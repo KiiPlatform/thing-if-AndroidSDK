@@ -74,12 +74,12 @@ public class MainActivity extends FragmentActivity {
     }
 
     // On board in background.
-    Promise<Target, Throwable, Void> onBoard(final String thingID) {
+    Promise<Target, Throwable, Void> onBoard(final String thingID, final String thingPassword) {
         return adm.when(new DeferredAsyncTask<Void, Void, Target>() {
             @Override
             protected Target doInBackgroundSafe(Void... voids) throws
                     Exception {
-                return api.onBoard(thingID);
+                return api.onBoard(thingID, thingPassword);
             }
         });
     }
