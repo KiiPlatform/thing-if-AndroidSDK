@@ -5,17 +5,29 @@ import android.os.Parcelable;
 
 public class TypedID implements Parcelable {
 
-    private String type;
-    private String ID;
-    private String qualifiedID;
-
-    public TypedID(String type, String ID) {
-        this.type = type;
-        this.ID = ID;
-        this.qualifiedID = this.type + ":" + this.ID;
+    public enum Types {
+        USER("user"),
+        GRPUP("group");
+        private final String value;
+        private Types(String value) {
+            this.value = value;
+        }
+        public String getValue() {
+            return this.value;
+        }
     }
 
-    public String getType() {
+    private final Types type;
+    private final String ID;
+    private final String qualifiedID;
+
+    public TypedID(Types type, String ID) {
+        this.type = type;
+        this.ID = ID;
+        this.qualifiedID = this.type.getValue() + ":" + this.ID;
+    }
+
+    public Types getType() {
         return this.type;
     }
 

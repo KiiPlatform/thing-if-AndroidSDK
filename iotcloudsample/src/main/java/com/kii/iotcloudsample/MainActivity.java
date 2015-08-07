@@ -110,7 +110,7 @@ public class MainActivity extends FragmentActivity {
                 actions.add(a4);
                 return api.postNewCommand(target, "SmartLight-Demo", 1,
                         actions, new TypedID
-                        ("group", "gp.abc-efg-hij"));
+                        (TypedID.Types.GRPUP, "gp.abc-efg-hij"));
             }
         });
     }
