@@ -10,6 +10,7 @@ public class IoTCloudAPIBuilder {
     private IoTCloudAPIBuilder() {}
 
     /** Instantiate new IoTCloudAPIBuilder.
+     * @param context
      * @param appID Application ID given by Kii Cloud.
      * @param appKey Application Key given by Kii Cloud.
      * @param baseUrl Application Site specified when create application.

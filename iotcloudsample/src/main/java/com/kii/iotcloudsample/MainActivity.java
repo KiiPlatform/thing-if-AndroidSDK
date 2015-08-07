@@ -55,7 +55,7 @@ public class MainActivity extends FragmentActivity {
 
         Schema smartLightSchema = sb.build();
 
-        IoTCloudAPIBuilder ib = IoTCloudAPIBuilder.newBuilder("myAppID",
+        IoTCloudAPIBuilder ib = IoTCloudAPIBuilder.newBuilder(this, "myAppID",
                 "myAppKey", "https://api-jp.kii.com", this.getOwner());
         ib.addSchema(smartLightSchema);
         api = ib.build();
