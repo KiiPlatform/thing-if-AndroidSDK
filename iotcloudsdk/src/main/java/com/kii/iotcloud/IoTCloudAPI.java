@@ -20,6 +20,9 @@ import java.io.Serializable;
 import java.net.UnknownServiceException;
 import java.util.List;
 
+/**
+ * This class operates an IoT device that is specified by <@link #onBoard(String, String, String, JSONObject)></@link> method.
+ */
 public class IoTCloudAPI implements Parcelable, Serializable {
 
     /** On board IoT Cloud with the specified vendor thing ID.
