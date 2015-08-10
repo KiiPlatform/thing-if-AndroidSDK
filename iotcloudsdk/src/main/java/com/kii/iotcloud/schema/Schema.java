@@ -2,6 +2,7 @@ package com.kii.iotcloud.schema;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import com.kii.iotcloud.TargetState;
 import com.kii.iotcloud.command.Action;
@@ -21,10 +22,12 @@ public class Schema implements Parcelable {
     private final List<Class<? extends ActionResult>> actionResultClasses;
     private final Class<? extends TargetState> stateClass;
 
-    Schema(String thingType, String schemaName, int schemaVersion,
-           List<Class<? extends Action>> actionClasses,
-           List<Class<? extends ActionResult>> actionResultClasses,
-           Class<? extends TargetState> stateClass) {
+    Schema(@NonNull String thingType,
+           @NonNull String schemaName,
+           @NonNull int schemaVersion,
+           @NonNull List<Class<? extends Action>> actionClasses,
+           @NonNull List<Class<? extends ActionResult>> actionResultClasses,
+           @NonNull Class<? extends TargetState> stateClass) {
         this.thingType = thingType;
         this.schemaName = schemaName;
         this.schemaVersion = schemaVersion;

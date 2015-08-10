@@ -1,5 +1,6 @@
 package com.kii.iotcloud;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Pair;
@@ -11,6 +12,7 @@ import com.google.gson.Gson;
 import com.kii.iotcloud.command.Action;
 import com.kii.iotcloud.command.ActionResult;
 import com.kii.iotcloud.command.Command;
+import com.kii.iotcloud.schema.Schema;
 import com.kii.iotcloud.trigger.Predicate;
 import com.kii.iotcloud.trigger.Trigger;
 
@@ -18,12 +20,36 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.net.UnknownServiceException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class operates an IoT device that is specified by <@link #onBoard(String, String, String, JSONObject)></@link> method.
  */
 public class IoTCloudAPI implements Parcelable, Serializable {
+
+    private final String appID;
+    private final String appKey;
+    private final Site site;
+    private final Owner owner;
+    private final Map<Pair<String, Integer>, Schema> schemas = new HashMap<Pair<String, Integer>, Schema>();
+
+    IoTCloudAPI(
+            @NonNull String appID,
+            @NonNull String appKey,
+            @NonNull Site site,
+            @NonNull Owner owner,
+            @NonNull List<Schema> schemas) {
+        this.appID = appID;
+        this.appKey = appKey;
+        this.site = site;
+        this.owner = owner;
+        for (Schema schema : schemas) {
+            this.schemas.put(new Pair<String, Integer>(schema.getSchemaName(), schema.getSchemaVersion()), schema);
+        }
+    }
 
     /** On board IoT Cloud with the specified vendor thing ID.
      * Specified thing will be owned by owner who is specified
@@ -161,6 +187,16 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             @NonNull List<Action> actions,
             @Nullable TypedID issuer) throws IoTCloudException {
         // TODO: Implement it.
+        if (target == null) {
+            throw new IllegalArgumentException("target is null");
+        }
+        Schema schema = this.getSchema(schemaName, schemaVersion);
+        if (schema == null) {
+            throw new UnsupportedOperationException(schemaName + " is not supported");
+        }
+        if (actions == null || actions.size() == 0) {
+            throw new IllegalArgumentException("actions is null or empty");
+        }
         return null;
     }
 
@@ -360,9 +396,22 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         S ret = gson.fromJson("{\"power\" : true}", classOfS);
         return ret;
     }
+    private Schema getSchema(String schemaName, int schemaVersion) {
+        return this.schemas.get(new Pair<String, Integer>(schemaName, schemaVersion));
+    }
 
     protected IoTCloudAPI(Parcel in) {
+        this.appID = in.readString();
+        this.appKey = in.readString();
+        this.site = (Site)in.readSerializable();
+        this.owner = in.readParcelable(Owner.class.getClassLoader());
+        ArrayList<Schema> schemas = in.createTypedArrayList(Schema.CREATOR);
+        for (Schema schema : schemas) {
+            this.schemas.put(new Pair<String, Integer>(schema.getSchemaName(), schema.getSchemaVersion()), schema);
+        }
+
     }
+
     public static final Creator<IoTCloudAPI> CREATOR = new Creator<IoTCloudAPI>() {
         @Override
         public IoTCloudAPI createFromParcel(Parcel in) {
@@ -379,8 +428,11 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         return 0;
     }
     @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        // TODO: Implement it.
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.appID);
+        dest.writeString(this.appKey);
+        dest.writeSerializable(this.site);
+        dest.writeParcelable(this.owner, flags);
+        dest.writeTypedList(new ArrayList<Schema>(this.schemas.values()));
     }
-
 }
