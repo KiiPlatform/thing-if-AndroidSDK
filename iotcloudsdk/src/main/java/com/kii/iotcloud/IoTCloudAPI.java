@@ -361,12 +361,23 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         return ret;
     }
 
+    protected IoTCloudAPI(Parcel in) {
+    }
+    public static final Creator<IoTCloudAPI> CREATOR = new Creator<IoTCloudAPI>() {
+        @Override
+        public IoTCloudAPI createFromParcel(Parcel in) {
+            return new IoTCloudAPI(in);
+        }
+
+        @Override
+        public IoTCloudAPI[] newArray(int size) {
+            return new IoTCloudAPI[size];
+        }
+    };
     @Override
     public int describeContents() {
-        // TODO: Implement it.
         return 0;
     }
-
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         // TODO: Implement it.

@@ -7,23 +7,39 @@ import com.kii.iotcloud.trigger.Trigger;
 
 public class Target implements Parcelable {
 
-    private TypedID typedID;
-    private String accessToken;
+    private final TypedID typedID;
+    private final String accessToken;
 
-    public Target(TypedID typedID) {
+    public Target(TypedID typedID, String accessToken) {
         this.typedID = typedID;
+        this.accessToken = accessToken;
+    }
+    protected Target(Parcel in) {
+        this.typedID = in.readParcelable(TypedID.class.getClassLoader());
+        this.accessToken = in.readString();
     }
 
+    public static final Creator<Target> CREATOR = new Creator<Target>() {
+        @Override
+        public Target createFromParcel(Parcel in) {
+            return new Target(in);
+        }
+
+        @Override
+        public Target[] newArray(int size) {
+            return new Target[size];
+        }
+    };
 
     @Override
     public int describeContents() {
-        // TODO: implement it.
         return 0;
     }
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        // TODO: implement it.
+        parcel.writeParcelable(typedID, i);
+        parcel.writeString(accessToken);
     }
 
 }

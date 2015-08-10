@@ -4,4 +4,7 @@ import com.kii.iotcloud.command.Action;
 
 public class SetBrightness extends Action {
     public int brightness;
+    public SetBrightness() {
+        super("setBrightness");
+    }
 }
