@@ -10,4 +10,7 @@ public enum Site {
     private Site(String baseUrl) {
         this.baseUrl = baseUrl;
     }
+    public String getBaseUrl() {
+        return this.baseUrl;
+    }
 }
