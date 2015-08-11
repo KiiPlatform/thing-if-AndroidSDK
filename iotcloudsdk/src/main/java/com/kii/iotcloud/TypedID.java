@@ -30,6 +30,21 @@ public class TypedID implements Parcelable {
     private final String ID;
     private final String qualifiedID;
 
+    public static TypedID fromString(String id) {
+        if (TextUtils.isEmpty(id)) {
+            throw new IllegalArgumentException("id is null or empty");
+        }
+        String[] ids = id.split(":");
+        if (ids.length != 2) {
+            throw new IllegalArgumentException(id + " is invalid format");
+        }
+        Types type = Types.fromString(ids[0]);
+        if (type == null) {
+            throw new IllegalArgumentException(ids[0] + " is unknown type");
+        }
+        return new TypedID(type, ids[1]);
+    }
+
     public TypedID(Types type, String ID) {
         if (type == null) {
             throw new IllegalArgumentException("type is null");

@@ -20,6 +20,9 @@ public class Command implements Parcelable {
     private List<Action> actions;
     private List<ActionResult> actionResults;
     private CommandState commandState;
+    private String firedByTriggerID;
+    private long created;
+    private long modified;
 
     /** Get ID of the command.
      * @return ID of the command.
@@ -42,6 +45,69 @@ public class Command implements Parcelable {
         return this.schemaVersion;
     }
 
+    /**
+     * Get ID of the target thing.
+     * @return
+     */
+    public TypedID getTargetID() {
+        return targetID;
+    }
+
+    /**
+     * Get ID of the issuer user.
+     * @return
+     */
+    public TypedID getIssuerID() {
+        return issuerID;
+    }
+
+    /**
+     * Get list of actions
+     * @return
+     */
+    public List<Action> getActions() {
+        return actions;
+    }
+
+    /**
+     * Get list of action result
+     * @return
+     */
+    public List<ActionResult> getActionResults() {
+        return actionResults;
+    }
+
+    /**
+     * Get status of command
+     * @return
+     */
+    public CommandState getCommandState() {
+        return commandState;
+    }
+
+    /**
+     * Get ID of trigger which fired this command
+     * @return
+     */
+    public String getFiredByTriggerID() {
+        return firedByTriggerID;
+    }
+
+    /**
+     * Get creation time
+     * @return
+     */
+    public long getCreated() {
+        return created;
+    }
+
+    /**
+     * Get modification time
+     * @return
+     */
+    public long getModified() {
+        return modified;
+    }
 
     protected Command(Parcel in) {
         this.commandID = in.readString();
@@ -54,6 +120,9 @@ public class Command implements Parcelable {
         this.actionResults = new ArrayList<ActionResult>();
         in.readList(this.actionResults, Command.class.getClassLoader());
         this.commandState = (CommandState)in.readSerializable();
+        this.firedByTriggerID = in.readString();
+        this.created = in.readLong();
+        this.modified = in.readLong();
     }
 
     public static final Creator<Command> CREATOR = new Creator<Command>() {
@@ -81,5 +150,8 @@ public class Command implements Parcelable {
         dest.writeList(this.actions);
         dest.writeList(this.actionResults);
         dest.writeSerializable(this.commandState);
+        dest.writeString(this.firedByTriggerID);
+        dest.writeLong(this.created);
+        dest.writeLong(this.modified);
     }
 }

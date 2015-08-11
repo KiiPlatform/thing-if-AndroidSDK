@@ -1,6 +1,5 @@
 package com.kii.iotcloud;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Pair;
@@ -12,6 +11,9 @@ import com.google.gson.Gson;
 import com.kii.iotcloud.command.Action;
 import com.kii.iotcloud.command.ActionResult;
 import com.kii.iotcloud.command.Command;
+import com.kii.iotcloud.exception.IoTCloudException;
+import com.kii.iotcloud.exception.UnsupportedActionException;
+import com.kii.iotcloud.exception.UnsupportedSchemaException;
 import com.kii.iotcloud.schema.Schema;
 import com.kii.iotcloud.trigger.Predicate;
 import com.kii.iotcloud.trigger.Trigger;
@@ -19,7 +21,6 @@ import com.kii.iotcloud.trigger.Trigger;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.net.UnknownServiceException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -399,6 +400,32 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     private Schema getSchema(String schemaName, int schemaVersion) {
         return this.schemas.get(new Pair<String, Integer>(schemaName, schemaVersion));
     }
+    private Action generateAction(String schemaName, int schemaVersion, String actionName, JSONObject actionParameters) throws IoTCloudException {
+        Schema schema = this.getSchema(schemaName, schemaVersion);
+        if (schema == null) {
+            throw new UnsupportedSchemaException(schemaName, schemaVersion);
+        }
+        Class<? extends Action> actionClass = schema.getActionClass(actionName);
+        if (actionClass == null) {
+            throw new UnsupportedActionException(schemaName, schemaVersion, actionName);
+        }
+        Gson gson = new Gson();
+        String json = actionParameters == null ? "{}" : actionParameters.toString();
+        return gson.fromJson(json, actionClass);
+    }
+    private ActionResult generateActionResult(String schemaName, int schemaVersion, String actionName, JSONObject actionResult) throws IoTCloudException {
+        Schema schema = this.getSchema(schemaName, schemaVersion);
+        if (schema == null) {
+            throw new UnsupportedSchemaException(schemaName, schemaVersion);
+        }
+        Class<? extends ActionResult> actionResultClass = schema.getActionResultClass(actionName);
+        if (actionResultClass == null) {
+            throw new UnsupportedActionException(schemaName, schemaVersion, actionName);
+        }
+        Gson gson = new Gson();
+        String json = actionResult == null ? "{}" : actionResult.toString();
+        return gson.fromJson(json, actionResultClass);
+    }
 
     protected IoTCloudAPI(Parcel in) {
         this.appID = in.readString();
@@ -409,7 +436,6 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         for (Schema schema : schemas) {
             this.schemas.put(new Pair<String, Integer>(schema.getSchemaName(), schema.getSchemaVersion()), schema);
         }
-
     }
 
     public static final Creator<IoTCloudAPI> CREATOR = new Creator<IoTCloudAPI>() {

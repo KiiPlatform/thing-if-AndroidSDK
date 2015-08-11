@@ -3,6 +3,7 @@ package com.kii.iotcloud.schema;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.kii.iotcloud.TargetState;
 import com.kii.iotcloud.command.Action;
@@ -53,6 +54,28 @@ public class Schema implements Parcelable {
         this.actionResultClasses = new ArrayList<Class<? extends ActionResult>>();
         in.readList(this.actionResultClasses, Schema.class.getClassLoader());
         this.stateClass = (Class<? extends TargetState>)in.readSerializable();
+    }
+    public Class<? extends Action> getActionClass(String actionName) {
+        // TOOD: cache the name if performance is bad
+        for (Class<? extends Action> actionClass : this.actionClasses) {
+            try {
+                if (TextUtils.equals(actionName, actionClass.newInstance().getName())) {
+                    return actionClass;
+                }
+            } catch (InstantiationException e) {
+                // Not happen
+            } catch (IllegalAccessException e) {
+                // Not happen
+            }
+        }
+        return null;
+    }
+    public Class<? extends ActionResult> getActionResultClass(String actionName) {
+        Class<? extends Action> actionClass = this.getActionClass(actionName);
+        if (actionClass != null) {
+            return this.actionResultClasses.get(this.actionClasses.indexOf(actionClass));
+        }
+        return null;
     }
 
     public static final Creator<Schema> CREATOR = new Creator<Schema>() {
