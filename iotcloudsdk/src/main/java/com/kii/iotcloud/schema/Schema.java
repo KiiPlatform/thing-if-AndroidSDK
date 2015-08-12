@@ -3,14 +3,17 @@ package com.kii.iotcloud.schema;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
+import android.util.Pair;
 
 import com.kii.iotcloud.TargetState;
 import com.kii.iotcloud.command.Action;
 import com.kii.iotcloud.command.ActionResult;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Object represents Schema.
  */
@@ -22,6 +25,10 @@ public class Schema implements Parcelable {
     private final List<Class<? extends Action>> actionClasses;
     private final List<Class<? extends ActionResult>> actionResultClasses;
     private final Class<? extends TargetState> stateClass;
+    /**
+     * index mapping for search Action/ActionResult by name
+     */
+    private Map<String, Pair<Class<? extends Action>, Class<? extends ActionResult>>> name2ActionClassMap = null;
 
     Schema(@NonNull String thingType,
            @NonNull String schemaName,
@@ -35,6 +42,7 @@ public class Schema implements Parcelable {
         this.actionClasses = actionClasses;
         this.actionResultClasses = actionResultClasses;
         this.stateClass = stateClass;
+        this.initializeName2ActionClassMap();
     }
 
     public String getSchemaName() {
@@ -54,26 +62,19 @@ public class Schema implements Parcelable {
         this.actionResultClasses = new ArrayList<Class<? extends ActionResult>>();
         in.readList(this.actionResultClasses, Schema.class.getClassLoader());
         this.stateClass = (Class<? extends TargetState>)in.readSerializable();
+        this.initializeName2ActionClassMap();
     }
     public Class<? extends Action> getActionClass(String actionName) {
-        // TOOD: cache the name if performance is bad
-        for (Class<? extends Action> actionClass : this.actionClasses) {
-            try {
-                if (TextUtils.equals(actionName, actionClass.newInstance().getName())) {
-                    return actionClass;
-                }
-            } catch (InstantiationException e) {
-                // Not happen
-            } catch (IllegalAccessException e) {
-                // Not happen
-            }
+        Pair<Class<? extends Action>, Class<? extends ActionResult>> pair = this.name2ActionClassMap.get(actionName);
+        if (pair != null) {
+            return pair.first;
         }
         return null;
     }
     public Class<? extends ActionResult> getActionResultClass(String actionName) {
-        Class<? extends Action> actionClass = this.getActionClass(actionName);
-        if (actionClass != null) {
-            return this.actionResultClasses.get(this.actionClasses.indexOf(actionClass));
+        Pair<Class<? extends Action>, Class<? extends ActionResult>> pair = this.name2ActionClassMap.get(actionName);
+        if (pair != null) {
+            return pair.second;
         }
         return null;
     }
@@ -103,5 +104,22 @@ public class Schema implements Parcelable {
         dest.writeList(this.actionClasses);
         dest.writeList(this.actionResultClasses);
         dest.writeSerializable(this.stateClass);
+    }
+    private synchronized void initializeName2ActionClassMap() {
+        if (this.name2ActionClassMap == null) {
+            this.name2ActionClassMap = Collections.synchronizedMap(new HashMap<String, Pair<Class<? extends Action>, Class<? extends ActionResult>>>());
+            if (!this.name2ActionClassMap.isEmpty()) {
+                for (int i = 0; i < this.actionClasses.size(); i++) {
+                    Class<? extends Action> actionClass = this.actionClasses.get(i);
+                    Class<? extends ActionResult> actionResultClass = this.actionResultClasses.get(i);
+                    try {
+                        this.name2ActionClassMap.put(actionClass.newInstance().getName(),
+                                new Pair<Class<? extends Action>, Class<? extends ActionResult>>(actionClass, actionResultClass));
+                    } catch (Exception ignore) {
+                        // Not happen
+                    }
+                }
+            }
+        }
     }
 }

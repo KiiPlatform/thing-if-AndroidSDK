@@ -5,8 +5,8 @@ import org.json.JSONObject;
 public class IoTCloudRestException extends IoTCloudException {
     private final int statusCode;
     private final JSONObject body;
-    public IoTCloudRestException(int statusCode, JSONObject body) {
-        super("Server returned HTTP-Status:" + statusCode);
+    public IoTCloudRestException(String message, int statusCode, JSONObject body) {
+        super(message + "    ## Server Returned HttpStatus:" + statusCode);
         this.statusCode = statusCode;
         this.body = body;
     }

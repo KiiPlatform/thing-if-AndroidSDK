@@ -243,7 +243,7 @@ public class IoTRestClient {
             } catch (Exception ignore) {
             }
             if (!response.isSuccessful()) {
-                throw new IoTCloudRestException(response.code(), errorDetail);
+                throw new IoTCloudRestException(request.getCurl(), response.code(), errorDetail);
             }
         }
     }
