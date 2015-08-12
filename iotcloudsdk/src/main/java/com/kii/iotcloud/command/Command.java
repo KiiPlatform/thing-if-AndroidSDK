@@ -20,7 +20,9 @@ import java.util.List;
 
 public class Command implements Parcelable {
 
+    @SerializedName("id")
     private String commandID;
+    @SerializedName("schema")
     private final String schemaName;
     private final int schemaVersion;
     @SerializedName("target")

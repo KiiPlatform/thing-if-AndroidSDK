@@ -224,8 +224,14 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             @NonNull Target target,
             @NonNull String commandID)
             throws IoTCloudException {
-        // TODO: implement it.
-        return null;
+        JSONObject responseBody = this.restClient.getCommand(target.getTypedID(), commandID);
+        String schemaName = responseBody.optString("schema");
+        int schemaVersion = responseBody.optInt("schemaVersion");
+        Schema schema = this.getSchema(schemaName, schemaVersion);
+        if (schema == null) {
+            throw new UnsupportedOperationException(schemaName + " is not supported");
+        }
+        return GsonRepository.gson(schema).fromJson(responseBody.toString(), Command.class);
     }
 
     /** List Commands in the specified Target.
