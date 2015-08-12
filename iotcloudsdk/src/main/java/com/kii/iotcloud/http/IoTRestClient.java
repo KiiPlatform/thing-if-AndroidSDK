@@ -4,7 +4,6 @@ import android.text.TextUtils;
 
 import com.kii.iotcloud.Site;
 import com.kii.iotcloud.TypedID;
-import com.kii.iotcloud.command.Command;
 import com.kii.iotcloud.exception.IoTCloudException;
 import com.kii.iotcloud.exception.IoTCloudRestException;
 import com.kii.iotcloud.http.IoTRestRequest.Method;
@@ -60,15 +59,15 @@ public class IoTRestClient {
     /**
      *
      * @param target
-     * @param command
+     * @param requestBody
      * @return commandID
      * @throws IoTCloudException
      */
-    public String createCommand(TypedID target, Command command) throws IoTCloudException {
+    public String createCommand(TypedID target, JSONObject requestBody) throws IoTCloudException {
         String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands", this.appID, target.toString());
         String url = Path.combine(site.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
-        IoTRestRequest request = new IoTRestRequest(url, Method.POST, headers, MEDIA_TYPE_JSON, command.toJson());
+        IoTRestRequest request = new IoTRestRequest(url, Method.POST, headers, MEDIA_TYPE_JSON, requestBody);
         Response response = this.execute(request);
         JSONObject responseBody = this.parseResponseAsJsonObject(request, response);
         return responseBody.optString("commandID");
@@ -81,14 +80,13 @@ public class IoTRestClient {
         Response response = this.execute(request);
         return this.parseResponseAsJsonObject(request, response);
     }
-    public Command getCommand(TypedID target, String commandID) throws IoTCloudException {
+    public JSONObject getCommand(TypedID target, String commandID) throws IoTCloudException {
         String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands/{2}", this.appID, target.toString(), commandID);
         String url = Path.combine(site.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, Method.GET, headers);
         Response response = this.execute(request);
-        JSONObject responseBody = this.parseResponseAsJsonObject(request, response);
-        return Command.fromJson(responseBody);
+        return this.parseResponseAsJsonObject(request, response);
     }
     public JSONObject getCommands(TypedID target) throws IoTCloudException {
         String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands", this.appID, target.toString());

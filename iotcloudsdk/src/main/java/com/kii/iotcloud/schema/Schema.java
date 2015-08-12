@@ -70,7 +70,7 @@ public class Schema implements Parcelable {
     private synchronized void initializeName2ActionClassMap() {
         if (this.name2ActionClassMap == null) {
             this.name2ActionClassMap = Collections.synchronizedMap(new HashMap<String, Pair<Class<? extends Action>, Class<? extends ActionResult>>>());
-            if (!this.name2ActionClassMap.isEmpty()) {
+            if (this.name2ActionClassMap.isEmpty()) {
                 for (int i = 0; i < this.actionClasses.size(); i++) {
                     Class<? extends Action> actionClass = this.actionClasses.get(i);
                     Class<? extends ActionResult> actionResultClass = this.actionResultClasses.get(i);

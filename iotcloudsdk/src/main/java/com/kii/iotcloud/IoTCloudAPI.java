@@ -19,6 +19,7 @@ import com.kii.iotcloud.schema.Schema;
 import com.kii.iotcloud.trigger.Predicate;
 import com.kii.iotcloud.trigger.Trigger;
 import com.kii.iotcloud.utils.GsonRepository;
+import com.kii.iotcloud.utils.JsonUtils;
 
 import org.json.JSONObject;
 
@@ -202,8 +203,9 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             throw new IllegalArgumentException("actions is null or empty");
         }
         Command command = new Command(schemaName, schemaVersion, target.getTypedID(), this.owner.getID());
-        String commandID = this.restClient.createCommand(target.getTypedID(), command);
-        return this.restClient.getCommand(target.getTypedID(), commandID);
+        String commandID = this.restClient.createCommand(target.getTypedID(), JsonUtils.newJson(GsonRepository.gson(schema).toJson(command)));
+        JSONObject responseBody = this.restClient.getCommand(target.getTypedID(), commandID);
+        return GsonRepository.gson(schema).fromJson(responseBody.toString(), Command.class);
     }
 
     /** Get specified command.
@@ -398,7 +400,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             @NonNull Target target,
             @NonNull Class<S> classOfS) {
         // TODO: implement it.
-        Gson gson = GsonRepository.gson();
+        Gson gson = GsonRepository.gson(null);
         S ret = gson.fromJson("{\"power\" : true}", classOfS);
         return ret;
     }
@@ -414,7 +416,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         if (actionClass == null) {
             throw new UnsupportedActionException(schemaName, schemaVersion, actionName);
         }
-        Gson gson = GsonRepository.gson();
+        Gson gson = GsonRepository.gson(schema);
         String json = actionParameters == null ? "{}" : actionParameters.toString();
         return gson.fromJson(json, actionClass);
     }
@@ -427,7 +429,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         if (actionResultClass == null) {
             throw new UnsupportedActionException(schemaName, schemaVersion, actionName);
         }
-        Gson gson = GsonRepository.gson();
+        Gson gson = GsonRepository.gson(schema);
         String json = actionResult == null ? "{}" : actionResult.toString();
         return gson.fromJson(json, actionResultClass);
     }

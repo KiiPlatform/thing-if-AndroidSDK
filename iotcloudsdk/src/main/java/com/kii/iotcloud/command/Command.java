@@ -143,22 +143,6 @@ public class Command implements Parcelable {
         return modified;
     }
 
-    public static Command fromJson(JSONObject json) {
-        return null;
-    }
-    /**
-     * Gets the JSON object which represents this instance.
-     * @return
-     */
-    public JSONObject toJson() {
-        try {
-            return new JSONObject(GsonRepository.gson().toJson(this));
-        } catch (JSONException ignore) {
-            // Not happen
-            throw new AssertionError(ignore);
-        }
-    }
-
     // Implementation of Parcelable
     protected Command(Parcel in) {
         this.commandID = in.readString();
