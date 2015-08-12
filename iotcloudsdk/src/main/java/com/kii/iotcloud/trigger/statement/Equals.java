@@ -3,7 +3,7 @@ package com.kii.iotcloud.trigger.statement;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Equals extends Statement {
+public class Equals implements Statement {
 
     private String field;
     private Object value;

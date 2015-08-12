@@ -77,6 +77,18 @@ public class SchemaBuilder {
         if (this.actionClasses.contains(actionResultClass)) {
             throw new IllegalArgumentException(actionResultClass.getName() + " already contains in this schema");
         }
+        try {
+            Action action = actionClass.newInstance();
+            ActionResult actionResult = actionResultClass.newInstance();
+            if (!TextUtils.equals(action.getActionName(), actionResult.getActionName())) {
+                throw new IllegalArgumentException("Action.actionName different from ActionResult.actionName");
+            }
+        } catch (InstantiationException e) {
+            throw new IllegalArgumentException(e);
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException(e);
+        }
+
         this.actionClasses.add(actionClass);
         this.actionResultClasses.add(actionResultClass);
         return this;

@@ -8,7 +8,8 @@ public class TypedID implements Parcelable {
 
     public enum Types {
         USER("user"),
-        GRPUP("group");
+        GRPUP("group"),
+        THING("thing");
         private final String value;
         private Types(String value) {
             this.value = value;
@@ -57,12 +58,6 @@ public class TypedID implements Parcelable {
         this.qualifiedID = this.type.getValue() + ":" + this.ID;
     }
 
-    protected TypedID(Parcel in) {
-        this.type = Types.fromString(in.readString());
-        this.ID = in.readString();
-        this.qualifiedID = this.type.getValue() + ":" + this.ID;
-    }
-
     public Types getType() {
         return this.type;
     }
@@ -76,7 +71,12 @@ public class TypedID implements Parcelable {
         return this.qualifiedID;
     }
 
-
+    // Implementation of Parcelable
+    protected TypedID(Parcel in) {
+        this.type = Types.fromString(in.readString());
+        this.ID = in.readString();
+        this.qualifiedID = this.type.getValue() + ":" + this.ID;
+    }
     public static final Creator<TypedID> CREATOR = new Creator<TypedID>() {
         @Override
         public TypedID createFromParcel(Parcel in) {
@@ -88,16 +88,13 @@ public class TypedID implements Parcelable {
             return new TypedID[size];
         }
     };
-
     @Override
     public int describeContents() {
         return 0;
     }
-
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(this.type.getValue());
         parcel.writeString(this.ID);
     }
-
 }

@@ -14,11 +14,18 @@ public class Target implements Parcelable {
         this.typedID = typedID;
         this.accessToken = accessToken;
     }
+    public TypedID getTypedID() {
+        return this.typedID;
+    }
+    public String getAccessToken() {
+        return this.accessToken;
+    }
+
+    // Implementation of Parcelable
     protected Target(Parcel in) {
         this.typedID = in.readParcelable(TypedID.class.getClassLoader());
         this.accessToken = in.readString();
     }
-
     public static final Creator<Target> CREATOR = new Creator<Target>() {
         @Override
         public Target createFromParcel(Parcel in) {
@@ -30,7 +37,6 @@ public class Target implements Parcelable {
             return new Target[size];
         }
     };
-
     @Override
     public int describeContents() {
         return 0;
@@ -41,5 +47,4 @@ public class Target implements Parcelable {
         parcel.writeParcelable(typedID, i);
         parcel.writeString(accessToken);
     }
-
 }

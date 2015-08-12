@@ -53,17 +53,6 @@ public class Schema implements Parcelable {
         return this.schemaVersion;
     }
 
-    protected Schema(Parcel in) {
-        this.thingType = in.readString();
-        this.schemaName = in.readString();
-        this.schemaVersion = in.readInt();
-        this.actionClasses = new ArrayList<Class<? extends Action>>();
-        in.readList(this.actionClasses, Schema.class.getClassLoader());
-        this.actionResultClasses = new ArrayList<Class<? extends ActionResult>>();
-        in.readList(this.actionResultClasses, Schema.class.getClassLoader());
-        this.stateClass = (Class<? extends TargetState>)in.readSerializable();
-        this.initializeName2ActionClassMap();
-    }
     public Class<? extends Action> getActionClass(String actionName) {
         Pair<Class<? extends Action>, Class<? extends ActionResult>> pair = this.name2ActionClassMap.get(actionName);
         if (pair != null) {
@@ -78,7 +67,36 @@ public class Schema implements Parcelable {
         }
         return null;
     }
+    private synchronized void initializeName2ActionClassMap() {
+        if (this.name2ActionClassMap == null) {
+            this.name2ActionClassMap = Collections.synchronizedMap(new HashMap<String, Pair<Class<? extends Action>, Class<? extends ActionResult>>>());
+            if (!this.name2ActionClassMap.isEmpty()) {
+                for (int i = 0; i < this.actionClasses.size(); i++) {
+                    Class<? extends Action> actionClass = this.actionClasses.get(i);
+                    Class<? extends ActionResult> actionResultClass = this.actionResultClasses.get(i);
+                    try {
+                        this.name2ActionClassMap.put(actionClass.newInstance().getActionName(),
+                                new Pair<Class<? extends Action>, Class<? extends ActionResult>>(actionClass, actionResultClass));
+                    } catch (Exception ignore) {
+                        // Not happen
+                    }
+                }
+            }
+        }
+    }
 
+    // Implementation of Parcelable
+    protected Schema(Parcel in) {
+        this.thingType = in.readString();
+        this.schemaName = in.readString();
+        this.schemaVersion = in.readInt();
+        this.actionClasses = new ArrayList<Class<? extends Action>>();
+        in.readList(this.actionClasses, Schema.class.getClassLoader());
+        this.actionResultClasses = new ArrayList<Class<? extends ActionResult>>();
+        in.readList(this.actionResultClasses, Schema.class.getClassLoader());
+        this.stateClass = (Class<? extends TargetState>)in.readSerializable();
+        this.initializeName2ActionClassMap();
+    }
     public static final Creator<Schema> CREATOR = new Creator<Schema>() {
         @Override
         public Schema createFromParcel(Parcel in) {
@@ -90,12 +108,10 @@ public class Schema implements Parcelable {
             return new Schema[size];
         }
     };
-
     @Override
     public int describeContents() {
         return 0;
     }
-
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.thingType);
@@ -104,22 +120,5 @@ public class Schema implements Parcelable {
         dest.writeList(this.actionClasses);
         dest.writeList(this.actionResultClasses);
         dest.writeSerializable(this.stateClass);
-    }
-    private synchronized void initializeName2ActionClassMap() {
-        if (this.name2ActionClassMap == null) {
-            this.name2ActionClassMap = Collections.synchronizedMap(new HashMap<String, Pair<Class<? extends Action>, Class<? extends ActionResult>>>());
-            if (!this.name2ActionClassMap.isEmpty()) {
-                for (int i = 0; i < this.actionClasses.size(); i++) {
-                    Class<? extends Action> actionClass = this.actionClasses.get(i);
-                    Class<? extends ActionResult> actionResultClass = this.actionResultClasses.get(i);
-                    try {
-                        this.name2ActionClassMap.put(actionClass.newInstance().getName(),
-                                new Pair<Class<? extends Action>, Class<? extends ActionResult>>(actionClass, actionResultClass));
-                    } catch (Exception ignore) {
-                        // Not happen
-                    }
-                }
-            }
-        }
     }
 }

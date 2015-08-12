@@ -2,9 +2,9 @@ package com.kii.iotcloud.trigger;
 
 public class Schedule {
 
-    private String cron;
+    private String cronExpression;
 
-    public Schedule(String cron) {
-        this.cron = cron;
+    public Schedule(String cronExpression) {
+        this.cronExpression = cronExpression;
     }
 }

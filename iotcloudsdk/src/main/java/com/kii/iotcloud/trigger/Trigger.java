@@ -8,6 +8,14 @@ import com.kii.iotcloud.command.Command;
 
 public class Trigger implements Parcelable {
 
+    private String triggerID;
+    private Predicate predicate;
+    private Command command;
+
+
+    public String getTriggerID() {
+        return this.triggerID;
+    }
     public TypedID getTargetID() {
         // TODO: implement
         return null;
@@ -19,23 +27,50 @@ public class Trigger implements Parcelable {
     }
 
     public Predicate getPredicate() {
-        // TODO: implement
-        return null;
+        return this.predicate;
     }
 
     public Command getCommand() {
-        // TODO: implement
-        return null;
+        return this.command;
     }
+
+
+
+
+
+
+
+
+
+
+
+    protected Trigger(Parcel in) {
+        triggerID = in.readString();
+        predicate = in.readParcelable(Predicate.class.getClassLoader());
+        command = in.readParcelable(Command.class.getClassLoader());
+    }
+
+    public static final Creator<Trigger> CREATOR = new Creator<Trigger>() {
+        @Override
+        public Trigger createFromParcel(Parcel in) {
+            return new Trigger(in);
+        }
+
+        @Override
+        public Trigger[] newArray(int size) {
+            return new Trigger[size];
+        }
+    };
 
     @Override
     public int describeContents() {
-        // TODO: implement it.
         return 0;
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        // TODO: implement it.
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(triggerID);
+        dest.writeParcelable(predicate, flags);
+        dest.writeParcelable(command, flags);
     }
 }

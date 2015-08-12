@@ -14,9 +14,11 @@ import com.kii.iotcloud.command.Command;
 import com.kii.iotcloud.exception.IoTCloudException;
 import com.kii.iotcloud.exception.UnsupportedActionException;
 import com.kii.iotcloud.exception.UnsupportedSchemaException;
+import com.kii.iotcloud.http.IoTRestClient;
 import com.kii.iotcloud.schema.Schema;
 import com.kii.iotcloud.trigger.Predicate;
 import com.kii.iotcloud.trigger.Trigger;
+import com.kii.iotcloud.utils.GsonRepository;
 
 import org.json.JSONObject;
 
@@ -36,6 +38,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     private final Site site;
     private final Owner owner;
     private final Map<Pair<String, Integer>, Schema> schemas = new HashMap<Pair<String, Integer>, Schema>();
+    private final IoTRestClient restClient;
 
     IoTCloudAPI(
             @NonNull String appID,
@@ -50,6 +53,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         for (Schema schema : schemas) {
             this.schemas.put(new Pair<String, Integer>(schema.getSchemaName(), schema.getSchemaVersion()), schema);
         }
+        this.restClient = new IoTRestClient(this.appID, this.appKey, this.site, this.owner.getAccessToken());
     }
 
     /** On board IoT Cloud with the specified vendor thing ID.
@@ -187,7 +191,6 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             int schemaVersion,
             @NonNull List<Action> actions,
             @Nullable TypedID issuer) throws IoTCloudException {
-        // TODO: Implement it.
         if (target == null) {
             throw new IllegalArgumentException("target is null");
         }
@@ -198,7 +201,9 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         if (actions == null || actions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty");
         }
-        return null;
+        Command command = new Command(schemaName, schemaVersion, target.getTypedID(), this.owner.getID());
+        String commandID = this.restClient.createCommand(target.getTypedID(), command);
+        return this.restClient.getCommand(target.getTypedID(), commandID);
     }
 
     /** Get specified command.
@@ -393,7 +398,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             @NonNull Target target,
             @NonNull Class<S> classOfS) {
         // TODO: implement it.
-        Gson gson = new Gson();
+        Gson gson = GsonRepository.gson();
         S ret = gson.fromJson("{\"power\" : true}", classOfS);
         return ret;
     }
@@ -409,7 +414,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         if (actionClass == null) {
             throw new UnsupportedActionException(schemaName, schemaVersion, actionName);
         }
-        Gson gson = new Gson();
+        Gson gson = GsonRepository.gson();
         String json = actionParameters == null ? "{}" : actionParameters.toString();
         return gson.fromJson(json, actionClass);
     }
@@ -422,11 +427,12 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         if (actionResultClass == null) {
             throw new UnsupportedActionException(schemaName, schemaVersion, actionName);
         }
-        Gson gson = new Gson();
+        Gson gson = GsonRepository.gson();
         String json = actionResult == null ? "{}" : actionResult.toString();
         return gson.fromJson(json, actionResultClass);
     }
 
+    // Implementation of Parcelable
     protected IoTCloudAPI(Parcel in) {
         this.appID = in.readString();
         this.appKey = in.readString();
@@ -436,8 +442,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         for (Schema schema : schemas) {
             this.schemas.put(new Pair<String, Integer>(schema.getSchemaName(), schema.getSchemaVersion()), schema);
         }
+        this.restClient = new IoTRestClient(this.appID, this.appKey, this.site, this.owner.getAccessToken());
     }
-
     public static final Creator<IoTCloudAPI> CREATOR = new Creator<IoTCloudAPI>() {
         @Override
         public IoTCloudAPI createFromParcel(Parcel in) {

@@ -4,7 +4,8 @@ import com.kii.iotcloud.command.Action;
 
 public class SetColor extends Action {
     public int[] color = new int[3];
-    public SetColor() {
-        super("setColor");
+    @Override
+    public String getActionName() {
+        return "setColor";
     }
 }

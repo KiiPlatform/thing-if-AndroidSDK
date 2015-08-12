@@ -2,8 +2,8 @@ package com.kii.iotcloud.trigger.statement;
 
 import org.json.JSONObject;
 
-public abstract class Statement {
+public interface Statement {
 
-    public abstract JSONObject toJSONObject();
+    public JSONObject toJSONObject();
 
 }

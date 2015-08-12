@@ -1,4 +1,6 @@
 package com.kii.iotcloud.trigger;
 
-public abstract class Predicate {
+import android.os.Parcelable;
+
+public interface Predicate extends Parcelable {
 }

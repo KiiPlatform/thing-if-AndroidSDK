@@ -3,8 +3,16 @@ package com.kii.iotcloud.command;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
+import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 import com.kii.iotcloud.TypedID;
+import com.kii.iotcloud.utils.GsonRepository;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,16 +21,42 @@ import java.util.List;
 public class Command implements Parcelable {
 
     private String commandID;
-    private String schemaName;
-    private int schemaVersion;
+    private final String schemaName;
+    private final int schemaVersion;
+    @SerializedName("target")
     private TypedID targetID;
+    @SerializedName("issuer")
     private TypedID issuerID;
     private List<Action> actions;
     private List<ActionResult> actionResults;
+    @SerializedName("state")
     private CommandState commandState;
     private String firedByTriggerID;
-    private long created;
-    private long modified;
+    private Long created;
+    private Long modified;
+
+    public Command(String schemaName, int schemaVersion, TypedID targetID, TypedID issuerID) {
+        if (TextUtils.isEmpty(schemaName)) {
+            throw new IllegalArgumentException("schemaName is null or empty");
+        }
+        this.schemaName = schemaName;
+        this.schemaVersion = schemaVersion;
+        this.targetID = targetID;
+        this.issuerID = issuerID;
+
+
+
+
+        this.actions = new ArrayList<Action>();
+        this.actionResults = new ArrayList<ActionResult>();
+    }
+    public void addAction(Action a) {
+        this.actions.add(a);
+    }
+    public void addActionResult(ActionResult ar) {
+        this.actionResults.add(ar);
+    }
+
 
     /** Get ID of the command.
      * @return ID of the command.
@@ -109,6 +143,23 @@ public class Command implements Parcelable {
         return modified;
     }
 
+    public static Command fromJson(JSONObject json) {
+        return null;
+    }
+    /**
+     * Gets the JSON object which represents this instance.
+     * @return
+     */
+    public JSONObject toJson() {
+        try {
+            return new JSONObject(GsonRepository.gson().toJson(this));
+        } catch (JSONException ignore) {
+            // Not happen
+            throw new AssertionError(ignore);
+        }
+    }
+
+    // Implementation of Parcelable
     protected Command(Parcel in) {
         this.commandID = in.readString();
         this.schemaName = in.readString();
@@ -124,7 +175,6 @@ public class Command implements Parcelable {
         this.created = in.readLong();
         this.modified = in.readLong();
     }
-
     public static final Creator<Command> CREATOR = new Creator<Command>() {
         @Override
         public Command createFromParcel(Parcel in) {

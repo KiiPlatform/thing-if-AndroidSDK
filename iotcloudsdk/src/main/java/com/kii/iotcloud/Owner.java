@@ -20,11 +20,19 @@ public class Owner implements Parcelable {
         this.accessToken = accessToken;
     }
 
+    public TypedID getID() {
+        return this.ID;
+    }
+
+    public String getAccessToken() {
+        return this.accessToken;
+    }
+
+    // Implementation of Parcelable
     protected Owner(Parcel in) {
         this.ID = in.readParcelable(TypedID.class.getClassLoader());
         this.accessToken = in.readString();
     }
-
     public static final Creator<Owner> CREATOR = new Creator<Owner>() {
         @Override
         public Owner createFromParcel(Parcel in) {
@@ -36,24 +44,13 @@ public class Owner implements Parcelable {
             return new Owner[size];
         }
     };
-
-    public TypedID getID() {
-        return this.ID;
-    }
-
-    public String getAccessToken() {
-        return this.accessToken;
-    }
-
     @Override
     public int describeContents() {
         return 0;
     }
-
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeParcelable(this.ID, i);
         parcel.writeString(this.accessToken);
     }
-
 }

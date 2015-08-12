@@ -12,5 +12,5 @@ public abstract class ActionResult implements Serializable {
     public String getErrorMessage() {
         return this.errorMessage;
     }
-
+    public abstract String getActionName();
 }
