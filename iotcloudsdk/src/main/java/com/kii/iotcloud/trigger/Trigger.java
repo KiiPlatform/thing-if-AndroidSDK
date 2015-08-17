@@ -11,19 +11,24 @@ public class Trigger implements Parcelable {
     private String triggerID;
     private Predicate predicate;
     private Command command;
+    private boolean enabled;
 
 
     public String getTriggerID() {
         return this.triggerID;
     }
     public TypedID getTargetID() {
-        // TODO: implement
-        return null;
+        if (this.command == null) {
+            return null;
+        }
+        return this.command.getTargetID();
     }
 
     public boolean enabled() {
-        // TODO: implement
-        return false;
+        return this.enabled;
+    }
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public Predicate getPredicate() {
@@ -36,18 +41,10 @@ public class Trigger implements Parcelable {
 
 
 
-
-
-
-
-
-
-
-
     protected Trigger(Parcel in) {
-        triggerID = in.readString();
-        predicate = in.readParcelable(Predicate.class.getClassLoader());
-        command = in.readParcelable(Command.class.getClassLoader());
+        this.triggerID = in.readString();
+        this.predicate = in.readParcelable(Predicate.class.getClassLoader());
+        this.command = in.readParcelable(Command.class.getClassLoader());
     }
 
     public static final Creator<Trigger> CREATOR = new Creator<Trigger>() {
@@ -69,8 +66,8 @@ public class Trigger implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(triggerID);
-        dest.writeParcelable(predicate, flags);
-        dest.writeParcelable(command, flags);
+        dest.writeString(this.triggerID);
+        dest.writeParcelable(this.predicate, flags);
+        dest.writeParcelable(this.command, flags);
     }
 }

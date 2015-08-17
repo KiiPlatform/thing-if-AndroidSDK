@@ -1,5 +1,7 @@
 package com.kii.iotcloud.trigger.statement;
 
+import android.os.Parcel;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,15 +27,52 @@ public class Equals implements Statement {
     @Override
     public JSONObject toJSONObject() {
         JSONObject ret = new JSONObject();
-        JSONObject kv = new JSONObject();
         try {
-            kv.put("field", this.field);
-            kv.put("value", this.value);
-            ret.put("=", kv);
+            ret.put("type", "eq");
+            ret.put("field", this.field);
+            ret.put("value", this.value);
             return ret;
         } catch (JSONException e) {
             // Won't happens.
             throw new RuntimeException(e);
+        }
+    }
+
+    protected Equals(Parcel in) {
+        this.field = in.readString();
+        Class<?> clazz = (Class<?>)in.readSerializable();
+        if (clazz == String.class) {
+            this.value = in.readString();
+        } else if (clazz == Long.class) {
+            this.value = in.readLong();
+        } else if (clazz == Boolean.class) {
+            this.value = (in.readByte() != 0);
+        }
+    }
+    public static final Creator<Equals> CREATOR = new Creator<Equals>() {
+        @Override
+        public Equals createFromParcel(Parcel in) {
+            return new Equals(in);
+        }
+        @Override
+        public Equals[] newArray(int size) {
+            return new Equals[size];
+        }
+    };
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.field);
+        dest.writeSerializable(this.value.getClass());
+        if (this.value instanceof String) {
+            dest.writeString((String)this.value);
+        } else if (Long.class.isInstance(this.value)) {
+            dest.writeLong((Long)this.value);
+        } else if (Boolean.class.isInstance(this.value)) {
+            dest.writeByte((byte)((Boolean)this.value ? 1 : 0));
         }
     }
 }

@@ -30,7 +30,6 @@ import java.util.Map;
 
 import okio.BufferedSink;
 
-// TODO: divide this class into smaller some classes if number of APIs will be increased.
 public class IoTRestClient {
 
     protected static final OkHttpClient client = OkHttpClientFactory.newInstance();
