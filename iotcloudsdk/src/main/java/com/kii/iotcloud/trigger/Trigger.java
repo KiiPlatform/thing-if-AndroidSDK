@@ -11,8 +11,18 @@ public class Trigger implements Parcelable {
     private String triggerID;
     private Predicate predicate;
     private Command command;
-    private boolean enabled;
+    private boolean disabled;
 
+    public Trigger(Predicate predicate, Command command) {
+        if (predicate == null) {
+            throw new IllegalArgumentException("predicate is null");
+        }
+        if (command == null) {
+            throw new IllegalArgumentException("command is null");
+        }
+        this.predicate = predicate;
+        this.command = command;
+    }
 
     public String getTriggerID() {
         return this.triggerID;
@@ -24,11 +34,11 @@ public class Trigger implements Parcelable {
         return this.command.getTargetID();
     }
 
-    public boolean enabled() {
-        return this.enabled;
+    public boolean disabled() {
+        return this.disabled;
     }
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
     }
 
     public Predicate getPredicate() {
@@ -40,7 +50,7 @@ public class Trigger implements Parcelable {
     }
 
 
-
+    // Implementation of Parcelable
     protected Trigger(Parcel in) {
         this.triggerID = in.readString();
         this.predicate = in.readParcelable(Predicate.class.getClassLoader());

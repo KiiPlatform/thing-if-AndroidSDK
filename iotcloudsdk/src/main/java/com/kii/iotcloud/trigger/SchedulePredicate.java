@@ -2,8 +2,8 @@ package com.kii.iotcloud.trigger;
 
 import android.os.Parcel;
 
-public class SchedulePredicate implements Predicate {
-    private final Schedule schedule;
+public class SchedulePredicate extends Predicate {
+    private Schedule schedule;
 
     public SchedulePredicate(Schedule schedule) {
         this.schedule = schedule;
@@ -11,7 +11,12 @@ public class SchedulePredicate implements Predicate {
     public Schedule getSchedule() {
         return this.schedule;
     }
+    public EventSource getEventSource() {
+        return EventSource.SCHEDULE;
+    }
 
+
+    // Implementation of Parcelable
     protected SchedulePredicate(Parcel in) {
         this.schedule = in.readParcelable(Schedule.class.getClassLoader());
     }

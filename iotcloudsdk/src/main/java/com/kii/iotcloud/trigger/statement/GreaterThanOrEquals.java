@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class GreaterThanOrEquals implements Statement {
+public class GreaterThanOrEquals extends Statement {
     private String field;
     private long limit;
     public GreaterThanOrEquals(String field, long limit) {
@@ -29,6 +29,22 @@ public class GreaterThanOrEquals implements Statement {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GreaterThanOrEquals that = (GreaterThanOrEquals) o;
+        if (limit != that.limit) return false;
+        return field.equals(that.field);
+    }
+    @Override
+    public int hashCode() {
+        int result = field.hashCode();
+        result = 31 * result + (int) (limit ^ (limit >>> 32));
+        return result;
+    }
+
+    // Implementation of Parcelable
     protected GreaterThanOrEquals(Parcel in) {
         this.field = in.readString();
         this.limit = in.readLong();

@@ -5,7 +5,7 @@ import android.os.Parcel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class GreaterThan implements Statement {
+public class GreaterThan extends Statement {
     private String field;
     private long limit;
     public GreaterThan(String field, long limit) {
@@ -27,6 +27,22 @@ public class GreaterThan implements Statement {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GreaterThan that = (GreaterThan) o;
+        if (limit != that.limit) return false;
+        return field.equals(that.field);
+    }
+    @Override
+    public int hashCode() {
+        int result = field.hashCode();
+        result = 31 * result + (int) (limit ^ (limit >>> 32));
+        return result;
+    }
+
+    // Implementation of Parcelable
     protected GreaterThan(Parcel in) {
         this.field = in.readString();
         this.limit = in.readLong();

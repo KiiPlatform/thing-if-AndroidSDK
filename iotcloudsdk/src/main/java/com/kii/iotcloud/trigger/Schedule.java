@@ -11,6 +11,11 @@ public class Schedule implements Parcelable {
         this.cronExpression = cronExpression;
     }
 
+    public String getCronExpression() {
+        return this.cronExpression;
+    }
+
+    // Implementation of Parcelable
     protected Schedule(Parcel in) {
         this.cronExpression = in.readString();
     }

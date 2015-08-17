@@ -5,7 +5,7 @@ import android.os.Parcel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LessThan implements Statement {
+public class LessThan extends Statement {
     private String field;
     private long limit;
     public LessThan(String field, long limit) {
@@ -27,6 +27,22 @@ public class LessThan implements Statement {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LessThan lessThan = (LessThan) o;
+        if (limit != lessThan.limit) return false;
+        return field.equals(lessThan.field);
+    }
+    @Override
+    public int hashCode() {
+        int result = field.hashCode();
+        result = 31 * result + (int) (limit ^ (limit >>> 32));
+        return result;
+    }
+
+    // Implementation of Parcelable
     protected LessThan(Parcel in) {
         this.field = in.readString();
         this.limit = in.readLong();

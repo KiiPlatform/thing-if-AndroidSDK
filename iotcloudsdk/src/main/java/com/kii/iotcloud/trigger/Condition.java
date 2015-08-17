@@ -10,7 +10,12 @@ public class Condition implements Parcelable {
     public Condition(Statement statement) {
         this.statement = statement;
     }
+    public Statement getStatement() {
+        return this.statement;
+    }
 
+
+    // Implementation of Parcelable
     protected Condition(Parcel in) {
         this.statement = in.readParcelable(Statement.class.getClassLoader());
     }

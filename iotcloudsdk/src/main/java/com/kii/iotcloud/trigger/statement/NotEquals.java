@@ -5,7 +5,7 @@ import android.os.Parcel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class NotEquals implements Statement {
+public class NotEquals extends Statement {
     private final Equals equals;
     public NotEquals(Equals equals) {
         this.equals = equals;
@@ -23,6 +23,19 @@ public class NotEquals implements Statement {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NotEquals notEquals = (NotEquals) o;
+        return equals.equals(notEquals.equals);
+    }
+    @Override
+    public int hashCode() {
+        return equals.hashCode();
+    }
+
+    // Implementation of Parcelable
     protected NotEquals(Parcel in) {
         this.equals = in.readParcelable(Equals.class.getClassLoader());
     }

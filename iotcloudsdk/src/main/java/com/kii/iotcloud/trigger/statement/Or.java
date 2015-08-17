@@ -6,7 +6,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Or implements Statement {
+import java.util.Arrays;
+
+public class Or extends Statement {
     private final Statement[] statements;
     public Or(Statement... statements) {
         this.statements = statements;
@@ -28,6 +30,20 @@ public class Or implements Statement {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Or or = (Or) o;
+        return Arrays.equals(statements, or.statements);
+
+    }
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(statements);
+    }
+
+    // Implementation of Parcelable
     protected Or(Parcel in) {
         this.statements = in.createTypedArray(Or.CREATOR);
     }

@@ -5,7 +5,7 @@ import android.os.Parcel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Equals implements Statement {
+public class Equals extends Statement {
 
     private String field;
     private Object value;
@@ -38,6 +38,22 @@ public class Equals implements Statement {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Equals equals = (Equals) o;
+        if (!field.equals(equals.field)) return false;
+        return value.equals(equals.value);
+    }
+    @Override
+    public int hashCode() {
+        int result = field.hashCode();
+        result = 31 * result + value.hashCode();
+        return result;
+    }
+
+    // Implementation of Parcelable
     protected Equals(Parcel in) {
         this.field = in.readString();
         Class<?> clazz = (Class<?>)in.readSerializable();

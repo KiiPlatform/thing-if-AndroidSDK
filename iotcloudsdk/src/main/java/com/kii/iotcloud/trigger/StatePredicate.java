@@ -2,17 +2,27 @@ package com.kii.iotcloud.trigger;
 
 import android.os.Parcel;
 
-public class StatePredicate implements Predicate {
+public class StatePredicate extends Predicate {
 
-    private final Condition condition;
-    private final TriggersWhen triggersWhen;
+    private Condition condition;
+    private TriggersWhen triggersWhen;
 
     public StatePredicate(Condition condition, TriggersWhen triggersWhen) {
         this.condition = condition;
         this.triggersWhen = triggersWhen;
     }
+    public EventSource getEventSource() {
+        return EventSource.STATE;
+    }
+    public Condition getCondition() {
+        return this.condition;
+    }
+    public TriggersWhen getTriggersWhen() {
+        return this.triggersWhen;
+    }
 
 
+    // Implementation of Parcelable
     protected StatePredicate(Parcel in) {
         this.condition = in.readParcelable(Condition.class.getClassLoader());
         this.triggersWhen = (TriggersWhen)in.readSerializable();

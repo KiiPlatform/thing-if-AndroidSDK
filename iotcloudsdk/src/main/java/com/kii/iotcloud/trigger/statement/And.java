@@ -6,7 +6,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class And implements Statement {
+import java.util.Arrays;
+
+public class And extends Statement {
     private final Statement[] statements;
     public And(Statement... statements) {
         this.statements = statements;
@@ -28,6 +30,19 @@ public class And implements Statement {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        And and = (And) o;
+        return Arrays.equals(statements, and.statements);
+    }
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(statements);
+    }
+
+    // Implementation of Parcelable
     protected And(Parcel in) {
         this.statements = in.createTypedArray(And.CREATOR);
     }

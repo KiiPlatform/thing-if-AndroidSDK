@@ -4,8 +4,8 @@ import android.os.Parcelable;
 
 import org.json.JSONObject;
 
-public interface Statement extends Parcelable {
+public abstract class Statement implements Parcelable {
 
-    public JSONObject toJSONObject();
+    public abstract JSONObject toJSONObject();
 
 }
