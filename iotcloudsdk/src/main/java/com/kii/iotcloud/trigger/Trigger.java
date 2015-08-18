@@ -13,6 +13,7 @@ public class Trigger implements Parcelable {
     private Predicate predicate;
     private Command command;
     private boolean disabled;
+    private String disabledReason;
 
     public Trigger(@NonNull Predicate predicate, @NonNull Command command) {
         if (predicate == null) {
@@ -49,13 +50,17 @@ public class Trigger implements Parcelable {
     public Command getCommand() {
         return this.command;
     }
-
+    public String getDisabledReason() {
+        return this.disabledReason;
+    }
 
     // Implementation of Parcelable
     protected Trigger(Parcel in) {
         this.triggerID = in.readString();
         this.predicate = in.readParcelable(Predicate.class.getClassLoader());
         this.command = in.readParcelable(Command.class.getClassLoader());
+        this.disabled = (in.readByte() != 0);
+        this.disabledReason = in.readString();
     }
 
     public static final Creator<Trigger> CREATOR = new Creator<Trigger>() {
@@ -80,5 +85,7 @@ public class Trigger implements Parcelable {
         dest.writeString(this.triggerID);
         dest.writeParcelable(this.predicate, flags);
         dest.writeParcelable(this.command, flags);
+        dest.writeByte((byte) (this.disabled ? 1 : 0));
+        dest.writeString(this.disabledReason);
     }
 }
