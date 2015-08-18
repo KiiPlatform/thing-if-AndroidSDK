@@ -324,19 +324,17 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             @Nullable String paginationKey)
             throws IoTCloudException {
         String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands", this.appID, target.toString());
-        StringBuilder queryString = new StringBuilder();
-        if (!TextUtils.isEmpty(paginationKey)) {
-            this.addQueryString(queryString, "paginationKey", paginationKey);
-        }
-        if (bestEffortLimit > 0) {
-            this.addQueryString(queryString, "bestEffortLimit", bestEffortLimit);
-        }
-        path += queryString.toString();
         String url = Path.combine(site.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
-        JSONObject response = this.restClient.sendRequest(request);
+        if (!TextUtils.isEmpty(paginationKey)) {
+            request.addQueryParameter("paginationKey", paginationKey);
+        }
+        if (bestEffortLimit > 0) {
+            request.addQueryParameter("bestEffortLimit", bestEffortLimit);
+        }
 
+        JSONObject response = this.restClient.sendRequest(request);
         String nextPaginationKey = response.optString("nextPaginationKey");
         JSONArray commandArray = response.optJSONArray("commands");
         List<Command> commands = new ArrayList<Command>();
@@ -561,14 +559,6 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             headers.put("Authorization", "Bearer " + this.owner.getAccessToken());
         }
         return headers;
-    }
-    private void addQueryString(StringBuilder queryString, String key, Object value) {
-        if (queryString.length() == 0) {
-            queryString.append("?");
-        } else {
-            queryString.append("&");
-        }
-        queryString.append(key + "=" + value.toString());
     }
 
     // Implementation of Parcelable
