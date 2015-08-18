@@ -26,6 +26,7 @@ import com.kii.iotcloud.utils.GsonRepository;
 
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -84,7 +85,9 @@ public class GsonSerializationTest {
         SetColorTemperatureResult setColorTemperatureResult = (SetColorTemperatureResult)command.getActionResults().get(1);
         Assert.assertFalse(setColorTemperatureResult.succeeded);
     }
+    // SchedulePredicate is not implemented yet.
     @Test
+    @Ignore
     public void scheduleTriggerTest() throws Exception {
         // Define the schema
         SchemaBuilder sb = SchemaBuilder.newSchemaBuilder("ThingType", "SchemaName1", 10, LightState.class);

@@ -232,7 +232,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         }
         Schema schema = this.getSchema(schemaName, schemaVersion);
         if (schema == null) {
-            throw new UnsupportedOperationException(schemaName + " is not supported");
+            throw new UnsupportedSchemaException(schemaName, schemaVersion);
         }
         if (actions == null || actions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty");
@@ -277,7 +277,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         int schemaVersion = responseBody.optInt("schemaVersion");
         Schema schema = this.getSchema(schemaName, schemaVersion);
         if (schema == null) {
-            throw new UnsupportedOperationException(schemaName + " is not supported");
+            throw new UnsupportedSchemaException(schemaName, schemaVersion);
         }
         return GsonRepository.gson(schema).fromJson(responseBody.toString(), Command.class);
     }
@@ -329,7 +329,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
                 int schemaVersion = commandJson.optInt("schemaVersion");
                 Schema schema = this.getSchema(schemaName, schemaVersion);
                 if (schema == null) {
-                    throw new UnsupportedOperationException(schemaName + " is not supported");
+                    throw new UnsupportedSchemaException(schemaName, schemaVersion);
                 }
                 commands.add(GsonRepository.gson(schema).fromJson(commandJson.toString(), Command.class));
             }
@@ -359,10 +359,6 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             @NonNull List<Action> actions,
             @NonNull Predicate predicate)
             throws IoTCloudException {
-
-        if (predicate instanceof SchedulePredicate) {
-            throw new UnsupportedOperationException("SchedulePredicate is not supported");
-        }
 
         String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers", this.appID, target.toString());
         String url = Path.combine(site.getBaseUrl(), path);
@@ -423,10 +419,6 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             @Nullable Predicate predicate) throws
             IoTCloudException {
         // TODO: implement it.
-        if (predicate instanceof SchedulePredicate) {
-            throw new UnsupportedOperationException("SchedulePredicate is not supported");
-        }
-        
         return null;
     }
 
