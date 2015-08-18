@@ -44,6 +44,8 @@ import java.util.Map;
 public class IoTCloudAPI implements Parcelable, Serializable {
 
     private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
+    private static final MediaType MEDIA_TYPE_INSTALLATION_CREATION_REQUEST = MediaType.parse("application/vnd.kii.InstallationCreationRequest+json");
+
     private final String appID;
     private final String appKey;
     private final Site site;
@@ -178,8 +180,20 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             @Nullable String deviceToken,
             @NonNull PushBackend pushBackend
     ) throws IoTCloudException {
-        // TODO: Implement it.
-        return null;
+        String path = MessageFormat.format("/api/apps/{0}/installations", this.appID);
+        String url = Path.combine(site.getBaseUrl(), path);
+        Map<String, String> headers = this.newHeader();
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("installationRegistrationID", deviceToken);
+            requestBody.put("deviceType", pushBackend.getDeviceType());
+        } catch (JSONException e) {
+            // Won’t happen
+        }
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MEDIA_TYPE_INSTALLATION_CREATION_REQUEST, requestBody);
+        JSONObject response = this.restClient.sendRequest(request);
+        this.installationID = response.optString("InstallationID");
+        return this.installationID;
     }
 
     /** Get installationID if the push is already installed.
@@ -202,9 +216,12 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      */
     @NonNull
     @WorkerThread
-    public void uninstallPush(
-            @Nullable String installationID
-    ) throws IoTCloudException {
+    public void uninstallPush(@Nullable String installationID) throws IoTCloudException {
+        String path = MessageFormat.format("/api/apps/{0}/installations/{1}", this.appID, installationID);
+        String url = Path.combine(site.getBaseUrl(), path);
+        Map<String, String> headers = this.newHeader();
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.DELETE, headers);
+        this.restClient.sendRequest(request);
     }
 
     /** Post new command to IoT Cloud.
