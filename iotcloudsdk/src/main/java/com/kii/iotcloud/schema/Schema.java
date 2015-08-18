@@ -78,7 +78,7 @@ public class Schema implements Parcelable {
                         this.name2ActionClassMap.put(actionClass.newInstance().getActionName(),
                                 new Pair<Class<? extends Action>, Class<? extends ActionResult>>(actionClass, actionResultClass));
                     } catch (Exception ignore) {
-                        // Not happen
+                        // Won’t happen
                     }
                 }
             }

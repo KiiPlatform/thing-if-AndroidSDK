@@ -4,7 +4,7 @@ import com.squareup.okhttp.MediaType;
 
 import java.util.Map;
 
-class IoTRestRequest {
+public class IoTRestRequest {
     public enum Method {
         HEAD,
         GET,

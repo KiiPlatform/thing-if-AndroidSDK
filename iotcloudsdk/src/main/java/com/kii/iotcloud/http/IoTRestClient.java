@@ -2,6 +2,7 @@ package com.kii.iotcloud.http;
 
 import android.text.TextUtils;
 
+import com.google.gson.JsonObject;
 import com.kii.iotcloud.Site;
 import com.kii.iotcloud.TypedID;
 import com.kii.iotcloud.exception.IoTCloudException;
@@ -35,130 +36,110 @@ public class IoTRestClient {
     protected static final OkHttpClient client = OkHttpClientFactory.newInstance();
     private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
 
-    private final String appID;
-    private final String appKey;
-    private final Site site;
-    private final String accessToken;
+//    private final String appID;
+//    private final String appKey;
+//    private final Site site;
+//    private final String accessToken;
 
-    public IoTRestClient(String appID, String appKey, Site site, String accessToken) {
-        this.appID = appID;
-        this.appKey = appKey;
-        this.site = site;
-        this.accessToken = accessToken;
+    public IoTRestClient() {
+//        this.appID = appID;
+//        this.appKey = appKey;
+//        this.site = site;
+//        this.accessToken = accessToken;
     }
-    public JSONObject onBoarding(JSONObject requestBody) throws IoTCloudException {
-        String path = MessageFormat.format("/iot-api/apps/{0}/onboardings", this.appID);
-        String url = Path.combine(site.getBaseUrl(), path);
-        Map<String, String> headers = this.newHeader();
-        IoTRestRequest request = new IoTRestRequest(url, Method.POST, headers, MEDIA_TYPE_JSON, requestBody);
+    public JSONObject sendRequest(IoTRestRequest request) throws IoTCloudException {
         Response response = this.execute(request);
         return this.parseResponseAsJsonObject(request, response);
     }
 
-    /**
-     *
-     * @param target
-     * @param requestBody
-     * @return commandID
-     * @throws IoTCloudException
-     */
-    public String createCommand(TypedID target, JSONObject requestBody) throws IoTCloudException {
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands", this.appID, target.toString());
-        String url = Path.combine(site.getBaseUrl(), path);
-        Map<String, String> headers = this.newHeader();
-        IoTRestRequest request = new IoTRestRequest(url, Method.POST, headers, MEDIA_TYPE_JSON, requestBody);
-        Response response = this.execute(request);
-        JSONObject responseBody = this.parseResponseAsJsonObject(request, response);
-        return responseBody.optString("commandID");
-    }
-    public JSONObject updateCommandActionResult(TypedID target, String commandID, JSONObject requestBody) throws IoTCloudException {
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands/{2}/action-results", this.appID, target.toString(), commandID);
-        String url = Path.combine(site.getBaseUrl(), path);
-        Map<String, String> headers = this.newHeader();
-        IoTRestRequest request = new IoTRestRequest(url, Method.PUT, headers, MEDIA_TYPE_JSON, requestBody);
-        Response response = this.execute(request);
-        return this.parseResponseAsJsonObject(request, response);
-    }
-    public JSONObject getCommand(TypedID target, String commandID) throws IoTCloudException {
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands/{2}", this.appID, target.toString(), commandID);
-        String url = Path.combine(site.getBaseUrl(), path);
-        Map<String, String> headers = this.newHeader();
-        IoTRestRequest request = new IoTRestRequest(url, Method.GET, headers);
-        Response response = this.execute(request);
-        return this.parseResponseAsJsonObject(request, response);
-    }
-    public JSONObject getCommands(TypedID target) throws IoTCloudException {
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands", this.appID, target.toString());
-        String url = Path.combine(site.getBaseUrl(), path);
-        Map<String, String> headers = this.newHeader();
-        IoTRestRequest request = new IoTRestRequest(url, Method.GET, headers);
-        Response response = this.execute(request);
-        return this.parseResponseAsJsonObject(request, response);
-    }
-    public JSONObject getTargetStatus(TypedID target) throws IoTCloudException {
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/states", this.appID, target.toString());
-        String url = Path.combine(site.getBaseUrl(), path);
-        Map<String, String> headers = this.newHeader();
-        IoTRestRequest request = new IoTRestRequest(url, Method.GET, headers);
-        Response response = this.execute(request);
-        return this.parseResponseAsJsonObject(request, response);
-    }
-    public JSONObject updateTargetStatus(TypedID target, JSONObject requestBody) throws IoTCloudException {
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/states", this.appID, target.toString());
-        String url = Path.combine(site.getBaseUrl(), path);
-        Map<String, String> headers = this.newHeader();
-        IoTRestRequest request = new IoTRestRequest(url, Method.PUT, headers, MEDIA_TYPE_JSON, requestBody);
-        Response response = this.execute(request);
-        return this.parseResponseAsJsonObject(request, response);
-    }
-    public JSONObject createTrigger(TypedID target, JSONObject requestBody) throws IoTCloudException {
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers", this.appID, target.toString());
-        String url = Path.combine(site.getBaseUrl(), path);
-        Map<String, String> headers = this.newHeader();
-        IoTRestRequest request = new IoTRestRequest(url, Method.POST, headers, MEDIA_TYPE_JSON, requestBody);
-        Response response = this.execute(request);
-        return this.parseResponseAsJsonObject(request, response);
-    }
-    public JSONObject getTrigger(TypedID target, String triggerID) throws IoTCloudException {
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}", this.appID, target.toString(), triggerID);
-        String url = Path.combine(site.getBaseUrl(), path);
-        Map<String, String> headers = this.newHeader();
-        IoTRestRequest request = new IoTRestRequest(url, Method.GET, headers);
-        Response response = this.execute(request);
-        return this.parseResponseAsJsonObject(request, response);
-    }
-    public JSONObject getTriggers(TypedID target) throws IoTCloudException {
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers", this.appID, target.toString());
-        String url = Path.combine(site.getBaseUrl(), path);
-        Map<String, String> headers = this.newHeader();
-        IoTRestRequest request = new IoTRestRequest(url, Method.GET, headers);
-        Response response = this.execute(request);
-        return this.parseResponseAsJsonObject(request, response);
-    }
-    public void deleteTrigger(TypedID target, String triggerID) throws IoTCloudException {
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}", this.appID, target.toString(), triggerID);
-        String url = Path.combine(site.getBaseUrl(), path);
-        Map<String, String> headers = this.newHeader();
-        IoTRestRequest request = new IoTRestRequest(url, Method.DELETE, headers);
-        Response response = this.execute(request);
-        this.parseResponse(request, response);
-    }
-    public void disableTrigger(TypedID target, String triggerID) throws IoTCloudException {
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}/disable", this.appID, target.toString(), triggerID);
-        String url = Path.combine(site.getBaseUrl(), path);
-        Map<String, String> headers = this.newHeader();
-        IoTRestRequest request = new IoTRestRequest(url, Method.PUT, headers);
-        Response response = this.execute(request);
-        this.parseResponse(request, response);
-    }
-    public void enableTrigger(TypedID target, String triggerID) throws IoTCloudException {
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}/enable", this.appID, target.toString(), triggerID);
-        String url = Path.combine(site.getBaseUrl(), path);
-        Map<String, String> headers = this.newHeader();
-        IoTRestRequest request = new IoTRestRequest(url, Method.PUT, headers);
-        Response response = this.execute(request);
-        this.parseResponse(request, response);
-    }
+
+//    public JSONObject onBoarding(JSONObject requestBody) throws IoTCloudException {
+//        String path = MessageFormat.format("/iot-api/apps/{0}/onboardings", this.appID);
+//        String url = Path.combine(site.getBaseUrl(), path);
+//        Map<String, String> headers = this.newHeader();
+//        IoTRestRequest request = new IoTRestRequest(url, Method.POST, headers, MEDIA_TYPE_JSON, requestBody);
+//        Response response = this.execute(request);
+//        return this.parseResponseAsJsonObject(request, response);
+//    }
+//    /**
+//     *
+//     * @param target
+//     * @param requestBody
+//     * @return commandID
+//     * @throws IoTCloudException
+//     */
+//    public String createCommand(TypedID target, JSONObject requestBody) throws IoTCloudException {
+//    }
+//    public JSONObject updateCommandActionResult(TypedID target, String commandID, JSONObject requestBody) throws IoTCloudException {
+//        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands/{2}/action-results", this.appID, target.toString(), commandID);
+//        String url = Path.combine(site.getBaseUrl(), path);
+//        Map<String, String> headers = this.newHeader();
+//        IoTRestRequest request = new IoTRestRequest(url, Method.PUT, headers, MEDIA_TYPE_JSON, requestBody);
+//        Response response = this.execute(request);
+//        return this.parseResponseAsJsonObject(request, response);
+//    }
+//    public JSONObject getCommand(TypedID target, String commandID) throws IoTCloudException {
+//    }
+//    public JSONObject getCommands(TypedID target) throws IoTCloudException {
+//    }
+//    public JSONObject getTargetStatus(TypedID target) throws IoTCloudException {
+//        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/states", this.appID, target.toString());
+//        String url = Path.combine(site.getBaseUrl(), path);
+//        Map<String, String> headers = this.newHeader();
+//        IoTRestRequest request = new IoTRestRequest(url, Method.GET, headers);
+//        Response response = this.execute(request);
+//        return this.parseResponseAsJsonObject(request, response);
+//    }
+//    public JSONObject updateTargetStatus(TypedID target, JSONObject requestBody) throws IoTCloudException {
+//        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/states", this.appID, target.toString());
+//        String url = Path.combine(site.getBaseUrl(), path);
+//        Map<String, String> headers = this.newHeader();
+//        IoTRestRequest request = new IoTRestRequest(url, Method.PUT, headers, MEDIA_TYPE_JSON, requestBody);
+//        Response response = this.execute(request);
+//        return this.parseResponseAsJsonObject(request, response);
+//    }
+//    public JSONObject createTrigger(TypedID target, JSONObject requestBody) throws IoTCloudException {
+//    }
+//    public JSONObject getTrigger(TypedID target, String triggerID) throws IoTCloudException {
+//        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}", this.appID, target.toString(), triggerID);
+//        String url = Path.combine(site.getBaseUrl(), path);
+//        Map<String, String> headers = this.newHeader();
+//        IoTRestRequest request = new IoTRestRequest(url, Method.GET, headers);
+//        Response response = this.execute(request);
+//        return this.parseResponseAsJsonObject(request, response);
+//    }
+//    public JSONObject getTriggers(TypedID target) throws IoTCloudException {
+//        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers", this.appID, target.toString());
+//        String url = Path.combine(site.getBaseUrl(), path);
+//        Map<String, String> headers = this.newHeader();
+//        IoTRestRequest request = new IoTRestRequest(url, Method.GET, headers);
+//        Response response = this.execute(request);
+//        return this.parseResponseAsJsonObject(request, response);
+//    }
+//    public void deleteTrigger(TypedID target, String triggerID) throws IoTCloudException {
+//        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}", this.appID, target.toString(), triggerID);
+//        String url = Path.combine(site.getBaseUrl(), path);
+//        Map<String, String> headers = this.newHeader();
+//        IoTRestRequest request = new IoTRestRequest(url, Method.DELETE, headers);
+//        Response response = this.execute(request);
+//        this.parseResponse(request, response);
+//    }
+//    public void disableTrigger(TypedID target, String triggerID) throws IoTCloudException {
+//        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}/disable", this.appID, target.toString(), triggerID);
+//        String url = Path.combine(site.getBaseUrl(), path);
+//        Map<String, String> headers = this.newHeader();
+//        IoTRestRequest request = new IoTRestRequest(url, Method.PUT, headers);
+//        Response response = this.execute(request);
+//        this.parseResponse(request, response);
+//    }
+//    public void enableTrigger(TypedID target, String triggerID) throws IoTCloudException {
+//        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}/enable", this.appID, target.toString(), triggerID);
+//        String url = Path.combine(site.getBaseUrl(), path);
+//        Map<String, String> headers = this.newHeader();
+//        IoTRestRequest request = new IoTRestRequest(url, Method.PUT, headers);
+//        Response response = this.execute(request);
+//        this.parseResponse(request, response);
+//    }
     private Response execute(IoTRestRequest request) throws IoTCloudException {
         Builder builder = new Builder();
         builder.url(request.getUrl());
@@ -190,19 +171,19 @@ public class IoTRestClient {
             throw new IoTCloudException(request.getCurl(), e);
         }
     }
-    private Map<String, String> newHeader() {
-        Map<String, String> headers = new HashMap<String, String>();
-        if (!TextUtils.isEmpty(this.appID)) {
-            headers.put("X-Kii-AppID", this.appID);
-        }
-        if (!TextUtils.isEmpty(this.appKey)) {
-            headers.put("X-Kii-AppKey", this.appKey);
-        }
-        if (!TextUtils.isEmpty(this.accessToken)) {
-            headers.put("Authorization", "Bearer " + this.accessToken);
-        }
-        return headers;
-    }
+//    private Map<String, String> newHeader() {
+//        Map<String, String> headers = new HashMap<String, String>();
+//        if (!TextUtils.isEmpty(this.appID)) {
+//            headers.put("X-Kii-AppID", this.appID);
+//        }
+//        if (!TextUtils.isEmpty(this.appKey)) {
+//            headers.put("X-Kii-AppKey", this.appKey);
+//        }
+//        if (!TextUtils.isEmpty(this.accessToken)) {
+//            headers.put("Authorization", "Bearer " + this.accessToken);
+//        }
+//        return headers;
+//    }
     protected RequestBody createRequestBody(final MediaType contentType, final Object entity) {
         if (entity == null) {
             return RequestBody.create(contentType, "");
