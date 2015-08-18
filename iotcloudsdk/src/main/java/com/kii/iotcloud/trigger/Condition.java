@@ -2,12 +2,13 @@ package com.kii.iotcloud.trigger;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import com.kii.iotcloud.trigger.statement.Statement;
 
 public class Condition implements Parcelable {
     private Statement statement;
-    public Condition(Statement statement) {
+    public Condition(@NonNull Statement statement) {
         this.statement = statement;
     }
     public Statement getStatement() {

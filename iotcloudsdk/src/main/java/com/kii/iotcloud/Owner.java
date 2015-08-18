@@ -2,6 +2,7 @@ package com.kii.iotcloud;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 public class Owner implements Parcelable {
@@ -9,7 +10,7 @@ public class Owner implements Parcelable {
     private final TypedID ID;
     private final String accessToken;
 
-    public Owner(TypedID ownerID, String accessToken) {
+    public Owner(@NonNull TypedID ownerID, @NonNull String accessToken) {
         if (ownerID == null) {
             throw new IllegalArgumentException("ownerID is null");
         }

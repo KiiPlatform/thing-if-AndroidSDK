@@ -30,6 +30,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RunWith(AndroidJUnit4.class)
 public class GsonSerializationTest {
     @Test
@@ -56,9 +59,10 @@ public class GsonSerializationTest {
                 "    \"target\":\"thing:1234\"" +
                 "}");
 
-        Command command = new Command("SchemaName1", 10, new TypedID(TypedID.Types.THING, "1234"), new TypedID(TypedID.Types.USER, "9876"));
-        command.addAction(new SetColor(128,0,255));
-        command.addAction(new SetColorTemperature(25));
+        List<Action> actions = new ArrayList<Action>();
+        actions.add(new SetColor(128, 0, 255));
+        actions.add(new SetColorTemperature(25));
+        Command command = new Command("SchemaName1", 10, new TypedID(TypedID.Types.THING, "1234"), new TypedID(TypedID.Types.USER, "9876"), actions);
         command.addActionResult(new SetColorResult(true));
         command.addActionResult(new SetColorTemperatureResult(false));
         Gson gson = GsonRepository.gson(schema);
@@ -121,9 +125,10 @@ public class GsonSerializationTest {
                         "}");
 
         // Command
-        Command command = new Command("SchemaName1", 10, new TypedID(TypedID.Types.THING, "1234"), new TypedID(TypedID.Types.USER, "9876"));
-        command.addAction(new SetColor(128,0,255));
-        command.addAction(new SetColorTemperature(25));
+        List<Action> actions = new ArrayList<Action>();
+        actions.add(new SetColor(128, 0, 255));
+        actions.add(new SetColorTemperature(25));
+        Command command = new Command("SchemaName1", 10, new TypedID(TypedID.Types.THING, "1234"), new TypedID(TypedID.Types.USER, "9876"), actions);
         command.addActionResult(new SetColorResult(true));
         command.addActionResult(new SetColorTemperatureResult(false));
         // SchedulePredicate
@@ -203,9 +208,10 @@ public class GsonSerializationTest {
                         "}");
 
         // Command
-        Command command = new Command("SchemaName1", 10, new TypedID(TypedID.Types.THING, "1234"), new TypedID(TypedID.Types.USER, "9876"));
-        command.addAction(new SetColor(128,0,255));
-        command.addAction(new SetColorTemperature(25));
+        List<Action> actions = new ArrayList<Action>();
+        actions.add(new SetColor(128, 0, 255));
+        actions.add(new SetColorTemperature(25));
+        Command command = new Command("SchemaName1", 10, new TypedID(TypedID.Types.THING, "1234"), new TypedID(TypedID.Types.USER, "9876"), actions);
         command.addActionResult(new SetColorResult(true));
         command.addActionResult(new SetColorTemperatureResult(false));
         // StatePredicate

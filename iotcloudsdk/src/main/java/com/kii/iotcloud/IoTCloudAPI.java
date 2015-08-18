@@ -259,7 +259,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands", this.appID, target.toString());
         String url = Path.combine(site.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
-        Command command = new Command(schemaName, schemaVersion, target.getTypedID(), this.owner.getID());
+        Command command = new Command(schemaName, schemaVersion, target.getTypedID(), this.owner.getID(), actions);
         JSONObject requestBody = JsonUtils.newJson(GsonRepository.gson(schema).toJson(command));
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MEDIA_TYPE_JSON, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
@@ -406,6 +406,12 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             @NonNull String triggerID)
             throws IoTCloudException {
         // TODO: implement it.
+        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}", this.appID, target.toString(), triggerID);
+        String url = Path.combine(site.getBaseUrl(), path);
+        Map<String, String> headers = this.newHeader();
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
+        JSONObject response = this.restClient.sendRequest(request);
+
         return null;
     }
 
@@ -518,6 +524,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         S ret = gson.fromJson("{\"power\" : true}", classOfS);
         return ret;
     }
+
     private Schema getSchema(String schemaName, int schemaVersion) {
         return this.schemas.get(new Pair<String, Integer>(schemaName, schemaVersion));
     }

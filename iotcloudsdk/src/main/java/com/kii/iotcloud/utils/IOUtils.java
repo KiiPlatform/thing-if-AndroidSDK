@@ -1,5 +1,7 @@
 package com.kii.iotcloud.utils;
 
+import android.support.annotation.NonNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -10,13 +12,13 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 
 public class IOUtils {
-    public static String readAsString(InputStream is) throws IOException {
+    public static String readAsString(@NonNull InputStream is) throws IOException {
         StringWriter writer = new StringWriter();
         InputStreamReader reader = new InputStreamReader(is, Charset.forName("UTF-8"));
         copy(reader, writer);
         return writer.toString();
     }
-    public static long copy(final InputStream input, final OutputStream output) throws IOException {
+    public static long copy(@NonNull final InputStream input, @NonNull final OutputStream output) throws IOException {
         byte[] buffer = new byte[1024 * 4];
         long count = 0;
         int n = 0;
@@ -26,7 +28,7 @@ public class IOUtils {
         }
         return count;
     }
-    public static long copy(Reader input, Writer output) throws IOException {
+    public static long copy(@NonNull Reader input, @NonNull Writer output) throws IOException {
         char[] buffer = new char[1024 * 4];
         long count = 0;
         int n = 0;

@@ -1,5 +1,8 @@
 package com.kii.iotcloud.http;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import com.squareup.okhttp.MediaType;
 
 import java.io.UnsupportedEncodingException;
@@ -22,10 +25,16 @@ public class IoTRestRequest {
     private final MediaType contentType;
     private final Object entity;
 
-    public IoTRestRequest(String url, Method method, Map<String, String> headers) {
+    public IoTRestRequest(@NonNull String url,
+                          @NonNull Method method,
+                          @NonNull Map<String, String> headers) {
         this(url, method, headers, null, null);
     }
-    public IoTRestRequest(String url, Method method, Map<String, String> headers, MediaType contentType, Object entity) {
+    public IoTRestRequest(@NonNull String url,
+                          @NonNull Method method,
+                          @NonNull Map<String, String> headers,
+                          @Nullable MediaType contentType,
+                          @Nullable Object entity) {
         this.url = url;
         this.method = method;
         this.headers = headers;
@@ -47,7 +56,7 @@ public class IoTRestRequest {
     public Object getEntity() {
         return entity;
     }
-    public IoTRestRequest addQueryParameter(String name, Object value) {
+    public IoTRestRequest addQueryParameter(@NonNull String name, @Nullable Object value) {
         if (value != null) {
             this.queryParameters.put(name, value.toString());
         }

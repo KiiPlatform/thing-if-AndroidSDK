@@ -1,13 +1,20 @@
 package com.kii.iotcloud.trigger;
 
 import android.os.Parcel;
+import android.support.annotation.NonNull;
 
 public class StatePredicate extends Predicate {
 
     private Condition condition;
     private TriggersWhen triggersWhen;
 
-    public StatePredicate(Condition condition, TriggersWhen triggersWhen) {
+    public StatePredicate(@NonNull Condition condition, @NonNull TriggersWhen triggersWhen) {
+        if (condition == null) {
+            throw new IllegalArgumentException("condition is null");
+        }
+        if (triggersWhen == null) {
+            throw new IllegalArgumentException("triggersWhen is null");
+        }
         this.condition = condition;
         this.triggersWhen = triggersWhen;
     }

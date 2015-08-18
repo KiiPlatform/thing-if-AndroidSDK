@@ -2,6 +2,8 @@ package com.kii.iotcloud;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.kii.iotcloud.trigger.Trigger;
 
@@ -10,7 +12,10 @@ public class Target implements Parcelable {
     private final TypedID typedID;
     private final String accessToken;
 
-    public Target(TypedID typedID, String accessToken) {
+    public Target(@NonNull TypedID typedID, @Nullable String accessToken) {
+        if (typedID == null) {
+            throw new IllegalArgumentException("typedID is null");
+        }
         this.typedID = typedID;
         this.accessToken = accessToken;
     }
@@ -44,7 +49,7 @@ public class Target implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeParcelable(typedID, i);
-        parcel.writeString(accessToken);
+        parcel.writeParcelable(this.typedID, i);
+        parcel.writeString(this.accessToken);
     }
 }

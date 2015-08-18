@@ -1,6 +1,7 @@
 package com.kii.iotcloud.trigger.statement;
 
 import android.os.Parcel;
+import android.support.annotation.NonNull;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,7 +10,7 @@ public class Equals extends Statement {
 
     private String field;
     private Object value;
-    public Equals(String field, String value) {
+    public Equals(@NonNull String field, String value) {
         this.field = field;
         this.value = value;
     }

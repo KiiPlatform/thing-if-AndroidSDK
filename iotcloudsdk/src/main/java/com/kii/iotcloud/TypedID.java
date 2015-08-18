@@ -2,6 +2,7 @@ package com.kii.iotcloud;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 public class TypedID implements Parcelable {
@@ -31,7 +32,7 @@ public class TypedID implements Parcelable {
     private final String ID;
     private final String qualifiedID;
 
-    public static TypedID fromString(String id) {
+    public static TypedID fromString(@NonNull String id) {
         if (TextUtils.isEmpty(id)) {
             throw new IllegalArgumentException("id is null or empty");
         }
@@ -46,7 +47,7 @@ public class TypedID implements Parcelable {
         return new TypedID(type, ids[1]);
     }
 
-    public TypedID(Types type, String ID) {
+    public TypedID(@NonNull Types type, @NonNull String ID) {
         if (type == null) {
             throw new IllegalArgumentException("type is null");
         }

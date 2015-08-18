@@ -2,12 +2,13 @@ package com.kii.iotcloud.trigger;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 public class Schedule implements Parcelable {
 
     private String cronExpression;
 
-    public Schedule(String cronExpression) {
+    public Schedule(@NonNull String cronExpression) {
         this.cronExpression = cronExpression;
     }
 

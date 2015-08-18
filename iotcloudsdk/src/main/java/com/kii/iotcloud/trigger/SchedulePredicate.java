@@ -5,7 +5,7 @@ import android.os.Parcel;
 public class SchedulePredicate extends Predicate {
     private Schedule schedule;
 
-    public SchedulePredicate(Schedule schedule) {
+    public SchedulePredicate(@NonNull Schedule schedule) {
         this.schedule = schedule;
         throw new UnsupportedOperationException("SchedulePredicate is not supported");
     }

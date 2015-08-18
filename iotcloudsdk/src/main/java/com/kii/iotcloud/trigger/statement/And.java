@@ -1,6 +1,7 @@
 package com.kii.iotcloud.trigger.statement;
 
 import android.os.Parcel;
+import android.support.annotation.NonNull;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,7 +11,7 @@ import java.util.Arrays;
 
 public class And extends Statement {
     private final Statement[] statements;
-    public And(Statement... statements) {
+    public And(@NonNull Statement... statements) {
         this.statements = statements;
     }
     @Override

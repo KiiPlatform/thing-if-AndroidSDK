@@ -2,6 +2,7 @@ package com.kii.iotcloud.trigger.statement;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,7 +10,7 @@ import org.json.JSONObject;
 public class GreaterThanOrEquals extends Statement {
     private String field;
     private long limit;
-    public GreaterThanOrEquals(String field, long limit) {
+    public GreaterThanOrEquals(@NonNull String field, long limit) {
         this.field = field;
         this.limit = limit;
     }

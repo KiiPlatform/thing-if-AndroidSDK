@@ -53,14 +53,20 @@ public class Schema implements Parcelable {
         return this.schemaVersion;
     }
 
-    public Class<? extends Action> getActionClass(String actionName) {
+    public Class<? extends Action> getActionClass(@NonNull String actionName) {
+        if (actionName == null) {
+            throw new IllegalArgumentException("actionName is null");
+        }
         Pair<Class<? extends Action>, Class<? extends ActionResult>> pair = this.name2ActionClassMap.get(actionName);
         if (pair != null) {
             return pair.first;
         }
         return null;
     }
-    public Class<? extends ActionResult> getActionResultClass(String actionName) {
+    public Class<? extends ActionResult> getActionResultClass(@NonNull String actionName) {
+        if (actionName == null) {
+            throw new IllegalArgumentException("actionName is null");
+        }
         Pair<Class<? extends Action>, Class<? extends ActionResult>> pair = this.name2ActionClassMap.get(actionName);
         if (pair != null) {
             return pair.second;

@@ -26,18 +26,22 @@ public class Command implements Parcelable {
     private final String schemaName;
     private final int schemaVersion;
     @SerializedName("target")
-    private TypedID targetID;
+    private final TypedID targetID;
     @SerializedName("issuer")
-    private TypedID issuerID;
-    private List<Action> actions;
-    private List<ActionResult> actionResults;
+    private final TypedID issuerID;
+    private final List<Action> actions;
+    private final List<ActionResult> actionResults;
     @SerializedName("state")
     private CommandState commandState;
     private String firedByTriggerID;
     private Long created;
     private Long modified;
 
-    public Command(String schemaName, int schemaVersion, TypedID targetID, TypedID issuerID) {
+    public Command(@NonNull String schemaName,
+                   int schemaVersion,
+                   @NonNull TypedID targetID,
+                   @NonNull TypedID issuerID,
+                   @NonNull List<Action> actions) {
         if (TextUtils.isEmpty(schemaName)) {
             throw new IllegalArgumentException("schemaName is null or empty");
         }
@@ -45,20 +49,24 @@ public class Command implements Parcelable {
         this.schemaVersion = schemaVersion;
         this.targetID = targetID;
         this.issuerID = issuerID;
-
-
-
-
-        this.actions = new ArrayList<Action>();
+        this.actions = actions;
         this.actionResults = new ArrayList<ActionResult>();
     }
-    public void addAction(Action a) {
-        this.actions.add(a);
-    }
-    public void addActionResult(ActionResult ar) {
+    public void addActionResult(@NonNull ActionResult ar) {
+        if (ar == null) {
+            throw new IllegalArgumentException("ActionResult is null");
+        }
+        boolean hasAction = false;
+        for (Action action : this.actions) {
+            if (TextUtils.equals(ar.getActionName(), action.getActionName())) {
+                hasAction = true;
+            }
+        }
+        if (!hasAction) {
+            throw new IllegalArgumentException(ar.getActionName() + " is not contained in this Command");
+        }
         this.actionResults.add(ar);
     }
-
 
     /** Get ID of the command.
      * @return ID of the command.
@@ -86,7 +94,7 @@ public class Command implements Parcelable {
      * @return
      */
     public TypedID getTargetID() {
-        return targetID;
+        return this.targetID;
     }
 
     /**
@@ -94,7 +102,7 @@ public class Command implements Parcelable {
      * @return
      */
     public TypedID getIssuerID() {
-        return issuerID;
+        return this.issuerID;
     }
 
     /**
@@ -102,7 +110,7 @@ public class Command implements Parcelable {
      * @return
      */
     public List<Action> getActions() {
-        return actions;
+        return this.actions;
     }
 
     /**
@@ -110,7 +118,25 @@ public class Command implements Parcelable {
      * @return
      */
     public List<ActionResult> getActionResults() {
-        return actionResults;
+        return this.actionResults;
+    }
+
+    /**
+     * Get a action result associated with specified action
+     *
+     * @param action
+     * @return
+     */
+    public ActionResult getActionResult(@NonNull Action action) {
+        if (action == null) {
+            throw new IllegalArgumentException("action is null");
+        }
+        for (ActionResult result : this.actionResults) {
+            if (TextUtils.equals(action.getActionName(), result.getActionName())) {
+                return result;
+            }
+        }
+        return null;
     }
 
     /**
@@ -118,7 +144,7 @@ public class Command implements Parcelable {
      * @return
      */
     public CommandState getCommandState() {
-        return commandState;
+        return this.commandState;
     }
 
     /**
@@ -126,7 +152,7 @@ public class Command implements Parcelable {
      * @return
      */
     public String getFiredByTriggerID() {
-        return firedByTriggerID;
+        return this.firedByTriggerID;
     }
 
     /**
@@ -134,7 +160,7 @@ public class Command implements Parcelable {
      * @return
      */
     public long getCreated() {
-        return created;
+        return this.created;
     }
 
     /**
@@ -142,7 +168,7 @@ public class Command implements Parcelable {
      * @return
      */
     public long getModified() {
-        return modified;
+        return this.modified;
     }
 
     // Implementation of Parcelable

@@ -2,6 +2,7 @@ package com.kii.iotcloud.trigger;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import com.kii.iotcloud.TypedID;
 import com.kii.iotcloud.command.Command;
@@ -13,7 +14,7 @@ public class Trigger implements Parcelable {
     private Command command;
     private boolean disabled;
 
-    public Trigger(Predicate predicate, Command command) {
+    public Trigger(@NonNull Predicate predicate, @NonNull Command command) {
         if (predicate == null) {
             throw new IllegalArgumentException("predicate is null");
         }

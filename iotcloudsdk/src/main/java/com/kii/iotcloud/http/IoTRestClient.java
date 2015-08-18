@@ -53,23 +53,6 @@ public class IoTRestClient {
     }
 
 
-//    public JSONObject onBoarding(JSONObject requestBody) throws IoTCloudException {
-//        String path = MessageFormat.format("/iot-api/apps/{0}/onboardings", this.appID);
-//        String url = Path.combine(site.getBaseUrl(), path);
-//        Map<String, String> headers = this.newHeader();
-//        IoTRestRequest request = new IoTRestRequest(url, Method.POST, headers, MEDIA_TYPE_JSON, requestBody);
-//        Response response = this.execute(request);
-//        return this.parseResponseAsJsonObject(request, response);
-//    }
-//    /**
-//     *
-//     * @param target
-//     * @param requestBody
-//     * @return commandID
-//     * @throws IoTCloudException
-//     */
-//    public String createCommand(TypedID target, JSONObject requestBody) throws IoTCloudException {
-//    }
 //    public JSONObject updateCommandActionResult(TypedID target, String commandID, JSONObject requestBody) throws IoTCloudException {
 //        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands/{2}/action-results", this.appID, target.toString(), commandID);
 //        String url = Path.combine(site.getBaseUrl(), path);
@@ -77,10 +60,6 @@ public class IoTRestClient {
 //        IoTRestRequest request = new IoTRestRequest(url, Method.PUT, headers, MEDIA_TYPE_JSON, requestBody);
 //        Response response = this.execute(request);
 //        return this.parseResponseAsJsonObject(request, response);
-//    }
-//    public JSONObject getCommand(TypedID target, String commandID) throws IoTCloudException {
-//    }
-//    public JSONObject getCommands(TypedID target) throws IoTCloudException {
 //    }
 //    public JSONObject getTargetStatus(TypedID target) throws IoTCloudException {
 //        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/states", this.appID, target.toString());
@@ -97,8 +76,6 @@ public class IoTRestClient {
 //        IoTRestRequest request = new IoTRestRequest(url, Method.PUT, headers, MEDIA_TYPE_JSON, requestBody);
 //        Response response = this.execute(request);
 //        return this.parseResponseAsJsonObject(request, response);
-//    }
-//    public JSONObject createTrigger(TypedID target, JSONObject requestBody) throws IoTCloudException {
 //    }
 //    public JSONObject getTrigger(TypedID target, String triggerID) throws IoTCloudException {
 //        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}", this.appID, target.toString(), triggerID);

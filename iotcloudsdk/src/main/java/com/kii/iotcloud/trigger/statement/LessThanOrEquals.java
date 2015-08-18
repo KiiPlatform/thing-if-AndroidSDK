@@ -1,6 +1,7 @@
 package com.kii.iotcloud.trigger.statement;
 
 import android.os.Parcel;
+import android.support.annotation.NonNull;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -8,7 +9,7 @@ import org.json.JSONObject;
 public class LessThanOrEquals extends Statement {
     private String field;
     private long limit;
-    public LessThanOrEquals(String field, long limit) {
+    public LessThanOrEquals(@NonNull String field, long limit) {
         this.field = field;
         this.limit = limit;
     }

@@ -1,9 +1,10 @@
 package com.kii.iotcloud.utils;
 
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 public class Path {
-    public static String combine(String path1, String path2) {
+    public static String combine(@Nullable String path1, @Nullable String path2) {
         if (TextUtils.isEmpty(path1)) {
             return path2;
         }

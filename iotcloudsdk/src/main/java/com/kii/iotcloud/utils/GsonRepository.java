@@ -1,5 +1,6 @@
 package com.kii.iotcloud.utils;
 
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Pair;
 
@@ -234,7 +235,7 @@ public class GsonRepository {
      * @param schema
      * @return
      */
-    public static Gson gson(final Schema schema) {
+    public static Gson gson(@Nullable final Schema schema) {
         if (schema == null) {
             return DEFAULT_GSON;
         }
