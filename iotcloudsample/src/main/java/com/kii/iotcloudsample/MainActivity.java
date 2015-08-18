@@ -109,9 +109,7 @@ public class MainActivity extends FragmentActivity {
                 actions.add(a2);
                 actions.add(a3);
                 actions.add(a4);
-                return api.postNewCommand(target, "SmartLight-Demo", 1,
-                        actions, new TypedID
-                        (TypedID.Types.GRPUP, "gp.abc-efg-hij"));
+                return api.postNewCommand(target, "SmartLight-Demo", 1, actions);
             }
         });
     }
@@ -143,7 +141,7 @@ public class MainActivity extends FragmentActivity {
                 Schedule schedule = new Schedule("/15 * * * *");
                 Predicate predicate = new SchedulePredicate(schedule);
                 return api.postNewTrigger(target, "SmartLight-Demo", 1,
-                        actions, null, predicate);
+                        actions, predicate);
             }
         });
     }

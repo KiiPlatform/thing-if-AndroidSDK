@@ -50,6 +50,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     private final Owner owner;
     private final Map<Pair<String, Integer>, Schema> schemas = new HashMap<Pair<String, Integer>, Schema>();
     private final IoTRestClient restClient;
+    private boolean onBoarded = false;
+    private String installationID;
 
     IoTCloudAPI(
             @NonNull String appID,
@@ -144,6 +146,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         JSONObject response = this.restClient.sendRequest(request);
         String thingID = response.optString("thingID");
         String accessToken = response.optString("accessToken");
+        this.onBoarded = true;
         return new Target(new TypedID(TypedID.Types.THING, thingID), accessToken);
     }
 
@@ -152,8 +155,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      */
     public boolean onBoarded()
     {
-        // TODO: implement it.
-        return false;
+        return this.onBoarded;
     }
 
     /** Install push notification to receive notification from IoT Cloud.
@@ -186,8 +188,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      */
     @Nullable
     public String getInstallationID() {
-        // TODO: Implement it.
-        return null;
+        return this.installationID;
     }
 
     /** Uninstall push notification.
@@ -564,6 +565,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             this.schemas.put(new Pair<String, Integer>(schema.getSchemaName(), schema.getSchemaVersion()), schema);
         }
         this.restClient = new IoTRestClient();
+        this.onBoarded = (in.readByte() != 0);
+        this.installationID = in.readString();
     }
     public static final Creator<IoTCloudAPI> CREATOR = new Creator<IoTCloudAPI>() {
         @Override
@@ -587,6 +590,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         dest.writeSerializable(this.site);
         dest.writeParcelable(this.owner, flags);
         dest.writeTypedList(new ArrayList<Schema>(this.schemas.values()));
+        dest.writeByte((byte) ((Boolean) this.onBoarded ? 1 : 0));
+        dest.writeString(this.installationID);
     }
 
 }
