@@ -5,6 +5,9 @@ import android.support.annotation.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Provides useful methods for JSON.
+ */
 public class JsonUtils {
     public static JSONObject newJson(@NonNull String json) {
         try {

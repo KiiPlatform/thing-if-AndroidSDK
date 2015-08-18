@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class operates an IoT device that is specified by <@link #onBoard(String, String, String, JSONObject)></@link> method.
+ * This class operates an IoT device that is specified by {@link #onBoard(String, String, String, JSONObject)} method.
  */
 public class IoTCloudAPI implements Parcelable, Serializable {
 
@@ -75,7 +75,6 @@ public class IoTCloudAPI implements Parcelable, Serializable {
 
     /** On board IoT Cloud with the specified vendor thing ID.
      * Specified thing will be owned by owner who is specified
-     * <@link newWithAccessToken></@link>.
      * IoT Cloud prepares communication channel to the target.
      * @param vendorThingID Thing ID given by vendor. Must be specified.
      * @param thingPassword Thing Password given by vendor. Must be specified.
@@ -85,7 +84,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      * @param thingProperties Properties of thing.
      *                        If the thing is already registered, this value
      *                        would be ignored by IoT Cloud.<br>
-     *                        Refer to the <@link http://docs.kii.com/rest/#thing_management-register_a_thing>register_a_thing</@link><br>
+     *                        Refer to the <a href="http://docs.kii.com/rest/#thing_management-register_a_thin">register_a_thing</a>
      *                        About the format of this Document.
      * @return Target instance can be used to operate target, manage resources
      * of the target.
@@ -126,7 +125,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     /** On board IoT Cloud with the specified thing ID.
      * When you are sure that the on boarding process has been done,
      * this method is more convenient than
-     * <@link #onBoard(String, String, String, JSONObject)></@link>.
+     * {@link #onBoard(String, String, String, JSONObject)}.
      * @param thingID Thing ID given by IoT Cloud. Must be specified.
      * @param thingPassword Thing password given by vendor. Must be specified.
      * @return Target instance can be used to operate target, manage resources
@@ -229,9 +228,9 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     /** Uninstall push notification.
      * After done, notification from IoT Cloud won't be notified.
      * @param installationID installation ID returned from
-     *                       <@link #installPush(String, PushBackend)></@link>
+     *                       {@link #installPush(String, PushBackend)}
      *                       if null is specified, value obtained by
-     *                       <@link #getInstallationID()></@link> is used.
+     *                       {@link #getInstallationID()} is used.
      * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server
      * or IoT Cloud returns error response.
      */
@@ -258,7 +257,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      * @return Created Command instance. At this time, Command is delivered to
      * the target Asynchronously and may not finished. Actual Result will be
      * delivered through push notification or you can check the latest status
-     * of the command by calling <@link #getCommand></@link>.
+     * of the command by calling {@link #getCommand}.
      * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server
      * or IoT Cloud returns error response.
      */
@@ -295,8 +294,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     /** Get specified command.
      * @param target Target of the command.
      * @param commandID ID of the command to obtain. ID is present in the
-     *                  instance returned by <@link #postNewCommand></@link>
-     *                  and can be obtained by <@link Command#getCommandID></@link>
+     *                  instance returned by {@link #postNewCommand}
+     *                  and can be obtained by {@link Command#getCommandID}
      *
      * @return Command instance.
      * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server

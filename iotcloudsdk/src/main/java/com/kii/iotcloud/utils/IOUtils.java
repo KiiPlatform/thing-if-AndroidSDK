@@ -11,6 +11,9 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 
+/**
+ * General IO stream manipulation utilities.
+ */
 public class IOUtils {
     public static String readAsString(@NonNull InputStream is) throws IOException {
         StringWriter writer = new StringWriter();

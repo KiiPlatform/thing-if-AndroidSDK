@@ -5,6 +5,10 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+/**
+ * Represents owner of things.
+ * All {@link com.kii.iotcloud.IoTCloudAPI} operations will be performed with the owner's access token.
+ */
 public class Owner implements Parcelable {
 
     private final TypedID ID;
