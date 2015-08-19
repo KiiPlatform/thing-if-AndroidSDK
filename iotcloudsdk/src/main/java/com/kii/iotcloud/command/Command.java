@@ -20,7 +20,6 @@ import java.util.List;
 
 public class Command implements Parcelable {
 
-    @SerializedName("id")
     private String commandID;
     @SerializedName("schema")
     private final String schemaName;
@@ -34,7 +33,9 @@ public class Command implements Parcelable {
     @SerializedName("state")
     private CommandState commandState;
     private String firedByTriggerID;
+    @SerializedName("createdAt")
     private Long created;
+    @SerializedName("modifiedAt")
     private Long modified;
 
     public Command(@NonNull String schemaName,

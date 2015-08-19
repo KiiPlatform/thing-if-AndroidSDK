@@ -12,14 +12,14 @@ public class IoTCloudRestException extends IoTCloudException {
     }
     public String getErrorCode() {
         if (this.body != null) {
-            return this.body.optString("errorCode");
+            return this.body.optString("errorCode", null);
         }
         return null;
     }
     @Override
     public String getMessage() {
         if (this.body != null) {
-            return this.body.optString("message");
+            return this.body.optString("message", null);
         }
         return null;
     }

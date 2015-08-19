@@ -68,6 +68,21 @@ public class TypedID implements Parcelable {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TypedID typedID = (TypedID) o;
+        if (type != typedID.type) return false;
+        return ID.equals(typedID.ID);
+    }
+    @Override
+    public int hashCode() {
+        int result = type.hashCode();
+        result = 31 * result + ID.hashCode();
+        return result;
+    }
+
+    @Override
     public String toString() {
         return this.qualifiedID;
     }
