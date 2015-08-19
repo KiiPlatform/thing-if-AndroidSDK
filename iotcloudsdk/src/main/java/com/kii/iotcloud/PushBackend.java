@@ -2,6 +2,22 @@ package com.kii.iotcloud;
 
 /** Represents backend service of the push notification. */
 public enum PushBackend {
-    GCM,
-    JPUSH
+    /**
+     * Google Cloud Messaging
+     */
+    GCM("ANDROID"),
+    /**
+     * JPush
+     */
+    JPUSH("JPUSH");
+
+    private final String deviceType;
+
+    private PushBackend(String deviceType) {
+        this.deviceType = deviceType;
+    }
+
+    String getDeviceType() {
+        return this.deviceType;
+    }
 }

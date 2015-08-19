@@ -6,6 +6,7 @@ import android.os.Bundle;
 import com.kii.iotcloud.IoTCloudAPI;
 import com.kii.iotcloud.IoTCloudAPIBuilder;
 import com.kii.iotcloud.Owner;
+import com.kii.iotcloud.Site;
 import com.kii.iotcloud.schema.Schema;
 import com.kii.iotcloud.schema.SchemaBuilder;
 import com.kii.iotcloud.Target;
@@ -48,15 +49,15 @@ public class MainActivity extends FragmentActivity {
         SchemaBuilder sb = SchemaBuilder.newSchemaBuilder("smartLight",
                 "SmartLight-Demo",
                 1, LightState.class);
-        sb.addActionClass("turnPower", TurnPower.class, TurnPowerResult.class).
-                addActionClass("setColor", SetColor.class, SetColorResult.class).
-                addActionClass("setBrightness", SetBrightness.class, SetBrightnessResult.class).
-                addActionClass("setColorTemperature", SetColorTemperature.class, SetColorTemperatureResult.class);
+        sb.addActionClass(TurnPower.class, TurnPowerResult.class).
+                addActionClass(SetColor.class, SetColorResult.class).
+                addActionClass(SetBrightness.class, SetBrightnessResult.class).
+                addActionClass(SetColorTemperature.class, SetColorTemperatureResult.class);
 
         Schema smartLightSchema = sb.build();
 
-        IoTCloudAPIBuilder ib = IoTCloudAPIBuilder.newBuilder("myAppID",
-                "myAppKey", "https://api-jp.kii.com", this.getOwner());
+        IoTCloudAPIBuilder ib = IoTCloudAPIBuilder.newBuilder(this, "myAppID",
+                "myAppKey", Site.JP, this.getOwner());
         ib.addSchema(smartLightSchema);
         api = ib.build();
     }
@@ -74,12 +75,12 @@ public class MainActivity extends FragmentActivity {
     }
 
     // On board in background.
-    Promise<Target, Throwable, Void> onBoard(final String thingID) {
+    Promise<Target, Throwable, Void> onBoard(final String thingID, final String thingPassword) {
         return adm.when(new DeferredAsyncTask<Void, Void, Target>() {
             @Override
             protected Target doInBackgroundSafe(Void... voids) throws
                     Exception {
-                return api.onBoard(thingID);
+                return api.onBoard(thingID, thingPassword);
             }
         });
     }
@@ -108,9 +109,7 @@ public class MainActivity extends FragmentActivity {
                 actions.add(a2);
                 actions.add(a3);
                 actions.add(a4);
-                return api.postNewCommand(target, "SmartLight-Demo", 1,
-                        actions, new TypedID
-                        ("group", "gp.abc-efg-hij"));
+                return api.postNewCommand(target, "SmartLight-Demo", 1, actions);
             }
         });
     }
@@ -142,7 +141,7 @@ public class MainActivity extends FragmentActivity {
                 Schedule schedule = new Schedule("/15 * * * *");
                 Predicate predicate = new SchedulePredicate(schedule);
                 return api.postNewTrigger(target, "SmartLight-Demo", 1,
-                        actions, null, predicate);
+                        actions, predicate);
             }
         });
     }

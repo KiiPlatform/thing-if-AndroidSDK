@@ -1,14 +1,34 @@
 package com.kii.iotcloud.schema;
 
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.kii.iotcloud.TargetState;
 import com.kii.iotcloud.command.Action;
 import com.kii.iotcloud.command.ActionResult;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SchemaBuilder {
 
-    private SchemaBuilder() {}
+    private final String thingType;
+    private final String schemaName;
+    private final int schemaVersion;
+    private final List<Class<? extends Action>> actionClasses = new ArrayList<Class<? extends Action>>();
+    private final List<Class<? extends ActionResult>> actionResultClasses = new ArrayList<Class<? extends ActionResult>>();
+    private final Class<? extends TargetState> stateClass;
+
+    private SchemaBuilder(
+            @NonNull String thingType,
+            @NonNull String schemaName,
+            int schemaVersion,
+            @NonNull Class<? extends TargetState> stateClass) {
+        this.thingType = thingType;
+        this.schemaName = schemaName;
+        this.schemaVersion = schemaVersion;
+        this.stateClass = stateClass;
+    }
 
     /** Instantiate new SchemaBuilder.
      * @param thingType type of the thing to which schema is bound.
@@ -21,30 +41,65 @@ public class SchemaBuilder {
             @NonNull String schemaName,
             int schemaVersion,
             @NonNull Class<? extends TargetState> stateClass) {
-        // TODO: implement it.
-        return null;
+        if (TextUtils.isEmpty(thingType)) {
+            throw new IllegalArgumentException("thingType is null or empty");
+        }
+        if (TextUtils.isEmpty(schemaName)) {
+            throw new IllegalArgumentException("schemaName is null or empty");
+        }
+        if (schemaVersion < 0) {
+            throw new IllegalArgumentException("schemaVersion is negative value");
+        }
+        if (stateClass == null) {
+            throw new IllegalArgumentException("stateClass is null");
+        }
+        return new SchemaBuilder(thingType, schemaName, schemaVersion, stateClass);
     }
 
     /** Add action class to the schema
-     * @param actionName name of the action defined in schema.
      * @param actionClass action defined in schema is serialized in this
      *                    class.
      * @param actionResultClass action result defined in the schema is serialized
      *                          in this class.
      * @return SchemaBuilder instance for method chaining.
      */
-    public SchemaBuilder addActionClass(@NonNull String actionName,
-                                        @NonNull Class<? extends Action> actionClass,
+    public SchemaBuilder addActionClass(@NonNull Class<? extends Action> actionClass,
                                         @NonNull Class<? extends ActionResult> actionResultClass) {
-        // TODO: implement it.
-        return null;
+        if (actionClass == null) {
+            throw new IllegalArgumentException("actionClass is null");
+        }
+        if (this.actionClasses.contains(actionClass)) {
+            throw new IllegalArgumentException(actionClass.getName() + " already contains in this schema");
+        }
+        if (actionResultClass == null) {
+            throw new IllegalArgumentException("actionResultClass is null");
+        }
+        if (this.actionClasses.contains(actionResultClass)) {
+            throw new IllegalArgumentException(actionResultClass.getName() + " already contains in this schema");
+        }
+        try {
+            Action action = actionClass.newInstance();
+            ActionResult actionResult = actionResultClass.newInstance();
+            if (!TextUtils.equals(action.getActionName(), actionResult.getActionName())) {
+                throw new IllegalArgumentException("Action.actionName different from ActionResult.actionName");
+            }
+        } catch (InstantiationException e) {
+            throw new IllegalArgumentException(e);
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException(e);
+        }
+
+        this.actionClasses.add(actionClass);
+        this.actionResultClasses.add(actionResultClass);
+        return this;
     }
 
     /** Build schema object.
      * @return Schema instance.
      */
     public Schema build() {
-        // TODO: implement it.
-        return null;
+        return new Schema(this.thingType, this.schemaName,
+                this.schemaVersion, this.actionClasses,
+                this.actionResultClasses, this.stateClass);
     }
 }

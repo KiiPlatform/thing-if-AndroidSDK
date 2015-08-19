@@ -1,4 +1,7 @@
 package com.kii.iotcloud.trigger;
 
-public abstract class Predicate {
+import android.os.Parcelable;
+
+public abstract class Predicate implements Parcelable {
+    public abstract EventSource getEventSource();
 }
