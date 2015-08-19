@@ -46,10 +46,12 @@ public class IoTCloudAPI implements Parcelable, Serializable {
 
     private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
     private static final MediaType MEDIA_TYPE_INSTALLATION_CREATION_REQUEST = MediaType.parse("application/vnd.kii.InstallationCreationRequest+json");
+    private static final MediaType MEDIA_TYPE_ONBOARDING_WITH_THING_ID_BY_OWNER_REQUEST = MediaType.parse("application/vnd.kii.OnboardingWithThingIDByOwner+json");
+    private static final MediaType MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST = MediaType.parse("application/vnd.kii.OnboardingWithVendorThingIDByOwner+json");
 
     private final String appID;
     private final String appKey;
-    private final Site site;
+    private final String baseUrl;
     private final Owner owner;
     private final Map<Pair<String, Integer>, Schema> schemas = new HashMap<Pair<String, Integer>, Schema>();
     private final IoTRestClient restClient;
@@ -59,13 +61,13 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     IoTCloudAPI(
             @NonNull String appID,
             @NonNull String appKey,
-            @NonNull Site site,
+            @NonNull String baseUrl,
             @NonNull Owner owner,
             @NonNull List<Schema> schemas) {
         // Parameters are checked by IoTCloudAPIBuilder
         this.appID = appID;
         this.appKey = appKey;
-        this.site = site;
+        this.baseUrl = baseUrl;
         this.owner = owner;
         for (Schema schema : schemas) {
             this.schemas.put(new Pair<String, Integer>(schema.getSchemaName(), schema.getSchemaVersion()), schema);
@@ -119,7 +121,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        return this.onBoard(requestBody);
+        return this.onBoard(MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST, requestBody);
     }
 
     /** On board IoT Cloud with the specified thing ID.
@@ -152,14 +154,14 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        return this.onBoard(requestBody);
+        return this.onBoard(MEDIA_TYPE_ONBOARDING_WITH_THING_ID_BY_OWNER_REQUEST, requestBody);
     }
 
-    private Target onBoard(JSONObject requestBody) throws IoTCloudException {
+    private Target onBoard(MediaType contentType, JSONObject requestBody) throws IoTCloudException {
         String path = MessageFormat.format("/iot-api/apps/{0}/onboardings", this.appID);
-        String url = Path.combine(site.getBaseUrl(), path);
+        String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
-        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MEDIA_TYPE_JSON, requestBody);
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, contentType, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
         String thingID = responseBody.optString("thingID");
         String accessToken = responseBody.optString("accessToken");
@@ -199,7 +201,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             throw new IllegalArgumentException("pushBackend is null");
         }
         String path = MessageFormat.format("/api/apps/{0}/installations", this.appID);
-        String url = Path.combine(site.getBaseUrl(), path);
+        String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         JSONObject requestBody = new JSONObject();
         try {
@@ -241,7 +243,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             throw new IllegalArgumentException("target is null");
         }
         String path = MessageFormat.format("/api/apps/{0}/installations/{1}", this.appID, installationID);
-        String url = Path.combine(site.getBaseUrl(), path);
+        String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.DELETE, headers);
         this.restClient.sendRequest(request);
@@ -280,7 +282,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         }
 
         String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands", this.appID, target.toString());
-        String url = Path.combine(site.getBaseUrl(), path);
+        String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         Command command = new Command(schemaName, schemaVersion, target.getTypedID(), this.owner.getID(), actions);
         JSONObject requestBody = JsonUtils.newJson(GsonRepository.gson(schema).toJson(command));
@@ -315,7 +317,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             throw new IllegalArgumentException("commandID is null");
         }
         String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands/{2}", this.appID, target.toString(), commandID);
-        String url = Path.combine(site.getBaseUrl(), path);
+        String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
@@ -357,7 +359,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             throw new IllegalArgumentException("target is null");
         }
         String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands", this.appID, target.toString());
-        String url = Path.combine(site.getBaseUrl(), path);
+        String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         if (!TextUtils.isEmpty(paginationKey)) {
@@ -423,7 +425,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         }
 
         String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers", this.appID, target.toString());
-        String url = Path.combine(site.getBaseUrl(), path);
+        String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         JSONObject requestBody = new JSONObject();
         Schema schema = this.getSchema(schemaName, schemaVersion);
@@ -462,7 +464,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         }
 
         String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}", this.appID, target.toString(), triggerID);
-        String url = Path.combine(site.getBaseUrl(), path);
+        String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
@@ -520,7 +522,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         }
 
         String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}", this.appID, target.toString(), triggerID);
-        String url = Path.combine(site.getBaseUrl(), path);
+        String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         JSONObject requestBody = new JSONObject();
         Schema schema = this.getSchema(schemaName, schemaVersion);
@@ -562,7 +564,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         }
         Trigger trigger = this.getTrigger(target, triggerID);
         String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}/{3}", this.appID, target.toString(), triggerID, (enable ? "enable" : "disable"));
-        String url = Path.combine(site.getBaseUrl(), path);
+        String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.PUT, headers);
         this.restClient.sendRequest(request);
@@ -593,7 +595,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
 
         Trigger trigger = this.getTrigger(target, triggerID);
         String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}", this.appID, target.toString(), triggerID);
-        String url = Path.combine(site.getBaseUrl(), path);
+        String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.DELETE, headers);
         this.restClient.sendRequest(request);
@@ -629,7 +631,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         }
 
         String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers", this.appID, target.toString());
-        String url = Path.combine(site.getBaseUrl(), path);
+        String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         if (!TextUtils.isEmpty(paginationKey)) {
@@ -679,7 +681,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         }
 
         String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/states", this.appID, target.toString());
-        String url = Path.combine(site.getBaseUrl(), path);
+        String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
@@ -734,7 +736,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     protected IoTCloudAPI(Parcel in) {
         this.appID = in.readString();
         this.appKey = in.readString();
-        this.site = (Site)in.readSerializable();
+        this.baseUrl = in.readString();
         this.owner = in.readParcelable(Owner.class.getClassLoader());
         ArrayList<Schema> schemas = in.createTypedArrayList(Schema.CREATOR);
         for (Schema schema : schemas) {
@@ -763,7 +765,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.appID);
         dest.writeString(this.appKey);
-        dest.writeSerializable(this.site);
+        dest.writeString(this.baseUrl);
         dest.writeParcelable(this.owner, flags);
         dest.writeTypedList(new ArrayList<Schema>(this.schemas.values()));
         dest.writeByte((byte) ((Boolean) this.onBoarded ? 1 : 0));

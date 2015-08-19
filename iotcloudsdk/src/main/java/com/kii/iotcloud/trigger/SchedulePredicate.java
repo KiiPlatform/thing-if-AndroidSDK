@@ -1,6 +1,7 @@
 package com.kii.iotcloud.trigger;
 
 import android.os.Parcel;
+import android.support.annotation.NonNull;
 
 public class SchedulePredicate extends Predicate {
     private Schedule schedule;

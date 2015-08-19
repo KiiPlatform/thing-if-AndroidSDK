@@ -15,6 +15,7 @@ public class IoTCloudAPIBuilder {
     private final String appID;
     private final String appKey;
     private final Site site;
+    private final String baseUrl;
     private final Owner owner;
     private final List<Schema> schemas = new ArrayList<Schema>();
 
@@ -28,6 +29,20 @@ public class IoTCloudAPIBuilder {
         this.appID = appID;
         this.appKey = appKey;
         this.site = site;
+        this.baseUrl = null;
+        this.owner = owner;
+    }
+    private IoTCloudAPIBuilder(
+            @NonNull Context context,
+            @NonNull String appID,
+            @NonNull String appKey,
+            @NonNull String baseUrl,
+            @NonNull Owner owner) {
+        this.context = context;
+        this.appID = appID;
+        this.appKey = appKey;
+        this.site = null;
+        this.baseUrl = baseUrl;
         this.owner = owner;
     }
 
@@ -63,6 +78,30 @@ public class IoTCloudAPIBuilder {
         }
         return new IoTCloudAPIBuilder(context, appID, appKey, site, owner);
     }
+    @NonNull
+    static IoTCloudAPIBuilder newBuilder(
+            @NonNull Context context,
+            @NonNull String appID,
+            @NonNull String appKey,
+            @NonNull String baseUrl,
+            @NonNull Owner owner) {
+        if (context == null) {
+            throw new IllegalArgumentException("context is null");
+        }
+        if (TextUtils.isEmpty(appID)) {
+            throw new IllegalArgumentException("appID is null or empty");
+        }
+        if (TextUtils.isEmpty(appKey)) {
+            throw new IllegalArgumentException("appKey is null or empty");
+        }
+        if (baseUrl == null) {
+            throw new IllegalArgumentException("baseUrl is null");
+        }
+        if (owner == null) {
+            throw new IllegalArgumentException("owner is null");
+        }
+        return new IoTCloudAPIBuilder(context, appID, appKey, baseUrl, owner);
+    }
 
     /** Add Schema to the IoTCloudAPI.
      * @param schema
@@ -83,8 +122,14 @@ public class IoTCloudAPIBuilder {
      */
     @NonNull
     public IoTCloudAPI build() {
-        // TODO: Implement it.
-        return null;
+        String baseUrl = this.baseUrl;
+        if (this.site != null) {
+            baseUrl = this.site.getBaseUrl();
+        }
+        if (this.schemas.size() == 0) {
+            throw new IllegalStateException("Builder has no schemas");
+        }
+        return new IoTCloudAPI(this.appID, this.appKey, baseUrl, this.owner, this.schemas);
     }
 
 }
