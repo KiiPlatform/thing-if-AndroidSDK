@@ -5,12 +5,15 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.kii.iotcloud.schema.Schema;
+import com.kii.iotcloud.utils.Log;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class IoTCloudAPIBuilder {
 
+    private static final String TAG = IoTCloudAPIBuilder.class.getSimpleName();
     private final Context context;
     private final String appID;
     private final String appKey;
@@ -114,6 +117,7 @@ public class IoTCloudAPIBuilder {
             throw new IllegalArgumentException("schema is null");
         }
         this.schemas.add(schema);
+        Log.d(TAG, MessageFormat.format("Added new schema SchemaName={0}, SchemaVersion={1}", schema.getSchemaName(), schema.getSchemaVersion()));
         return this;
     }
 
@@ -129,6 +133,7 @@ public class IoTCloudAPIBuilder {
         if (this.schemas.size() == 0) {
             throw new IllegalStateException("Builder has no schemas");
         }
+        Log.d(TAG, MessageFormat.format("Initialize IoTCloudAPI AppID={0}, AppKey={1}, BaseUrl={2}", this.appID, this.appKey, baseUrl));
         return new IoTCloudAPI(this.appID, this.appKey, baseUrl, this.owner, this.schemas);
     }
 

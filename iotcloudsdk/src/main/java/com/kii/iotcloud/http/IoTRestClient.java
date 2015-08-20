@@ -9,7 +9,9 @@ import com.kii.iotcloud.exception.IoTCloudException;
 import com.kii.iotcloud.exception.IoTCloudRestException;
 import com.kii.iotcloud.http.IoTRestRequest.Method;
 import com.kii.iotcloud.utils.IOUtils;
+import com.kii.iotcloud.utils.Log;
 import com.kii.iotcloud.utils.Path;
+import com.kii.iotcloud.utils.StringUtils;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -37,6 +39,7 @@ import okio.BufferedSink;
  */
 public class IoTRestClient {
 
+    private static final String TAG = IoTRestClient.class.getSimpleName();
     protected static final OkHttpClient client = OkHttpClientFactory.newInstance();
     private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
 
@@ -151,6 +154,7 @@ public class IoTRestClient {
         try {
             String body = response.body().string();
             this.checkHttpStatus(request, response, body);
+            Log.d(TAG, request.getCurl() + StringUtils.LINE_SEPARATOR + body);
             if (TextUtils.isEmpty(body)) {
                 return null;
             }
@@ -193,9 +197,8 @@ public class IoTRestClient {
                 errorDetail = new JSONObject(responseBody);
             } catch (Exception ignore) {
             }
-            if (!response.isSuccessful()) {
-                throw new IoTCloudRestException(request.getCurl(), response.code(), errorDetail);
-            }
+            Log.w(TAG, request.getCurl() + "  --  " + response.code() + ":" + errorDetail);
+            throw new IoTCloudRestException(request.getCurl(), response.code(), errorDetail);
         }
     }
 }
