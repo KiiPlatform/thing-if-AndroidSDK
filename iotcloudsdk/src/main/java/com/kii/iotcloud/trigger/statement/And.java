@@ -14,6 +14,10 @@ public class And extends Statement {
     public And(@NonNull Statement... statements) {
         this.statements = statements;
     }
+    public Statement[] getStatements() {
+        return this.statements;
+    }
+
     @Override
     public JSONObject toJSONObject() {
         JSONObject ret = new JSONObject();

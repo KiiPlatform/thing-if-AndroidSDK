@@ -70,7 +70,7 @@ public class GsonSerializationTest {
 
         Assert.assertEquals(expectedJson, serializedJson);
 
-        serializedJson.addProperty("id", "Command-1234567");
+        serializedJson.addProperty("commandID", "Command-1234567");
         command = gson.fromJson(serializedJson.toString(), Command.class);
 
         Assert.assertEquals("Command-1234567", command.getCommandID());
@@ -118,7 +118,7 @@ public class GsonSerializationTest {
                         "    }," +
                         "    \"predicate\":" +
                         "    {" +
-                        "        \"eventSource\":\"SCHEDULE\"," +
+                        "        \"eventSource\":\"schedule\"," +
                         "        \"schedule\":\"1 0 * * *\"" +
                         "    }," +
                         "    \"disabled\":false" +
@@ -193,14 +193,14 @@ public class GsonSerializationTest {
                         "        \"target\":\"thing:1234\"" +
                         "    }," +
                         "    \"predicate\":{" +
-                        "        \"eventSource\":\"STATE\"," +
+                        "        \"eventSource\":\"states\"," +
                         "        \"triggersWhen\":\"CONDITION_FALSE_TO_TRUE\"," +
                         "        \"condition\":{" +
                         "            \"type\":\"and\"," +
                         "            \"clauses\":[" +
                         "                {\"type\":\"eq\", \"field\":\"prefecture\", \"value\":\"Tokyo\"}," +
                         "                {\"type\":\"not\", \"clause\":{\"type\":\"eq\", \"field\":\"city\", \"value\":\"Akasaka\"}}," +
-                        "                {\"type\":\"range\", \"field\":\"temperature\", \"upperLimit\":25, \"upperLimitIncluded\":true}" +
+                        "                {\"type\":\"range\", \"field\":\"temperature\", \"upperLimit\":25, \"upperIncluded\":true}" +
                         "            ]" +
                         "        }" +
                         "    }," +

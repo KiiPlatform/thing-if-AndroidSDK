@@ -8,11 +8,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class GreaterThanOrEquals extends Statement {
-    private String field;
-    private long limit;
+    private final String field;
+    private final long limit;
     public GreaterThanOrEquals(@NonNull String field, long limit) {
         this.field = field;
         this.limit = limit;
+    }
+    public String getField() {
+        return this.field;
+    }
+    public long getLimit() {
+        return this.limit;
     }
 
     @Override
@@ -22,7 +28,7 @@ public class GreaterThanOrEquals extends Statement {
             ret.put("type", "range");
             ret.put("field", this.field);
             ret.put("upperLimit", this.limit);
-            ret.put("upperLimitIncluded", true);
+            ret.put("upperIncluded", true);
             return ret;
         } catch (JSONException e) {
             // Won't happens.

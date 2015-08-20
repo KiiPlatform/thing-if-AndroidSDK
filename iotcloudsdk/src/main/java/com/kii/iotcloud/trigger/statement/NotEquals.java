@@ -23,6 +23,9 @@ public class NotEquals extends Statement {
             throw new RuntimeException(e);
         }
     }
+    public Equals getEquals() {
+        return this.equals;
+    }
 
     @Override
     public boolean equals(Object o) {

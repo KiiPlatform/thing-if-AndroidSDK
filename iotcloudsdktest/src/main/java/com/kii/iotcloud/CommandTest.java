@@ -6,7 +6,6 @@ import android.util.Pair;
 
 import com.kii.iotcloud.command.Action;
 import com.kii.iotcloud.command.Command;
-import com.kii.iotcloud.command.CommandState;
 import com.kii.iotcloud.schema.SetBrightness;
 import com.kii.iotcloud.schema.SetColor;
 import com.kii.iotcloud.schema.SetColorTemperature;
@@ -24,7 +23,7 @@ import java.util.UUID;
 @RunWith(AndroidJUnit4.class)
 public class CommandTest extends LargeTestCaseBase {
     @Test
-    public void test() throws Exception {
+    public void basicTest() throws Exception {
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(TargetTestServer.DEV_SERVER_1);
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";

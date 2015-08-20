@@ -8,8 +8,8 @@ import org.json.JSONObject;
 
 public class Equals extends Statement {
 
-    private String field;
-    private Object value;
+    private final String field;
+    private final Object value;
     public Equals(@NonNull String field, String value) {
         this.field = field;
         this.value = value;
@@ -23,6 +23,12 @@ public class Equals extends Statement {
     public Equals(String field, boolean value) {
         this.field = field;
         this.value = value;
+    }
+    public String getField() {
+        return this.field;
+    }
+    public Object getValue() {
+        return this.value;
     }
 
     @Override
@@ -64,6 +70,9 @@ public class Equals extends Statement {
             this.value = in.readLong();
         } else if (clazz == Boolean.class) {
             this.value = (in.readByte() != 0);
+        } else {
+            // Won't happens.
+            throw new AssertionError("Detected unexpected value.");
         }
     }
     public static final Creator<Equals> CREATOR = new Creator<Equals>() {

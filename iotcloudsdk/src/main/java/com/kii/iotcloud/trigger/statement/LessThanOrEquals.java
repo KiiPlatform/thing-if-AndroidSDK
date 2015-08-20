@@ -7,12 +7,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LessThanOrEquals extends Statement {
-    private String field;
-    private long limit;
+    private final String field;
+    private final long limit;
     public LessThanOrEquals(@NonNull String field, long limit) {
         this.field = field;
         this.limit = limit;
     }
+    public String getField() {
+        return this.field;
+    }
+    public long getLimit() {
+        return this.limit;
+    }
+
     @Override
     public JSONObject toJSONObject() {
         JSONObject ret = new JSONObject();
@@ -20,7 +27,7 @@ public class LessThanOrEquals extends Statement {
             ret.put("type", "range");
             ret.put("field", this.field);
             ret.put("lowerLimit", this.limit);
-            ret.put("lowerLimitIncluded", true);
+            ret.put("lowerIncluded", true);
             return ret;
         } catch (JSONException e) {
             // Won't happens.

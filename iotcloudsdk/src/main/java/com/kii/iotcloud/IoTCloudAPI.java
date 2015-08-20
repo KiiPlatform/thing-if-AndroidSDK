@@ -533,7 +533,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.PUT, headers, MEDIA_TYPE_JSON, requestBody);
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.PATCH, headers, MEDIA_TYPE_JSON, requestBody);
         this.restClient.sendRequest(request);
         return this.getTrigger(target, triggerID);
     }
@@ -604,7 +604,6 @@ public class IoTCloudAPI implements Parcelable, Serializable {
 
     /** List Triggers belongs to the specified Target.
      * @param target Target of which the Trigger stored.
-     * @param paginationKey If specified obtain rest of the items.
      * @param bestEffortLimit limit the maximum number of the Triggers in the
      *                        Response. It ensures numbers in
      *                        response is equals to or less than specified number.
@@ -612,6 +611,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      *                        in the response is equal to specified value.<br>
      *                        If the specified value <= 0, Default size of the limit
      *                        is applied by IoT Cloud.
+     * @param paginationKey If specified obtain rest of the items.
      * @return first is list of the Triggers and second is paginationKey returned
      * by IoT Cloud. paginationKey is null when there is next page to be obtained.
      * Obtained paginationKey can be used to get the rest of the items stored
@@ -623,8 +623,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     @WorkerThread
     public Pair<List<Trigger>, String> listTriggers(
             @NonNull Target target,
-            @Nullable String paginationKey,
-            int bestEffortLimit) throws
+            int bestEffortLimit,
+            @Nullable String paginationKey) throws
             IoTCloudException {
         if (target == null) {
             throw new IllegalArgumentException("target is null");

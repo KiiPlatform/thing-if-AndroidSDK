@@ -101,10 +101,10 @@ public class GsonRepository {
                 return null;
             }
             JsonObject json = new JsonObject();
-            json.addProperty("eventSource", src.getEventSource().name());
+            json.addProperty("eventSource", src.getEventSource().getValue());
             if (src.getEventSource() == EventSource.SCHEDULE) {
                 json.addProperty("schedule", ((SchedulePredicate)src).getSchedule().getCronExpression());
-            } else if (src.getEventSource() == EventSource.STATE) {
+            } else if (src.getEventSource() == EventSource.STATES) {
                 json.add("condition", context.serialize(((StatePredicate)src).getCondition()));
                 json.addProperty("triggersWhen", ((StatePredicate)src).getTriggersWhen().name());
             }
@@ -118,11 +118,11 @@ public class GsonRepository {
                 return null;
             }
             JsonObject json = (JsonObject)jsonElement;
-            EventSource eventSource = EventSource.valueOf(json.get("eventSource").getAsString());
+            EventSource eventSource = EventSource.fromValue(json.get("eventSource").getAsString());
             Predicate predicate = null;
             if (eventSource == EventSource.SCHEDULE) {
                 predicate = new SchedulePredicate(new Schedule(json.get("schedule").getAsString()));
-            } else if (eventSource == EventSource.STATE) {
+            } else if (eventSource == EventSource.STATES) {
                 Condition condition = context.deserialize(new JsonParser().parse(json.get("condition").toString()), Condition.class);
                 TriggersWhen triggersWhen = TriggersWhen.valueOf(json.get("triggersWhen").getAsString());
                 predicate = new StatePredicate(condition, triggersWhen);
@@ -193,14 +193,14 @@ public class GsonRepository {
                 String field = json.get("field").getAsString();
                 if (json.has("upperLimit")) {
                     long upperLimit = json.get("upperLimit").getAsLong();
-                    if (json.get("upperLimitIncluded").getAsBoolean()) {
+                    if (json.get("upperIncluded").getAsBoolean()) {
                         return new GreaterThanOrEquals(field, upperLimit);
                     } else {
                         return new GreaterThan(field, upperLimit);
                     }
                 } else if (json.has("lowerLimit")) {
                     long lowerLimit = json.get("lowerLimit").getAsLong();
-                    if (json.get("lowerLimitIncluded").getAsBoolean()) {
+                    if (json.get("lowerIncluded").getAsBoolean()) {
                         return new LessThanOrEquals(field, lowerLimit);
                     } else {
                         return new LessThan(field, lowerLimit);
@@ -222,8 +222,8 @@ public class GsonRepository {
                 .registerTypeHierarchyAdapter(Statement.class, STATEMENT_DESERIALIZER)
                 .registerTypeAdapter(Condition.class, CONDITION_SERIALIZER)
                 .registerTypeAdapter(Condition.class, CONDITION_DESERIALIZER)
-                .registerTypeAdapter(SchedulePredicate.class, PREDICATE_SERIALIZER)
-                .registerTypeAdapter(SchedulePredicate.class, PREDICATE_DESERIALIZER)
+                .registerTypeHierarchyAdapter(SchedulePredicate.class, PREDICATE_SERIALIZER)
+                .registerTypeHierarchyAdapter(SchedulePredicate.class, PREDICATE_DESERIALIZER)
                 .create();
     }
 
@@ -288,8 +288,8 @@ public class GsonRepository {
                     .registerTypeHierarchyAdapter(Statement.class, STATEMENT_DESERIALIZER)
                     .registerTypeAdapter(Condition.class, CONDITION_SERIALIZER)
                     .registerTypeAdapter(Condition.class, CONDITION_DESERIALIZER)
-                    .registerTypeAdapter(Predicate.class, PREDICATE_SERIALIZER)
-                    .registerTypeAdapter(Predicate.class, PREDICATE_DESERIALIZER)
+                    .registerTypeHierarchyAdapter(Predicate.class, PREDICATE_SERIALIZER)
+                    .registerTypeHierarchyAdapter(Predicate.class, PREDICATE_DESERIALIZER)
                     .registerTypeAdapter(Action.class, ACTION_DESERIALIZER)
                     .registerTypeAdapter(ActionResult.class, ACTION_RESULT_DESERIALIZER)
                     .create();

@@ -19,7 +19,7 @@ public class StatePredicate extends Predicate {
         this.triggersWhen = triggersWhen;
     }
     public EventSource getEventSource() {
-        return EventSource.STATE;
+        return EventSource.STATES;
     }
     public Condition getCondition() {
         return this.condition;

@@ -16,6 +16,7 @@ public class IoTRestRequest {
         GET,
         POST,
         PUT,
+        PATCH,
         DELETE
     }
     private final String url;
@@ -64,14 +65,20 @@ public class IoTRestRequest {
     }
     public String getCurl() {
         StringBuilder curl = new StringBuilder();
-        curl.append("curl -v -X " + this.method.name());
+        if (this.method != Method.PATCH) {
+            curl.append("curl -v -X " + this.method.name());
+        }
         if (this.contentType != null) {
             curl.append(" -H 'Content-Type:" + this.contentType.toString() + "'");
         }
         for (Map.Entry<String, String> header : this.headers.entrySet()) {
             curl.append(" -H '" + header.getKey() + ":" + header.getValue() + "'");
         }
-        curl.append(" '" + this.getUrl() + "'");
+        if (this.method != Method.PATCH) {
+            curl.append(" '" + this.getUrl() + "'");
+        } else {
+            curl.append("--request PATCH '" + this.getUrl() + "'");
+        }
         if (this.entity != null) {
             curl.append(" -d '" + entity.toString() + "'");
         }

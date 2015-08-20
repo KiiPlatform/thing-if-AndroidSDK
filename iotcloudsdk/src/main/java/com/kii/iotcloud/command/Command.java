@@ -160,7 +160,7 @@ public class Command implements Parcelable {
      * Get creation time
      * @return
      */
-    public long getCreated() {
+    public Long getCreated() {
         return this.created;
     }
 
@@ -168,7 +168,7 @@ public class Command implements Parcelable {
      * Get modification time
      * @return
      */
-    public long getModified() {
+    public Long getModified() {
         return this.modified;
     }
 

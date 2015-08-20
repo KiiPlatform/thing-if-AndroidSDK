@@ -7,12 +7,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class GreaterThan extends Statement {
-    private String field;
-    private long limit;
+    private final String field;
+    private final long limit;
     public GreaterThan(@NonNull String field, long limit) {
         this.field = field;
         this.limit = limit;
     }
+    public String getField() {
+        return this.field;
+    }
+    public long getLimit() {
+        return this.limit;
+    }
+
     @Override
     public JSONObject toJSONObject() {
         JSONObject ret = new JSONObject();
@@ -20,7 +27,7 @@ public class GreaterThan extends Statement {
             ret.put("type", "range");
             ret.put("field", this.field);
             ret.put("upperLimit", this.limit);
-            ret.put("upperLimitIncluded", false);
+            ret.put("upperIncluded", false);
             return ret;
         } catch (JSONException e) {
             // Won't happens.

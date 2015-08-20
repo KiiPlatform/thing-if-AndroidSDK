@@ -30,6 +30,9 @@ public class Or extends Statement {
             throw new RuntimeException(e);
         }
     }
+    public Statement[] getStatements() {
+        return this.statements;
+    }
 
     @Override
     public boolean equals(Object o) {
