@@ -19,8 +19,8 @@ public class IoTCloudRestException extends IoTCloudException {
     @Override
     public String getMessage() {
         if (this.body != null) {
-            return this.body.optString("message", null);
+            return super.getMessage() + "        " + this.body.optString("message", null);
         }
-        return null;
+        return super.getMessage();
     }
 }
