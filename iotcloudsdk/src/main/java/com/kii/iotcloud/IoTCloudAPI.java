@@ -214,7 +214,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         }
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MEDIA_TYPE_INSTALLATION_CREATION_REQUEST, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
-        this.installationID = responseBody.optString("InstallationID", null);
+        this.installationID = responseBody.optString("installationID", null);
         return this.installationID;
     }
 
@@ -240,7 +240,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     @WorkerThread
     public void uninstallPush(@NonNull String installationID) throws IoTCloudException {
         if (installationID == null) {
-            throw new IllegalArgumentException("target is null");
+            throw new IllegalArgumentException("installationID is null");
         }
         String path = MessageFormat.format("/api/apps/{0}/installations/{1}", this.appID, installationID);
         String url = Path.combine(this.baseUrl, path);
