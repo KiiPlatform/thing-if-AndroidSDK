@@ -23,11 +23,11 @@ public class Range extends Clause {
     }
     public static Range range(
             @NonNull String field,
-            @NonNull Long upperLimit,
-            @NonNull Boolean upperIncluded,
-            @NonNull Long lowerLimit,
-            @NonNull Boolean lowerIncluded) {
-        return new Range(field, upperLimit, upperIncluded, lowerLimit, lowerIncluded);
+            Number upperLimit,
+            Boolean upperIncluded,
+            Number lowerLimit,
+            Boolean lowerIncluded) {
+        return new Range(field, upperLimit.longValue(), upperIncluded, lowerLimit.longValue(), lowerIncluded);
     }
     public static Range greaterThan(
             @NonNull String field,

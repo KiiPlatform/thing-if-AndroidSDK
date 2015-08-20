@@ -75,7 +75,7 @@ public class GsonRepository {
                 return null;
             }
             JsonObject json = new JsonObject();
-            json.add(src.getActionName(), context.serialize(src));
+            json.add(src.getActionName(), PURE_GSON.toJsonTree(src));
             return json;
         }
     };
@@ -86,7 +86,7 @@ public class GsonRepository {
                 return null;
             }
             JsonObject json = new JsonObject();
-            json.add(src.getActionName(), context.serialize(src));
+            json.add(src.getActionName(), PURE_GSON.toJsonTree(src));
             return json;
         }
     };
@@ -266,8 +266,8 @@ public class GsonRepository {
             gson = new GsonBuilder()
                     .registerTypeAdapter(TypedID.class, TYPED_ID_SERIALIZER)
                     .registerTypeAdapter(TypedID.class, TYPED_ID_DESERIALIZER)
-                    .registerTypeAdapter(Action.class, ACTION_SERIALIZER)
-                    .registerTypeAdapter(ActionResult.class, ACTION_RESULT_SERIALIZER)
+                    .registerTypeHierarchyAdapter(Action.class, ACTION_SERIALIZER)
+                    .registerTypeHierarchyAdapter(ActionResult.class, ACTION_RESULT_SERIALIZER)
                     .registerTypeHierarchyAdapter(Clause.class, STATEMENT_SERIALIZER)
                     .registerTypeHierarchyAdapter(Clause.class, STATEMENT_DESERIALIZER)
                     .registerTypeAdapter(Condition.class, CONDITION_SERIALIZER)
