@@ -3,7 +3,6 @@ package com.kii.iotcloud;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.kii.iotcloud.command.Action;
@@ -18,10 +17,10 @@ import com.kii.iotcloud.trigger.Schedule;
 import com.kii.iotcloud.trigger.StatePredicate;
 import com.kii.iotcloud.trigger.Trigger;
 import com.kii.iotcloud.trigger.TriggersWhen;
-import com.kii.iotcloud.trigger.statement.And;
-import com.kii.iotcloud.trigger.statement.Equals;
-import com.kii.iotcloud.trigger.statement.GreaterThanOrEquals;
-import com.kii.iotcloud.trigger.statement.NotEquals;
+import com.kii.iotcloud.trigger.clause.And;
+import com.kii.iotcloud.trigger.clause.Equals;
+import com.kii.iotcloud.trigger.clause.NotEquals;
+import com.kii.iotcloud.trigger.clause.Range;
 import com.kii.iotcloud.utils.GsonRepository;
 
 
@@ -217,7 +216,7 @@ public class GsonSerializationTest {
         // StatePredicate
         Equals eq = new Equals("prefecture", "Tokyo");
         NotEquals neq = new NotEquals(new Equals("city", "Akasaka"));
-        GreaterThanOrEquals gte = new GreaterThanOrEquals("temperature", 25);
+        Range gte = Range.greaterThanEquals("temperature", 25);
         And and = new And(eq, neq, gte);
         Condition condition = new Condition(and);
         Predicate predicate = new StatePredicate(condition, TriggersWhen.CONDITION_FALSE_TO_TRUE);
@@ -254,7 +253,7 @@ public class GsonSerializationTest {
         predicate = trigger.getPredicate();
         Assert.assertTrue(predicate instanceof StatePredicate);
         Assert.assertEquals(TriggersWhen.CONDITION_FALSE_TO_TRUE, ((StatePredicate) predicate).getTriggersWhen());
-        Assert.assertEquals(condition.getStatement(), ((StatePredicate) predicate).getCondition().getStatement());
+        Assert.assertEquals(condition.getClause(), ((StatePredicate) predicate).getCondition().getClause());
     }
 
 

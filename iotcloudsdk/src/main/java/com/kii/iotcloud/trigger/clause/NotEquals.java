@@ -1,4 +1,4 @@
-package com.kii.iotcloud.trigger.statement;
+package com.kii.iotcloud.trigger.clause;
 
 import android.os.Parcel;
 import android.support.annotation.NonNull;
@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class NotEquals extends Statement {
+public class NotEquals extends Clause {
     private final Equals equals;
     public NotEquals(@NonNull Equals equals) {
         this.equals = equals;

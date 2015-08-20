@@ -1,4 +1,4 @@
-package com.kii.iotcloud.trigger.statement;
+package com.kii.iotcloud.trigger.clause;
 
 import android.os.Parcel;
 import android.support.annotation.NonNull;
@@ -9,23 +9,19 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 
-public class And extends Statement {
-    private final Statement[] statements;
-    public And(@NonNull Statement... statements) {
-        this.statements = statements;
+public class Or extends Clause {
+    private final Clause[] clauses;
+    public Or(@NonNull Clause... clauses) {
+        this.clauses = clauses;
     }
-    public Statement[] getStatements() {
-        return this.statements;
-    }
-
     @Override
     public JSONObject toJSONObject() {
         JSONObject ret = new JSONObject();
         JSONArray clauses = new JSONArray();
         try {
-            ret.put("type", "and");
-            for (Statement statement : this.statements) {
-                clauses.put(statement.toJSONObject());
+            ret.put("type", "or");
+            for (Clause clause : this.clauses) {
+                clauses.put(clause.toJSONObject());
             }
             ret.put("clauses", clauses);
             return ret;
@@ -34,32 +30,36 @@ public class And extends Statement {
             throw new RuntimeException(e);
         }
     }
+    public Clause[] getClauses() {
+        return this.clauses;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        And and = (And) o;
-        return Arrays.equals(statements, and.statements);
+        Or or = (Or) o;
+        return Arrays.equals(clauses, or.clauses);
+
     }
     @Override
     public int hashCode() {
-        return Arrays.hashCode(statements);
+        return Arrays.hashCode(clauses);
     }
 
     // Implementation of Parcelable
-    protected And(Parcel in) {
-        this.statements = in.createTypedArray(And.CREATOR);
+    protected Or(Parcel in) {
+        this.clauses = in.createTypedArray(Or.CREATOR);
     }
-    public static final Creator<And> CREATOR = new Creator<And>() {
+    public static final Creator<Or> CREATOR = new Creator<Or>() {
         @Override
-        public And createFromParcel(Parcel in) {
-            return new And(in);
+        public Or createFromParcel(Parcel in) {
+            return new Or(in);
         }
 
         @Override
-        public And[] newArray(int size) {
-            return new And[size];
+        public Or[] newArray(int size) {
+            return new Or[size];
         }
     };
     @Override
@@ -69,6 +69,6 @@ public class And extends Statement {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeTypedArray(this.statements, flags);
+        dest.writeTypedArray(this.clauses, flags);
     }
 }

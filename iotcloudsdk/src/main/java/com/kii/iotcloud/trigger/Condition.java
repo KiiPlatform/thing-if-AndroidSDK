@@ -4,21 +4,21 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import com.kii.iotcloud.trigger.statement.Statement;
+import com.kii.iotcloud.trigger.clause.Clause;
 
 public class Condition implements Parcelable {
-    private Statement statement;
-    public Condition(@NonNull Statement statement) {
-        this.statement = statement;
+    private Clause clause;
+    public Condition(@NonNull Clause clause) {
+        this.clause = clause;
     }
-    public Statement getStatement() {
-        return this.statement;
+    public Clause getClause() {
+        return this.clause;
     }
 
 
     // Implementation of Parcelable
     protected Condition(Parcel in) {
-        this.statement = in.readParcelable(Statement.class.getClassLoader());
+        this.clause = in.readParcelable(Clause.class.getClassLoader());
     }
     public static final Creator<Condition> CREATOR = new Creator<Condition>() {
         @Override
@@ -37,6 +37,6 @@ public class Condition implements Parcelable {
     }
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(this.statement, flags);
+        dest.writeParcelable(this.clause, flags);
     }
 }

@@ -28,17 +28,12 @@ import com.kii.iotcloud.trigger.Schedule;
 import com.kii.iotcloud.trigger.SchedulePredicate;
 import com.kii.iotcloud.trigger.StatePredicate;
 import com.kii.iotcloud.trigger.TriggersWhen;
-import com.kii.iotcloud.trigger.statement.And;
-import com.kii.iotcloud.trigger.statement.Equals;
-import com.kii.iotcloud.trigger.statement.GreaterThan;
-import com.kii.iotcloud.trigger.statement.GreaterThanOrEquals;
-import com.kii.iotcloud.trigger.statement.LessThan;
-import com.kii.iotcloud.trigger.statement.LessThanOrEquals;
-import com.kii.iotcloud.trigger.statement.NotEquals;
-import com.kii.iotcloud.trigger.statement.Or;
-import com.kii.iotcloud.trigger.statement.Statement;
-
-import org.json.JSONArray;
+import com.kii.iotcloud.trigger.clause.And;
+import com.kii.iotcloud.trigger.clause.Equals;
+import com.kii.iotcloud.trigger.clause.NotEquals;
+import com.kii.iotcloud.trigger.clause.Or;
+import com.kii.iotcloud.trigger.clause.Clause;
+import com.kii.iotcloud.trigger.clause.Range;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -56,6 +51,7 @@ public class GsonRepository {
 
     private static final Map<Pair<String, Integer>, Gson> REPOSITORY = Collections.synchronizedMap(new HashMap<Pair<String, Integer>, Gson>());
     private static final Gson DEFAULT_GSON;
+    private static final Gson PURE_GSON = new Gson();
 
     private static final JsonSerializer<TypedID> TYPED_ID_SERIALIZER = new JsonSerializer<TypedID>() {
         @Override
@@ -136,7 +132,7 @@ public class GsonRepository {
             if (src == null) {
                 return null;
             }
-            return context.serialize(src.getStatement());
+            return context.serialize(src.getClause());
         }
     };
     private static final JsonDeserializer<Condition> CONDITION_DESERIALIZER = new JsonDeserializer<Condition>() {
@@ -145,22 +141,22 @@ public class GsonRepository {
             if (json == null) {
                 return null;
             }
-            Statement statement = context.deserialize(json, Statement.class);
-            return new Condition(statement);
+            Clause clause = context.deserialize(json, Clause.class);
+            return new Condition(clause);
         }
     };
-    private static final JsonSerializer<Statement> STATEMENT_SERIALIZER = new JsonSerializer<Statement>() {
+    private static final JsonSerializer<Clause> STATEMENT_SERIALIZER = new JsonSerializer<Clause>() {
         @Override
-        public JsonElement serialize(Statement src, Type typeOfSrc, JsonSerializationContext context) {
+        public JsonElement serialize(Clause src, Type typeOfSrc, JsonSerializationContext context) {
             if (src == null) {
                 return null;
             }
             return new JsonParser().parse(src.toJSONObject().toString());
         }
     };
-    private static final JsonDeserializer<Statement> STATEMENT_DESERIALIZER = new JsonDeserializer<Statement>() {
+    private static final JsonDeserializer<Clause> STATEMENT_DESERIALIZER = new JsonDeserializer<Clause>() {
         @Override
-        public Statement deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        public Clause deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             if (jsonElement == null) {
                 return null;
             }
@@ -173,39 +169,27 @@ public class GsonRepository {
                     return new Equals(json.get("field").getAsString(), json.get("value").getAsLong());
                 } else if (((JsonPrimitive)json.get("value")).isBoolean()) {
                     return new Equals(json.get("field").getAsString(), json.get("value").getAsBoolean());
+                } else {
+                    // Won't happens
+                    throw new AssertionError("Detected unexpected type of value");
                 }
             } else if (TextUtils.equals("not", type)) {
                 Equals eq = context.deserialize(new JsonParser().parse(json.get("clause").toString()), Equals.class);
                 return new NotEquals(eq);
             } else if (TextUtils.equals("and", type) || TextUtils.equals("or", type)) {
-                List<Statement> statements = new ArrayList<Statement>();
+                List<Clause> statements = new ArrayList<Clause>();
                 JsonArray clauses = json.getAsJsonArray("clauses");
                 for (int i = 0; i < clauses.size(); i++) {
-                    Statement statement = context.deserialize(clauses.get(i), Statement.class);
-                    statements.add(statement);
+                    Clause clause = context.deserialize(clauses.get(i), Clause.class);
+                    statements.add(clause);
                 }
                 if (TextUtils.equals("and", type)) {
-                    return new And(statements.toArray(new Statement[statements.size()]));
+                    return new And(statements.toArray(new Clause[statements.size()]));
                 } else if (TextUtils.equals("or", type)) {
-                    return new Or(statements.toArray(new Statement[statements.size()]));
+                    return new Or(statements.toArray(new Clause[statements.size()]));
                 }
             } else if (TextUtils.equals("range", type)) {
-                String field = json.get("field").getAsString();
-                if (json.has("upperLimit")) {
-                    long upperLimit = json.get("upperLimit").getAsLong();
-                    if (json.get("upperIncluded").getAsBoolean()) {
-                        return new GreaterThanOrEquals(field, upperLimit);
-                    } else {
-                        return new GreaterThan(field, upperLimit);
-                    }
-                } else if (json.has("lowerLimit")) {
-                    long lowerLimit = json.get("lowerLimit").getAsLong();
-                    if (json.get("lowerIncluded").getAsBoolean()) {
-                        return new LessThanOrEquals(field, lowerLimit);
-                    } else {
-                        return new LessThan(field, lowerLimit);
-                    }
-                }
+                return PURE_GSON.fromJson(json, Range.class);
             }
             throw new JsonParseException(jsonElement.toString());
         }
@@ -216,10 +200,10 @@ public class GsonRepository {
         DEFAULT_GSON = new GsonBuilder()
                 .registerTypeAdapter(TypedID.class, TYPED_ID_SERIALIZER)
                 .registerTypeAdapter(TypedID.class, TYPED_ID_DESERIALIZER)
-                .registerTypeAdapter(Action.class, ACTION_SERIALIZER)
-                .registerTypeAdapter(ActionResult.class, ACTION_RESULT_SERIALIZER)
-                .registerTypeHierarchyAdapter(Statement.class, STATEMENT_SERIALIZER)
-                .registerTypeHierarchyAdapter(Statement.class, STATEMENT_DESERIALIZER)
+                .registerTypeHierarchyAdapter(Action.class, ACTION_SERIALIZER)
+                .registerTypeHierarchyAdapter(ActionResult.class, ACTION_RESULT_SERIALIZER)
+                .registerTypeHierarchyAdapter(Clause.class, STATEMENT_SERIALIZER)
+                .registerTypeHierarchyAdapter(Clause.class, STATEMENT_DESERIALIZER)
                 .registerTypeAdapter(Condition.class, CONDITION_SERIALIZER)
                 .registerTypeAdapter(Condition.class, CONDITION_DESERIALIZER)
                 .registerTypeHierarchyAdapter(SchedulePredicate.class, PREDICATE_SERIALIZER)
@@ -284,8 +268,8 @@ public class GsonRepository {
                     .registerTypeAdapter(TypedID.class, TYPED_ID_DESERIALIZER)
                     .registerTypeAdapter(Action.class, ACTION_SERIALIZER)
                     .registerTypeAdapter(ActionResult.class, ACTION_RESULT_SERIALIZER)
-                    .registerTypeHierarchyAdapter(Statement.class, STATEMENT_SERIALIZER)
-                    .registerTypeHierarchyAdapter(Statement.class, STATEMENT_DESERIALIZER)
+                    .registerTypeHierarchyAdapter(Clause.class, STATEMENT_SERIALIZER)
+                    .registerTypeHierarchyAdapter(Clause.class, STATEMENT_DESERIALIZER)
                     .registerTypeAdapter(Condition.class, CONDITION_SERIALIZER)
                     .registerTypeAdapter(Condition.class, CONDITION_DESERIALIZER)
                     .registerTypeHierarchyAdapter(Predicate.class, PREDICATE_SERIALIZER)

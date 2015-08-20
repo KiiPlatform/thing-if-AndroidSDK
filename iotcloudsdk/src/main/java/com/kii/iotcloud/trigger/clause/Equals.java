@@ -1,4 +1,4 @@
-package com.kii.iotcloud.trigger.statement;
+package com.kii.iotcloud.trigger.clause;
 
 import android.os.Parcel;
 import android.support.annotation.NonNull;
@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Equals extends Statement {
+public class Equals extends Clause {
 
     private final String field;
     private final Object value;
