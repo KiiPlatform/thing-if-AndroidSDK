@@ -36,7 +36,7 @@ public class TriggerTest extends LargeTestCaseBase {
 
         // on-boarding thing
         Target target = api.onBoard(vendorThingID, thingPassword, DEMO_THING_TYPE, null);
-        Assert.assertEquals(TypedID.Types.THING, target.getTypedID().getType());
+        Assert.assertEquals(TypedID.Types.THING, target.getID().getType());
         Assert.assertNotNull(target.getAccessToken());
 
         // create new trigger
@@ -52,13 +52,13 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertNotNull(trigger1.getTriggerID());
         Assert.assertFalse(trigger1.disabled());
         Assert.assertNull(trigger1.getDisabledReason());
-        Assert.assertEquals(target.getTypedID(), trigger1.getTargetID());
+        Assert.assertEquals(target.getID(), trigger1.getTargetID());
 
         Command trigger1Command = trigger1.getCommand();
         Assert.assertNull(trigger1Command.getCommandID());
         Assert.assertEquals(DEMO_SCHEMA_NAME, trigger1Command.getSchemaName());
         Assert.assertEquals(DEMO_SCHEMA_VERSION, trigger1Command.getSchemaVersion());
-        Assert.assertEquals(target.getTypedID(), trigger1Command.getTargetID());
+        Assert.assertEquals(target.getID(), trigger1Command.getTargetID());
         Assert.assertEquals(api.getOwner().getID(), trigger1Command.getIssuerID());
         Assert.assertNull(trigger1Command.getCommandState());
         Assert.assertNull(trigger1Command.getFiredByTriggerID());
@@ -90,13 +90,13 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertNotNull(trigger2.getTriggerID());
         Assert.assertFalse(trigger2.disabled());
         Assert.assertNull(trigger2.getDisabledReason());
-        Assert.assertEquals(target.getTypedID(), trigger2.getTargetID());
+        Assert.assertEquals(target.getID(), trigger2.getTargetID());
 
         Command trigger2Command = trigger2.getCommand();
         Assert.assertNull(trigger2Command.getCommandID());
         Assert.assertEquals(DEMO_SCHEMA_NAME, trigger2Command.getSchemaName());
         Assert.assertEquals(DEMO_SCHEMA_VERSION, trigger2Command.getSchemaVersion());
-        Assert.assertEquals(target.getTypedID(), trigger2Command.getTargetID());
+        Assert.assertEquals(target.getID(), trigger2Command.getTargetID());
         Assert.assertEquals(api.getOwner().getID(), trigger2Command.getIssuerID());
         Assert.assertNull(trigger2Command.getCommandState());
         Assert.assertNull(trigger2Command.getFiredByTriggerID());
@@ -133,13 +133,13 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertNotNull(trigger1.getTriggerID());
         Assert.assertFalse(trigger1.disabled());
         Assert.assertNull(trigger1.getDisabledReason());
-        Assert.assertEquals(target.getTypedID(), trigger1.getTargetID());
+        Assert.assertEquals(target.getID(), trigger1.getTargetID());
 
         trigger1Command = trigger1.getCommand();
         Assert.assertNull(trigger1Command.getCommandID());
         Assert.assertEquals(DEMO_SCHEMA_NAME, trigger1Command.getSchemaName());
         Assert.assertEquals(DEMO_SCHEMA_VERSION, trigger1Command.getSchemaVersion());
-        Assert.assertEquals(target.getTypedID(), trigger1Command.getTargetID());
+        Assert.assertEquals(target.getID(), trigger1Command.getTargetID());
         Assert.assertEquals(api.getOwner().getID(), trigger1Command.getIssuerID());
         Assert.assertNull(trigger1Command.getCommandState());
         Assert.assertNull(trigger1Command.getFiredByTriggerID());
@@ -162,13 +162,13 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertNotNull(trigger2.getTriggerID());
         Assert.assertFalse(trigger2.disabled());
         Assert.assertNull(trigger2.getDisabledReason());
-        Assert.assertEquals(target.getTypedID(), trigger2.getTargetID());
+        Assert.assertEquals(target.getID(), trigger2.getTargetID());
 
         trigger2Command = trigger2.getCommand();
         Assert.assertNull(trigger2Command.getCommandID());
         Assert.assertEquals(DEMO_SCHEMA_NAME, trigger2Command.getSchemaName());
         Assert.assertEquals(DEMO_SCHEMA_VERSION, trigger2Command.getSchemaVersion());
-        Assert.assertEquals(target.getTypedID(), trigger2Command.getTargetID());
+        Assert.assertEquals(target.getID(), trigger2Command.getTargetID());
         Assert.assertEquals(api.getOwner().getID(), trigger2Command.getIssuerID());
         Assert.assertNull(trigger2Command.getCommandState());
         Assert.assertNull(trigger2Command.getFiredByTriggerID());
@@ -211,13 +211,13 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertEquals(trigger2.getTriggerID(), updatedTriger2.getTriggerID());
         Assert.assertFalse(updatedTriger2.disabled());
         Assert.assertNull(updatedTriger2.getDisabledReason());
-        Assert.assertEquals(target.getTypedID(), updatedTriger2.getTargetID());
+        Assert.assertEquals(target.getID(), updatedTriger2.getTargetID());
 
         Command updatedTrigger2Command = updatedTriger2.getCommand();
         Assert.assertNull(updatedTrigger2Command.getCommandID());
         Assert.assertEquals(DEMO_SCHEMA_NAME, updatedTrigger2Command.getSchemaName());
         Assert.assertEquals(DEMO_SCHEMA_VERSION, updatedTrigger2Command.getSchemaVersion());
-        Assert.assertEquals(target.getTypedID(), updatedTrigger2Command.getTargetID());
+        Assert.assertEquals(target.getID(), updatedTrigger2Command.getTargetID());
         Assert.assertEquals(api.getOwner().getID(), updatedTrigger2Command.getIssuerID());
         Assert.assertNull(updatedTrigger2Command.getCommandState());
         Assert.assertNull(updatedTrigger2Command.getFiredByTriggerID());

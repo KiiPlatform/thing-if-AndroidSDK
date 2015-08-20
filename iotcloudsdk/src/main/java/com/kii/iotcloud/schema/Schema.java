@@ -45,12 +45,26 @@ public class Schema implements Parcelable {
         this.initializeName2ActionClassMap();
     }
 
+    public String getThingType() {
+        return this.thingType;
+    }
+
     public String getSchemaName() {
         return this.schemaName;
     }
 
     public int getSchemaVersion() {
         return this.schemaVersion;
+    }
+
+    List<Class<? extends Action>> getActionClasses() {
+        return this.actionClasses;
+    }
+    List<Class<? extends ActionResult>> getActionResultClasses() {
+        return this.actionResultClasses;
+    }
+    Class<? extends TargetState> getStateClass() {
+        return this.stateClass;
     }
 
     public Class<? extends Action> getActionClass(@NonNull String actionName) {

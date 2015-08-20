@@ -49,7 +49,11 @@ public class And extends Clause {
 
     // Implementation of Parcelable
     protected And(Parcel in) {
-        this.clauses = in.createTypedArray(And.CREATOR);
+        int length = in.readInt();
+        this.clauses = new Clause[length];
+        for (int i = 0; i < length; i++) {
+            this.clauses[i] = in.readParcelable(getClass().getClassLoader());
+        }
     }
     public static final Creator<And> CREATOR = new Creator<And>() {
         @Override
@@ -69,6 +73,9 @@ public class And extends Clause {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeTypedArray(this.clauses, flags);
+        dest.writeInt(this.clauses.length);
+        for (Clause clause : this.clauses) {
+            dest.writeParcelable(clause, flags);
+        }
     }
 }

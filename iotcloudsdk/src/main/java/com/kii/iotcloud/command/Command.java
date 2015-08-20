@@ -75,6 +75,9 @@ public class Command implements Parcelable {
     public String getCommandID() {
         return this.commandID;
     }
+    void setCommandID(String commandID) {
+        this.commandID = commandID;
+    }
 
     /** Get name of the schema in which command is defined.
      * @return name of the schema.
@@ -147,6 +150,9 @@ public class Command implements Parcelable {
     public CommandState getCommandState() {
         return this.commandState;
     }
+    void setCommandState(CommandState commandState) {
+        this.commandState = commandState;
+    }
 
     /**
      * Get ID of trigger which fired this command
@@ -154,6 +160,9 @@ public class Command implements Parcelable {
      */
     public String getFiredByTriggerID() {
         return this.firedByTriggerID;
+    }
+    void setFiredByTriggerID(String firedByTriggerID) {
+        this.firedByTriggerID = firedByTriggerID;
     }
 
     /**
@@ -163,13 +172,18 @@ public class Command implements Parcelable {
     public Long getCreated() {
         return this.created;
     }
-
+    void setCreated(Long created) {
+        this.created = created;
+    }
     /**
      * Get modification time
      * @return
      */
     public Long getModified() {
         return this.modified;
+    }
+    void setModified(Long modified) {
+        this.modified = modified;
     }
 
     // Implementation of Parcelable
@@ -185,8 +199,8 @@ public class Command implements Parcelable {
         in.readList(this.actionResults, Command.class.getClassLoader());
         this.commandState = (CommandState)in.readSerializable();
         this.firedByTriggerID = in.readString();
-        this.created = in.readLong();
-        this.modified = in.readLong();
+        this.created = (Long)in.readValue(Command.class.getClassLoader());
+        this.modified = (Long)in.readValue(Command.class.getClassLoader());
     }
     public static final Creator<Command> CREATOR = new Creator<Command>() {
         @Override
@@ -214,7 +228,7 @@ public class Command implements Parcelable {
         dest.writeList(this.actionResults);
         dest.writeSerializable(this.commandState);
         dest.writeString(this.firedByTriggerID);
-        dest.writeLong(this.created);
-        dest.writeLong(this.modified);
+        dest.writeValue(this.created);
+        dest.writeValue(this.modified);
     }
 }
