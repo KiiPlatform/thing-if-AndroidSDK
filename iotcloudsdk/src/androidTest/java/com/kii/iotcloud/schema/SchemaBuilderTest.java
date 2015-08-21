@@ -8,7 +8,7 @@ import com.kii.iotcloud.testmodel.SetColorResult;
 import com.kii.iotcloud.testmodel.TurnPower;
 import com.kii.iotcloud.testmodel.TurnPowerResult;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

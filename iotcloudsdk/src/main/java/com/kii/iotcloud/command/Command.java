@@ -46,6 +46,15 @@ public class Command implements Parcelable {
         if (TextUtils.isEmpty(schemaName)) {
             throw new IllegalArgumentException("schemaName is null or empty");
         }
+        if (targetID == null) {
+            throw new IllegalArgumentException("targetID is null");
+        }
+        if (issuerID == null) {
+            throw new IllegalArgumentException("issuerID is null");
+        }
+        if (actions == null || actions.size() == 0) {
+            throw new IllegalArgumentException("actions is null or empty");
+        }
         this.schemaName = schemaName;
         this.schemaVersion = schemaVersion;
         this.targetID = targetID;
