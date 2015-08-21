@@ -3,12 +3,11 @@ package com.kii.iotcloud.schema;
 import android.os.Parcel;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.kii.iotcloud.model.LightState;
-import com.kii.iotcloud.model.SetColor;
-import com.kii.iotcloud.model.SetColorResult;
-import com.kii.iotcloud.model.SetColorTemperature;
-import com.kii.iotcloud.model.SetColorTemperatureResult;
-import com.kii.iotcloud.trigger.Trigger;
+import com.kii.iotcloud.testmodel.LightState;
+import com.kii.iotcloud.testmodel.SetColor;
+import com.kii.iotcloud.testmodel.SetColorResult;
+import com.kii.iotcloud.testmodel.SetColorTemperature;
+import com.kii.iotcloud.testmodel.SetColorTemperatureResult;
 
 import org.junit.Assert;
 import org.junit.Test;

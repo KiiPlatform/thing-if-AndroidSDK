@@ -1,4 +1,4 @@
-package com.kii.iotcloud.model;
+package com.kii.iotcloud.testmodel;
 
 import com.kii.iotcloud.command.ActionResult;
 

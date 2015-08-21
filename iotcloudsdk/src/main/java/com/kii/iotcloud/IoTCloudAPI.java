@@ -685,6 +685,34 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     }
 
     /**
+     * Get AppID
+     * @return
+     */
+    public String getAppID() {
+        return this.appID;
+    }
+    /**
+     * Get AppKey
+     * @return
+     */
+    public String getAppKey() {
+        return this.appKey;
+    }
+    /**
+     * Get base URL
+     * @return
+     */
+    public String getBaseUrl() {
+        return this.baseUrl;
+    }
+    /**
+     *
+     * @return
+     */
+    public List<Schema> getSchemas() {
+        return new ArrayList<Schema>(this.schemas.values());
+    }
+    /**
      * Get owner who uses the IoTCloudAPI.
      * @return
      */
