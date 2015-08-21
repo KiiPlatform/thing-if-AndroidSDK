@@ -559,14 +559,12 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         if (triggerID == null) {
             throw new IllegalArgumentException("triggerID is null");
         }
-        Trigger trigger = this.getTrigger(target, triggerID);
         String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}/{3}", this.appID, target.getID().toString(), triggerID, (enable ? "enable" : "disable"));
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.PUT, headers);
         this.restClient.sendRequest(request);
-        trigger.setDisabled(!enable);
-        return trigger;
+        return this.getTrigger(target, triggerID);
     }
 
     /** Delete the specified Trigger.

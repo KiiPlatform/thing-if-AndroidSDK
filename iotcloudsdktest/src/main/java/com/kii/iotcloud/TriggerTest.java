@@ -6,6 +6,7 @@ import android.util.Pair;
 
 import com.kii.iotcloud.command.Action;
 import com.kii.iotcloud.command.Command;
+import com.kii.iotcloud.schema.LightState;
 import com.kii.iotcloud.schema.SetBrightness;
 import com.kii.iotcloud.schema.SetColor;
 import com.kii.iotcloud.schema.SetColorTemperature;
@@ -76,6 +77,15 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertEquals(TriggersWhen.CONDITION_TRUE, trigger1Predicate.getTriggersWhen());
         Assert.assertEquals("power", ((Equals)trigger1Predicate.getCondition().getClause()).getField());
         Assert.assertEquals(Boolean.TRUE, ((Equals)trigger1Predicate.getCondition().getClause()).getValue());
+
+        // disable/enable trigger
+        trigger1 = api.enableTrigger(target, trigger1.getTriggerID(), false);
+        Assert.assertTrue(trigger1.disabled());
+        trigger1 = api.enableTrigger(target, trigger1.getTriggerID(), true);
+        Assert.assertFalse(trigger1.disabled());
+
+        // get target state (empty)
+        LightState lightState = api.getTargetState(target, LightState.class);
 
         // create new trigger
         List<Action> actions2 = new ArrayList<Action>();
