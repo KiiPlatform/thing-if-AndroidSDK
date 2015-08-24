@@ -97,8 +97,8 @@ public class IoTCloudAPIBuilder {
         if (TextUtils.isEmpty(appKey)) {
             throw new IllegalArgumentException("appKey is null or empty");
         }
-        if (baseUrl == null) {
-            throw new IllegalArgumentException("baseUrl is null");
+        if (TextUtils.isEmpty(baseUrl)) {
+            throw new IllegalArgumentException("baseUrl is null or empty");
         }
         if (owner == null) {
             throw new IllegalArgumentException("owner is null");
