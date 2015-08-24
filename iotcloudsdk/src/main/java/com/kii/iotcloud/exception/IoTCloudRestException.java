@@ -10,6 +10,9 @@ public class IoTCloudRestException extends IoTCloudException {
         this.statusCode = statusCode;
         this.body = body;
     }
+    public int getStatusCode() {
+        return this.statusCode;
+    }
     public String getErrorCode() {
         if (this.body != null) {
             return this.body.optString("errorCode", null);

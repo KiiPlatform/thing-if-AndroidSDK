@@ -98,11 +98,11 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             @Nullable String thingType,
             @Nullable JSONObject thingProperties)
             throws IoTCloudException {
-        if (vendorThingID == null) {
-            throw new IllegalArgumentException("vendorThingID is null");
+        if (TextUtils.isEmpty(vendorThingID)) {
+            throw new IllegalArgumentException("vendorThingID is null or empty");
         }
-        if (thingPassword == null) {
-            throw new IllegalArgumentException("thingPassword is null");
+        if (TextUtils.isEmpty(thingPassword)) {
+            throw new IllegalArgumentException("thingPassword is null or empty");
         }
         JSONObject requestBody = new JSONObject();
         try {
@@ -138,16 +138,17 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             @NonNull String thingID,
             @NonNull String thingPassword) throws
             IoTCloudException {
-        if (thingID == null) {
-            throw new IllegalArgumentException("thingID is null");
+        if (TextUtils.isEmpty(thingID)) {
+            throw new IllegalArgumentException("thingID is null or empty");
         }
-        if (thingPassword == null) {
-            throw new IllegalArgumentException("thingPassword is null");
+        if (TextUtils.isEmpty(thingPassword)) {
+            throw new IllegalArgumentException("thingPassword is null or empty");
         }
         JSONObject requestBody = new JSONObject();
         try {
             requestBody.put("thingID", thingID);
             requestBody.put("thingPassword", thingPassword);
+            requestBody.put("owner", this.owner.getID().toString());
         } catch (JSONException e) {
             // Won’t happen
         }
