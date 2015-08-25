@@ -2,7 +2,6 @@ package com.kii.iotcloud;
 
 import android.test.mock.MockContext;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -40,6 +39,7 @@ public abstract class IoTCloudAPITestBase extends SmallTestBase {
     protected static final String APP_ID = "smalltest";
     protected static final String APP_KEY = "abcdefghijklmnopqrstuvwxyz123456789";
     protected static final String BASE_PATH = "/iot-api/apps/" + APP_ID;
+    protected static final String KII_CLOUD_BASE_PATH = "/api/apps/" + APP_ID;
     protected static final String DEMO_THING_TYPE = "LED";
     protected static final String DEMO_SCHEMA_NAME = "SmartLightDemo";
     protected static final int DEMO_SCHEMA_VERSION = 1;
@@ -157,6 +157,19 @@ public abstract class IoTCloudAPITestBase extends SmallTestBase {
             response.setBody(responseBody.toString());
         }
         this.server.enqueue(response);
+    }
+    protected void addMockResponseForInstallPush(int httpStatus, String installationID) {
+        MockResponse response = new MockResponse().setResponseCode(httpStatus);
+        if (installationID != null) {
+            JsonObject responseBody = new JsonObject();
+            responseBody.addProperty("installationID", installationID);
+            response.setBody(responseBody.toString());
+        }
+        this.server.enqueue(response);
+
+    }
+    protected void addMockResponse(int httpStatus) {
+        this.server.enqueue(new MockResponse().setResponseCode(httpStatus));
     }
     protected void assertRequestBody(String expected, RecordedRequest actual) {
         this.assertRequestBody(new JsonParser().parse(expected), actual);

@@ -68,7 +68,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         thingProperties.put("manufacturer", "Kii");
         String thingID = "th.1234567890";
         String accessToken = "thing-access-token-1234";
-        this.addMockResponseForOnBoard(403, null, null);
+        this.addMockResponse(403);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
@@ -77,6 +77,25 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         } catch (IoTCloudRestException e) {
             Assert.assertEquals(403, e.getStatusCode());
         }
+        // verify the request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/onboardings", request.getPath());
+        Assert.assertEquals("POST", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        expectedRequestHeaders.put("Content-Type", "application/vnd.kii.OnboardingWithVendorThingIDByOwner+json");
+        this.assertRequestHeader(expectedRequestHeaders, request);
+
+        JsonObject expectedRequestBody = new JsonObject();
+        expectedRequestBody.addProperty("owner", api.getOwner().getID().toString());
+        expectedRequestBody.addProperty("vendorThingID", vendorThingID);
+        expectedRequestBody.addProperty("thingPassword", thingPassword);
+        expectedRequestBody.addProperty("thingType", DEMO_THING_TYPE);
+        expectedRequestBody.add("thingProperties", new JsonParser().parse(thingProperties.toString()));
+        this.assertRequestBody(expectedRequestBody, request);
     }
     @Test
     public void onboardingWithVendorThingIDByOwner404ErrorTest() throws Exception {
@@ -86,7 +105,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         thingProperties.put("manufacturer", "Kii");
         String thingID = "th.1234567890";
         String accessToken = "thing-access-token-1234";
-        this.addMockResponseForOnBoard(404, null, null);
+        this.addMockResponse(404);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
@@ -95,6 +114,25 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         } catch (IoTCloudRestException e) {
             Assert.assertEquals(404, e.getStatusCode());
         }
+        // verify the request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/onboardings", request.getPath());
+        Assert.assertEquals("POST", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        expectedRequestHeaders.put("Content-Type", "application/vnd.kii.OnboardingWithVendorThingIDByOwner+json");
+        this.assertRequestHeader(expectedRequestHeaders, request);
+
+        JsonObject expectedRequestBody = new JsonObject();
+        expectedRequestBody.addProperty("owner", api.getOwner().getID().toString());
+        expectedRequestBody.addProperty("vendorThingID", vendorThingID);
+        expectedRequestBody.addProperty("thingPassword", thingPassword);
+        expectedRequestBody.addProperty("thingType", DEMO_THING_TYPE);
+        expectedRequestBody.add("thingProperties", new JsonParser().parse(thingProperties.toString()));
+        this.assertRequestBody(expectedRequestBody, request);
     }
     @Test
     public void onboardingWithVendorThingIDByOwner500ErrorTest() throws Exception {
@@ -104,7 +142,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         thingProperties.put("manufacturer", "Kii");
         String thingID = "th.1234567890";
         String accessToken = "thing-access-token-1234";
-        this.addMockResponseForOnBoard(500, null, null);
+        this.addMockResponse(500);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
@@ -113,6 +151,25 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         } catch (IoTCloudRestException e) {
             Assert.assertEquals(500, e.getStatusCode());
         }
+        // verify the request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/onboardings", request.getPath());
+        Assert.assertEquals("POST", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        expectedRequestHeaders.put("Content-Type", "application/vnd.kii.OnboardingWithVendorThingIDByOwner+json");
+        this.assertRequestHeader(expectedRequestHeaders, request);
+
+        JsonObject expectedRequestBody = new JsonObject();
+        expectedRequestBody.addProperty("owner", api.getOwner().getID().toString());
+        expectedRequestBody.addProperty("vendorThingID", vendorThingID);
+        expectedRequestBody.addProperty("thingPassword", thingPassword);
+        expectedRequestBody.addProperty("thingType", DEMO_THING_TYPE);
+        expectedRequestBody.add("thingProperties", new JsonParser().parse(thingProperties.toString()));
+        this.assertRequestBody(expectedRequestBody, request);
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardingWithVendorThingIDByOwnerWithNullVendorThingIDTest() throws Exception {

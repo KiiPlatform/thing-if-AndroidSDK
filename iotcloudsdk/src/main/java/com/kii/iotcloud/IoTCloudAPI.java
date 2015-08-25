@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.kii.iotcloud.command.Action;
 import com.kii.iotcloud.command.ActionResult;

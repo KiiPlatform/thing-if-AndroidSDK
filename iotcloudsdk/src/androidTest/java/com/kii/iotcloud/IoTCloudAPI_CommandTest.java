@@ -124,7 +124,7 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
-        this.addMockResponseForPostNewCommand(400, commandID);
+        this.addMockResponse(400);
 
         try {
             api.postNewCommand(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
@@ -167,7 +167,7 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
-        this.addMockResponseForPostNewCommand(403, commandID);
+        this.addMockResponse(403);
 
         try {
             api.postNewCommand(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
@@ -210,7 +210,7 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
-        this.addMockResponseForPostNewCommand(503, commandID);
+        this.addMockResponse(503);
 
         try {
             api.postNewCommand(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
@@ -342,7 +342,7 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         Target target = new Target(thingID, accessToken);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        this.addMockResponseForGetCommand(403, null, null, null, null, null, null, null, null, null);
+        this.addMockResponse(403);
 
         try {
             api.getCommand(target, commandID);
@@ -370,7 +370,7 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         Target target = new Target(thingID, accessToken);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        this.addMockResponseForGetCommand(404, null, null, null, null, null, null, null, null, null);
+        this.addMockResponse(404);
 
         try {
             api.getCommand(target, commandID);
@@ -398,7 +398,7 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         Target target = new Target(thingID, accessToken);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        this.addMockResponseForGetCommand(503, null, null, null, null, null, null, null, null, null);
+        this.addMockResponse(503);
 
         try {
             api.getCommand(target, commandID);
@@ -658,8 +658,7 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
-
-        this.addMockResponseForListCommands(400, null, null, null);
+        this.addMockResponse(400);
 
         try {
             api.listCommands(target, 10, null);
@@ -688,8 +687,7 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
-
-        this.addMockResponseForListCommands(404, null, null, null);
+        this.addMockResponse(404);
 
         try {
             api.listCommands(target, 10, null);
