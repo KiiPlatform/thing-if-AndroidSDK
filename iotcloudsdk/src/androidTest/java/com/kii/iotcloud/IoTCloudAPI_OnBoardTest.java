@@ -33,7 +33,9 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        Assert.assertFalse(api.onBoarded());
         Target target = api.onBoard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
+        Assert.assertTrue(api.onBoarded());
 
         // verify the result
         Assert.assertEquals(new TypedID(TypedID.Types.THING, thingID), target.getID());
@@ -140,7 +142,9 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        Assert.assertFalse(api.onBoarded());
         Target target = api.onBoard(thingID, thingPassword);
+        Assert.assertTrue(api.onBoarded());
 
         // verify the result
         Assert.assertEquals(new TypedID(TypedID.Types.THING, thingID), target.getID());
