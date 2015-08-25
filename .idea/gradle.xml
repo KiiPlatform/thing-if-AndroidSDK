@@ -10,7 +10,6 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/iotcloudsample" />
             <option value="$PROJECT_DIR$/iotcloudsdk" />
             <option value="$PROJECT_DIR$/iotcloudsdktest" />
           </set>
