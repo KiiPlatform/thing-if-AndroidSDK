@@ -2,6 +2,7 @@ package com.kii.iotcloud.command;
 
 import android.support.test.runner.AndroidJUnit4;
 
+import com.kii.iotcloud.SmallTestBase;
 import com.kii.iotcloud.TypedID;
 import com.kii.iotcloud.testmodel.SetColorResult;
 import com.kii.iotcloud.testmodel.TurnPower;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
-public class CommandTest {
+public class CommandTest extends SmallTestBase {
     @Test
     public void basicTest() throws Exception {
         List<Action> actions = new ArrayList<Action>();

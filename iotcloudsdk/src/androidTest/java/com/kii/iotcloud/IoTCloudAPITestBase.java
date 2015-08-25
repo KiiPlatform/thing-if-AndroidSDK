@@ -2,9 +2,15 @@ package com.kii.iotcloud;
 
 import android.test.mock.MockContext;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.kii.iotcloud.command.Action;
+import com.kii.iotcloud.command.ActionResult;
+import com.kii.iotcloud.command.Command;
+import com.kii.iotcloud.command.CommandState;
 import com.kii.iotcloud.schema.Schema;
 import com.kii.iotcloud.schema.SchemaBuilder;
 import com.kii.iotcloud.testmodel.LightState;
@@ -30,15 +36,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public abstract class IoTCloudAPITestBase {
-    public static final String DEMO_THING_TYPE = "LED";
-    public static final String DEMO_SCHEMA_NAME = "SmartLightDemo";
-    public static final int DEMO_SCHEMA_VERSION = 1;
+public abstract class IoTCloudAPITestBase extends SmallTestBase {
+    protected static final String APP_ID = "smalltest";
+    protected static final String APP_KEY = "abcdefghijklmnopqrstuvwxyz123456789";
+    protected static final String BASE_PATH = "/iot-api/apps/" + APP_ID;
+    protected static final String DEMO_THING_TYPE = "LED";
+    protected static final String DEMO_SCHEMA_NAME = "SmartLightDemo";
+    protected static final int DEMO_SCHEMA_VERSION = 1;
 
     protected MockWebServer server;
 
     @Before
     public void before() throws Exception {
+        super.before();
         this.server = new MockWebServer();
         this.server.start();
     }
@@ -63,12 +73,87 @@ public abstract class IoTCloudAPITestBase {
         builder.addSchema(this.createDefaultSchema());
         return builder.build();
     }
+    protected IoTCloudAPI craeteIoTCloudAPIWithSchema(String appID, String appKey, Schema schema) throws Exception {
+        String ownerID = UUID.randomUUID().toString();
+        Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
+        URL baseUrl = this.server.getUrl("/");
+        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(new MockContext(), appID, appKey, baseUrl.toString(), owner);
+        builder.addSchema(schema);
+        return builder.build();
+    }
     protected void addMockResponseForOnBoard(int httpStatus, String thingID, String accessToken) {
         MockResponse response = new MockResponse().setResponseCode(httpStatus);
         if (thingID != null && accessToken != null) {
             JsonObject responseBody = new JsonObject();
             responseBody.addProperty("thingID", thingID);
             responseBody.addProperty("accessToken", accessToken);
+            response.setBody(responseBody.toString());
+        }
+        this.server.enqueue(response);
+    }
+    protected void addMockResponseForPostNewCommand(int httpStatus, String commandID) {
+        MockResponse response = new MockResponse().setResponseCode(httpStatus);
+        if (commandID != null) {
+            JsonObject responseBody = new JsonObject();
+            responseBody.addProperty("commandID", commandID);
+            response.setBody(responseBody.toString());
+        }
+        this.server.enqueue(response);
+    }
+    protected void addMockResponseForListCommands(int httpStatus, Schema schema, Command[] commands, String paginationKey) {
+        MockResponse response = new MockResponse().setResponseCode(httpStatus);
+        if (commands != null) {
+            JsonObject responseBody = new JsonObject();
+            JsonArray array = new JsonArray();
+            for (Command command : commands) {
+                array.add(GsonRepository.gson(schema).toJsonTree(command));
+            }
+            responseBody.add("commands", array);
+            if (paginationKey != null) {
+                responseBody.addProperty("nextPaginationKey", paginationKey);
+            }
+            response.setBody(responseBody.toString());
+        }
+        this.server.enqueue(response);
+    }
+    protected void addMockResponseForGetCommand(int httpStatus, String commandID, TypedID issuer, TypedID target,
+                                                List<Action> actions, List<ActionResult> actionResults,
+                                                CommandState state, Schema schema, Long created, Long modified) {
+        MockResponse response = new MockResponse().setResponseCode(httpStatus);
+        if (httpStatus == 200) {
+            JsonObject responseBody = new JsonObject();
+            responseBody.addProperty("commandID", commandID);
+            if (issuer != null) {
+                responseBody.addProperty("issuer", issuer.toString());
+            }
+            if (target != null) {
+                responseBody.addProperty("target", target.toString());
+            }
+            if (actions != null) {
+                JsonArray array = new JsonArray();
+                for (Action action : actions) {
+                    array.add(GsonRepository.gson(schema).toJsonTree(action));
+                }
+                responseBody.add("actions", array);
+            }
+            if (actionResults != null) {
+                JsonArray array = new JsonArray();
+                for (ActionResult actionResult : actionResults) {
+                    array.add(GsonRepository.gson(schema).toJsonTree(actionResult));
+                }
+                responseBody.add("actionResults", array);
+            }
+            if (state != null) {
+                responseBody.addProperty("state", state.name());
+            }
+            responseBody.addProperty("schema", schema.getSchemaName());
+            responseBody.addProperty("schemaVersion", schema.getSchemaVersion());
+            if (created != null) {
+                responseBody.addProperty("createdAt", created);
+            }
+            if (modified != null) {
+                responseBody.addProperty("modifiedAt", modified);
+            }
             response.setBody(responseBody.toString());
         }
         this.server.enqueue(response);
@@ -102,5 +187,28 @@ public abstract class IoTCloudAPITestBase {
             }
             Assert.assertEquals("request header(" + h.getKey() + ")", expectedHeaderValue, actualMap.get(h.getKey()).get(0));
         }
+    }
+    public void assertCommand(Schema schema, Command expected, Command actual) {
+        Assert.assertEquals(expected.getCommandID(), actual.getCommandID());
+        Assert.assertEquals(expected.getCommandState(), actual.getCommandState());
+        Assert.assertEquals(expected.getActions().size(), actual.getActions().size());
+        for (int i = 0; i < expected.getActions().size(); i++) {
+            Action expectedAction = expected.getActions().get(i);
+            Action actualAction = actual.getActions().get(i);
+            Assert.assertEquals(GsonRepository.gson(schema).toJsonTree(expectedAction), GsonRepository.gson(schema).toJsonTree(actualAction));
+        }
+        Assert.assertEquals(expected.getActionResults().size(), actual.getActionResults().size());
+        for (int i = 0; i < expected.getActionResults().size(); i++) {
+            ActionResult expectedActionResult = expected.getActionResults().get(i);
+            ActionResult actualActionResult = actual.getActionResults().get(i);
+            Assert.assertEquals(GsonRepository.gson(schema).toJsonTree(expectedActionResult), GsonRepository.gson(schema).toJsonTree(actualActionResult));
+        }
+        Assert.assertEquals(expected.getSchemaName(), actual.getSchemaName());
+        Assert.assertEquals(expected.getSchemaVersion(), actual.getSchemaVersion());
+        Assert.assertEquals(expected.getIssuerID(), actual.getIssuerID());
+        Assert.assertEquals(expected.getTargetID(), actual.getTargetID());
+        Assert.assertEquals(expected.getFiredByTriggerID(), actual.getFiredByTriggerID());
+        Assert.assertEquals(expected.getCreated(), actual.getCreated());
+        Assert.assertEquals(expected.getModified(), actual.getModified());
     }
 }

@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 import com.kii.iotcloud.command.Action;
 import com.kii.iotcloud.command.ActionResult;
 import com.kii.iotcloud.command.Command;
@@ -20,7 +21,6 @@ import com.kii.iotcloud.http.IoTRestRequest;
 import com.kii.iotcloud.schema.Schema;
 import com.kii.iotcloud.trigger.Predicate;
 import com.kii.iotcloud.trigger.Trigger;
-import com.kii.iotcloud.utils.GsonRepository;
 import com.kii.iotcloud.utils.JsonUtils;
 import com.kii.iotcloud.utils.Path;
 import com.squareup.okhttp.MediaType;
@@ -282,7 +282,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands", this.appID, target.getID().toString());
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
-        Command command = new Command(schemaName, schemaVersion, target.getID(), this.owner.getID(), actions);
+        Command command = new Command(schemaName, schemaVersion, this.owner.getID(), actions);
         JSONObject requestBody = JsonUtils.newJson(GsonRepository.gson(schema).toJson(command));
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MEDIA_TYPE_JSON, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
@@ -311,8 +311,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         if (target == null) {
             throw new IllegalArgumentException("target is null");
         }
-        if (commandID == null) {
-            throw new IllegalArgumentException("commandID is null");
+        if (TextUtils.isEmpty(commandID)) {
+            throw new IllegalArgumentException("commandID is null or empty");
         }
         String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands/{2}", this.appID, target.getID().toString(), commandID);
         String url = Path.combine(this.baseUrl, path);
@@ -326,9 +326,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         if (schema == null) {
             throw new UnsupportedSchemaException(schemaName, schemaVersion);
         }
-        return GsonRepository.gson(schema).fromJson(responseBody.toString(), Command.class);
+        return this.deserialize(schema, responseBody, Command.class);
     }
-
     /** List Commands in the specified Target.
      * @param target Target to which the Commands belongs.
      * @param bestEffortLimit Maximum number of the Commands in the response.
@@ -360,11 +359,11 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
-        if (!TextUtils.isEmpty(paginationKey)) {
-            request.addQueryParameter("paginationKey", paginationKey);
-        }
         if (bestEffortLimit > 0) {
             request.addQueryParameter("bestEffortLimit", bestEffortLimit);
+        }
+        if (!TextUtils.isEmpty(paginationKey)) {
+            request.addQueryParameter("paginationKey", paginationKey);
         }
 
         JSONObject responseBody = this.restClient.sendRequest(request);
@@ -380,7 +379,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
                 if (schema == null) {
                     throw new UnsupportedSchemaException(schemaName, schemaVersion);
                 }
-                commands.add(GsonRepository.gson(schema).fromJson(commandJson.toString(), Command.class));
+                commands.add(this.deserialize(schema, commandJson, Command.class));
             }
         }
         return new Pair<List<Command>, String>(commands, nextPaginationKey);
@@ -474,7 +473,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         if (schema == null) {
             throw new UnsupportedSchemaException(schemaName, schemaVersion);
         }
-        return GsonRepository.gson(schema).fromJson(responseBody.toString(), Trigger.class);
+        return this.deserialize(schema, responseBody, Trigger.class);
     }
 
     /** Apply Patch to registered Trigger
@@ -651,7 +650,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
                 if (schema == null) {
                     throw new UnsupportedSchemaException(schemaName, schemaVersion);
                 }
-                triggers.add(GsonRepository.gson(schema).fromJson(triggerJson.toString(), Trigger.class));
+                triggers.add(this.deserialize(schema, triggerJson, Trigger.class));
             }
         }
         return new Pair<List<Trigger>, String>(triggers, nextPaginationKey);
@@ -733,9 +732,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         if (actionClass == null) {
             throw new UnsupportedActionException(schemaName, schemaVersion, actionName);
         }
-        Gson gson = GsonRepository.gson(schema);
         String json = actionParameters == null ? "{}" : actionParameters.toString();
-        return gson.fromJson(json, actionClass);
+        return this.deserialize(schema, json, actionClass);
     }
     private ActionResult generateActionResult(String schemaName, int schemaVersion, String actionName, JSONObject actionResult) throws IoTCloudException {
         Schema schema = this.getSchema(schemaName, schemaVersion);
@@ -746,9 +744,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         if (actionResultClass == null) {
             throw new UnsupportedActionException(schemaName, schemaVersion, actionName);
         }
-        Gson gson = GsonRepository.gson(schema);
         String json = actionResult == null ? "{}" : actionResult.toString();
-        return gson.fromJson(json, actionResultClass);
+        return this.deserialize(schema, json, actionResultClass);
     }
     private Map<String, String> newHeader() {
         Map<String, String> headers = new HashMap<String, String>();
@@ -762,6 +759,19 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             headers.put("Authorization", "Bearer " + this.owner.getAccessToken());
         }
         return headers;
+    }
+    private <T> T deserialize(Schema schema, JSONObject json, Class<T> clazz) throws IoTCloudException {
+        return this.deserialize(schema, json.toString(), clazz);
+    }
+    private <T> T deserialize(Schema schema, String json, Class<T> clazz) throws IoTCloudException {
+        try {
+            return GsonRepository.gson(schema).fromJson(json, clazz);
+        } catch (JsonParseException e) {
+            if (e.getCause() instanceof IoTCloudException) {
+                throw (IoTCloudException)e.getCause();
+            }
+            throw e;
+        }
     }
 
     // Implementation of Parcelable

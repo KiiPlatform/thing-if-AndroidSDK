@@ -8,6 +8,7 @@ import com.squareup.okhttp.MediaType;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class IoTRestRequest {
@@ -22,7 +23,7 @@ public class IoTRestRequest {
     private final String url;
     private final Method method;
     private final Map<String, String> headers;
-    private final Map<String, String> queryParameters = new HashMap<String, String>();
+    private final Map<String, String> queryParameters = new LinkedHashMap<String, String>();
     private final MediaType contentType;
     private final Object entity;
 

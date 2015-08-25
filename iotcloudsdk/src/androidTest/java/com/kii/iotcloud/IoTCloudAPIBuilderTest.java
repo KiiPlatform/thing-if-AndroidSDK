@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
-public class IoTCloudAPIBuilderTest {
+public class IoTCloudAPIBuilderTest extends SmallTestBase {
     @Test
     public void basicTest() throws Exception {
         IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(new MockContext(), "appid", "appkey", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));

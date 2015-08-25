@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
-public class TargetParcelableTest {
+public class TargetParcelableTest extends SmallTestBase {
     @Test
     public void test() throws Exception {
         Target target = new Target(new TypedID(TypedID.Types.THING, "thing1234"), "token1234");

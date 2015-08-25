@@ -28,7 +28,6 @@ import com.kii.iotcloud.trigger.clause.Equals;
 import com.kii.iotcloud.trigger.clause.NotEquals;
 import com.kii.iotcloud.trigger.clause.Or;
 import com.kii.iotcloud.trigger.clause.Range;
-import com.kii.iotcloud.utils.GsonRepository;
 
 
 import org.junit.Assert;
@@ -40,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
-public class GsonSerializationTest {
+public class GsonSerializationTest extends SmallTestBase {
     @Test
     public void typedIDTest() throws Exception {
         TypedID userID = new TypedID(TypedID.Types.USER, "12345");

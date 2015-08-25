@@ -2,6 +2,7 @@ package com.kii.iotcloud.schema;
 
 import android.support.test.runner.AndroidJUnit4;
 
+import com.kii.iotcloud.SmallTestBase;
 import com.kii.iotcloud.testmodel.LightState;
 import com.kii.iotcloud.testmodel.SetColor;
 import com.kii.iotcloud.testmodel.SetColorResult;
@@ -14,7 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
-public class SchemaBuilderTest {
+public class SchemaBuilderTest extends SmallTestBase {
     @Test
     public void basicTest() throws Exception {
         SchemaBuilder sb = SchemaBuilder.newSchemaBuilder("SmartLight", "LightDemoSchema", 1, LightState.class);

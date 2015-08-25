@@ -3,6 +3,8 @@ package com.kii.iotcloud.command;
 import android.os.Parcel;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.kii.iotcloud.GsonRepository;
+import com.kii.iotcloud.SmallTestBase;
 import com.kii.iotcloud.TypedID;
 import com.kii.iotcloud.testmodel.SetColor;
 import com.kii.iotcloud.testmodel.SetColorResult;
@@ -10,6 +12,7 @@ import com.kii.iotcloud.testmodel.SetColorTemperature;
 import com.kii.iotcloud.testmodel.SetColorTemperatureResult;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -17,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
-public class CommandParcelableTest {
+public class CommandParcelableTest extends SmallTestBase {
     @Test
     public void test() throws Exception {
         String schemaName = "TestSchema";

@@ -3,6 +3,7 @@ package com.kii.iotcloud.trigger;
 import android.os.Parcel;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.kii.iotcloud.SmallTestBase;
 import com.kii.iotcloud.TypedID;
 import com.kii.iotcloud.command.Action;
 import com.kii.iotcloud.command.Command;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
-public class TriggerParcelableTest {
+public class TriggerParcelableTest extends SmallTestBase {
     @Test
     public void test() throws Exception {
         String schemaName = "TestSchema";

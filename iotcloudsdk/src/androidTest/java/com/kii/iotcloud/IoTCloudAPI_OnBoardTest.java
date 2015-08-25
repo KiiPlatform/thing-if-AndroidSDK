@@ -21,9 +21,6 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(AndroidJUnit4.class)
 public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
-    private static final String APP_ID = "smalltest";
-    private static final String APP_KEY = "abcdefghijklmnopqrstuvwxyz123456789";
-    private static final String BASE_PATH = "/iot-api/apps/" + APP_ID;
 
     @Test
     public void onboardingWithVendorThingIDByOwnerTest() throws Exception {

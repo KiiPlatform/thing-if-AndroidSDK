@@ -1,4 +1,4 @@
-package com.kii.iotcloud.utils;
+package com.kii.iotcloud;
 
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -280,5 +280,11 @@ public class GsonRepository {
             REPOSITORY.put(new Pair<String, Integer>(schema.getSchemaName(), schema.getSchemaVersion()), gson);
         }
         return gson;
+    }
+    /**
+     * This method is for unit tests use only. Do not use it from SDK code.
+     */
+    static void clearCache() {
+        REPOSITORY.clear();
     }
 }

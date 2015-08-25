@@ -3,12 +3,14 @@ package com.kii.iotcloud.trigger.clause;
 import android.os.Parcel;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.kii.iotcloud.SmallTestBase;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
-public class ClauseParcelableTest {
+public class ClauseParcelableTest extends SmallTestBase {
     @Test
     public void stringEqualsTest() throws Exception {
         Equals clause = new Equals("f", "value");

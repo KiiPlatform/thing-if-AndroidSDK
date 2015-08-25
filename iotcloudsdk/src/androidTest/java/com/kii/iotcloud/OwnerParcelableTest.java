@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
-public class OwnerParcelableTest {
+public class OwnerParcelableTest extends SmallTestBase {
     @Test
     public void test() throws Exception {
         Owner owner = new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token1234");

@@ -5,14 +5,8 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.kii.iotcloud.TypedID;
-import com.kii.iotcloud.utils.GsonRepository;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +23,7 @@ public class Command implements Parcelable {
     @SerializedName("issuer")
     private final TypedID issuerID;
     private final List<Action> actions;
-    private final List<ActionResult> actionResults;
+    private List<ActionResult> actionResults;
     @SerializedName("state")
     private CommandState commandState;
     private String firedByTriggerID;
@@ -60,7 +54,25 @@ public class Command implements Parcelable {
         this.targetID = targetID;
         this.issuerID = issuerID;
         this.actions = actions;
-        this.actionResults = new ArrayList<ActionResult>();
+    }
+    public Command(@NonNull String schemaName,
+                   int schemaVersion,
+                   @NonNull TypedID issuerID,
+                   @NonNull List<Action> actions) {
+        if (TextUtils.isEmpty(schemaName)) {
+            throw new IllegalArgumentException("schemaName is null or empty");
+        }
+        if (issuerID == null) {
+            throw new IllegalArgumentException("issuerID is null");
+        }
+        if (actions == null || actions.size() == 0) {
+            throw new IllegalArgumentException("actions is null or empty");
+        }
+        this.schemaName = schemaName;
+        this.schemaVersion = schemaVersion;
+        this.targetID = null;
+        this.issuerID = issuerID;
+        this.actions = actions;
     }
     public void addActionResult(@NonNull ActionResult ar) {
         if (ar == null) {
@@ -75,7 +87,7 @@ public class Command implements Parcelable {
         if (!hasAction) {
             throw new IllegalArgumentException(ar.getActionName() + " is not contained in this Command");
         }
-        this.actionResults.add(ar);
+        this.getActionResults().add(ar);
     }
 
     /** Get ID of the command.
@@ -131,6 +143,9 @@ public class Command implements Parcelable {
      * @return
      */
     public List<ActionResult> getActionResults() {
+        if (this.actionResults == null) {
+            this.actionResults = new ArrayList<ActionResult>();
+        }
         return this.actionResults;
     }
 
@@ -144,7 +159,7 @@ public class Command implements Parcelable {
         if (action == null) {
             throw new IllegalArgumentException("action is null");
         }
-        for (ActionResult result : this.actionResults) {
+        for (ActionResult result : this.getActionResults()) {
             if (TextUtils.equals(action.getActionName(), result.getActionName())) {
                 return result;
             }
