@@ -168,7 +168,10 @@ public abstract class IoTCloudAPITestBase extends SmallTestBase {
         this.server.enqueue(response);
 
     }
-    protected void addMockResponse(int httpStatus) {
+    protected void addMockResponse(int httpStatus, JsonElement body) {
+        this.server.enqueue(new MockResponse().setResponseCode(httpStatus).setBody(body.toString()));
+    }
+    protected void addEmptyMockResponse(int httpStatus) {
         this.server.enqueue(new MockResponse().setResponseCode(httpStatus));
     }
     protected void assertRequestBody(String expected, RecordedRequest actual) {

@@ -85,7 +85,7 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
     @Test
     public void installPush400ErrorTest() throws Exception {
         String deviceToken = UUID.randomUUID().toString();
-        this.addMockResponse(400);
+        this.addEmptyMockResponse(400);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
@@ -115,7 +115,7 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
     @Test
     public void installPush401ErrorTest() throws Exception {
         String deviceToken = UUID.randomUUID().toString();
-        this.addMockResponse(401);
+        this.addEmptyMockResponse(401);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
@@ -145,7 +145,7 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
     @Test
     public void installPush404ErrorTest() throws Exception {
         String deviceToken = UUID.randomUUID().toString();
-        this.addMockResponse(404);
+        this.addEmptyMockResponse(404);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
@@ -182,7 +182,7 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
     public void uninstallPushTest() throws Exception {
         String installationID = UUID.randomUUID().toString();
 
-        this.addMockResponse(204);
+        this.addEmptyMockResponse(204);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         api.uninstallPush(installationID);
@@ -201,7 +201,7 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
     public void uninstallPush401ErrorTest() throws Exception {
         String installationID = UUID.randomUUID().toString();
 
-        this.addMockResponse(401);
+        this.addEmptyMockResponse(401);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
@@ -225,7 +225,7 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
     public void uninstallPush404ErrorTest() throws Exception {
         String installationID = UUID.randomUUID().toString();
 
-        this.addMockResponse(404);
+        this.addEmptyMockResponse(404);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {

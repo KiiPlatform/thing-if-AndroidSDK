@@ -68,7 +68,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         thingProperties.put("manufacturer", "Kii");
         String thingID = "th.1234567890";
         String accessToken = "thing-access-token-1234";
-        this.addMockResponse(403);
+        this.addEmptyMockResponse(403);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
@@ -105,7 +105,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         thingProperties.put("manufacturer", "Kii");
         String thingID = "th.1234567890";
         String accessToken = "thing-access-token-1234";
-        this.addMockResponse(404);
+        this.addEmptyMockResponse(404);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
@@ -142,7 +142,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         thingProperties.put("manufacturer", "Kii");
         String thingID = "th.1234567890";
         String accessToken = "thing-access-token-1234";
-        this.addMockResponse(500);
+        this.addEmptyMockResponse(500);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
