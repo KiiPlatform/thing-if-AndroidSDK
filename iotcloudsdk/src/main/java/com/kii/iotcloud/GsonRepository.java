@@ -212,6 +212,7 @@ public class GsonRepository {
     }
 
     /**
+     * Returns the Gson instance that can handle Action class and ActionResult class that are defined specified schema.
      * Action class and ActionResult class depend on the schema name and version.
      *
      * @param schema

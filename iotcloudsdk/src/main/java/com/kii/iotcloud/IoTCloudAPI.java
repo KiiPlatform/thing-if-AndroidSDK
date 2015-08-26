@@ -13,6 +13,7 @@ import com.kii.iotcloud.command.Action;
 import com.kii.iotcloud.command.ActionResult;
 import com.kii.iotcloud.command.Command;
 import com.kii.iotcloud.exception.IoTCloudException;
+import com.kii.iotcloud.exception.IoTCloudRestException;
 import com.kii.iotcloud.exception.UnsupportedActionException;
 import com.kii.iotcloud.exception.UnsupportedSchemaException;
 import com.kii.iotcloud.http.IoTRestClient;
@@ -71,7 +72,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         this.restClient = new IoTRestClient();
     }
 
-    /** On board IoT Cloud with the specified vendor thing ID.
+    /**
+     * On board IoT Cloud with the specified vendor thing ID.
      * Specified thing will be owned by owner who is specified
      * IoT Cloud prepares communication channel to the target.
      * @param vendorThingID Thing ID given by vendor. Must be specified.
@@ -86,8 +88,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      *                        About the format of this Document.
      * @return Target instance can be used to operate target, manage resources
      * of the target.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server
-     * or IoT Cloud returns error response.
+     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
+     * @throws IoTCloudRestException Thrown when server returns error response.
      */
     @NonNull
     @WorkerThread
@@ -120,7 +122,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         return this.onBoard(MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST, requestBody);
     }
 
-    /** On board IoT Cloud with the specified thing ID.
+    /**
+     * On board IoT Cloud with the specified thing ID.
      * When you are sure that the on boarding process has been done,
      * this method is more convenient than
      * {@link #onBoard(String, String, String, JSONObject)}.
@@ -128,8 +131,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      * @param thingPassword Thing password given by vendor. Must be specified.
      * @return Target instance can be used to operate target, manage resources
      * of the target.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server
-     * or IoT Cloud returns error response.
+     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
+     * @throws IoTCloudRestException Thrown when server returns error response.
      */
     @NonNull
     @WorkerThread
@@ -166,7 +169,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         return new Target(new TypedID(TypedID.Types.THING, thingID), accessToken);
     }
 
-    /** Checks whether on boarding is done.
+    /**
+     * Checks whether on boarding is done.
      * @return true if done, otherwise false.
      */
     public boolean onBoarded()
@@ -174,7 +178,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         return this.onBoarded;
     }
 
-    /** Install push notification to receive notification from IoT Cloud.
+    /**
+     * Install push notification to receive notification from IoT Cloud.
      * IoT Cloud will send notification when the Target replies to the Command.
      * Application can receive the notification and check the result of Command
      * fired by Application or registered Trigger.
@@ -185,8 +190,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      *                    JPushInterface.getUdid().
      * @param pushBackend Specify backend to use.
      * @return Installation ID used in IoT Cloud.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server
-     * or IoT Cloud returns error response.
+     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
+     * @throws IoTCloudRestException Thrown when server returns error response.
      */
     @NonNull
     @WorkerThread
@@ -215,7 +220,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         return this.installationID;
     }
 
-    /** Get installationID if the push is already installed.
+    /**
+     * Get installationID if the push is already installed.
      * null will be returned if the push installation has not been done.
      * @return Installation ID used in IoT Cloud.
      */
@@ -224,14 +230,15 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         return this.installationID;
     }
 
-    /** Uninstall push notification.
+    /**
+     * Uninstall push notification.
      * After done, notification from IoT Cloud won't be notified.
      * @param installationID installation ID returned from
      *                       {@link #installPush(String, PushBackend)}
      *                       if null is specified, value obtained by
      *                       {@link #getInstallationID()} is used.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server
-     * or IoT Cloud returns error response.
+     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
+     * @throws IoTCloudRestException Thrown when server returns error response.
      */
     @NonNull
     @WorkerThread
@@ -246,7 +253,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         this.restClient.sendRequest(request);
     }
 
-    /** Post new command to IoT Cloud.
+    /**
+     * Post new command to IoT Cloud.
      * Command will be delivered to specified target and result will be notified
      * through push notification.
      * @param target Target of the command to be delivered.
@@ -257,8 +265,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      * the target Asynchronously and may not finished. Actual Result will be
      * delivered through push notification or you can check the latest status
      * of the command by calling {@link #getCommand}.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server
-     * or IoT Cloud returns error response.
+     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
+     * @throws IoTCloudRestException Thrown when server returns error response.
      */
     @NonNull
     @WorkerThread
@@ -290,15 +298,18 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         return this.getCommand(target, commandID);
     }
 
-    /** Get specified command.
+    /**
+     * Get specified command.
      * @param target Target of the command.
      * @param commandID ID of the command to obtain. ID is present in the
      *                  instance returned by {@link #postNewCommand}
      *                  and can be obtained by {@link Command#getCommandID}
      *
      * @return Command instance.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server
-     * or IoT Cloud returns error response.
+     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
+     * @throws IoTCloudRestException Thrown when server returns error response.
+     * @throws UnsupportedSchemaException Thrown when the returned response has a schema that cannot handle this instance.
+     * @throws UnsupportedActionException Thrown when the returned response has a action that cannot handle this instance.
      */
     @NonNull
     @WorkerThread
@@ -327,7 +338,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         }
         return this.deserialize(schema, responseBody, Command.class);
     }
-    /** List Commands in the specified Target.
+    /**
+     * List Commands in the specified Target.
      * @param target Target to which the Commands belongs.
      * @param bestEffortLimit Maximum number of the Commands in the response.
      *                        if the value is <= 0, default limit internally
@@ -342,8 +354,10 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      *                      to get the result from the next page.
      * @return 1st Element is Commands belongs to the Target. 2nd element is
      * paginationKey if there is next page to be obtained.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server
-     * or IoT Cloud returns error response.
+     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
+     * @throws IoTCloudRestException Thrown when server returns error response.
+     * @throws UnsupportedSchemaException Thrown when the returned response has a schema that cannot handle this instance.
+     * @throws UnsupportedActionException Thrown when the returned response has a action that cannot handle this instance.
      */
     public Pair<List<Command>, String> listCommands (
             @NonNull Target target,
@@ -384,7 +398,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         return new Pair<List<Command>, String>(commands, nextPaginationKey);
     }
 
-    /** Post new Trigger to IoT Cloud.
+    /**
+     * Post new Trigger to IoT Cloud.
      * @param target Target of which the trigger stored. It the trigger is based
      *               on state of target, Trigger is evaluated when the state of
      *               the target has been updated.
@@ -394,8 +409,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      *                trigger.
      * @param predicate Specify when the Trigger fires command.
      * @return Instance of the Trigger registered in IoT Cloud.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server
-     * or IoT Cloud returns error response.
+     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
+     * @throws IoTCloudRestException Thrown when server returns error response.
      */
     @NonNull
     @WorkerThread
@@ -438,12 +453,15 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         return this.getTrigger(target, triggerID);
     }
 
-    /** Get specified Trigger.
+    /**
+     * Get specified Trigger.
      * @param target Target of which the trigger stored.
      * @param triggerID ID of the Trigger to get.
      * @return Trigger instance.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server
-     * or IoT Cloud returns error response.
+     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
+     * @throws IoTCloudRestException Thrown when server returns error response.
+     * @throws UnsupportedSchemaException Thrown when the returned response has a schema that cannot handle this instance.
+     * @throws UnsupportedActionException Thrown when the returned response has a action that cannot handle this instance.
      */
     @NonNull
     @WorkerThread
@@ -475,7 +493,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         return this.deserialize(schema, responseBody, Trigger.class);
     }
 
-    /** Apply Patch to registered Trigger
+    /**
+     * Apply Patch to registered Trigger
      * Modify registered Trigger with specified patch.
      * @param target Target of which the Trigger stored
      * @param triggerID ID ot the Trigger to apply patch
@@ -486,8 +505,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      * @param predicate Modified predicate.
      *                  If null NonNull actions must be specified.
      * @return Updated Trigger instance.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server
-     * or IoT Cloud returns error response.
+     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
+     * @throws IoTCloudRestException Thrown when server returns error response.
      * @throws IllegalArgumentException when both actions and predicates are null
      */
     @NonNull
@@ -534,15 +553,16 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         return this.getTrigger(target, triggerID);
     }
 
-    /** Enable/Disable registered Trigger
+    /**
+     * Enable/Disable registered Trigger
      * If its already enabled(/disabled),
      * this method won't throw Exception and behave as succeeded.
      * @param target Target of which the Trigger stored.
      * @param triggerID ID of the Trigger to be enabled(/disabled).
      * @param enable specify whether enable of disable the Trigger.
      * @return Updated Trigger Instance.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server
-     * or IoT Cloud returns error response.
+     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
+     * @throws IoTCloudRestException Thrown when server returns error response.
      */
     @NonNull
     @WorkerThread
@@ -566,12 +586,13 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         return this.getTrigger(target, triggerID);
     }
 
-    /** Delete the specified Trigger.
+    /**
+     * Delete the specified Trigger.
      * @param target Target of which the Trigger stored.
      * @param triggerID ID of the Trigger to be deleted.
      * @return Deleted Trigger Instance.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server
-     * or IoT Cloud returns error response.
+     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
+     * @throws IoTCloudRestException Thrown when server returns error response.
      */
     @NonNull
     @WorkerThread
@@ -596,7 +617,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         return trigger;
     }
 
-    /** List Triggers belongs to the specified Target.
+    /**
+     * List Triggers belongs to the specified Target.
      * @param target Target of which the Trigger stored.
      * @param bestEffortLimit limit the maximum number of the Triggers in the
      *                        Response. It ensures numbers in
@@ -610,8 +632,10 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      * by IoT Cloud. paginationKey is null when there is next page to be obtained.
      * Obtained paginationKey can be used to get the rest of the items stored
      * in the target.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server
-     * or IoT Cloud returns error response.
+     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
+     * @throws IoTCloudRestException Thrown when server returns error response.
+     * @throws UnsupportedSchemaException Thrown when the returned response has a schema that cannot handle this instance.
+     * @throws UnsupportedActionException Thrown when the returned response has a action that cannot handle this instance.
      */
     @NonNull
     @WorkerThread
@@ -655,11 +679,14 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         return new Pair<List<Trigger>, String>(triggers, nextPaginationKey);
     }
 
-    /** Get the State of specified Target.
+    /**
+     * Get the State of specified Target.
      * State will be serialized with Gson library.
      * @param classOfS Specify class of the State.
      * @param <S> State class.
      * @return Instance of Target State.
+     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
+     * @throws IoTCloudRestException Thrown when server returns error response.
      */
     @NonNull
     @WorkerThread
