@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * Represents a command that is executed by the thing
+ */
 public class Command implements Parcelable {
 
     private String commandID;

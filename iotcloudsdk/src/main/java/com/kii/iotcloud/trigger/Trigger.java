@@ -7,6 +7,9 @@ import android.support.annotation.NonNull;
 import com.kii.iotcloud.TypedID;
 import com.kii.iotcloud.command.Command;
 
+/**
+ * Represents a trigger that is fired when status of thing changed or it became at the designated time.
+ */
 public class Trigger implements Parcelable {
 
     private String triggerID;

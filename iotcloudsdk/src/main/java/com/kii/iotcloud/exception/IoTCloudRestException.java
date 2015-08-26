@@ -2,6 +2,10 @@ package com.kii.iotcloud.exception;
 
 import org.json.JSONObject;
 
+
+/**
+ * Thrown when IoT Cloud Server returned an error.
+ */
 public class IoTCloudRestException extends IoTCloudException {
     private final int statusCode;
     private final JSONObject body;

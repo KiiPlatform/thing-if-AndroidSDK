@@ -15,7 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Object represents Schema.
+/**
+ * Object represents Schema.
  */
 public class Schema implements Parcelable {
 
