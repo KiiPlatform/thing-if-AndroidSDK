@@ -648,7 +648,6 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         RecordedRequest request2 = this.server.takeRequest(1, TimeUnit.SECONDS);
         Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/commands?bestEffortLimit=10&paginationKey=" + paginationKey, request2.getPath());
         Assert.assertEquals("GET", request2.getMethod());
-
         this.assertRequestHeader(expectedRequestHeaders, request2);
     }
     @Test

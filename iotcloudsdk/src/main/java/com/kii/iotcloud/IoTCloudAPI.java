@@ -523,11 +523,11 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         if (target == null) {
             throw new IllegalArgumentException("target is null");
         }
-        if (triggerID == null) {
-            throw new IllegalArgumentException("triggerID is null");
+        if (TextUtils.isEmpty(triggerID)) {
+            throw new IllegalArgumentException("triggerID is null or empty");
         }
-        if (schemaName == null) {
-            throw new IllegalArgumentException("schemaName is null");
+        if (TextUtils.isEmpty(schemaName)) {
+            throw new IllegalArgumentException("schemaName is null or empty");
         }
         if (actions == null || actions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty");
@@ -604,8 +604,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         if (target == null) {
             throw new IllegalArgumentException("target is null");
         }
-        if (triggerID == null) {
-            throw new IllegalArgumentException("triggerID is null");
+        if (TextUtils.isEmpty(triggerID)) {
+            throw new IllegalArgumentException("triggerID is null or empty");
         }
 
         Trigger trigger = this.getTrigger(target, triggerID);
@@ -652,11 +652,11 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
-        if (!TextUtils.isEmpty(paginationKey)) {
-            request.addQueryParameter("paginationKey", paginationKey);
-        }
         if (bestEffortLimit > 0) {
             request.addQueryParameter("bestEffortLimit", bestEffortLimit);
+        }
+        if (!TextUtils.isEmpty(paginationKey)) {
+            request.addQueryParameter("paginationKey", paginationKey);
         }
 
         JSONObject responseBody = this.restClient.sendRequest(request);
