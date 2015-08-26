@@ -425,8 +425,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         if (target == null) {
             throw new IllegalArgumentException("target is null");
         }
-        if (schemaName == null) {
-            throw new IllegalArgumentException("schemaName is null");
+        if (TextUtils.isEmpty(schemaName)) {
+            throw new IllegalArgumentException("schemaName is null or empty");
         }
         if (actions == null || actions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty");
@@ -473,8 +473,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         if (target == null) {
             throw new IllegalArgumentException("target is null");
         }
-        if (triggerID == null) {
-            throw new IllegalArgumentException("triggerID is null");
+        if (TextUtils.isEmpty(triggerID)) {
+            throw new IllegalArgumentException("triggerID is null or empty");
         }
 
         String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}", this.appID, target.getID().toString(), triggerID);
@@ -575,8 +575,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         if (target == null) {
             throw new IllegalArgumentException("target is null");
         }
-        if (triggerID == null) {
-            throw new IllegalArgumentException("triggerID is null");
+        if (TextUtils.isEmpty(triggerID)) {
+            throw new IllegalArgumentException("triggerID is null or empty");
         }
         String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}/{3}", this.appID, target.getID().toString(), triggerID, (enable ? "enable" : "disable"));
         String url = Path.combine(this.baseUrl, path);

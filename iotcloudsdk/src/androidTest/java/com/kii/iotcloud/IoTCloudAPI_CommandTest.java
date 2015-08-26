@@ -59,7 +59,7 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
         this.addMockResponseForPostNewCommand(201, commandID);
-        this.addMockResponseForGetCommand(200, commandID, api.getOwner().getID(), thingID, actions, null, null, schema, created, modified);
+        this.addMockResponseForGetCommand(200, commandID, api.getOwner().getID(), thingID, actions, null, null, created, modified, schema);
 
         Command command = api.postNewCommand(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
         // verify the result
@@ -77,7 +77,7 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         Assert.assertArrayEquals(setColor.color, ((SetColor) command.getActions().get(0)).color);
         Assert.assertEquals(setColorTemperature.getActionName(), ((SetColorTemperature) command.getActions().get(1)).getActionName());
         Assert.assertEquals(setColorTemperature.colorTemperature, ((SetColorTemperature) command.getActions().get(1)).colorTemperature);
-        Assert.assertEquals(0, command.getActionResults().size());
+        Assert.assertNull(command.getActionResults());
         // verify the 1st request
         RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
         Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/commands", request1.getPath());
@@ -297,7 +297,7 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         CommandState state = CommandState.DELIVERED;
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        this.addMockResponseForGetCommand(200, commandID, api.getOwner().getID(), thingID, actions, actionResults, state, schema, created, modified);
+        this.addMockResponseForGetCommand(200, commandID, api.getOwner().getID(), thingID, actions, actionResults, state, created, modified, schema);
 
         Command command = api.getCommand(target, commandID);
 
@@ -417,7 +417,7 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
         this.assertRequestHeader(expectedRequestHeaders, request);
     }
-    @Test(expected = UnsupportedSchemaException.class)
+    @Test
     public void getCommandWithInvalidSchemaNameTest() throws Exception {
         Schema schema = this.createDefaultSchema();
         SchemaBuilder sb = SchemaBuilder.newSchemaBuilder(DEMO_THING_TYPE, DEMO_SCHEMA_NAME + "_invalid", DEMO_SCHEMA_VERSION, LightState.class);
@@ -446,11 +446,25 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         CommandState state = CommandState.DELIVERED;
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithSchema(APP_ID, APP_KEY, invalidSchema);
-        this.addMockResponseForGetCommand(200, commandID, api.getOwner().getID(), thingID, actions, actionResults, state, schema, created, modified);
+        this.addMockResponseForGetCommand(200, commandID, api.getOwner().getID(), thingID, actions, actionResults, state, created, modified, schema);
 
-        api.getCommand(target, commandID);
+        try {
+            api.getCommand(target, commandID);
+            Assert.fail("UnsupportedSchemaException should be thrown");
+        } catch (UnsupportedSchemaException e) {
+        }
+        // verify the request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/commands/" + commandID, request.getPath());
+        Assert.assertEquals("GET", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        this.assertRequestHeader(expectedRequestHeaders, request);
     }
-    @Test(expected = UnsupportedSchemaException.class)
+    @Test
     public void getCommandWithInvalidSchemaVersionTest() throws Exception {
         Schema schema = this.createDefaultSchema();
         SchemaBuilder sb = SchemaBuilder.newSchemaBuilder(DEMO_THING_TYPE, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION + 1, LightState.class);
@@ -479,11 +493,25 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         CommandState state = CommandState.DELIVERED;
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithSchema(APP_ID, APP_KEY, invalidSchema);
-        this.addMockResponseForGetCommand(200, commandID, api.getOwner().getID(), thingID, actions, actionResults, state, schema, created, modified);
+        this.addMockResponseForGetCommand(200, commandID, api.getOwner().getID(), thingID, actions, actionResults, state, created, modified, schema);
 
-        api.getCommand(target, commandID);
+        try {
+            api.getCommand(target, commandID);
+            Assert.fail("UnsupportedSchemaException should be thrown");
+        } catch (UnsupportedSchemaException e) {
+        }
+        // verify the request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/commands/" + commandID, request.getPath());
+        Assert.assertEquals("GET", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        this.assertRequestHeader(expectedRequestHeaders, request);
     }
-    @Test(expected = UnsupportedActionException.class)
+    @Test
     public void getCommandWithUnknownActionTest() throws Exception {
         Schema schema = this.createDefaultSchema();
         SchemaBuilder sb = SchemaBuilder.newSchemaBuilder(DEMO_THING_TYPE, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, LightState.class);
@@ -507,10 +535,24 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         CommandState state = CommandState.DELIVERED;
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithSchema(APP_ID, APP_KEY, unsupportedSetColorSchema);
-        this.addMockResponseForGetCommand(200, commandID, api.getOwner().getID(), thingID, actions, actionResults, state, schema, created, modified);
+        this.addMockResponseForGetCommand(200, commandID, api.getOwner().getID(), thingID, actions, actionResults, state, created, modified, schema);
 
         GsonRepository.clearCache();
-        api.getCommand(target, commandID);
+        try {
+            api.getCommand(target, commandID);
+            Assert.fail("UnsupportedActionException should be thrown");
+        } catch (UnsupportedActionException e) {
+        }
+        // verify the request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/commands/" + commandID, request.getPath());
+        Assert.assertEquals("GET", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        this.assertRequestHeader(expectedRequestHeaders, request);
     }
     @Test(expected = IllegalArgumentException.class)
     public void getCommandWithNullTargetTest() throws Exception {
@@ -574,8 +616,8 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         CommandUtils.setCreated(command3, System.currentTimeMillis());
         CommandUtils.setModified(command3, System.currentTimeMillis());
 
-        this.addMockResponseForListCommands(200, schema, new Command[]{command1, command2}, paginationKey);
-        this.addMockResponseForListCommands(200, schema, new Command[]{command3}, null);
+        this.addMockResponseForListCommands(200, new Command[]{command1, command2}, paginationKey, schema);
+        this.addMockResponseForListCommands(200, new Command[]{command3}, null, schema);
 
         // verify the result
         Pair<List<Command>, String> result1 = api.listCommands(target, 10, null);
@@ -628,7 +670,7 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         CommandUtils.setCreated(command, System.currentTimeMillis());
         CommandUtils.setModified(command, System.currentTimeMillis());
 
-        this.addMockResponseForListCommands(200, schema, new Command[]{command}, paginationKey);
+        this.addMockResponseForListCommands(200, new Command[]{command}, paginationKey, schema);
 
         // verify the result
         Pair<List<Command>, String> result = api.listCommands(target, 0, null);

@@ -70,7 +70,7 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertArrayEquals(setColor.color, ((SetColor) trigger1Command.getActions().get(0)).color);
         Assert.assertEquals(setColorTemperature.getActionName(), trigger1Command.getActions().get(1).getActionName());
         Assert.assertEquals(setColorTemperature.colorTemperature, ((SetColorTemperature)trigger1Command.getActions().get(1)).colorTemperature);
-        Assert.assertEquals(0, trigger1Command.getActionResults().size());
+        Assert.assertNull(trigger1Command.getActionResults());
 
         StatePredicate trigger1Predicate = (StatePredicate)trigger1.getPredicate();
         Assert.assertEquals(EventSource.STATES, trigger1Predicate.getEventSource());
@@ -117,7 +117,7 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertEquals(setBrightness.brightness, ((SetBrightness) trigger2Command.getActions().get(0)).brightness);
         Assert.assertEquals(turnPower.getActionName(), trigger2Command.getActions().get(1).getActionName());
         Assert.assertEquals(turnPower.power, ((TurnPower)trigger2Command.getActions().get(1)).power);
-        Assert.assertEquals(0, trigger2Command.getActionResults().size());
+        Assert.assertNull(trigger2Command.getActionResults());
 
         StatePredicate trigger2Predicate = (StatePredicate)trigger2.getPredicate();
         Assert.assertEquals(EventSource.STATES, trigger2Predicate.getEventSource());
@@ -160,7 +160,7 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertArrayEquals(setColor.color, ((SetColor) trigger1Command.getActions().get(0)).color);
         Assert.assertEquals(setColorTemperature.getActionName(), trigger1Command.getActions().get(1).getActionName());
         Assert.assertEquals(setColorTemperature.colorTemperature, ((SetColorTemperature)trigger1Command.getActions().get(1)).colorTemperature);
-        Assert.assertEquals(0, trigger1Command.getActionResults().size());
+        Assert.assertNull(trigger1Command.getActionResults());
 
         trigger1Predicate = (StatePredicate)trigger1.getPredicate();
         Assert.assertEquals(EventSource.STATES, trigger1Predicate.getEventSource());
@@ -189,7 +189,7 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertEquals(setBrightness.brightness, ((SetBrightness) trigger2Command.getActions().get(0)).brightness);
         Assert.assertEquals(turnPower.getActionName(), trigger2Command.getActions().get(1).getActionName());
         Assert.assertEquals(turnPower.power, ((TurnPower)trigger2Command.getActions().get(1)).power);
-        Assert.assertEquals(0, trigger2Command.getActionResults().size());
+        Assert.assertNull(trigger2Command.getActionResults());
 
         trigger2Predicate = (StatePredicate)trigger2.getPredicate();
         Assert.assertEquals(EventSource.STATES, trigger2Predicate.getEventSource());
@@ -238,7 +238,7 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertEquals(setBrightness3.brightness, ((SetBrightness) updatedTrigger2Command.getActions().get(0)).brightness);
         Assert.assertEquals(turnPower3.getActionName(), updatedTrigger2Command.getActions().get(1).getActionName());
         Assert.assertEquals(turnPower3.power, ((TurnPower)updatedTrigger2Command.getActions().get(1)).power);
-        Assert.assertEquals(0, updatedTrigger2Command.getActionResults().size());
+        Assert.assertNull(updatedTrigger2Command.getActionResults());
 
         StatePredicate updatedTrigger2Predicate = (StatePredicate)updatedTriger2.getPredicate();
         Assert.assertEquals(EventSource.STATES, updatedTrigger2Predicate.getEventSource());

@@ -90,7 +90,10 @@ public class Command implements Parcelable {
         if (!hasAction) {
             throw new IllegalArgumentException(ar.getActionName() + " is not contained in this Command");
         }
-        this.getActionResults().add(ar);
+        if (this.actionResults == null) {
+            this.actionResults = new ArrayList<ActionResult>();
+        }
+        this.actionResults.add(ar);
     }
 
     /** Get ID of the command.
@@ -146,9 +149,6 @@ public class Command implements Parcelable {
      * @return
      */
     public List<ActionResult> getActionResults() {
-        if (this.actionResults == null) {
-            this.actionResults = new ArrayList<ActionResult>();
-        }
         return this.actionResults;
     }
 
@@ -162,9 +162,11 @@ public class Command implements Parcelable {
         if (action == null) {
             throw new IllegalArgumentException("action is null");
         }
-        for (ActionResult result : this.getActionResults()) {
-            if (TextUtils.equals(action.getActionName(), result.getActionName())) {
-                return result;
+        if (this.getActionResults() != null) {
+            for (ActionResult result : this.getActionResults()) {
+                if (TextUtils.equals(action.getActionName(), result.getActionName())) {
+                    return result;
+                }
             }
         }
         return null;

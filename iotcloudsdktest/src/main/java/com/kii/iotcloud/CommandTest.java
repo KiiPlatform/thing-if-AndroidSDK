@@ -54,7 +54,7 @@ public class CommandTest extends LargeTestCaseBase {
         Assert.assertArrayEquals(setColor.color, ((SetColor) command1.getActions().get(0)).color);
         Assert.assertEquals(setColorTemperature.getActionName(), command1.getActions().get(1).getActionName());
         Assert.assertEquals(setColorTemperature.colorTemperature, ((SetColorTemperature)command1.getActions().get(1)).colorTemperature);
-        Assert.assertEquals(0, command1.getActionResults().size());
+        Assert.assertNull(command1.getActionResults());
         // create new command
         List<Action> actions2 = new ArrayList<Action>();
         SetBrightness setBrightness = new SetBrightness(50);
@@ -76,7 +76,7 @@ public class CommandTest extends LargeTestCaseBase {
         Assert.assertEquals(setBrightness.brightness, ((SetBrightness)command2.getActions().get(0)).brightness);
         Assert.assertEquals(turnPower.getActionName(), command2.getActions().get(1).getActionName());
         Assert.assertEquals(turnPower.power, ((TurnPower)command2.getActions().get(1)).power);
-        Assert.assertEquals(0, command2.getActionResults().size());
+        Assert.assertNull(command2.getActionResults());
         // list commands
         Pair<List<Command>, String> results = api.listCommands(target, 100, null);
         Assert.assertNull(results.second);
@@ -101,7 +101,7 @@ public class CommandTest extends LargeTestCaseBase {
         Assert.assertArrayEquals(setColor.color, ((SetColor) command1.getActions().get(0)).color);
         Assert.assertEquals(setColorTemperature.getActionName(), command1.getActions().get(1).getActionName());
         Assert.assertEquals(setColorTemperature.colorTemperature, ((SetColorTemperature) command1.getActions().get(1)).colorTemperature);
-        Assert.assertEquals(0, command1.getActionResults().size());
+        Assert.assertNull(command1.getActionResults());
         Assert.assertNull(command2.getCommandState());
         Assert.assertNull(command2.getFiredByTriggerID());
         Assert.assertTrue(command2.getCreated() > command1.getCreated());
@@ -111,6 +111,6 @@ public class CommandTest extends LargeTestCaseBase {
         Assert.assertEquals(setBrightness.brightness, ((SetBrightness) command2.getActions().get(0)).brightness);
         Assert.assertEquals(turnPower.getActionName(), command2.getActions().get(1).getActionName());
         Assert.assertEquals(turnPower.power, ((TurnPower)command2.getActions().get(1)).power);
-        Assert.assertEquals(0, command2.getActionResults().size());
+        Assert.assertNull(command2.getActionResults());
     }
 }

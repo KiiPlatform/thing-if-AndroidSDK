@@ -21,6 +21,16 @@ import com.kii.iotcloud.testschemas.SetColorTemperature;
 import com.kii.iotcloud.testschemas.SetColorTemperatureResult;
 import com.kii.iotcloud.testschemas.TurnPower;
 import com.kii.iotcloud.testschemas.TurnPowerResult;
+import com.kii.iotcloud.trigger.Predicate;
+import com.kii.iotcloud.trigger.SchedulePredicate;
+import com.kii.iotcloud.trigger.StatePredicate;
+import com.kii.iotcloud.trigger.Trigger;
+import com.kii.iotcloud.trigger.clause.And;
+import com.kii.iotcloud.trigger.clause.Clause;
+import com.kii.iotcloud.trigger.clause.Equals;
+import com.kii.iotcloud.trigger.clause.NotEquals;
+import com.kii.iotcloud.trigger.clause.Or;
+import com.kii.iotcloud.trigger.clause.Range;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
@@ -91,6 +101,55 @@ public abstract class IoTCloudAPITestBase extends SmallTestBase {
         }
         this.server.enqueue(response);
     }
+    protected void addMockResponseForPostNewTrigger(int httpStatus, String triggerID) {
+        MockResponse response = new MockResponse().setResponseCode(httpStatus);
+        if (triggerID != null) {
+            JsonObject responseBody = new JsonObject();
+            responseBody.addProperty("triggerID", triggerID);
+            response.setBody(responseBody.toString());
+        }
+        this.server.enqueue(response);
+    }
+    protected void addMockResponseForGetTrigger(int httpStatus, String triggerID, Command command, Predicate predicate, Boolean disabled, String disabledReason, Schema schema) {
+        MockResponse response = new MockResponse().setResponseCode(httpStatus);
+        if (httpStatus == 200) {
+            JsonObject responseBody = new JsonObject();
+            if (triggerID != null) {
+                responseBody.addProperty("triggerID", triggerID);
+            }
+            if (command != null) {
+                responseBody.add("command", GsonRepository.gson(schema).toJsonTree(command));
+            }
+            if (predicate != null) {
+                responseBody.add("predicate", GsonRepository.gson(schema).toJsonTree(predicate));
+            }
+            if (disabled != null) {
+                responseBody.addProperty("disabled", disabled);
+            }
+            if (disabledReason != null) {
+                responseBody.addProperty("disabledReason", disabledReason);
+            }
+            response.setBody(responseBody.toString());
+        }
+        this.server.enqueue(response);
+    }
+    protected void addMockResponseForListTriggers(int httpStatus, Trigger[] triggers, String paginationKey, Schema schema) {
+        MockResponse response = new MockResponse().setResponseCode(httpStatus);
+        if (triggers != null) {
+            JsonObject responseBody = new JsonObject();
+            JsonArray array = new JsonArray();
+            for (Trigger trigger : triggers) {
+                array.add(GsonRepository.gson(schema).toJsonTree(trigger));
+            }
+            responseBody.add("triggers", array);
+            if (paginationKey != null) {
+                responseBody.addProperty("nextPaginationKey", paginationKey);
+            }
+            response.setBody(responseBody.toString());
+        }
+        this.server.enqueue(response);
+    }
+
     protected void addMockResponseForPostNewCommand(int httpStatus, String commandID) {
         MockResponse response = new MockResponse().setResponseCode(httpStatus);
         if (commandID != null) {
@@ -100,7 +159,7 @@ public abstract class IoTCloudAPITestBase extends SmallTestBase {
         }
         this.server.enqueue(response);
     }
-    protected void addMockResponseForListCommands(int httpStatus, Schema schema, Command[] commands, String paginationKey) {
+    protected void addMockResponseForListCommands(int httpStatus, Command[] commands, String paginationKey, Schema schema) {
         MockResponse response = new MockResponse().setResponseCode(httpStatus);
         if (commands != null) {
             JsonObject responseBody = new JsonObject();
@@ -118,7 +177,7 @@ public abstract class IoTCloudAPITestBase extends SmallTestBase {
     }
     protected void addMockResponseForGetCommand(int httpStatus, String commandID, TypedID issuer, TypedID target,
                                                 List<Action> actions, List<ActionResult> actionResults,
-                                                CommandState state, Schema schema, Long created, Long modified) {
+                                                CommandState state, Long created, Long modified, Schema schema) {
         MockResponse response = new MockResponse().setResponseCode(httpStatus);
         if (httpStatus == 200) {
             JsonObject responseBody = new JsonObject();
@@ -204,7 +263,7 @@ public abstract class IoTCloudAPITestBase extends SmallTestBase {
             Assert.assertEquals("request header(" + h.getKey() + ")", expectedHeaderValue, actualMap.get(h.getKey()).get(0));
         }
     }
-    public void assertCommand(Schema schema, Command expected, Command actual) {
+    protected void assertCommand(Schema schema, Command expected, Command actual) {
         Assert.assertEquals(expected.getCommandID(), actual.getCommandID());
         Assert.assertEquals(expected.getCommandState(), actual.getCommandState());
         Assert.assertEquals(expected.getActions().size(), actual.getActions().size());
@@ -213,11 +272,15 @@ public abstract class IoTCloudAPITestBase extends SmallTestBase {
             Action actualAction = actual.getActions().get(i);
             Assert.assertEquals(GsonRepository.gson(schema).toJsonTree(expectedAction), GsonRepository.gson(schema).toJsonTree(actualAction));
         }
-        Assert.assertEquals(expected.getActionResults().size(), actual.getActionResults().size());
-        for (int i = 0; i < expected.getActionResults().size(); i++) {
-            ActionResult expectedActionResult = expected.getActionResults().get(i);
-            ActionResult actualActionResult = actual.getActionResults().get(i);
-            Assert.assertEquals(GsonRepository.gson(schema).toJsonTree(expectedActionResult), GsonRepository.gson(schema).toJsonTree(actualActionResult));
+        if (expected.getActionResults() == null) {
+            Assert.assertNull(actual.getActionResults());
+        } else {
+            Assert.assertEquals(expected.getActionResults().size(), actual.getActionResults().size());
+            for (int i = 0; i < expected.getActionResults().size(); i++) {
+                ActionResult expectedActionResult = expected.getActionResults().get(i);
+                ActionResult actualActionResult = actual.getActionResults().get(i);
+                Assert.assertEquals(GsonRepository.gson(schema).toJsonTree(expectedActionResult), GsonRepository.gson(schema).toJsonTree(actualActionResult));
+            }
         }
         Assert.assertEquals(expected.getSchemaName(), actual.getSchemaName());
         Assert.assertEquals(expected.getSchemaVersion(), actual.getSchemaVersion());
@@ -226,5 +289,60 @@ public abstract class IoTCloudAPITestBase extends SmallTestBase {
         Assert.assertEquals(expected.getFiredByTriggerID(), actual.getFiredByTriggerID());
         Assert.assertEquals(expected.getCreated(), actual.getCreated());
         Assert.assertEquals(expected.getModified(), actual.getModified());
+    }
+    protected void assertPredicate(Predicate expected, Predicate actual) {
+        Assert.assertEquals(expected.getClass(), actual.getClass());
+        if (expected instanceof StatePredicate) {
+            StatePredicate esp = (StatePredicate)expected;
+            StatePredicate asp = (StatePredicate)actual;
+            Assert.assertEquals(esp.getEventSource(), asp.getEventSource());
+            Assert.assertEquals(esp.getTriggersWhen(), asp.getTriggersWhen());
+            this.assertClause(esp.getCondition().getClause(), asp.getCondition().getClause());
+        } else if (expected instanceof SchedulePredicate) {
+            SchedulePredicate esp = (SchedulePredicate)expected;
+            SchedulePredicate asp = (SchedulePredicate)actual;
+            Assert.assertEquals(esp.getEventSource(), asp.getEventSource());
+            Assert.assertEquals(esp.getSchedule().getCronExpression(), asp.getSchedule().getCronExpression());
+        }
+    }
+    protected void assertClause(Clause expected, Clause actual) {
+        Assert.assertEquals(expected.getClass(), actual.getClass());
+        if (expected instanceof Equals) {
+            Equals ee = (Equals)expected;
+            Equals ae = (Equals)actual;
+            Assert.assertEquals(ee.getField(), ae.getField());
+            Assert.assertEquals(ee.getValue(), ae.getValue());
+        } else if (expected instanceof NotEquals) {
+            NotEquals ene = (NotEquals)expected;
+            NotEquals ane = (NotEquals)actual;
+            this.assertClause(ene.getEquals(), ane.getEquals());
+        } else if (expected instanceof Range) {
+            Range er = (Range)expected;
+            Range ar = (Range)actual;
+            Assert.assertEquals(er.getField(), ar.getField());
+            Assert.assertEquals(er.getLowerLimit(), ar.getLowerLimit());
+            Assert.assertEquals(er.getUpperLimit(), ar.getUpperLimit());
+            Assert.assertEquals(er.getLowerIncluded(), ar.getLowerIncluded());
+            Assert.assertEquals(er.getUpperIncluded(), ar.getUpperIncluded());
+        } else if (expected instanceof And) {
+            And ea = (And)expected;
+            And aa = (And)actual;
+            for (int i = 0; i < ea.getClauses().length; i++) {
+                this.assertClause(ea.getClauses()[i], aa.getClauses()[i]);
+            }
+        } else if (expected instanceof Or) {
+            Or eo = (Or)expected;
+            Or ao = (Or)actual;
+            for (int i = 0; i < eo.getClauses().length; i++) {
+                this.assertClause(eo.getClauses()[i], ao.getClauses()[i]);
+            }
+        }
+    }
+    protected void assertTrigger(Schema schema, Trigger expected, Trigger actual) {
+        Assert.assertEquals(expected.getTriggerID(), actual.getTriggerID());
+        Assert.assertEquals(expected.disabled(), actual.disabled());
+        Assert.assertEquals(expected.getDisabledReason(), actual.getDisabledReason());
+        this.assertPredicate(expected.getPredicate(), actual.getPredicate());
+        this.assertCommand(schema, expected.getCommand(), actual.getCommand());
     }
 }
