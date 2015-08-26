@@ -3,16 +3,14 @@ package com.kii.iotcloud.command;
 import android.os.Parcel;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.kii.iotcloud.GsonRepository;
 import com.kii.iotcloud.SmallTestBase;
 import com.kii.iotcloud.TypedID;
-import com.kii.iotcloud.testmodel.SetColor;
-import com.kii.iotcloud.testmodel.SetColorResult;
-import com.kii.iotcloud.testmodel.SetColorTemperature;
-import com.kii.iotcloud.testmodel.SetColorTemperatureResult;
+import com.kii.iotcloud.testschemas.SetColor;
+import com.kii.iotcloud.testschemas.SetColorResult;
+import com.kii.iotcloud.testschemas.SetColorTemperature;
+import com.kii.iotcloud.testschemas.SetColorTemperatureResult;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 

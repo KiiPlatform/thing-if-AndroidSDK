@@ -4,9 +4,9 @@ import android.support.test.runner.AndroidJUnit4;
 
 import com.kii.iotcloud.SmallTestBase;
 import com.kii.iotcloud.TypedID;
-import com.kii.iotcloud.testmodel.SetColorResult;
-import com.kii.iotcloud.testmodel.TurnPower;
-import com.kii.iotcloud.testmodel.TurnPowerResult;
+import com.kii.iotcloud.testschemas.SetColorResult;
+import com.kii.iotcloud.testschemas.TurnPower;
+import com.kii.iotcloud.testschemas.TurnPowerResult;
 
 import org.junit.Assert;
 

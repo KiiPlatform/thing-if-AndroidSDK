@@ -3,11 +3,11 @@ package com.kii.iotcloud.schema;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.kii.iotcloud.SmallTestBase;
-import com.kii.iotcloud.testmodel.LightState;
-import com.kii.iotcloud.testmodel.SetColor;
-import com.kii.iotcloud.testmodel.SetColorResult;
-import com.kii.iotcloud.testmodel.TurnPower;
-import com.kii.iotcloud.testmodel.TurnPowerResult;
+import com.kii.iotcloud.testschemas.LightState;
+import com.kii.iotcloud.testschemas.SetColor;
+import com.kii.iotcloud.testschemas.SetColorResult;
+import com.kii.iotcloud.testschemas.TurnPower;
+import com.kii.iotcloud.testschemas.TurnPowerResult;
 
 import org.junit.Assert;
 

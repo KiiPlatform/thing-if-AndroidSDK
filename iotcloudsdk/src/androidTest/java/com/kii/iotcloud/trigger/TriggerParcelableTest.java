@@ -7,8 +7,8 @@ import com.kii.iotcloud.SmallTestBase;
 import com.kii.iotcloud.TypedID;
 import com.kii.iotcloud.command.Action;
 import com.kii.iotcloud.command.Command;
-import com.kii.iotcloud.testmodel.SetColor;
-import com.kii.iotcloud.testmodel.SetColorTemperature;
+import com.kii.iotcloud.testschemas.SetColor;
+import com.kii.iotcloud.testschemas.SetColorTemperature;
 import com.kii.iotcloud.trigger.clause.Equals;
 
 import org.junit.Assert;

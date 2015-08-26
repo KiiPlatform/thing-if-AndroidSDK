@@ -6,11 +6,11 @@ import android.test.mock.MockContext;
 
 import com.kii.iotcloud.schema.Schema;
 import com.kii.iotcloud.schema.SchemaBuilder;
-import com.kii.iotcloud.testmodel.LightState;
-import com.kii.iotcloud.testmodel.SetBrightness;
-import com.kii.iotcloud.testmodel.SetBrightnessResult;
-import com.kii.iotcloud.testmodel.SetColor;
-import com.kii.iotcloud.testmodel.SetColorResult;
+import com.kii.iotcloud.testschemas.LightState;
+import com.kii.iotcloud.testschemas.SetBrightness;
+import com.kii.iotcloud.testschemas.SetBrightnessResult;
+import com.kii.iotcloud.testschemas.SetColor;
+import com.kii.iotcloud.testschemas.SetColorResult;
 
 import junit.framework.Assert;
 

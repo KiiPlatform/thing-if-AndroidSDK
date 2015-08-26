@@ -1,4 +1,4 @@
-package com.kii.iotcloud.testmodel;
+package com.kii.iotcloud.testschemas;
 
 import com.kii.iotcloud.TargetState;
 

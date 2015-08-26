@@ -2,9 +2,8 @@ package com.kii.iotcloud;
 
 import android.support.test.runner.AndroidJUnit4;
 
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.kii.iotcloud.testmodel.LightState;
+import com.kii.iotcloud.testschemas.LightState;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import org.junit.Assert;
