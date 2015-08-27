@@ -113,4 +113,20 @@ public class CommandTest extends LargeTestCaseBase {
         Assert.assertEquals(turnPower.power, ((TurnPower)command2.getActions().get(1)).power);
         Assert.assertNull(command2.getActionResults());
     }
+    @Test
+    public void listCommandsEmptyResultTest() throws Exception {
+        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(TargetTestServer.DEV_SERVER_1);
+        String vendorThingID = UUID.randomUUID().toString();
+        String thingPassword = "password";
+
+        // on-boarding thing
+        Target target = api.onBoard(vendorThingID, thingPassword, DEMO_THING_TYPE, null);
+        Assert.assertEquals(TypedID.Types.THING, target.getID().getType());
+        Assert.assertNotNull(target.getAccessToken());
+
+        Pair<List<Command>, String> results = api.listCommands(target, 10, null);
+        Assert.assertNull(results.second);
+        List<Command> commands = results.first;
+        Assert.assertEquals(0, commands.size());
+    }
 }

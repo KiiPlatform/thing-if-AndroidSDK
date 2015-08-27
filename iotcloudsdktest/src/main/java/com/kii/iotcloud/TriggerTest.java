@@ -246,4 +246,20 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertEquals("brightness", ((Range)updatedTrigger2Predicate.getCondition().getClause()).getField());
         Assert.assertEquals(100, (long)((Range)updatedTrigger2Predicate.getCondition().getClause()).getUpperLimit());
     }
+    @Test
+    public void listTriggersEmptyResultTest() throws Exception {
+        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(TargetTestServer.DEV_SERVER_1);
+        String vendorThingID = UUID.randomUUID().toString();
+        String thingPassword = "password";
+
+        // on-boarding thing
+        Target target = api.onBoard(vendorThingID, thingPassword, DEMO_THING_TYPE, null);
+        Assert.assertEquals(TypedID.Types.THING, target.getID().getType());
+        Assert.assertNotNull(target.getAccessToken());
+
+        Pair<List<Trigger>, String> results = api.listTriggers(target, 100, null);
+        Assert.assertNull(results.second);
+        List<Trigger> triggers = results.first;
+        Assert.assertEquals(0, triggers.size());
+    }
 }
