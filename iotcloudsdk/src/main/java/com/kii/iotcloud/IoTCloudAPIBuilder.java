@@ -50,7 +50,7 @@ public class IoTCloudAPIBuilder {
     }
 
     /** Instantiate new IoTCloudAPIBuilder.
-     * @param context
+     * @param context Application context.
      * @param appID Application ID given by Kii Cloud.
      * @param appKey Application Key given by Kii Cloud.
      * @param site Application Site specified when create application.
@@ -81,8 +81,18 @@ public class IoTCloudAPIBuilder {
         }
         return new IoTCloudAPIBuilder(context, appID, appKey, site, owner);
     }
+
+    /** Instantiate new IoTCloudAPIBuilder with custom URL.
+     * For Custom plan users who run Kii Cloud on premise and need to use your own site URL.
+     * @param context Application Context.
+     * @param appID Application ID given by Kii Cloud.
+     * @param appKey Application Key given by Kii Cloud.
+     * @param baseUrl Custom Site base URL.
+     * @param owner Specify who uses the IoTCloudAPI.
+     * @return IoTCloudAPIBuilder instance.
+     */
     @NonNull
-    static IoTCloudAPIBuilder newBuilder(
+    public static IoTCloudAPIBuilder newBuilder(
             @NonNull Context context,
             @NonNull String appID,
             @NonNull String appKey,
