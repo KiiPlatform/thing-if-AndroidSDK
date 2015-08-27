@@ -17,11 +17,16 @@ public class IoTCloudRestException extends IoTCloudException {
     public int getStatusCode() {
         return this.statusCode;
     }
-    public String getErrorCode() {
+    public ErrorCode getErrorCode() {
         if (this.body != null) {
-            return this.body.optString("errorCode", null);
+            String errorCode = this.body.optString("errorCode", null);
+            try {
+                return IoTCloudErrorCode.valueOf(errorCode);
+            } catch (Exception e) {
+                return new UnkownErrorCode(errorCode);
+            }
         }
-        return null;
+        return new UnkownErrorCode(null);
     }
     @Override
     public String getMessage() {
