@@ -83,7 +83,7 @@ public class IoTCloudAPIBuilder {
     }
 
     /** Instantiate new IoTCloudAPIBuilder with custom URL.
-     * For Custom plan uses who run Kii Cloud on premise and need to use your own site URL.
+     * For Custom plan users who run Kii Cloud on premise and need to use your own site URL.
      * @param context Application Context.
      * @param appID Application ID given by Kii Cloud.
      * @param appKey Application Key given by Kii Cloud.
