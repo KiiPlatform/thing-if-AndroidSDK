@@ -2,15 +2,18 @@ package com.kii.iotcloud.http;
 
 import android.text.TextUtils;
 
-import com.google.gson.JsonObject;
-import com.kii.iotcloud.Site;
-import com.kii.iotcloud.TypedID;
+import com.kii.iotcloud.exception.BadRequestException;
+import com.kii.iotcloud.exception.ConflictException;
+import com.kii.iotcloud.exception.ForbiddenException;
+import com.kii.iotcloud.exception.GatewayTimeoutException;
+import com.kii.iotcloud.exception.InternalServerErrorException;
 import com.kii.iotcloud.exception.IoTCloudException;
 import com.kii.iotcloud.exception.IoTCloudRestException;
-import com.kii.iotcloud.http.IoTRestRequest.Method;
+import com.kii.iotcloud.exception.NotFoundException;
+import com.kii.iotcloud.exception.ServiceUnavailableException;
+import com.kii.iotcloud.exception.UnauthorizedException;
 import com.kii.iotcloud.utils.IOUtils;
 import com.kii.iotcloud.utils.Log;
-import com.kii.iotcloud.utils.Path;
 import com.kii.iotcloud.utils.StringUtils;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.MediaType;
@@ -27,9 +30,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Map;
 
 import okio.BufferedSink;
 
@@ -198,7 +198,26 @@ public class IoTRestClient {
             } catch (Exception ignore) {
             }
             Log.w(TAG, request.getCurl() + "  --  " + response.code() + ":" + errorDetail);
-            throw new IoTCloudRestException(request.getCurl(), response.code(), errorDetail);
+            switch (response.code()) {
+                case 400:
+                    throw new BadRequestException(request.getCurl(), errorDetail);
+                case 401:
+                    throw new UnauthorizedException(request.getCurl(), errorDetail);
+                case 403:
+                    throw new ForbiddenException(request.getCurl(), errorDetail);
+                case 404:
+                    throw new NotFoundException(request.getCurl(), errorDetail);
+                case 409:
+                    throw new ConflictException(request.getCurl(), errorDetail);
+                case 500:
+                    throw new InternalServerErrorException(request.getCurl(), errorDetail);
+                case 503:
+                    throw new ServiceUnavailableException(request.getCurl(), errorDetail);
+                case 504:
+                    throw new GatewayTimeoutException(request.getCurl(), errorDetail);
+                default:
+                    throw new IoTCloudRestException(request.getCurl(), response.code(), errorDetail);
+            }
         }
     }
 }

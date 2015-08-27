@@ -4,7 +4,9 @@ import android.support.test.runner.AndroidJUnit4;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.kii.iotcloud.exception.IoTCloudRestException;
+import com.kii.iotcloud.exception.ForbiddenException;
+import com.kii.iotcloud.exception.InternalServerErrorException;
+import com.kii.iotcloud.exception.NotFoundException;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import org.json.JSONObject;
@@ -74,8 +76,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         try {
             api.onBoard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(403, e.getStatusCode());
+        } catch (ForbiddenException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -111,8 +112,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         try {
             api.onBoard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(404, e.getStatusCode());
+        } catch (NotFoundException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -148,8 +148,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         try {
             api.onBoard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(500, e.getStatusCode());
+        } catch (InternalServerErrorException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -235,8 +234,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         try {
             api.onBoard(thingID, thingPassword);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(403, e.getStatusCode());
+        } catch (ForbiddenException e) {
         }
     }
     @Test
@@ -250,8 +248,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         try {
             api.onBoard(thingID, thingPassword);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(404, e.getStatusCode());
+        } catch (NotFoundException e) {
         }
     }
     @Test
@@ -265,8 +262,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         try {
             api.onBoard(thingID, thingPassword);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(500, e.getStatusCode());
+        } catch (InternalServerErrorException e) {
         }
     }
     @Test(expected = IllegalArgumentException.class)

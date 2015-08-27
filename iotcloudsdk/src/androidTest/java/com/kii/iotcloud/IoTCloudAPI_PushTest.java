@@ -3,11 +3,12 @@ package com.kii.iotcloud;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.google.gson.JsonObject;
-import com.kii.iotcloud.exception.IoTCloudRestException;
+import com.kii.iotcloud.exception.BadRequestException;
+import com.kii.iotcloud.exception.NotFoundException;
+import com.kii.iotcloud.exception.UnauthorizedException;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -37,8 +38,8 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
         Assert.assertEquals(installationID, result);
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        org.junit.Assert.assertEquals(KII_CLOUD_BASE_PATH + "/installations", request.getPath());
-        org.junit.Assert.assertEquals("POST", request.getMethod());
+        Assert.assertEquals(KII_CLOUD_BASE_PATH + "/installations", request.getPath());
+        Assert.assertEquals("POST", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
@@ -67,8 +68,8 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
         Assert.assertEquals(installationID, result);
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        org.junit.Assert.assertEquals(KII_CLOUD_BASE_PATH + "/installations", request.getPath());
-        org.junit.Assert.assertEquals("POST", request.getMethod());
+        Assert.assertEquals(KII_CLOUD_BASE_PATH + "/installations", request.getPath());
+        Assert.assertEquals("POST", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
@@ -90,15 +91,15 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
             api.installPush(deviceToken, PushBackend.GCM);
-            org.junit.Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            org.junit.Assert.assertEquals(400, e.getStatusCode());
+            Assert.fail("IoTCloudRestException should be thrown");
+        } catch (BadRequestException e) {
+            Assert.assertEquals(400, e.getStatusCode());
         }
         Assert.assertNull(api.getInstallationID());
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        org.junit.Assert.assertEquals(KII_CLOUD_BASE_PATH + "/installations", request.getPath());
-        org.junit.Assert.assertEquals("POST", request.getMethod());
+        Assert.assertEquals(KII_CLOUD_BASE_PATH + "/installations", request.getPath());
+        Assert.assertEquals("POST", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
@@ -120,15 +121,15 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
             api.installPush(deviceToken, PushBackend.GCM);
-            org.junit.Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            org.junit.Assert.assertEquals(401, e.getStatusCode());
+            Assert.fail("IoTCloudRestException should be thrown");
+        } catch (UnauthorizedException e) {
+            Assert.assertEquals(401, e.getStatusCode());
         }
         Assert.assertNull(api.getInstallationID());
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        org.junit.Assert.assertEquals(KII_CLOUD_BASE_PATH + "/installations", request.getPath());
-        org.junit.Assert.assertEquals("POST", request.getMethod());
+        Assert.assertEquals(KII_CLOUD_BASE_PATH + "/installations", request.getPath());
+        Assert.assertEquals("POST", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
@@ -150,15 +151,14 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
             api.installPush(deviceToken, PushBackend.GCM);
-            org.junit.Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            org.junit.Assert.assertEquals(404, e.getStatusCode());
+            Assert.fail("IoTCloudRestException should be thrown");
+        } catch (NotFoundException e) {
         }
         Assert.assertNull(api.getInstallationID());
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        org.junit.Assert.assertEquals(KII_CLOUD_BASE_PATH + "/installations", request.getPath());
-        org.junit.Assert.assertEquals("POST", request.getMethod());
+        Assert.assertEquals(KII_CLOUD_BASE_PATH + "/installations", request.getPath());
+        Assert.assertEquals("POST", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
@@ -188,8 +188,8 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
         api.uninstallPush(installationID);
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        org.junit.Assert.assertEquals(KII_CLOUD_BASE_PATH + "/installations/" + installationID, request.getPath());
-        org.junit.Assert.assertEquals("DELETE", request.getMethod());
+        Assert.assertEquals(KII_CLOUD_BASE_PATH + "/installations/" + installationID, request.getPath());
+        Assert.assertEquals("DELETE", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
@@ -206,14 +206,13 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
             api.uninstallPush(installationID);
-            org.junit.Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            org.junit.Assert.assertEquals(401, e.getStatusCode());
+            Assert.fail("IoTCloudRestException should be thrown");
+        } catch (UnauthorizedException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        org.junit.Assert.assertEquals(KII_CLOUD_BASE_PATH + "/installations/" + installationID, request.getPath());
-        org.junit.Assert.assertEquals("DELETE", request.getMethod());
+        Assert.assertEquals(KII_CLOUD_BASE_PATH + "/installations/" + installationID, request.getPath());
+        Assert.assertEquals("DELETE", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
@@ -230,14 +229,13 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
             api.uninstallPush(installationID);
-            org.junit.Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            org.junit.Assert.assertEquals(404, e.getStatusCode());
+            Assert.fail("IoTCloudRestException should be thrown");
+        } catch (NotFoundException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        org.junit.Assert.assertEquals(KII_CLOUD_BASE_PATH + "/installations/" + installationID, request.getPath());
-        org.junit.Assert.assertEquals("DELETE", request.getMethod());
+        Assert.assertEquals(KII_CLOUD_BASE_PATH + "/installations/" + installationID, request.getPath());
+        Assert.assertEquals("DELETE", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);

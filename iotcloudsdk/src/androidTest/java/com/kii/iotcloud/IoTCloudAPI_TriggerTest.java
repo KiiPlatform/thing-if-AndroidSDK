@@ -6,7 +6,10 @@ import android.util.Pair;
 import com.google.gson.JsonObject;
 import com.kii.iotcloud.command.Action;
 import com.kii.iotcloud.command.Command;
-import com.kii.iotcloud.exception.IoTCloudRestException;
+import com.kii.iotcloud.exception.BadRequestException;
+import com.kii.iotcloud.exception.ForbiddenException;
+import com.kii.iotcloud.exception.NotFoundException;
+import com.kii.iotcloud.exception.ServiceUnavailableException;
 import com.kii.iotcloud.exception.UnsupportedActionException;
 import com.kii.iotcloud.exception.UnsupportedSchemaException;
 import com.kii.iotcloud.schema.Schema;
@@ -121,8 +124,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         try {
             api.postNewTrigger(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(403, e.getStatusCode());
+        } catch (ForbiddenException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -163,8 +165,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         try {
             api.postNewTrigger(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(404, e.getStatusCode());
+        } catch (NotFoundException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -205,8 +206,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         try {
             api.postNewTrigger(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(503, e.getStatusCode());
+        } catch (ServiceUnavailableException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -359,8 +359,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         try {
             api.getTrigger(target, triggerID);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(403, e.getStatusCode());
+        } catch (ForbiddenException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -387,8 +386,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         try {
             api.getTrigger(target, triggerID);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(404, e.getStatusCode());
+        } catch (NotFoundException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -415,8 +413,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         try {
             api.getTrigger(target, triggerID);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(503, e.getStatusCode());
+        } catch (ServiceUnavailableException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -681,8 +678,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         try {
             api.enableTrigger(target, triggerID, false);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(403, e.getStatusCode());
+        } catch (ForbiddenException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -700,8 +696,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         try {
             api.enableTrigger(target, triggerID, false);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(404, e.getStatusCode());
+        } catch (NotFoundException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -719,8 +714,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         try {
             api.enableTrigger(target, triggerID, false);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(503, e.getStatusCode());
+        } catch (ServiceUnavailableException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -893,8 +887,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         try {
             api.listTriggers(target, 10, null);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(400, e.getStatusCode());
+        } catch (BadRequestException e) {
         }
         // verify the request
         RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -919,8 +912,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         try {
             api.listTriggers(target, 10, null);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(403, e.getStatusCode());
+        } catch (ForbiddenException e) {
         }
         // verify the request
         RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -945,8 +937,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         try {
             api.listTriggers(target, 10, null);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(404, e.getStatusCode());
+        } catch (NotFoundException e) {
         }
         // verify the request
         RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -971,8 +962,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         try {
             api.listTriggers(target, 10, null);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(503, e.getStatusCode());
+        } catch (ServiceUnavailableException e) {
         }
         // verify the request
         RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -1049,8 +1039,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         try {
             api.deleteTrigger(target, triggerID);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(403, e.getStatusCode());
+        } catch (ForbiddenException e) {
         }
         // verify the 1st request
         RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -1077,8 +1066,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         try {
             api.deleteTrigger(target, triggerID);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(404, e.getStatusCode());
+        } catch (NotFoundException e) {
         }
         // verify the 1st request
         RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -1105,8 +1093,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         try {
             api.deleteTrigger(target, triggerID);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(503, e.getStatusCode());
+        } catch (ServiceUnavailableException e) {
         }
         // verify the 1st request
         RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -1223,8 +1210,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         try {
             api.patchTrigger(target, triggerID, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(403, e.getStatusCode());
+        } catch (ForbiddenException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -1266,8 +1252,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         try {
             api.patchTrigger(target, triggerID, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(404, e.getStatusCode());
+        } catch (NotFoundException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -1309,8 +1294,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         try {
             api.patchTrigger(target, triggerID, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(503, e.getStatusCode());
+        } catch (ServiceUnavailableException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);

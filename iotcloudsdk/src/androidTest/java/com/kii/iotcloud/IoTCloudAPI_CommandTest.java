@@ -10,7 +10,10 @@ import com.kii.iotcloud.command.ActionResult;
 import com.kii.iotcloud.command.Command;
 import com.kii.iotcloud.command.CommandState;
 import com.kii.iotcloud.command.CommandUtils;
-import com.kii.iotcloud.exception.IoTCloudRestException;
+import com.kii.iotcloud.exception.BadRequestException;
+import com.kii.iotcloud.exception.ForbiddenException;
+import com.kii.iotcloud.exception.NotFoundException;
+import com.kii.iotcloud.exception.ServiceUnavailableException;
 import com.kii.iotcloud.exception.UnsupportedActionException;
 import com.kii.iotcloud.exception.UnsupportedSchemaException;
 import com.kii.iotcloud.schema.Schema;
@@ -129,8 +132,7 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         try {
             api.postNewCommand(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(400, e.getStatusCode());
+        } catch (BadRequestException e) {
         }
         // verify the request
         RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -172,7 +174,7 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         try {
             api.postNewCommand(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
+        } catch (ForbiddenException e) {
             Assert.assertEquals(403, e.getStatusCode());
         }
         // verify the request
@@ -215,8 +217,7 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         try {
             api.postNewCommand(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(503, e.getStatusCode());
+        } catch (ServiceUnavailableException e) {
         }
         // verify the request
         RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -347,8 +348,7 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         try {
             api.getCommand(target, commandID);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(403, e.getStatusCode());
+        } catch (ForbiddenException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -375,8 +375,7 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         try {
             api.getCommand(target, commandID);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(404, e.getStatusCode());
+        } catch (NotFoundException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -403,8 +402,7 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         try {
             api.getCommand(target, commandID);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(503, e.getStatusCode());
+        } catch (ServiceUnavailableException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -704,8 +702,7 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         try {
             api.listCommands(target, 10, null);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(400, e.getStatusCode());
+        } catch (BadRequestException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -733,8 +730,7 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         try {
             api.listCommands(target, 10, null);
             Assert.fail("IoTCloudRestException should be thrown");
-        } catch (IoTCloudRestException e) {
-            Assert.assertEquals(404, e.getStatusCode());
+        } catch (NotFoundException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
