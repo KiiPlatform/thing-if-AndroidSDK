@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/android.iml" filepath="$PROJECT_DIR$/android.iml" />
-      <module fileurl="file://$PROJECT_DIR$/iotcloudsample/iotcloudsample.iml" filepath="$PROJECT_DIR$/iotcloudsample/iotcloudsample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/IoTCloud-AndroidSDK.iml" filepath="$PROJECT_DIR$/IoTCloud-AndroidSDK.iml" />
       <module fileurl="file://$PROJECT_DIR$/iotcloudsdk/iotcloudsdk.iml" filepath="$PROJECT_DIR$/iotcloudsdk/iotcloudsdk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/iotcloudsdktest/iotcloudsdktest.iml" filepath="$PROJECT_DIR$/iotcloudsdktest/iotcloudsdktest.iml" />
     </modules>
   </component>
 </project>

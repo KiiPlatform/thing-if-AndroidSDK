@@ -1,1 +1,1 @@
-include ':iotcloudsdk', ':iotcloudsample'
+include ':iotcloudsdk', ':iotcloudsdktest'
