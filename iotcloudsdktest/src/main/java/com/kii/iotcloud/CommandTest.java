@@ -39,7 +39,7 @@ public class CommandTest extends LargeTestCaseBase {
         SetColorTemperature setColorTemperature = new SetColorTemperature(25);
         actions1.add(setColor);
         actions1.add(setColorTemperature);
-        Command command1 = api.postNewCommand(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions1);
+        Command command1 = api.postNewCommand(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions1);
         Assert.assertNotNull(command1.getCommandID());
         Assert.assertEquals(DEMO_SCHEMA_NAME, command1.getSchemaName());
         Assert.assertEquals(DEMO_SCHEMA_VERSION, command1.getSchemaVersion());
@@ -61,7 +61,7 @@ public class CommandTest extends LargeTestCaseBase {
         TurnPower turnPower = new TurnPower(true);
         actions2.add(setBrightness);
         actions2.add(turnPower);
-        Command command2 = api.postNewCommand(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions2);
+        Command command2 = api.postNewCommand(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions2);
         Assert.assertNotNull(command2.getCommandID());
         Assert.assertEquals(DEMO_SCHEMA_NAME, command2.getSchemaName());
         Assert.assertEquals(DEMO_SCHEMA_VERSION, command2.getSchemaVersion());
@@ -78,7 +78,7 @@ public class CommandTest extends LargeTestCaseBase {
         Assert.assertEquals(turnPower.power, ((TurnPower)command2.getActions().get(1)).power);
         Assert.assertNull(command2.getActionResults());
         // list commands
-        Pair<List<Command>, String> results = api.listCommands(target, 100, null);
+        Pair<List<Command>, String> results = api.listCommands(100, null);
         Assert.assertNull(results.second);
         List<Command> commands = results.first;
         Assert.assertEquals(2, commands.size());
@@ -124,7 +124,7 @@ public class CommandTest extends LargeTestCaseBase {
         Assert.assertEquals(TypedID.Types.THING, target.getID().getType());
         Assert.assertNotNull(target.getAccessToken());
 
-        Pair<List<Command>, String> results = api.listCommands(target, 10, null);
+        Pair<List<Command>, String> results = api.listCommands(10, null);
         Assert.assertNull(results.second);
         List<Command> commands = results.first;
         Assert.assertEquals(0, commands.size());

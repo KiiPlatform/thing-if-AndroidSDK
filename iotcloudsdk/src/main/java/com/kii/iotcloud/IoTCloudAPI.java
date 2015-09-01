@@ -728,7 +728,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     public Target getTarget() {
         return this.target;
     }
-    public void setTarget() {
+    public void setTarget(Target target) {
         this.target = target;
     }
 

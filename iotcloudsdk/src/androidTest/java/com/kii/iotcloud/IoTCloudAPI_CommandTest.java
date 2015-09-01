@@ -64,7 +64,8 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         this.addMockResponseForPostNewCommand(201, commandID);
         this.addMockResponseForGetCommand(200, commandID, api.getOwner().getID(), thingID, actions, null, null, created, modified, schema);
 
-        Command command = api.postNewCommand(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
+        api.setTarget(target);
+        Command command = api.postNewCommand(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
         // verify the result
         Assert.assertEquals(commandID, command.getCommandID());
         Assert.assertEquals(DEMO_SCHEMA_NAME, command.getSchemaName());
@@ -130,7 +131,8 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         this.addEmptyMockResponse(400);
 
         try {
-            api.postNewCommand(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
+            api.setTarget(target);
+            api.postNewCommand(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (BadRequestException e) {
         }
@@ -172,7 +174,8 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         this.addEmptyMockResponse(403);
 
         try {
-            api.postNewCommand(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
+            api.setTarget(target);
+            api.postNewCommand(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (ForbiddenException e) {
             Assert.assertEquals(403, e.getStatusCode());
@@ -215,7 +218,8 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         this.addEmptyMockResponse(503);
 
         try {
-            api.postNewCommand(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
+            api.setTarget(target);
+            api.postNewCommand(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (ServiceUnavailableException e) {
         }
@@ -242,14 +246,14 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         expectedRequestBody.add("actions", expectedActions);
         this.assertRequestBody(expectedRequestBody, request1);
     }
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void postNewCommandWithNullTargetTest() throws Exception {
         List<Action> actions = new ArrayList<Action>();
         actions.add(new SetColor(128, 0, 255));
         actions.add(new SetColorTemperature(25));
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.postNewCommand(null, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
+        api.postNewCommand(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
     }
     @Test(expected = UnsupportedSchemaException.class)
     public void postNewCommandWithNullSchemaNameTest() throws Exception {
@@ -259,14 +263,16 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         actions.add(new SetColorTemperature(25));
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.postNewCommand(target, null, DEMO_SCHEMA_VERSION, actions);
+        api.setTarget(target);
+        api.postNewCommand(null, DEMO_SCHEMA_VERSION, actions);
     }
     @Test(expected = IllegalArgumentException.class)
     public void postNewCommandWithNullActionsTest() throws Exception {
         Target target = new Target(new TypedID(TypedID.Types.THING, "th.1234567890"), "thing-access-token-1234");
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.postNewCommand(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, null);
+        api.setTarget(target);
+        api.postNewCommand(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, null);
     }
     @Test(expected = IllegalArgumentException.class)
     public void postNewCommandWithEmptyActionsTest() throws Exception {
@@ -274,7 +280,8 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         List<Action> actions = new ArrayList<Action>();
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.postNewCommand(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
+        api.setTarget(target);
+        api.postNewCommand(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
     }
     @Test
     public void getCommandTest() throws Exception {
@@ -300,7 +307,8 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addMockResponseForGetCommand(200, commandID, api.getOwner().getID(), thingID, actions, actionResults, state, created, modified, schema);
 
-        Command command = api.getCommand(target, commandID);
+        api.setTarget(target);
+        Command command = api.getCommand(commandID);
 
         // verify the result
         Assert.assertEquals(commandID, command.getCommandID());
@@ -346,7 +354,8 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         this.addEmptyMockResponse(403);
 
         try {
-            api.getCommand(target, commandID);
+            api.setTarget(target);
+            api.getCommand(commandID);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (ForbiddenException e) {
         }
@@ -373,7 +382,8 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         this.addEmptyMockResponse(404);
 
         try {
-            api.getCommand(target, commandID);
+            api.setTarget(target);
+            api.getCommand(commandID);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (NotFoundException e) {
         }
@@ -400,7 +410,8 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         this.addEmptyMockResponse(503);
 
         try {
-            api.getCommand(target, commandID);
+            api.setTarget(target);
+            api.getCommand(commandID);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (ServiceUnavailableException e) {
         }
@@ -447,7 +458,8 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         this.addMockResponseForGetCommand(200, commandID, api.getOwner().getID(), thingID, actions, actionResults, state, created, modified, schema);
 
         try {
-            api.getCommand(target, commandID);
+            api.setTarget(target);
+            api.getCommand(commandID);
             Assert.fail("UnsupportedSchemaException should be thrown");
         } catch (UnsupportedSchemaException e) {
         }
@@ -494,7 +506,8 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         this.addMockResponseForGetCommand(200, commandID, api.getOwner().getID(), thingID, actions, actionResults, state, created, modified, schema);
 
         try {
-            api.getCommand(target, commandID);
+            api.setTarget(target);
+            api.getCommand(commandID);
             Assert.fail("UnsupportedSchemaException should be thrown");
         } catch (UnsupportedSchemaException e) {
         }
@@ -537,7 +550,8 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
 
         GsonRepository.clearCache();
         try {
-            api.getCommand(target, commandID);
+            api.setTarget(target);
+            api.getCommand(commandID);
             Assert.fail("UnsupportedActionException should be thrown");
         } catch (UnsupportedActionException e) {
         }
@@ -552,12 +566,12 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
         this.assertRequestHeader(expectedRequestHeaders, request);
     }
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void getCommandWithNullTargetTest() throws Exception {
         String commandID = "command-1234";
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.getCommand(null, commandID);
+        api.getCommand(commandID);
     }
     @Test(expected = IllegalArgumentException.class)
     public void getCommandWithNullCommandIDTest() throws Exception {
@@ -566,7 +580,8 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         Target target = new Target(thingID, accessToken);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.getCommand(target, null);
+        api.setTarget(target);
+        api.getCommand(null);
     }
     @Test(expected = IllegalArgumentException.class)
     public void getCommandWithEmptyCommandIDTest() throws Exception {
@@ -575,7 +590,8 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         Target target = new Target(thingID, accessToken);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.getCommand(target, "");
+        api.setTarget(target);
+        api.getCommand("");
     }
     @Test
     public void listCommandsTest() throws Exception {
@@ -586,6 +602,7 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         String paginationKey = "pagination-12345-key";
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.setTarget(target);
 
         List<Action> command1Actions = new ArrayList<Action>();
         command1Actions.add(new TurnPower(true));
@@ -618,14 +635,14 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         this.addMockResponseForListCommands(200, new Command[]{command3}, null, schema);
 
         // verify the result
-        Pair<List<Command>, String> result1 = api.listCommands(target, 10, null);
+        Pair<List<Command>, String> result1 = api.listCommands(10, null);
         Assert.assertEquals(paginationKey, result1.second);
         List<Command> commands1 = result1.first;
         Assert.assertEquals(2, commands1.size());
         this.assertCommand(schema, command1, commands1.get(0));
         this.assertCommand(schema, command2, commands1.get(1));
 
-        Pair<List<Command>, String> result2= api.listCommands(target, 10, result1.second);
+        Pair<List<Command>, String> result2= api.listCommands(10, result1.second);
         Assert.assertNull(result2.second);
         List<Command> commands2 = result2.first;
         Assert.assertEquals(1, commands2.size());
@@ -670,7 +687,8 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         this.addMockResponseForListCommands(200, new Command[]{command}, paginationKey, schema);
 
         // verify the result
-        Pair<List<Command>, String> result = api.listCommands(target, 0, null);
+        api.setTarget(target);
+        Pair<List<Command>, String> result = api.listCommands(0, null);
         Assert.assertEquals(paginationKey, result.second);
         List<Command> commands = result.first;
         Assert.assertEquals(1, commands.size());
@@ -700,7 +718,8 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         this.addEmptyMockResponse(400);
 
         try {
-            api.listCommands(target, 10, null);
+            api.setTarget(target);
+            api.listCommands(10, null);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (BadRequestException e) {
         }
@@ -728,7 +747,8 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         this.addEmptyMockResponse(404);
 
         try {
-            api.listCommands(target, 10, null);
+            api.setTarget(target);
+            api.listCommands(10, null);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (NotFoundException e) {
         }
@@ -743,10 +763,10 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
         this.assertRequestHeader(expectedRequestHeaders, request);
     }
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void listCommandsWithNullTargetTest() throws Exception {
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.listCommands(null, 10, null);
+        api.listCommands(10, null);
     }
 
 }

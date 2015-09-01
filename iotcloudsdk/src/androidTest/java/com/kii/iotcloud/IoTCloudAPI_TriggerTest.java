@@ -67,7 +67,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         this.addMockResponseForPostNewTrigger(201, triggerID);
         this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, false, null, schema);
 
-        Trigger trigger = api.postNewTrigger(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
+        api.setTarget(target);
+        Trigger trigger = api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -122,7 +123,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         this.addEmptyMockResponse(403);
 
         try {
-            api.postNewTrigger(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
+            api.setTarget(target);
+            api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (ForbiddenException e) {
         }
@@ -163,7 +165,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         this.addEmptyMockResponse(404);
 
         try {
-            api.postNewTrigger(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
+            api.setTarget(target);
+            api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (NotFoundException e) {
         }
@@ -204,7 +207,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         this.addEmptyMockResponse(503);
 
         try {
-            api.postNewTrigger(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
+            api.setTarget(target);
+            api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (ServiceUnavailableException e) {
         }
@@ -225,7 +229,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         expectedRequestBody.add("predicate", GsonRepository.gson(schema).toJsonTree(predicate));
         this.assertRequestBody(expectedRequestBody, request);
     }
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void postNewTriggerWithNullTargetTest() throws Exception {
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
@@ -235,7 +239,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.postNewTrigger(null, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
+        api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
     }
     @Test(expected = IllegalArgumentException.class)
     public void postNewTriggerWithNullSchemaNameTest() throws Exception {
@@ -251,7 +255,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.postNewTrigger(target, null, DEMO_SCHEMA_VERSION, actions, predicate);
+        api.setTarget(target);
+        api.postNewTrigger(null, DEMO_SCHEMA_VERSION, actions, predicate);
     }
     @Test(expected = IllegalArgumentException.class)
     public void postNewTriggerWithEmptySchemaNameTest() throws Exception {
@@ -267,7 +272,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.postNewTrigger(target, "", DEMO_SCHEMA_VERSION, actions, predicate);
+        api.setTarget(target);
+        api.postNewTrigger("", DEMO_SCHEMA_VERSION, actions, predicate);
     }
     @Test(expected = IllegalArgumentException.class)
     public void postNewTriggerWithNullActionsTest() throws Exception {
@@ -278,7 +284,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.postNewTrigger(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, null, predicate);
+        api.setTarget(target);
+        api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, null, predicate);
     }
     @Test(expected = IllegalArgumentException.class)
     public void postNewTriggerWithEmptyActionsTest() throws Exception {
@@ -290,7 +297,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.postNewTrigger(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
+        api.setTarget(target);
+        api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
     }
     @Test(expected = IllegalArgumentException.class)
     public void postNewTriggerWithNullPredicateTest() throws Exception {
@@ -305,7 +313,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         actions.add(setColorTemperature);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.postNewTrigger(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, null);
+        api.setTarget(target);
+        api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, null);
     }
     @Test
     public void getTriggerTest() throws Exception {
@@ -327,7 +336,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getID(), api.getOwner().getID(), actions);
         this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, true, "COMMAND_EXECUTION_REJECTED", schema);
 
-        Trigger trigger = api.getTrigger(target, triggerID);
+        api.setTarget(target);
+        Trigger trigger = api.getTrigger(triggerID);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(true, trigger.disabled());
@@ -357,7 +367,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         this.addEmptyMockResponse(403);
 
         try {
-            api.getTrigger(target, triggerID);
+            api.setTarget(target);
+            api.getTrigger(triggerID);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (ForbiddenException e) {
         }
@@ -384,7 +395,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         this.addEmptyMockResponse(404);
 
         try {
-            api.getTrigger(target, triggerID);
+            api.setTarget(target);
+            api.getTrigger(triggerID);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (NotFoundException e) {
         }
@@ -411,7 +423,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         this.addEmptyMockResponse(503);
 
         try {
-            api.getTrigger(target, triggerID);
+            api.setTarget(target);
+            api.getTrigger(triggerID);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (ServiceUnavailableException e) {
         }
@@ -453,7 +466,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, true, "COMMAND_EXECUTION_REJECTED", schema);
 
         try {
-            api.getTrigger(target, triggerID);
+            api.setTarget(target);
+            api.getTrigger(triggerID);
             Assert.fail("UnsupportedSchemaException should be thrown");
         } catch (UnsupportedSchemaException e) {
         }
@@ -495,7 +509,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, true, "COMMAND_EXECUTION_REJECTED", schema);
 
         try {
-            api.getTrigger(target, triggerID);
+            api.setTarget(target);
+            api.getTrigger(triggerID);
             Assert.fail("UnsupportedSchemaException should be thrown");
         } catch (UnsupportedSchemaException e) {
         }
@@ -537,7 +552,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
 
         GsonRepository.clearCache();
         try {
-            api.getTrigger(target, triggerID);
+            api.setTarget(target);
+            api.getTrigger(triggerID);
             Assert.fail("UnsupportedActionException should be thrown");
         } catch (UnsupportedActionException e) {
         }
@@ -552,12 +568,12 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
         this.assertRequestHeader(expectedRequestHeaders, request);
     }
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void getTriggerWithNullTargetTest() throws Exception {
         String triggerID = "trigger-1234";
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.getTrigger(null, triggerID);
+        api.getTrigger(triggerID);
     }
     @Test(expected = IllegalArgumentException.class)
     public void getTriggerWithNullTriggerIDTest() throws Exception {
@@ -567,7 +583,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         Target target = new Target(thingID, accessToken);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.getTrigger(target, null);
+        api.setTarget(target);
+        api.getTrigger(null);
     }
     @Test(expected = IllegalArgumentException.class)
     public void getTriggerWithEmptyTriggerIDTest() throws Exception {
@@ -577,7 +594,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         Target target = new Target(thingID, accessToken);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.getTrigger(target, "");
+        api.setTarget(target);
+        api.getTrigger("");
     }
     @Test
     public void enableTriggerTest() throws Exception {
@@ -600,7 +618,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         this.addEmptyMockResponse(204);
         this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, false, null, schema);
 
-        Trigger trigger = api.enableTrigger(target, triggerID, true);
+        api.setTarget(target);
+        Trigger trigger = api.enableTrigger(triggerID, true);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -644,7 +663,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         this.addEmptyMockResponse(204);
         this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, true, null, schema);
 
-        Trigger trigger = api.enableTrigger(target, triggerID, false);
+        api.setTarget(target);
+        Trigger trigger = api.enableTrigger(triggerID, false);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(true, trigger.disabled());
@@ -676,7 +696,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(403);
         try {
-            api.enableTrigger(target, triggerID, false);
+            api.setTarget(target);
+            api.enableTrigger(triggerID, false);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (ForbiddenException e) {
         }
@@ -694,7 +715,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(404);
         try {
-            api.enableTrigger(target, triggerID, false);
+            api.setTarget(target);
+            api.enableTrigger(triggerID, false);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (NotFoundException e) {
         }
@@ -712,7 +734,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(503);
         try {
-            api.enableTrigger(target, triggerID, false);
+            api.setTarget(target);
+            api.enableTrigger(triggerID, false);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (ServiceUnavailableException e) {
         }
@@ -721,11 +744,11 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers/" + triggerID + "/disable", request.getPath());
         Assert.assertEquals("PUT", request.getMethod());
     }
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void enableTriggerWithNullTargetTest() throws Exception {
         String triggerID = "trigger-1234";
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.enableTrigger(null, triggerID, false);
+        api.enableTrigger(triggerID, false);
     }
     @Test(expected = IllegalArgumentException.class)
     public void enableTriggerWithNullTriggerIDTest() throws Exception {
@@ -733,7 +756,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new Target(thingID, accessToken);
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.enableTrigger(target, null, false);
+        api.setTarget(target);
+        api.enableTrigger(null, false);
     }
     @Test(expected = IllegalArgumentException.class)
     public void enableTriggerWithEmptyTriggerIDTest() throws Exception {
@@ -741,7 +765,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new Target(thingID, accessToken);
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.enableTrigger(target, "", false);
+        api.setTarget(target);
+        api.enableTrigger("", false);
     }
     @Test
     public void listTriggersTest() throws Exception {
@@ -752,6 +777,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         String paginationKey = "pagination-12345-key";
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.setTarget(target);
 
         List<Action> command1Actions = new ArrayList<Action>();
         command1Actions.add(new TurnPower(true));
@@ -779,14 +805,14 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         this.addMockResponseForListTriggers(200, new Trigger[]{trigger3}, null, schema);
 
         // verify the result
-        Pair<List<Trigger>, String> result1 = api.listTriggers(target, 10, null);
+        Pair<List<Trigger>, String> result1 = api.listTriggers(10, null);
         Assert.assertEquals(paginationKey, result1.second);
         List<Trigger> triggers1 = result1.first;
         Assert.assertEquals(2, triggers1.size());
         this.assertTrigger(schema, trigger1, triggers1.get(0));
         this.assertTrigger(schema, trigger2, triggers1.get(1));
 
-        Pair<List<Trigger>, String> result2 = api.listTriggers(target, 10, result1.second);
+        Pair<List<Trigger>, String> result2 = api.listTriggers(10, result1.second);
         Assert.assertNull(result2.second);
         List<Trigger> triggers2 = result2.first;
         Assert.assertEquals(1, triggers2.size());
@@ -818,6 +844,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         String paginationKey = "pagination-12345-key";
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.setTarget(target);
 
         List<Action> command1Actions = new ArrayList<Action>();
         command1Actions.add(new TurnPower(true));
@@ -845,14 +872,14 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         this.addMockResponseForListTriggers(200, new Trigger[]{trigger3}, null, schema);
 
         // verify the result
-        Pair<List<Trigger>, String> result1 = api.listTriggers(target, 0, null);
+        Pair<List<Trigger>, String> result1 = api.listTriggers(0, null);
         Assert.assertEquals(paginationKey, result1.second);
         List<Trigger> triggers1 = result1.first;
         Assert.assertEquals(2, triggers1.size());
         this.assertTrigger(schema, trigger1, triggers1.get(0));
         this.assertTrigger(schema, trigger2, triggers1.get(1));
 
-        Pair<List<Trigger>, String> result2 = api.listTriggers(target, 0, result1.second);
+        Pair<List<Trigger>, String> result2 = api.listTriggers(0, result1.second);
         Assert.assertNull(result2.second);
         List<Trigger> triggers2 = result2.first;
         Assert.assertEquals(1, triggers2.size());
@@ -885,7 +912,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(400);
         try {
-            api.listTriggers(target, 10, null);
+            api.setTarget(target);
+            api.listTriggers(10, null);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (BadRequestException e) {
         }
@@ -910,7 +938,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(403);
         try {
-            api.listTriggers(target, 10, null);
+            api.setTarget(target);
+            api.listTriggers(10, null);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (ForbiddenException e) {
         }
@@ -935,7 +964,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(404);
         try {
-            api.listTriggers(target, 10, null);
+            api.setTarget(target);
+            api.listTriggers(10, null);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (NotFoundException e) {
         }
@@ -960,7 +990,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(503);
         try {
-            api.listTriggers(target, 10, null);
+            api.setTarget(target);
+            api.listTriggers(10, null);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (ServiceUnavailableException e) {
         }
@@ -975,10 +1006,10 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
         this.assertRequestHeader(expectedRequestHeaders, request1);
     }
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void listTriggersWithNullTargetTest() throws Exception {
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.listTriggers(null, 10, null);
+        api.listTriggers(10, null);
     }
     @Test
     public void deleteTriggerTest() throws Exception {
@@ -1001,7 +1032,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, false, null, schema);
         this.addEmptyMockResponse(204);
 
-        Trigger trigger = api.deleteTrigger(target, triggerID);
+        api.setTarget(target);
+        Trigger trigger = api.deleteTrigger(triggerID);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -1037,7 +1069,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         this.addEmptyMockResponse(403);
 
         try {
-            api.deleteTrigger(target, triggerID);
+            api.setTarget(target);
+            api.deleteTrigger(triggerID);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (ForbiddenException e) {
         }
@@ -1064,7 +1097,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         this.addEmptyMockResponse(404);
 
         try {
-            api.deleteTrigger(target, triggerID);
+            api.setTarget(target);
+            api.deleteTrigger(triggerID);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (NotFoundException e) {
         }
@@ -1091,7 +1125,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         this.addEmptyMockResponse(503);
 
         try {
-            api.deleteTrigger(target, triggerID);
+            api.setTarget(target);
+            api.deleteTrigger(triggerID);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (ServiceUnavailableException e) {
         }
@@ -1106,12 +1141,12 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
         this.assertRequestHeader(expectedRequestHeaders, request1);
     }
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void deleteTriggerWithNullTargetTest() throws Exception {
         String triggerID = "trigger-1234";
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.deleteTrigger(null, triggerID);
+        api.deleteTrigger(triggerID);
     }
     @Test(expected = IllegalArgumentException.class)
     public void deleteTriggerWithNullTriggerIDTest() throws Exception {
@@ -1120,7 +1155,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         Target target = new Target(thingID, accessToken);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.deleteTrigger(target, null);
+        api.setTarget(target);
+        api.deleteTrigger(null);
     }
     @Test(expected = IllegalArgumentException.class)
     public void deleteTriggerWithEmptyTriggerIDTest() throws Exception {
@@ -1129,7 +1165,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         Target target = new Target(thingID, accessToken);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.deleteTrigger(target, "");
+        api.setTarget(target);
+        api.deleteTrigger("");
     }
     @Test
     public void patchTriggerTest() throws Exception {
@@ -1152,7 +1189,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         this.addEmptyMockResponse(204);
         this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, false, null, schema);
 
-        Trigger trigger = api.patchTrigger(target, triggerID, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
+        api.setTarget(target);
+        Trigger trigger = api.patchTrigger(triggerID, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -1208,7 +1246,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         this.addEmptyMockResponse(403);
 
         try {
-            api.patchTrigger(target, triggerID, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
+            api.setTarget(target);
+            api.patchTrigger(triggerID, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (ForbiddenException e) {
         }
@@ -1250,7 +1289,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         this.addEmptyMockResponse(404);
 
         try {
-            api.patchTrigger(target, triggerID, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
+            api.setTarget(target);
+            api.patchTrigger(triggerID, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (NotFoundException e) {
         }
@@ -1292,7 +1332,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         this.addEmptyMockResponse(503);
 
         try {
-            api.patchTrigger(target, triggerID, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
+            api.setTarget(target);
+            api.patchTrigger(triggerID, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (ServiceUnavailableException e) {
         }
@@ -1313,7 +1354,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         expectedRequestBody.add("predicate", GsonRepository.gson(schema).toJsonTree(predicate));
         this.assertRequestBody(expectedRequestBody, request);
     }
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void patchTriggerWithNullTargetTest() throws Exception {
         Schema schema = this.createDefaultSchema();
         String triggerID = "trigger-1234";
@@ -1326,7 +1367,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.patchTrigger(null, triggerID, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
+        api.patchTrigger(triggerID, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
     }
     @Test(expected = IllegalArgumentException.class)
     public void patchTriggerWithNullTriggerIDTest() throws Exception {
@@ -1343,7 +1384,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.patchTrigger(target, null, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
+        api.setTarget(target);
+        api.patchTrigger(null, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
     }
     @Test(expected = IllegalArgumentException.class)
     public void patchTriggerWithEmptyTriggerIDTest() throws Exception {
@@ -1360,7 +1402,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.patchTrigger(target, null, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
+        api.setTarget(target);
+        api.patchTrigger(null, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
     }
     @Test(expected = IllegalArgumentException.class)
     public void patchTriggerWithNullSchemaNameTest() throws Exception {
@@ -1378,7 +1421,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.patchTrigger(target, triggerID, null, DEMO_SCHEMA_VERSION, actions, predicate);
+        api.setTarget(target);
+        api.patchTrigger(triggerID, null, DEMO_SCHEMA_VERSION, actions, predicate);
     }
     @Test(expected = IllegalArgumentException.class)
     public void patchTriggerWithEmptySchemaNameTest() throws Exception {
@@ -1396,7 +1440,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.patchTrigger(target, triggerID, "", DEMO_SCHEMA_VERSION, actions, predicate);
+        api.setTarget(target);
+        api.patchTrigger(triggerID, "", DEMO_SCHEMA_VERSION, actions, predicate);
     }
     @Test(expected = IllegalArgumentException.class)
     public void patchTriggerWithNullActionsTest() throws Exception {
@@ -1409,7 +1454,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.patchTrigger(target, triggerID, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, null, predicate);
+        api.setTarget(target);
+        api.patchTrigger(triggerID, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, null, predicate);
     }
     @Test(expected = IllegalArgumentException.class)
     public void patchTriggerWithEmptyActionsTest() throws Exception {
@@ -1423,7 +1469,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.patchTrigger(target, triggerID, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
+        api.setTarget(target);
+        api.patchTrigger(triggerID, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
     }
     @Test(expected = IllegalArgumentException.class)
     public void patchTriggerWithNullPredicateTest() throws Exception {
@@ -1439,7 +1486,8 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         actions.add(setColorTemperature);
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.patchTrigger(target, triggerID, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, null);
+        api.setTarget(target);
+        api.patchTrigger(triggerID, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, null);
     }
 }
 

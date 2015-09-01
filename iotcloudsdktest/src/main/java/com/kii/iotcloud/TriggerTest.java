@@ -49,7 +49,7 @@ public class TriggerTest extends LargeTestCaseBase {
         Condition condition1 = new Condition(new Equals("power", true));
         StatePredicate predicate1 = new StatePredicate(condition1, TriggersWhen.CONDITION_TRUE);
 
-        Trigger trigger1 = api.postNewTrigger(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions1, predicate1);
+        Trigger trigger1 = api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions1, predicate1);
         Assert.assertNotNull(trigger1.getTriggerID());
         Assert.assertFalse(trigger1.disabled());
         Assert.assertNull(trigger1.getDisabledReason());
@@ -79,13 +79,13 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertEquals(Boolean.TRUE, ((Equals)trigger1Predicate.getCondition().getClause()).getValue());
 
         // disable/enable trigger
-        trigger1 = api.enableTrigger(target, trigger1.getTriggerID(), false);
+        trigger1 = api.enableTrigger(trigger1.getTriggerID(), false);
         Assert.assertTrue(trigger1.disabled());
-        trigger1 = api.enableTrigger(target, trigger1.getTriggerID(), true);
+        trigger1 = api.enableTrigger(trigger1.getTriggerID(), true);
         Assert.assertFalse(trigger1.disabled());
 
         // get target state (empty)
-        LightState lightState = api.getTargetState(target, LightState.class);
+        LightState lightState = api.getTargetState(LightState.class);
 
         // create new trigger
         List<Action> actions2 = new ArrayList<Action>();
@@ -96,7 +96,7 @@ public class TriggerTest extends LargeTestCaseBase {
         Condition condition2 = new Condition(new Equals("power", false));
         StatePredicate predicate2 = new StatePredicate(condition2, TriggersWhen.CONDITION_CHANGED);
 
-        Trigger trigger2 = api.postNewTrigger(target, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions2, predicate2);
+        Trigger trigger2 = api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions2, predicate2);
         Assert.assertNotNull(trigger2.getTriggerID());
         Assert.assertFalse(trigger2.disabled());
         Assert.assertNull(trigger2.getDisabledReason());
@@ -126,7 +126,7 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertEquals(Boolean.FALSE, ((Equals)trigger2Predicate.getCondition().getClause()).getValue());
 
         // list triggers
-        Pair<List<Trigger>, String> results = api.listTriggers(target, 100, null);
+        Pair<List<Trigger>, String> results = api.listTriggers(100, null);
         Assert.assertNull(results.second);
         List<Trigger> triggers = results.first;
         Assert.assertEquals(2, triggers.size());
@@ -198,7 +198,7 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertEquals(Boolean.FALSE, ((Equals)trigger2Predicate.getCondition().getClause()).getValue());
 
         // delete triiger
-        api.deleteTrigger(target, trigger1.getTriggerID());
+        api.deleteTrigger(trigger1.getTriggerID());
 
         // update trigger
         List<Action> actions3 = new ArrayList<Action>();
@@ -208,10 +208,10 @@ public class TriggerTest extends LargeTestCaseBase {
         actions3.add(turnPower3);
         Condition condition3 = new Condition(Range.greaterThan("brightness", 100));
         StatePredicate predicate3 = new StatePredicate(condition3, TriggersWhen.CONDITION_FALSE_TO_TRUE);
-        api.patchTrigger(target, trigger2.getTriggerID(), DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions3, predicate3);
+        api.patchTrigger(trigger2.getTriggerID(), DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions3, predicate3);
 
         // list triggers
-        results = api.listTriggers(target, 100, null);
+        results = api.listTriggers(100, null);
         Assert.assertNull(results.second);
         triggers = results.first;
         Assert.assertEquals(1, triggers.size());
@@ -257,7 +257,7 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertEquals(TypedID.Types.THING, target.getID().getType());
         Assert.assertNotNull(target.getAccessToken());
 
-        Pair<List<Trigger>, String> results = api.listTriggers(target, 100, null);
+        Pair<List<Trigger>, String> results = api.listTriggers(100, null);
         Assert.assertNull(results.second);
         List<Trigger> triggers = results.first;
         Assert.assertEquals(0, triggers.size());
