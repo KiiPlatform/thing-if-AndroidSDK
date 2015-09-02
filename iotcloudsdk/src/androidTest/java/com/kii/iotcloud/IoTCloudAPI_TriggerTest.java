@@ -13,6 +13,7 @@ import com.kii.iotcloud.exception.ServiceUnavailableException;
 import com.kii.iotcloud.exception.UnsupportedActionException;
 import com.kii.iotcloud.exception.UnsupportedSchemaException;
 import com.kii.iotcloud.internal.GsonRepository;
+import com.kii.iotcloud.internal.InternalUtils;
 import com.kii.iotcloud.schema.Schema;
 import com.kii.iotcloud.schema.SchemaBuilder;
 import com.kii.iotcloud.testschemas.LightState;
@@ -551,7 +552,7 @@ public class IoTCloudAPI_TriggerTest extends IoTCloudAPITestBase {
         Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getID(), api.getOwner().getID(), actions);
         this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, true, "COMMAND_EXECUTION_REJECTED", schema);
 
-        GsonRepository.clearCache();
+        InternalUtils.gsonRepositoryClearCache();
         try {
             api.setTarget(target);
             api.getTrigger(triggerID);

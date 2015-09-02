@@ -17,6 +17,7 @@ import com.kii.iotcloud.exception.ServiceUnavailableException;
 import com.kii.iotcloud.exception.UnsupportedActionException;
 import com.kii.iotcloud.exception.UnsupportedSchemaException;
 import com.kii.iotcloud.internal.GsonRepository;
+import com.kii.iotcloud.internal.InternalUtils;
 import com.kii.iotcloud.schema.Schema;
 import com.kii.iotcloud.schema.SchemaBuilder;
 import com.kii.iotcloud.testschemas.LightState;
@@ -549,7 +550,7 @@ public class IoTCloudAPI_CommandTest extends IoTCloudAPITestBase {
         IoTCloudAPI api = this.craeteIoTCloudAPIWithSchema(APP_ID, APP_KEY, unsupportedSetColorSchema);
         this.addMockResponseForGetCommand(200, commandID, api.getOwner().getID(), thingID, actions, actionResults, state, created, modified, schema);
 
-        GsonRepository.clearCache();
+        InternalUtils.gsonRepositoryClearCache();
         try {
             api.setTarget(target);
             api.getCommand(commandID);

@@ -70,7 +70,9 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             @NonNull String appKey,
             @NonNull String baseUrl,
             @NonNull Owner owner,
-            @NonNull List<Schema> schemas) {
+            @Nullable Target target,
+            @NonNull List<Schema> schemas,
+            String installationID) {
         // Parameters are checked by IoTCloudAPIBuilder
         if (context != null) {
             IoTCloudAPI.context = context.getApplicationContext();
@@ -79,9 +81,11 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         this.appKey = appKey;
         this.baseUrl = baseUrl;
         this.owner = owner;
+        this.target = target;
         for (Schema schema : schemas) {
             this.schemas.put(new Pair<String, Integer>(schema.getSchemaName(), schema.getSchemaVersion()), schema);
         }
+        this.installationID = installationID;
         this.restClient = new IoTRestClient();
     }
 
@@ -241,6 +245,9 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     @Nullable
     public String getInstallationID() {
         return this.installationID;
+    }
+    void setInstallationID(String installationID) {
+        this.installationID = installationID;
     }
 
     /**

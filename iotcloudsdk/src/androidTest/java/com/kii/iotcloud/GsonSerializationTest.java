@@ -1,6 +1,8 @@
 package com.kii.iotcloud;
 
+import android.content.Context;
 import android.support.test.runner.AndroidJUnit4;
+import android.test.mock.MockContext;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -16,6 +18,8 @@ import com.kii.iotcloud.testschemas.SetColorTemperature;
 import com.kii.iotcloud.testschemas.SetColorTemperatureResult;
 import com.kii.iotcloud.schema.Schema;
 import com.kii.iotcloud.schema.SchemaBuilder;
+import com.kii.iotcloud.testschemas.TurnPower;
+import com.kii.iotcloud.testschemas.TurnPowerResult;
 import com.kii.iotcloud.trigger.Condition;
 import com.kii.iotcloud.trigger.Predicate;
 import com.kii.iotcloud.trigger.SchedulePredicate;
@@ -131,8 +135,98 @@ public class GsonSerializationTest extends SmallTestBase {
         sb.addActionClass(SetColorTemperature.class, SetColorTemperatureResult.class);
         Schema schema = sb.build();
 
-        String json = GsonRepository.gson(null).toJson(schema);
-        Assert.assertEquals("", json);
+        JsonObject expectedJson = (JsonObject)new JsonParser().parse(
+                "{" +
+                "    \"thingType\":\"ThingType\"," +
+                "    \"schemaName\":\"SchemaName1\"," +
+                "    \"schemaVersion\":10," +
+                "    \"stateClass\":\"com.kii.iotcloud.testschemas.LightState\"," +
+                "    \"actionClasses\":[" +
+                "        \"com.kii.iotcloud.testschemas.SetColor\"," +
+                "        \"com.kii.iotcloud.testschemas.SetColorTemperature\"" +
+                "    ]," +
+                "    \"actionResultClasses\":[" +
+                "        \"com.kii.iotcloud.testschemas.SetColorResult\"," +
+                "        \"com.kii.iotcloud.testschemas.SetColorTemperatureResult\"" +
+                "    ]" +
+                "}");
+
+        JsonObject serializedJson = (JsonObject)new JsonParser().parse(GsonRepository.gson(null).toJson(schema));
+        Assert.assertEquals(expectedJson, serializedJson);
+
+        Schema deserializedSchema = GsonRepository.gson(null).fromJson(serializedJson, Schema.class);
+        Assert.assertEquals("ThingType", deserializedSchema.getThingType());
+        Assert.assertEquals("SchemaName1", deserializedSchema.getSchemaName());
+        Assert.assertEquals(10, deserializedSchema.getSchemaVersion());
+        Assert.assertEquals(LightState.class, deserializedSchema.getStateClass());
+        Assert.assertEquals(SetColor.class, deserializedSchema.getActionClasses().get(0));
+        Assert.assertEquals(SetColorTemperature.class, deserializedSchema.getActionClasses().get(1));
+        Assert.assertEquals(SetColorResult.class, deserializedSchema.getActionResultClasses().get(0));
+        Assert.assertEquals(SetColorTemperatureResult.class, deserializedSchema.getActionResultClasses().get(1));
+    }
+    @Test
+    public void iotCloudAPITest() throws Exception {
+        Context context = new MockContext() {
+            @Override
+            public Context getApplicationContext() {
+                // Default implementation of MockContext#getApplicationContext() throws java.lang.UnsupportedOperationException
+                return this;
+            }
+        };
+        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(context, "appid", "appkey", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "user-access-token-1234"));
+        SchemaBuilder sb = SchemaBuilder.newSchemaBuilder("SmartLight", "LightDemoSchema", 1, LightState.class);
+        sb.addActionClass(TurnPower.class, TurnPowerResult.class);
+        sb.addActionClass(SetColor.class, SetColorResult.class);
+        Schema schema = sb.build();
+        builder.addSchema(schema);
+        IoTCloudAPI api = builder.build();
+        Target target = new Target(new TypedID(TypedID.Types.THING, "th.1234567890"), "thing-access-token-1234");
+        api.setTarget(target);
+
+        JsonObject expectedJson = (JsonObject)new JsonParser().parse(
+                "{" +
+                "    \"appID\":\"appid\"," +
+                "    \"appKey\":\"appkey\"," +
+                "    \"baseUrl\":\"https://api-jp.kii.com\"," +
+                "    \"owner\":{\"ID\":\"user:user1234\",\"accessToken\":\"user-access-token-1234\"}," +
+                "    \"target\":{\"ID\":\"thing:th.1234567890\",\"accessToken\":\"thing-access-token-1234\"}," +
+                "    \"schemas\":[" +
+                "        {" +
+                "            \"thingType\":\"SmartLight\"," +
+                "            \"schemaName\":\"LightDemoSchema\"," +
+                "            \"schemaVersion\":1," +
+                "            \"stateClass\":\"com.kii.iotcloud.testschemas.LightState\"," +
+                "            \"actionClasses\":[" +
+                "                \"com.kii.iotcloud.testschemas.TurnPower\"," +
+                "                \"com.kii.iotcloud.testschemas.SetColor\"" +
+                "            ]," +
+                "            \"actionResultClasses\":[" +
+                "                \"com.kii.iotcloud.testschemas.TurnPowerResult\"," +
+                "                \"com.kii.iotcloud.testschemas.SetColorResult\"" +
+                "            ]" +
+                "        }" +
+                "    ]" +
+                "}");
+        JsonObject serializedJson = (JsonObject)new JsonParser().parse(GsonRepository.gson(null).toJson(api));
+        Assert.assertEquals(expectedJson, serializedJson);
+
+        IoTCloudAPI deserializedApi = GsonRepository.gson(null).fromJson(serializedJson, IoTCloudAPI.class);
+        Assert.assertEquals("appid", deserializedApi.getAppID());
+        Assert.assertEquals("appkey", deserializedApi.getAppKey());
+        Assert.assertEquals(Site.JP.getBaseUrl(), deserializedApi.getBaseUrl());
+        Assert.assertEquals(new TypedID(TypedID.Types.USER, "user1234"), deserializedApi.getOwner().getID());
+        Assert.assertEquals("user-access-token-1234", deserializedApi.getOwner().getAccessToken());
+        Assert.assertEquals(new TypedID(TypedID.Types.THING, "th.1234567890"), deserializedApi.getTarget().getID());
+        Assert.assertEquals("thing-access-token-1234", deserializedApi.getTarget().getAccessToken());
+        Assert.assertEquals(1, deserializedApi.getSchemas().size());
+        Assert.assertEquals("SmartLight", deserializedApi.getSchemas().get(0).getThingType());
+        Assert.assertEquals("LightDemoSchema", deserializedApi.getSchemas().get(0).getSchemaName());
+        Assert.assertEquals(1, deserializedApi.getSchemas().get(0).getSchemaVersion());
+        Assert.assertEquals(LightState.class, deserializedApi.getSchemas().get(0).getStateClass());
+        Assert.assertEquals(TurnPower.class, deserializedApi.getSchemas().get(0).getActionClasses().get(0));
+        Assert.assertEquals(SetColor.class, deserializedApi.getSchemas().get(0).getActionClasses().get(1));
+        Assert.assertEquals(TurnPowerResult.class, deserializedApi.getSchemas().get(0).getActionResultClasses().get(0));
+        Assert.assertEquals(SetColorResult.class, deserializedApi.getSchemas().get(0).getActionResultClasses().get(1));
     }
     @Test
     public void actionTest() throws Exception {

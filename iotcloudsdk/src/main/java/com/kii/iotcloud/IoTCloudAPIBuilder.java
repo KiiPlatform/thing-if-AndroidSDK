@@ -20,6 +20,8 @@ public class IoTCloudAPIBuilder {
     private final Site site;
     private final String baseUrl;
     private final Owner owner;
+    private Target target;
+    private String installationID;
     private final List<Schema> schemas = new ArrayList<Schema>();
 
     private IoTCloudAPIBuilder(
@@ -117,27 +119,8 @@ public class IoTCloudAPIBuilder {
     }
 
     @NonNull
-    static IoTCloudAPIBuilder newBuilder(
-            @NonNull String appID,
-            @NonNull String appKey,
-            @NonNull Site site,
-            @NonNull Owner owner) {
-        if (TextUtils.isEmpty(appID)) {
-            throw new IllegalArgumentException("appID is null or empty");
-        }
-        if (TextUtils.isEmpty(appKey)) {
-            throw new IllegalArgumentException("appKey is null or empty");
-        }
-        if (site == null) {
-            throw new IllegalArgumentException("site is null");
-        }
-        if (owner == null) {
-            throw new IllegalArgumentException("owner is null");
-        }
-        return new IoTCloudAPIBuilder(null, appID, appKey, site, owner);
-    }
-    @NonNull
-    static IoTCloudAPIBuilder newBuilder(
+    @Deprecated
+    public static IoTCloudAPIBuilder newBuilder(
             @NonNull String appID,
             @NonNull String appKey,
             @NonNull String baseUrl,
@@ -172,6 +155,26 @@ public class IoTCloudAPIBuilder {
         return this;
     }
 
+    /**
+     * Set target thing to the IoTCloudAPI.
+     * @param target
+     * @return
+     */
+    public IoTCloudAPIBuilder setTarget(Target target) {
+        this.target = target;
+        return this;
+    }
+
+    /**
+     * Set InstallationID to the IoTCloudAPI.
+     * @param installationID
+     * @return
+     */
+    public IoTCloudAPIBuilder setInstallationID(String installationID) {
+        this.installationID = installationID;
+        return this;
+    }
+
     /** Instantiate new IoTCloudAPI instance.
      * @return IoTCloudAPI instance.
      */
@@ -185,7 +188,7 @@ public class IoTCloudAPIBuilder {
             throw new IllegalStateException("Builder has no schemas");
         }
         Log.d(TAG, MessageFormat.format("Initialize IoTCloudAPI AppID={0}, AppKey={1}, BaseUrl={2}", this.appID, this.appKey, baseUrl));
-        return new IoTCloudAPI(this.context, this.appID, this.appKey, baseUrl, this.owner, this.schemas);
+        return new IoTCloudAPI(this.context, this.appID, this.appKey, baseUrl, this.owner, this.target, this.schemas, this.installationID);
     }
 
 }

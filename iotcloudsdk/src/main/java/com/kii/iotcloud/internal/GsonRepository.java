@@ -16,6 +16,11 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.kii.iotcloud.IoTCloudAPI;
+import com.kii.iotcloud.IoTCloudAPIBuilder;
+import com.kii.iotcloud.Owner;
+import com.kii.iotcloud.Target;
+import com.kii.iotcloud.TargetState;
 import com.kii.iotcloud.TypedID;
 import com.kii.iotcloud.command.Action;
 import com.kii.iotcloud.command.ActionResult;
@@ -274,7 +279,25 @@ public class GsonRepository {
             if (jsonElement == null) {
                 return null;
             }
-            return null;
+            JsonObject json = (JsonObject)jsonElement;
+            String appID = json.get("appID").getAsString();
+            String appKey = json.get("appKey").getAsString();
+            String baseUrl = json.get("baseUrl").getAsString();
+            Owner owner = DEFAULT_GSON.fromJson(json.getAsJsonObject("owner"), Owner.class);
+            IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(appID, appKey, baseUrl, owner);
+            if (json.has("target")) {
+                Target target = DEFAULT_GSON.fromJson(json.getAsJsonObject("target"), Target.class);
+                builder.setTarget(target);
+            }
+            JsonArray schemasArray = json.getAsJsonArray("schemas");
+            for (int i = 0; i < schemasArray.size(); i++) {
+                Schema schema = DEFAULT_GSON.fromJson(schemasArray.get(i), Schema.class);
+                builder.addSchema(schema);
+            }
+            if (json.has("installationID")) {
+                builder.setInstallationID(json.get("installationID").getAsString());
+            }
+            return builder.build();
         }
     };
     static {
