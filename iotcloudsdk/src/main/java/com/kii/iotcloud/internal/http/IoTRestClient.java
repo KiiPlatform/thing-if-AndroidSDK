@@ -1,4 +1,4 @@
-package com.kii.iotcloud.http;
+package com.kii.iotcloud.internal.http;
 
 import android.text.TextUtils;
 
@@ -12,9 +12,9 @@ import com.kii.iotcloud.exception.IoTCloudRestException;
 import com.kii.iotcloud.exception.NotFoundException;
 import com.kii.iotcloud.exception.ServiceUnavailableException;
 import com.kii.iotcloud.exception.UnauthorizedException;
-import com.kii.iotcloud.utils.IOUtils;
-import com.kii.iotcloud.utils.Log;
-import com.kii.iotcloud.utils.StringUtils;
+import com.kii.iotcloud.internal.utils.IOUtils;
+import com.kii.iotcloud.internal.utils.Log;
+import com.kii.iotcloud.internal.utils.StringUtils;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
