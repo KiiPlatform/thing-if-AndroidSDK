@@ -1,4 +1,4 @@
-package com.kii.iotcloud.http;
+package com.kii.iotcloud.internal.http;
 
 import com.squareup.okhttp.OkHttpClient;
 

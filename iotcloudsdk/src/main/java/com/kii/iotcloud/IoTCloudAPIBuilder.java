@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.kii.iotcloud.schema.Schema;
-import com.kii.iotcloud.utils.Log;
+import com.kii.iotcloud.internal.utils.Log;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;

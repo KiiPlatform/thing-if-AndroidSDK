@@ -10,6 +10,7 @@ import com.kii.iotcloud.command.Action;
 import com.kii.iotcloud.command.ActionResult;
 import com.kii.iotcloud.command.Command;
 import com.kii.iotcloud.command.CommandState;
+import com.kii.iotcloud.internal.GsonRepository;
 import com.kii.iotcloud.schema.Schema;
 import com.kii.iotcloud.schema.SchemaBuilder;
 import com.kii.iotcloud.testschemas.LightState;
