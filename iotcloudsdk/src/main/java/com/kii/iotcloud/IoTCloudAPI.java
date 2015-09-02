@@ -51,9 +51,9 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     private final String appKey;
     private final String baseUrl;
     private final Owner owner;
+    private Target target;
     private final Map<Pair<String, Integer>, Schema> schemas = new HashMap<Pair<String, Integer>, Schema>();
     private final IoTRestClient restClient;
-    private boolean onBoarded = false;
     private String installationID;
 
     IoTCloudAPI(
@@ -166,8 +166,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         JSONObject responseBody = this.restClient.sendRequest(request);
         String thingID = responseBody.optString("thingID", null);
         String accessToken = responseBody.optString("accessToken", null);
-        this.onBoarded = true;
-        return new Target(new TypedID(TypedID.Types.THING, thingID), accessToken);
+        this.target = new Target(new TypedID(TypedID.Types.THING, thingID), accessToken);
+        return this.target;
     }
 
     /**
@@ -176,7 +176,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      */
     public boolean onBoarded()
     {
-        return this.onBoarded;
+        return this.target != null;
     }
 
     /**
@@ -258,7 +258,6 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      * Post new command to IoT Cloud.
      * Command will be delivered to specified target and result will be notified
      * through push notification.
-     * @param target Target of the command to be delivered.
      * @param schemaName name of the schema.
      * @param schemaVersion version of schema.
      * @param actions Actions to be executed.
@@ -272,12 +271,11 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     @NonNull
     @WorkerThread
     public Command postNewCommand(
-            @NonNull Target target,
             @NonNull String schemaName,
             int schemaVersion,
             @NonNull List<Action> actions) throws IoTCloudException {
-        if (target == null) {
-            throw new IllegalArgumentException("target is null");
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
         }
         Schema schema = this.getSchema(schemaName, schemaVersion);
         if (schema == null) {
@@ -287,7 +285,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             throw new IllegalArgumentException("actions is null or empty");
         }
 
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands", this.appID, target.getID().toString());
+        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands", this.appID, this.target.getID().toString());
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         Command command = new Command(schemaName, schemaVersion, this.owner.getID(), actions);
@@ -296,12 +294,11 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         JSONObject responseBody = this.restClient.sendRequest(request);
 
         String commandID = responseBody.optString("commandID", null);
-        return this.getCommand(target, commandID);
+        return this.getCommand(commandID);
     }
 
     /**
      * Get specified command.
-     * @param target Target of the command.
      * @param commandID ID of the command to obtain. ID is present in the
      *                  instance returned by {@link #postNewCommand}
      *                  and can be obtained by {@link Command#getCommandID}
@@ -315,17 +312,16 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     @NonNull
     @WorkerThread
     public Command getCommand(
-            @NonNull Target target,
             @NonNull String commandID)
             throws IoTCloudException {
 
-        if (target == null) {
-            throw new IllegalArgumentException("target is null");
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
         }
         if (TextUtils.isEmpty(commandID)) {
             throw new IllegalArgumentException("commandID is null or empty");
         }
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands/{2}", this.appID, target.getID().toString(), commandID);
+        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands/{2}", this.appID, this.target.getID().toString(), commandID);
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
@@ -341,7 +337,6 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     }
     /**
      * List Commands in the specified Target.
-     * @param target Target to which the Commands belongs.
      * @param bestEffortLimit Maximum number of the Commands in the response.
      *                        if the value is <= 0, default limit internally
      *                        defined is applied.
@@ -361,15 +356,14 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      * @throws UnsupportedActionException Thrown when the returned response has a action that cannot handle this instance.
      */
     public Pair<List<Command>, String> listCommands (
-            @NonNull Target target,
             int bestEffortLimit,
             @Nullable String paginationKey)
             throws IoTCloudException {
 
-        if (target == null) {
-            throw new IllegalArgumentException("target is null");
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
         }
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands", this.appID, target.getID().toString());
+        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands", this.appID, this.target.getID().toString());
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
@@ -401,9 +395,6 @@ public class IoTCloudAPI implements Parcelable, Serializable {
 
     /**
      * Post new Trigger to IoT Cloud.
-     * @param target Target of which the trigger stored. It the trigger is based
-     *               on state of target, Trigger is evaluated when the state of
-     *               the target has been updated.
      * @param schemaName name of the schema.
      * @param schemaVersion version of schema.
      * @param actions Specify actions included in the Command is fired by the
@@ -416,15 +407,14 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     @NonNull
     @WorkerThread
     public Trigger postNewTrigger(
-            @NonNull Target target,
             @NonNull String schemaName,
             int schemaVersion,
             @NonNull List<Action> actions,
             @NonNull Predicate predicate)
             throws IoTCloudException {
 
-        if (target == null) {
-            throw new IllegalArgumentException("target is null");
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
         }
         if (TextUtils.isEmpty(schemaName)) {
             throw new IllegalArgumentException("schemaName is null or empty");
@@ -436,12 +426,12 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             throw new IllegalArgumentException("predicate is null");
         }
 
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers", this.appID, target.getID().toString());
+        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers", this.appID, this.target.getID().toString());
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         JSONObject requestBody = new JSONObject();
         Schema schema = this.getSchema(schemaName, schemaVersion);
-        Command command = new Command(schemaName, schemaVersion, target.getID(), this.owner.getID(), actions);
+        Command command = new Command(schemaName, schemaVersion, this.target.getID(), this.owner.getID(), actions);
         try {
             requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson(schema).toJson(predicate)));
             requestBody.put("command", JsonUtils.newJson(GsonRepository.gson(schema).toJson(command)));
@@ -451,12 +441,11 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MEDIA_TYPE_JSON, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
         String triggerID = responseBody.optString("triggerID", null);
-        return this.getTrigger(target, triggerID);
+        return this.getTrigger(triggerID);
     }
 
     /**
      * Get specified Trigger.
-     * @param target Target of which the trigger stored.
      * @param triggerID ID of the Trigger to get.
      * @return Trigger instance.
      * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
@@ -467,18 +456,17 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     @NonNull
     @WorkerThread
     public Trigger getTrigger(
-            @NonNull Target target,
             @NonNull String triggerID)
             throws IoTCloudException {
 
-        if (target == null) {
-            throw new IllegalArgumentException("target is null");
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
         }
         if (TextUtils.isEmpty(triggerID)) {
             throw new IllegalArgumentException("triggerID is null or empty");
         }
 
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}", this.appID, target.getID().toString(), triggerID);
+        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}", this.appID, this.target.getID().toString(), triggerID);
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
@@ -497,7 +485,6 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     /**
      * Apply Patch to registered Trigger
      * Modify registered Trigger with specified patch.
-     * @param target Target of which the Trigger stored
      * @param triggerID ID ot the Trigger to apply patch
      * @param schemaName name of the schema.
      * @param schemaVersion version of schema.
@@ -513,7 +500,6 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     @NonNull
     @WorkerThread
     public Trigger patchTrigger(
-            @NonNull Target target,
             @NonNull String triggerID,
             @NonNull String schemaName,
             int schemaVersion,
@@ -521,8 +507,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             @Nullable Predicate predicate) throws
             IoTCloudException {
 
-        if (target == null) {
-            throw new IllegalArgumentException("target is null");
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
         }
         if (TextUtils.isEmpty(triggerID)) {
             throw new IllegalArgumentException("triggerID is null or empty");
@@ -537,12 +523,12 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             throw new IllegalArgumentException("predicate is null");
         }
 
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}", this.appID, target.getID().toString(), triggerID);
+        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}", this.appID, this.target.getID().toString(), triggerID);
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         JSONObject requestBody = new JSONObject();
         Schema schema = this.getSchema(schemaName, schemaVersion);
-        Command command = new Command(schemaName, schemaVersion, target.getID(), this.owner.getID(), actions);
+        Command command = new Command(schemaName, schemaVersion, this.target.getID(), this.owner.getID(), actions);
         try {
             requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson(schema).toJson(predicate)));
             requestBody.put("command", JsonUtils.newJson(GsonRepository.gson(schema).toJson(command)));
@@ -551,14 +537,13 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         }
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.PATCH, headers, MEDIA_TYPE_JSON, requestBody);
         this.restClient.sendRequest(request);
-        return this.getTrigger(target, triggerID);
+        return this.getTrigger(triggerID);
     }
 
     /**
      * Enable/Disable registered Trigger
      * If its already enabled(/disabled),
      * this method won't throw Exception and behave as succeeded.
-     * @param target Target of which the Trigger stored.
      * @param triggerID ID of the Trigger to be enabled(/disabled).
      * @param enable specify whether enable of disable the Trigger.
      * @return Updated Trigger Instance.
@@ -568,28 +553,26 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     @NonNull
     @WorkerThread
     public Trigger enableTrigger(
-            @NonNull Target target,
             @NonNull String triggerID,
             boolean enable)
             throws IoTCloudException {
 
-        if (target == null) {
-            throw new IllegalArgumentException("target is null");
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
         }
         if (TextUtils.isEmpty(triggerID)) {
             throw new IllegalArgumentException("triggerID is null or empty");
         }
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}/{3}", this.appID, target.getID().toString(), triggerID, (enable ? "enable" : "disable"));
+        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}/{3}", this.appID, this.target.getID().toString(), triggerID, (enable ? "enable" : "disable"));
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.PUT, headers);
         this.restClient.sendRequest(request);
-        return this.getTrigger(target, triggerID);
+        return this.getTrigger(triggerID);
     }
 
     /**
      * Delete the specified Trigger.
-     * @param target Target of which the Trigger stored.
      * @param triggerID ID of the Trigger to be deleted.
      * @return Deleted Trigger Instance.
      * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
@@ -598,18 +581,17 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     @NonNull
     @WorkerThread
     public Trigger deleteTrigger(
-            @NonNull Target target,
             @NonNull String triggerID) throws
             IoTCloudException {
 
-        if (target == null) {
-            throw new IllegalArgumentException("target is null");
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
         }
         if (TextUtils.isEmpty(triggerID)) {
             throw new IllegalArgumentException("triggerID is null or empty");
         }
 
-        Trigger trigger = this.getTrigger(target, triggerID);
+        Trigger trigger = this.getTrigger(triggerID);
         String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}", this.appID, target.getID().toString(), triggerID);
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
@@ -620,7 +602,6 @@ public class IoTCloudAPI implements Parcelable, Serializable {
 
     /**
      * List Triggers belongs to the specified Target.
-     * @param target Target of which the Trigger stored.
      * @param bestEffortLimit limit the maximum number of the Triggers in the
      *                        Response. It ensures numbers in
      *                        response is equals to or less than specified number.
@@ -641,15 +622,14 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     @NonNull
     @WorkerThread
     public Pair<List<Trigger>, String> listTriggers(
-            @NonNull Target target,
             int bestEffortLimit,
             @Nullable String paginationKey) throws
             IoTCloudException {
-        if (target == null) {
-            throw new IllegalArgumentException("target is null");
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
         }
 
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers", this.appID, target.getID().toString());
+        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers", this.appID, this.target.getID().toString());
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
@@ -692,17 +672,16 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     @NonNull
     @WorkerThread
     public <S extends TargetState> S getTargetState(
-            @NonNull Target target,
             @NonNull Class<S> classOfS) throws IoTCloudException {
 
-        if (target == null) {
-            throw new IllegalArgumentException("target is null");
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
         }
         if (classOfS == null) {
             throw new IllegalArgumentException("classOfS is null");
         }
 
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/states", this.appID, target.getID().toString());
+        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/states", this.appID, this.target.getID().toString());
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
@@ -745,6 +724,13 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      */
     public Owner getOwner() {
         return this.owner;
+    }
+
+    public Target getTarget() {
+        return this.target;
+    }
+    public void setTarget(Target target) {
+        this.target = target;
     }
 
     private Schema getSchema(String schemaName, int schemaVersion) {
@@ -807,12 +793,12 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         this.appKey = in.readString();
         this.baseUrl = in.readString();
         this.owner = in.readParcelable(Owner.class.getClassLoader());
+        this.target = in.readParcelable(Target.class.getClassLoader());
         ArrayList<Schema> schemas = in.createTypedArrayList(Schema.CREATOR);
         for (Schema schema : schemas) {
             this.schemas.put(new Pair<String, Integer>(schema.getSchemaName(), schema.getSchemaVersion()), schema);
         }
         this.restClient = new IoTRestClient();
-        this.onBoarded = (in.readByte() != 0);
         this.installationID = in.readString();
     }
     public static final Creator<IoTCloudAPI> CREATOR = new Creator<IoTCloudAPI>() {
@@ -836,8 +822,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         dest.writeString(this.appKey);
         dest.writeString(this.baseUrl);
         dest.writeParcelable(this.owner, flags);
+        dest.writeParcelable(this.target, flags);
         dest.writeTypedList(new ArrayList<Schema>(this.schemas.values()));
-        dest.writeByte((byte) ((Boolean) this.onBoarded ? 1 : 0));
         dest.writeString(this.installationID);
     }
 

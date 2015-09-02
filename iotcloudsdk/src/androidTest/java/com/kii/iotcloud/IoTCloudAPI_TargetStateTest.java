@@ -35,7 +35,8 @@ public class IoTCloudAPI_TargetStateTest extends IoTCloudAPITestBase {
         this.addMockResponse(200, new JsonParser().parse(responseBody));
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        LightState lightState = api.getTargetState(target, LightState.class);
+        api.setTarget(target);
+        LightState lightState = api.getTargetState(LightState.class);
         // verify the result
         Assert.assertEquals(true, lightState.power);
         Assert.assertEquals(90, lightState.brightness);
@@ -52,17 +53,18 @@ public class IoTCloudAPI_TargetStateTest extends IoTCloudAPITestBase {
         expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
         this.assertRequestHeader(expectedRequestHeaders, request);
     }
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void getTargetStateWithNullTargetTest() throws Exception {
+        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.getTargetState(LightState.class);
+    }
+    @Test(expected = IllegalArgumentException.class)
+    public void getTargetStateWithNullClassTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         Target target = new Target(thingID, accessToken);
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.getTargetState(target, null);
-    }
-    @Test(expected = IllegalArgumentException.class)
-    public void getTargetStateWithNullClassTest() throws Exception {
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.getTargetState(null, LightState.class);
+        api.setTarget(target);
+        api.getTargetState(null);
     }
 }
