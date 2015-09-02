@@ -16,6 +16,7 @@ import com.kii.iotcloud.exception.NotFoundException;
 import com.kii.iotcloud.exception.ServiceUnavailableException;
 import com.kii.iotcloud.exception.UnsupportedActionException;
 import com.kii.iotcloud.exception.UnsupportedSchemaException;
+import com.kii.iotcloud.internal.GsonRepository;
 import com.kii.iotcloud.schema.Schema;
 import com.kii.iotcloud.schema.SchemaBuilder;
 import com.kii.iotcloud.testschemas.LightState;

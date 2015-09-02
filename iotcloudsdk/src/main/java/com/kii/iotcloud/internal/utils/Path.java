@@ -1,4 +1,4 @@
-package com.kii.iotcloud.utils;
+package com.kii.iotcloud.internal.utils;
 
 import android.support.annotation.Nullable;
 import android.text.TextUtils;

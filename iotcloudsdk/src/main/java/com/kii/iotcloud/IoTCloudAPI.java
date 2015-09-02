@@ -18,13 +18,14 @@ import com.kii.iotcloud.exception.IoTCloudException;
 import com.kii.iotcloud.exception.IoTCloudRestException;
 import com.kii.iotcloud.exception.UnsupportedActionException;
 import com.kii.iotcloud.exception.UnsupportedSchemaException;
-import com.kii.iotcloud.http.IoTRestClient;
-import com.kii.iotcloud.http.IoTRestRequest;
+import com.kii.iotcloud.internal.GsonRepository;
+import com.kii.iotcloud.internal.http.IoTRestClient;
+import com.kii.iotcloud.internal.http.IoTRestRequest;
 import com.kii.iotcloud.schema.Schema;
 import com.kii.iotcloud.trigger.Predicate;
 import com.kii.iotcloud.trigger.Trigger;
-import com.kii.iotcloud.utils.JsonUtils;
-import com.kii.iotcloud.utils.Path;
+import com.kii.iotcloud.internal.utils.JsonUtils;
+import com.kii.iotcloud.internal.utils.Path;
 import com.squareup.okhttp.MediaType;
 
 import org.json.JSONArray;

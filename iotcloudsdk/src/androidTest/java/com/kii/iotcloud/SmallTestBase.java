@@ -1,5 +1,7 @@
 package com.kii.iotcloud;
 
+import com.kii.iotcloud.internal.GsonRepository;
+
 import org.junit.Before;
 
 public abstract class SmallTestBase {

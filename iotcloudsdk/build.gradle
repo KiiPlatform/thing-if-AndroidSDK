@@ -24,6 +24,28 @@ android {
     }
 }
 
+task generateJavadoc(type: Javadoc) {
+    title = "Kii IoT Cloud SDK for Android"
+    description "Kii IoT Cloud SDK for Android"
+    source = files() {
+        fileTree(dir:'src/main/java').matching {
+            exclude 'com/kii/iotcloud/internal/**'
+            include 'com/kii/iotcloud/**'
+        }
+    }
+
+    ext.androidJar =
+            "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
+    ext.m2repo = "${android.sdkDirectory}/extras/android/m2repository"
+    ext.supportAnnotationjar =
+            ext.m2repo + "/com/android/support/support-annotations/22.2.0/support-annotations-22.2.0-sources.jar"
+    classpath = files(ext.androidJar) + files(ext.supportAnnotationjar)
+
+    destinationDir = file("build/outputs/javadoc")
+}
+
+assemble.dependsOn generateJavadoc
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.2.0'

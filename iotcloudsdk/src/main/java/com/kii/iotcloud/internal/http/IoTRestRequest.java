@@ -1,4 +1,4 @@
-package com.kii.iotcloud.http;
+package com.kii.iotcloud.internal.http;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,7 +7,6 @@ import com.squareup.okhttp.MediaType;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

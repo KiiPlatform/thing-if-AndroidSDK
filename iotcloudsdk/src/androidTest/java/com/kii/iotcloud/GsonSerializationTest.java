@@ -8,6 +8,7 @@ import com.google.gson.JsonParser;
 import com.kii.iotcloud.command.Action;
 import com.kii.iotcloud.command.ActionResult;
 import com.kii.iotcloud.command.Command;
+import com.kii.iotcloud.internal.GsonRepository;
 import com.kii.iotcloud.testschemas.LightState;
 import com.kii.iotcloud.testschemas.SetColor;
 import com.kii.iotcloud.testschemas.SetColorResult;
