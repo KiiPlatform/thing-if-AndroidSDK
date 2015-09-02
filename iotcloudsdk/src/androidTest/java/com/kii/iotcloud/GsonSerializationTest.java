@@ -124,6 +124,16 @@ public class GsonSerializationTest extends SmallTestBase {
         Assert.assertEquals(or, GsonRepository.gson(null).fromJson(serializedOr, Clause.class));
     }
     @Test
+    public void schemaTest() throws Exception {
+        SchemaBuilder sb = SchemaBuilder.newSchemaBuilder("ThingType", "SchemaName1", 10, LightState.class);
+        sb.addActionClass(SetColor.class, SetColorResult.class);
+        sb.addActionClass(SetColorTemperature.class, SetColorTemperatureResult.class);
+        Schema schema = sb.build();
+
+        String json = GsonRepository.gson(null).toJson(schema);
+        Assert.assertEquals("", json);
+    }
+    @Test
     public void actionTest() throws Exception {
         // Define the schema
         SchemaBuilder sb = SchemaBuilder.newSchemaBuilder("ThingType", "SchemaName1", 10, LightState.class);

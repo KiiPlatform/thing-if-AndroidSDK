@@ -1,5 +1,7 @@
 package com.kii.iotcloud;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
@@ -46,6 +48,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     private static final MediaType MEDIA_TYPE_ONBOARDING_WITH_THING_ID_BY_OWNER_REQUEST = MediaType.parse("application/vnd.kii.OnboardingWithThingIDByOwner+json");
     private static final MediaType MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST = MediaType.parse("application/vnd.kii.OnboardingWithVendorThingIDByOwner+json");
 
+    private static Context context;
     private final String appID;
     private final String appKey;
     private final String baseUrl;
@@ -55,13 +58,22 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     private final IoTRestClient restClient;
     private String installationID;
 
+    public static IoTCloudAPI loadWithStoredInstance(Context context) {
+        IoTCloudAPI.context = context.getApplicationContext();
+        return null;
+    }
+
     IoTCloudAPI(
+            Context context,
             @NonNull String appID,
             @NonNull String appKey,
             @NonNull String baseUrl,
             @NonNull Owner owner,
             @NonNull List<Schema> schemas) {
         // Parameters are checked by IoTCloudAPIBuilder
+        if (context != null) {
+            IoTCloudAPI.context = context.getApplicationContext();
+        }
         this.appID = appID;
         this.appKey = appKey;
         this.baseUrl = baseUrl;
@@ -783,6 +795,19 @@ public class IoTCloudAPI implements Parcelable, Serializable {
                 throw (IoTCloudException)e.getCause();
             }
             throw e;
+        }
+    }
+    private static SharedPreferences getSharedPreferences() {
+        if (context != null) {
+            return context.getSharedPreferences("com.kii.iotcloud.preferences", Context.MODE_PRIVATE);
+        }
+        return null;
+    }
+    private static void save(IoTCloudAPI api) {
+        SharedPreferences preferences = getSharedPreferences();
+        if (preferences != null) {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.apply();
         }
     }
 

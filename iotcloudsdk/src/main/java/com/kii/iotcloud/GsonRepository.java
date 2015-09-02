@@ -21,6 +21,7 @@ import com.kii.iotcloud.command.Action;
 import com.kii.iotcloud.command.ActionResult;
 import com.kii.iotcloud.exception.UnsupportedActionException;
 import com.kii.iotcloud.schema.Schema;
+import com.kii.iotcloud.schema.SchemaBuilder;
 import com.kii.iotcloud.trigger.Condition;
 import com.kii.iotcloud.trigger.EventSource;
 import com.kii.iotcloud.trigger.Predicate;
@@ -195,7 +196,87 @@ public class GsonRepository {
         }
     };
 
+    private static final JsonSerializer<Schema> SCHEMA_SERIALIZER = new JsonSerializer<Schema>() {
+        @Override
+        public JsonElement serialize(Schema src, Type typeOfSrc, JsonSerializationContext context) {
+            if (src == null) {
+                return null;
+            }
+            JsonObject json = new JsonObject();
+            json.addProperty("thingType", src.getThingType());
+            json.addProperty("schemaName", src.getSchemaName());
+            json.addProperty("schemaVersion", src.getSchemaVersion());
+            json.addProperty("stateClass", src.getStateClass().getName());
+            JsonArray actionClasses = new JsonArray();
+            for (Class<? extends Action> actionClass : src.getActionClasses()) {
+                actionClasses.add(new JsonPrimitive(actionClass.getName()));
+            }
+            json.add("actionClasses", actionClasses);
+            JsonArray actionResultClasses = new JsonArray();
+            for (Class<? extends ActionResult> actionResultClass : src.getActionResultClasses()) {
+                actionResultClasses.add(new JsonPrimitive(actionResultClass.getName()));
+            }
+            json.add("actionResultClasses", actionResultClasses);
+            return json;
+        }
+    };
+    private static final JsonDeserializer<Schema> SCHEMA_DESERIALIZER = new JsonDeserializer<Schema>() {
+        @Override
+        public Schema deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            if (jsonElement == null) {
+                return null;
+            }
+            try {
+                JsonObject json = (JsonObject)jsonElement;
+                String thingType = json.get("thingType").getAsString();
+                String schemaName = json.get("schemaName").getAsString();
+                int schemaVersion = json.get("schemaVersion").getAsInt();
+                Class<? extends TargetState> stateClass = (Class<? extends TargetState>) Class.forName(json.get("stateClass").getAsString());
+                SchemaBuilder sb = SchemaBuilder.newSchemaBuilder(thingType, schemaName, schemaVersion, stateClass);
+                JsonArray actionClasses = json.getAsJsonArray("actionClasses");
+                JsonArray actionResultClasses = json.getAsJsonArray("actionResultClasses");
+                for (int i = 0; i < actionClasses.size(); i++) {
+                    sb.addActionClass(
+                            (Class<? extends Action>)Class.forName(actionClasses.get(i).getAsString()),
+                            (Class<? extends ActionResult>)Class.forName(actionResultClasses.get(i).getAsString()));
+                }
+                return sb.build();
+            } catch (Exception e) {
+                throw new JsonParseException(e);
+            }
+        }
+    };
 
+    private static final JsonSerializer<IoTCloudAPI> IOT_CLOUD_API_SERIALIZER = new JsonSerializer<IoTCloudAPI>() {
+        @Override
+        public JsonElement serialize(IoTCloudAPI src, Type typeOfSrc, JsonSerializationContext context) {
+            if (src == null) {
+                return null;
+            }
+            JsonObject json = new JsonObject();
+            json.addProperty("appID", src.getAppID());
+            json.addProperty("appKey", src.getAppKey());
+            json.addProperty("baseUrl", src.getBaseUrl());
+            json.add("owner", DEFAULT_GSON.toJsonTree(src.getOwner()));
+            json.add("target", DEFAULT_GSON.toJsonTree(src.getTarget()));
+            JsonArray schemas = new JsonArray();
+            for (Schema schema : src.getSchemas()) {
+                schemas.add(DEFAULT_GSON.toJsonTree(schema));
+            }
+            json.add("schemas", schemas);
+            json.addProperty("installationID", src.getInstallationID());
+            return json;
+        }
+    };
+    private static final JsonDeserializer<IoTCloudAPI> IOT_CLOUD_API_DESERIALIZER = new JsonDeserializer<IoTCloudAPI>() {
+        @Override
+        public IoTCloudAPI deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            if (jsonElement == null) {
+                return null;
+            }
+            return null;
+        }
+    };
     static {
         DEFAULT_GSON = new GsonBuilder()
                 .registerTypeAdapter(TypedID.class, TYPED_ID_SERIALIZER)
@@ -206,8 +287,12 @@ public class GsonRepository {
                 .registerTypeHierarchyAdapter(Clause.class, STATEMENT_DESERIALIZER)
                 .registerTypeAdapter(Condition.class, CONDITION_SERIALIZER)
                 .registerTypeAdapter(Condition.class, CONDITION_DESERIALIZER)
-                .registerTypeHierarchyAdapter(SchedulePredicate.class, PREDICATE_SERIALIZER)
-                .registerTypeHierarchyAdapter(SchedulePredicate.class, PREDICATE_DESERIALIZER)
+                .registerTypeHierarchyAdapter(Predicate.class, PREDICATE_SERIALIZER)
+                .registerTypeHierarchyAdapter(Predicate.class, PREDICATE_DESERIALIZER)
+                .registerTypeAdapter(Schema.class, SCHEMA_SERIALIZER)
+                .registerTypeAdapter(Schema.class, SCHEMA_DESERIALIZER)
+                .registerTypeAdapter(IoTCloudAPI.class, IOT_CLOUD_API_SERIALIZER)
+                .registerTypeAdapter(IoTCloudAPI.class, IOT_CLOUD_API_DESERIALIZER)
                 .create();
     }
 
@@ -277,6 +362,10 @@ public class GsonRepository {
                     .registerTypeHierarchyAdapter(Predicate.class, PREDICATE_DESERIALIZER)
                     .registerTypeAdapter(Action.class, ACTION_DESERIALIZER)
                     .registerTypeAdapter(ActionResult.class, ACTION_RESULT_DESERIALIZER)
+                    .registerTypeAdapter(Schema.class, SCHEMA_SERIALIZER)
+                    .registerTypeAdapter(Schema.class, SCHEMA_DESERIALIZER)
+                    .registerTypeAdapter(IoTCloudAPI.class, IOT_CLOUD_API_SERIALIZER)
+                    .registerTypeAdapter(IoTCloudAPI.class, IOT_CLOUD_API_DESERIALIZER)
                     .create();
             REPOSITORY.put(new Pair<String, Integer>(schema.getSchemaName(), schema.getSchemaVersion()), gson);
         }

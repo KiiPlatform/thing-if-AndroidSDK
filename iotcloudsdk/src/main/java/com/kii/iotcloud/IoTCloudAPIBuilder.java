@@ -23,7 +23,7 @@ public class IoTCloudAPIBuilder {
     private final List<Schema> schemas = new ArrayList<Schema>();
 
     private IoTCloudAPIBuilder(
-            @NonNull Context context,
+            Context context,
             @NonNull String appID,
             @NonNull String appKey,
             @NonNull Site site,
@@ -36,7 +36,7 @@ public class IoTCloudAPIBuilder {
         this.owner = owner;
     }
     private IoTCloudAPIBuilder(
-            @NonNull Context context,
+            Context context,
             @NonNull String appID,
             @NonNull String appKey,
             @NonNull String baseUrl,
@@ -116,6 +116,47 @@ public class IoTCloudAPIBuilder {
         return new IoTCloudAPIBuilder(context, appID, appKey, baseUrl, owner);
     }
 
+    @NonNull
+    static IoTCloudAPIBuilder newBuilder(
+            @NonNull String appID,
+            @NonNull String appKey,
+            @NonNull Site site,
+            @NonNull Owner owner) {
+        if (TextUtils.isEmpty(appID)) {
+            throw new IllegalArgumentException("appID is null or empty");
+        }
+        if (TextUtils.isEmpty(appKey)) {
+            throw new IllegalArgumentException("appKey is null or empty");
+        }
+        if (site == null) {
+            throw new IllegalArgumentException("site is null");
+        }
+        if (owner == null) {
+            throw new IllegalArgumentException("owner is null");
+        }
+        return new IoTCloudAPIBuilder(null, appID, appKey, site, owner);
+    }
+    @NonNull
+    static IoTCloudAPIBuilder newBuilder(
+            @NonNull String appID,
+            @NonNull String appKey,
+            @NonNull String baseUrl,
+            @NonNull Owner owner) {
+        if (TextUtils.isEmpty(appID)) {
+            throw new IllegalArgumentException("appID is null or empty");
+        }
+        if (TextUtils.isEmpty(appKey)) {
+            throw new IllegalArgumentException("appKey is null or empty");
+        }
+        if (TextUtils.isEmpty(baseUrl)) {
+            throw new IllegalArgumentException("baseUrl is null or empty");
+        }
+        if (owner == null) {
+            throw new IllegalArgumentException("owner is null");
+        }
+        return new IoTCloudAPIBuilder(null, appID, appKey, baseUrl, owner);
+    }
+
     /** Add Schema to the IoTCloudAPI.
      * @param schema
      * @return IoTCloudAPIBuilder instance for method chaining.
@@ -144,7 +185,7 @@ public class IoTCloudAPIBuilder {
             throw new IllegalStateException("Builder has no schemas");
         }
         Log.d(TAG, MessageFormat.format("Initialize IoTCloudAPI AppID={0}, AppKey={1}, BaseUrl={2}", this.appID, this.appKey, baseUrl));
-        return new IoTCloudAPI(this.appID, this.appKey, baseUrl, this.owner, this.schemas);
+        return new IoTCloudAPI(this.context, this.appID, this.appKey, baseUrl, this.owner, this.schemas);
     }
 
 }
