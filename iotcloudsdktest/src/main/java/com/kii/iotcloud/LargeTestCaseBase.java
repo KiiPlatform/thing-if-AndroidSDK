@@ -1,7 +1,8 @@
 package com.kii.iotcloud;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.test.InstrumentationTestCase;
-import android.test.mock.MockContext;
 
 import com.kii.cloud.rest.client.KiiRest;
 import com.kii.cloud.rest.client.model.storage.KiiNormalUser;
@@ -50,6 +51,19 @@ public abstract class LargeTestCaseBase extends InstrumentationTestCase {
             return this.appKey;
         }
     }
+    public static class MockContext extends android.test.mock.MockContext {
+        @Override
+        public Context getApplicationContext() {
+            // Default implementation of MockContext#getApplicationContext() throws java.lang.UnsupportedOperationException
+            return this;
+        }
+        @Override
+        public SharedPreferences getSharedPreferences(String name, int mode) {
+            // Default implementation of MockContext#getSharedPreferences(String, int) throws java.lang.UnsupportedOperationException
+            return null;
+        }
+    }
+
     protected Owner createNewOwner(TargetTestServer server) throws Exception {
         KiiRest rest = new KiiRest(server.getAppID(), server.getAppKey(), server.getBaseUrl() + "/api");
         KiiNormalUser user = new KiiNormalUser().setUsername("test-" + System.currentTimeMillis());

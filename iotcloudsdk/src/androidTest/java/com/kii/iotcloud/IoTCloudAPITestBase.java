@@ -1,6 +1,6 @@
 package com.kii.iotcloud;
 
-import android.test.mock.MockContext;
+import com.kii.iotcloud.utils.MockContext;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

@@ -320,6 +320,14 @@ public class GsonRepository {
     }
 
     /**
+     * Returns the default Gson instance.
+     *
+     * @return
+     */
+    public static Gson gson() {
+        return gson(null);
+    }
+    /**
      * Returns the Gson instance that can handle Action class and ActionResult class that are defined specified schema.
      * Action class and ActionResult class depend on the schema name and version.
      *

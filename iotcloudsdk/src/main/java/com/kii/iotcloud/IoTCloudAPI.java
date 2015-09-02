@@ -44,6 +44,7 @@ import java.util.Map;
  */
 public class IoTCloudAPI implements Parcelable, Serializable {
 
+    private static final String SHARED_PREFERENCES_KEY_INSTANCE = "IoTCloudAPI_INSTANCE";
     private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
     private static final MediaType MEDIA_TYPE_INSTALLATION_CREATION_REQUEST = MediaType.parse("application/vnd.kii.InstallationCreationRequest+json");
     private static final MediaType MEDIA_TYPE_ONBOARDING_WITH_THING_ID_BY_OWNER_REQUEST = MediaType.parse("application/vnd.kii.OnboardingWithThingIDByOwner+json");
@@ -59,9 +60,29 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     private final IoTRestClient restClient;
     private String installationID;
 
+    /**
+     * Try to load the instance of IoTCloudAPI using stored serialized instance.
+     *
+     * @param context
+     * @return IoTCloudAPI instance.
+     * @throws IllegalStateException Thrown when the instance has not stored.
+     */
     public static IoTCloudAPI loadWithStoredInstance(Context context) {
         IoTCloudAPI.context = context.getApplicationContext();
-        return null;
+        SharedPreferences preferences = getSharedPreferences();
+        String serializedJson = preferences.getString(SHARED_PREFERENCES_KEY_INSTANCE, null);
+        if (serializedJson != null) {
+            return GsonRepository.gson().fromJson(serializedJson, IoTCloudAPI.class);
+        }
+        throw new IllegalStateException("Instance has not stored.");
+    }
+    private static void saveInstance(IoTCloudAPI instance) {
+        SharedPreferences preferences = getSharedPreferences();
+        if (preferences != null) {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString(SHARED_PREFERENCES_KEY_INSTANCE, GsonRepository.gson().toJson(instance));
+            editor.apply();
+        }
     }
 
     IoTCloudAPI(
@@ -183,6 +204,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         String thingID = responseBody.optString("thingID", null);
         String accessToken = responseBody.optString("accessToken", null);
         this.target = new Target(new TypedID(TypedID.Types.THING, thingID), accessToken);
+        saveInstance(this);
         return this.target;
     }
 
@@ -234,6 +256,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MEDIA_TYPE_INSTALLATION_CREATION_REQUEST, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
         this.installationID = responseBody.optString("installationID", null);
+        saveInstance(this);
         return this.installationID;
     }
 
@@ -705,7 +728,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
-        S ret = GsonRepository.gson(null).fromJson(responseBody.toString(), classOfS);
+        S ret = GsonRepository.gson().fromJson(responseBody.toString(), classOfS);
         return ret;
     }
 
@@ -750,6 +773,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     }
     public void setTarget(Target target) {
         this.target = target;
+        saveInstance(this);
     }
 
     private Schema getSchema(String schemaName, int schemaVersion) {
@@ -810,13 +834,6 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             return context.getSharedPreferences("com.kii.iotcloud.preferences", Context.MODE_PRIVATE);
         }
         return null;
-    }
-    private static void save(IoTCloudAPI api) {
-        SharedPreferences preferences = getSharedPreferences();
-        if (preferences != null) {
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.apply();
-        }
     }
 
     // Implementation of Parcelable

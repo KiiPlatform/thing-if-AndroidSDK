@@ -1,7 +1,7 @@
 package com.kii.iotcloud;
 
 import android.support.test.runner.AndroidJUnit4;
-import android.test.mock.MockContext;
+import com.kii.iotcloud.utils.MockContext;
 
 import com.kii.iotcloud.schema.Schema;
 import com.kii.iotcloud.schema.SchemaBuilder;
