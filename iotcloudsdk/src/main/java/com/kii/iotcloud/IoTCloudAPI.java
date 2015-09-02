@@ -51,6 +51,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     private static final MediaType MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST = MediaType.parse("application/vnd.kii.OnboardingWithVendorThingIDByOwner+json");
 
     private static Context context;
+    private final String tag;
     private final String appID;
     private final String appKey;
     private final String baseUrl;
@@ -68,9 +69,20 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      * @throws IllegalStateException Thrown when the instance has not stored.
      */
     public static IoTCloudAPI loadWithStoredInstance(Context context) {
+        return loadWithStoredInstance(context, null);
+    }
+    /**
+     * Try to load the instance of IoTCloudAPI using stored serialized instance.
+     *
+     * @param context
+     * @param  tag
+     * @return IoTCloudAPI instance.
+     * @throws IllegalStateException Thrown when the instance has not stored.
+     */
+    public static IoTCloudAPI loadWithStoredInstance(Context context, String tag) {
         IoTCloudAPI.context = context.getApplicationContext();
         SharedPreferences preferences = getSharedPreferences();
-        String serializedJson = preferences.getString(SHARED_PREFERENCES_KEY_INSTANCE, null);
+        String serializedJson = preferences.getString(getSharedPreferencesKey(tag), null);
         if (serializedJson != null) {
             return GsonRepository.gson().fromJson(serializedJson, IoTCloudAPI.class);
         }
@@ -80,13 +92,17 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         SharedPreferences preferences = getSharedPreferences();
         if (preferences != null) {
             SharedPreferences.Editor editor = preferences.edit();
-            editor.putString(SHARED_PREFERENCES_KEY_INSTANCE, GsonRepository.gson().toJson(instance));
+            editor.putString(getSharedPreferencesKey(instance.tag), GsonRepository.gson().toJson(instance));
             editor.apply();
         }
     }
+    private static String getSharedPreferencesKey(String tag) {
+        return SHARED_PREFERENCES_KEY_INSTANCE + (tag == null ? "" : "_"  +tag);
+    }
 
     IoTCloudAPI(
-            Context context,
+            @Nullable Context context,
+            @Nullable String tag,
             @NonNull String appID,
             @NonNull String appKey,
             @NonNull String baseUrl,
@@ -98,6 +114,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         if (context != null) {
             IoTCloudAPI.context = context.getApplicationContext();
         }
+        this.tag = tag;
         this.appID = appID;
         this.appKey = appKey;
         this.baseUrl = baseUrl;
@@ -838,6 +855,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
 
     // Implementation of Parcelable
     protected IoTCloudAPI(Parcel in) {
+        this.tag = in.readString();
         this.appID = in.readString();
         this.appKey = in.readString();
         this.baseUrl = in.readString();
@@ -867,6 +885,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     }
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.tag);
         dest.writeString(this.appID);
         dest.writeString(this.appKey);
         dest.writeString(this.baseUrl);

@@ -180,6 +180,14 @@ public class IoTCloudAPIBuilder {
      */
     @NonNull
     public IoTCloudAPI build() {
+        return build(null);
+    }
+    /** Instantiate new IoTCloudAPI instance.
+     * @param tag
+     * @return IoTCloudAPI instance.
+     */
+    @NonNull
+    public IoTCloudAPI build(String tag) {
         String baseUrl = this.baseUrl;
         if (this.site != null) {
             baseUrl = this.site.getBaseUrl();
@@ -188,7 +196,7 @@ public class IoTCloudAPIBuilder {
             throw new IllegalStateException("Builder has no schemas");
         }
         Log.d(TAG, MessageFormat.format("Initialize IoTCloudAPI AppID={0}, AppKey={1}, BaseUrl={2}", this.appID, this.appKey, baseUrl));
-        return new IoTCloudAPI(this.context, this.appID, this.appKey, baseUrl, this.owner, this.target, this.schemas, this.installationID);
+        return new IoTCloudAPI(this.context, tag, this.appID, this.appKey, baseUrl, this.owner, this.target, this.schemas, this.installationID);
     }
 
 }
