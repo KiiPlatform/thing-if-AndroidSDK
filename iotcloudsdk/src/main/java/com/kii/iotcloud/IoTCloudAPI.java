@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import com.kii.iotcloud.command.Action;
 import com.kii.iotcloud.command.ActionResult;
 import com.kii.iotcloud.command.Command;
@@ -126,6 +127,18 @@ public class IoTCloudAPI implements Parcelable {
         }
         this.installationID = installationID;
         this.restClient = new IoTRestClient();
+    }
+    /**
+     * Create the clone instance that has specified target and tag.
+     *
+     * @param target
+     * @param tag
+     * @return IoTCloudAPI instance
+     */
+    public IoTCloudAPI copyWithTarget(Target target, String tag) {
+        IoTCloudAPI api = new IoTCloudAPI(context, tag, this.appID, this.appKey, this.baseUrl, this.owner, target, new ArrayList<Schema>(this.schemas.values()), this.installationID);
+        saveInstance(api);
+        return api;
     }
 
     /**
