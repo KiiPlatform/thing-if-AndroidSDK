@@ -2,8 +2,8 @@ package com.kii.iotcloud;
 
 import android.os.Parcel;
 import android.support.test.runner.AndroidJUnit4;
-import com.kii.iotcloud.utils.MockContext;
 
+import android.support.test.InstrumentationRegistry;
 import com.kii.iotcloud.schema.Schema;
 import com.kii.iotcloud.schema.SchemaBuilder;
 import com.kii.iotcloud.testschemas.LightState;
@@ -35,7 +35,7 @@ public class IoTCloudAPIParcelableTest extends SmallTestBase {
         sb.addActionClass(SetColor.class, SetColorResult.class);
         sb.addActionClass(SetBrightness.class, SetBrightnessResult.class);
         Schema schema = sb.build();
-        IoTCloudAPIBuilder icab = IoTCloudAPIBuilder.newBuilder(new MockContext(), appID, appKey, baseUrl, owner);
+        IoTCloudAPIBuilder icab = IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), appID, appKey, baseUrl, owner);
         icab.addSchema(schema);
 
         IoTCloudAPI api = icab.build();

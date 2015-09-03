@@ -1,7 +1,7 @@
 package com.kii.iotcloud;
 
+import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import com.kii.iotcloud.utils.MockContext;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -168,7 +168,7 @@ public class GsonSerializationTest extends SmallTestBase {
 
     @Test
     public void iotCloudAPITest() throws Exception {
-        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(new MockContext(), "appid", "appkey", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "user-access-token-1234"));
+        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "appid", "appkey", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "user-access-token-1234"));
         SchemaBuilder sb = SchemaBuilder.newSchemaBuilder("SmartLight", "LightDemoSchema", 1, LightState.class);
         sb.addActionClass(TurnPower.class, TurnPowerResult.class);
         sb.addActionClass(SetColor.class, SetColorResult.class);

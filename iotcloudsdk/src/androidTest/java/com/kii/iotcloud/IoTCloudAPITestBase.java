@@ -1,6 +1,6 @@
 package com.kii.iotcloud;
 
-import com.kii.iotcloud.utils.MockContext;
+import android.support.test.InstrumentationRegistry;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -76,11 +76,19 @@ public abstract class IoTCloudAPITestBase extends SmallTestBase {
         sb.addActionClass(TurnPower.class, TurnPowerResult.class);
         return sb.build();
     }
+    protected IoTCloudAPIBuilder craeteIoTCloudAPIBuilderWithDemoSchema(String appID, String appKey) throws Exception {
+        String ownerID = UUID.randomUUID().toString();
+        Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
+        URL baseUrl = this.server.getUrl("/");
+        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), appID, appKey, baseUrl.toString(), owner);
+        builder.addSchema(this.createDefaultSchema());
+        return builder;
+    }
     protected IoTCloudAPI craeteIoTCloudAPIWithDemoSchema(String appID, String appKey) throws Exception {
         String ownerID = UUID.randomUUID().toString();
         Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
         URL baseUrl = this.server.getUrl("/");
-        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(new MockContext(), appID, appKey, baseUrl.toString(), owner);
+        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), appID, appKey, baseUrl.toString(), owner);
         builder.addSchema(this.createDefaultSchema());
         return builder.build();
     }
@@ -88,7 +96,7 @@ public abstract class IoTCloudAPITestBase extends SmallTestBase {
         String ownerID = UUID.randomUUID().toString();
         Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
         URL baseUrl = this.server.getUrl("/");
-        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(new MockContext(), appID, appKey, baseUrl.toString(), owner);
+        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), appID, appKey, baseUrl.toString(), owner);
         builder.addSchema(schema);
         return builder.build();
     }
