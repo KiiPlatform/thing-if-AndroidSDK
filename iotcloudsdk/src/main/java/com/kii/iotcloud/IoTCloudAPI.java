@@ -16,6 +16,7 @@ import com.kii.iotcloud.command.ActionResult;
 import com.kii.iotcloud.command.Command;
 import com.kii.iotcloud.exception.IoTCloudException;
 import com.kii.iotcloud.exception.IoTCloudRestException;
+import com.kii.iotcloud.exception.StoredIoTCloudAPIInstanceNotFoundException;
 import com.kii.iotcloud.exception.UnsupportedActionException;
 import com.kii.iotcloud.exception.UnsupportedSchemaException;
 import com.kii.iotcloud.internal.GsonRepository;
@@ -68,8 +69,8 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      * @return IoTCloudAPI instance.
      * @throws IllegalStateException Thrown when the instance has not stored.
      */
-    public static IoTCloudAPI loadWithStoredInstance(Context context) {
-        return loadWithStoredInstance(context, null);
+    public static IoTCloudAPI loadFromStoredInstance(@NonNull Context context) throws StoredIoTCloudAPIInstanceNotFoundException {
+        return loadFromStoredInstance(context, null);
     }
     /**
      * Try to load the instance of IoTCloudAPI using stored serialized instance.
@@ -79,14 +80,14 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      * @return IoTCloudAPI instance.
      * @throws IllegalStateException Thrown when the instance has not stored.
      */
-    public static IoTCloudAPI loadWithStoredInstance(Context context, String tag) {
+    public static IoTCloudAPI loadFromStoredInstance(Context context, String tag) throws StoredIoTCloudAPIInstanceNotFoundException {
         IoTCloudAPI.context = context.getApplicationContext();
         SharedPreferences preferences = getSharedPreferences();
         String serializedJson = preferences.getString(getSharedPreferencesKey(tag), null);
         if (serializedJson != null) {
             return GsonRepository.gson().fromJson(serializedJson, IoTCloudAPI.class);
         }
-        throw new IllegalStateException("Instance has not stored.");
+        throw new StoredIoTCloudAPIInstanceNotFoundException(tag);
     }
     private static void saveInstance(IoTCloudAPI instance) {
         SharedPreferences preferences = getSharedPreferences();
