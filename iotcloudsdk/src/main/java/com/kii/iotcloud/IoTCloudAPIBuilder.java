@@ -2,6 +2,7 @@ package com.kii.iotcloud;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.kii.iotcloud.schema.Schema;
@@ -25,7 +26,7 @@ public class IoTCloudAPIBuilder {
     private final List<Schema> schemas = new ArrayList<Schema>();
 
     private IoTCloudAPIBuilder(
-            Context context,
+            @Nullable Context context,
             @NonNull String appID,
             @NonNull String appKey,
             @NonNull Site site,
@@ -38,7 +39,7 @@ public class IoTCloudAPIBuilder {
         this.owner = owner;
     }
     private IoTCloudAPIBuilder(
-            Context context,
+            @Nullable Context context,
             @NonNull String appID,
             @NonNull String appKey,
             @NonNull String baseUrl,

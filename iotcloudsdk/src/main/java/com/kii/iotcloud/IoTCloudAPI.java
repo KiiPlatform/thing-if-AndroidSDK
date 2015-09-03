@@ -80,7 +80,7 @@ public class IoTCloudAPI implements Parcelable {
      * @return IoTCloudAPI instance.
      * @throws IllegalStateException Thrown when the instance has not stored.
      */
-    public static IoTCloudAPI loadFromStoredInstance(Context context, String tag) throws StoredIoTCloudAPIInstanceNotFoundException {
+    public static IoTCloudAPI loadFromStoredInstance(@NonNull Context context, String tag) throws StoredIoTCloudAPIInstanceNotFoundException {
         IoTCloudAPI.context = context.getApplicationContext();
         SharedPreferences preferences = getSharedPreferences();
         String serializedJson = preferences.getString(getSharedPreferencesKey(tag), null);
