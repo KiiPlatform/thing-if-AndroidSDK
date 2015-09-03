@@ -43,7 +43,7 @@ import java.util.Map;
 /**
  * This class operates an IoT device that is specified by {@link #onboard(String, String, String, JSONObject)} method.
  */
-public class IoTCloudAPI implements Parcelable, Serializable {
+public class IoTCloudAPI implements Parcelable {
 
     private static final String SHARED_PREFERENCES_KEY_INSTANCE = "IoTCloudAPI_INSTANCE";
     private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
