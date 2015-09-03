@@ -144,6 +144,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      *                        About the format of this Document.
      * @return Target instance can be used to operate target, manage resources
      * of the target.
+     * @throws IllegalStateException Thrown when this instance is already onboarded.
      * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
      * @throws IoTCloudRestException Thrown when server returns error response.
      */
@@ -155,6 +156,9 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             @Nullable String thingType,
             @Nullable JSONObject thingProperties)
             throws IoTCloudException {
+        if (this.onboarded()) {
+            throw new IllegalStateException("This instance is already onboarded.");
+        }
         if (TextUtils.isEmpty(vendorThingID)) {
             throw new IllegalArgumentException("vendorThingID is null or empty");
         }
@@ -187,6 +191,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      * @param thingPassword Thing password given by vendor. Must be specified.
      * @return Target instance can be used to operate target, manage resources
      * of the target.
+     * @throws IllegalStateException Thrown when this instance is already onboarded.
      * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
      * @throws IoTCloudRestException Thrown when server returns error response.
      */
@@ -196,6 +201,9 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             @NonNull String thingID,
             @NonNull String thingPassword) throws
             IoTCloudException {
+        if (this.onboarded()) {
+            throw new IllegalStateException("This instance is already onboarded.");
+        }
         if (TextUtils.isEmpty(thingID)) {
             throw new IllegalArgumentException("thingID is null or empty");
         }
@@ -230,7 +238,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      * Checks whether on boarding is done.
      * @return true if done, otherwise false.
      */
-    public boolean onBoarded()
+    public boolean onboarded()
     {
         return this.target != null;
     }
