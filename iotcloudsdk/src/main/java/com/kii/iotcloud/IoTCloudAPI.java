@@ -794,10 +794,14 @@ public class IoTCloudAPI implements Parcelable {
         return this.owner;
     }
 
+    /**
+     * Get target thing that is operated by the IoTCloudAPI.
+     * @return
+     */
     public Target getTarget() {
         return this.target;
     }
-    public void setTarget(Target target) {
+    void setTarget(Target target) {
         this.target = target;
         saveInstance(this);
     }
