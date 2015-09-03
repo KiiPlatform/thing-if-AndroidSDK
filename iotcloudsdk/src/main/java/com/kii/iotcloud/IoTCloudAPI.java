@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class operates an IoT device that is specified by {@link #onBoard(String, String, String, JSONObject)} method.
+ * This class operates an IoT device that is specified by {@link #onboard(String, String, String, JSONObject)} method.
  */
 public class IoTCloudAPI implements Parcelable, Serializable {
 
@@ -149,7 +149,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      */
     @NonNull
     @WorkerThread
-    public Target onBoard(
+    public Target onboard(
             @NonNull String vendorThingID,
             @NonNull String thingPassword,
             @Nullable String thingType,
@@ -175,14 +175,14 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        return this.onBoard(MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST, requestBody);
+        return this.onboard(MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST, requestBody);
     }
 
     /**
      * On board IoT Cloud with the specified thing ID.
      * When you are sure that the on boarding process has been done,
      * this method is more convenient than
-     * {@link #onBoard(String, String, String, JSONObject)}.
+     * {@link #onboard(String, String, String, JSONObject)}.
      * @param thingID Thing ID given by IoT Cloud. Must be specified.
      * @param thingPassword Thing password given by vendor. Must be specified.
      * @return Target instance can be used to operate target, manage resources
@@ -192,7 +192,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      */
     @NonNull
     @WorkerThread
-    public Target onBoard(
+    public Target onboard(
             @NonNull String thingID,
             @NonNull String thingPassword) throws
             IoTCloudException {
@@ -210,10 +210,10 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        return this.onBoard(MEDIA_TYPE_ONBOARDING_WITH_THING_ID_BY_OWNER_REQUEST, requestBody);
+        return this.onboard(MEDIA_TYPE_ONBOARDING_WITH_THING_ID_BY_OWNER_REQUEST, requestBody);
     }
 
-    private Target onBoard(MediaType contentType, JSONObject requestBody) throws IoTCloudException {
+    private Target onboard(MediaType contentType, JSONObject requestBody) throws IoTCloudException {
         String path = MessageFormat.format("/iot-api/apps/{0}/onboardings", this.appID);
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
