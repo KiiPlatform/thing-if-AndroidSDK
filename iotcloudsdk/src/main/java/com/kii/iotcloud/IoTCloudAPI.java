@@ -136,6 +136,9 @@ public class IoTCloudAPI implements Parcelable {
      * @return IoTCloudAPI instance
      */
     public IoTCloudAPI copyWithTarget(@NonNull Target target, @Nullable String tag) {
+        if (target == null) {
+            throw new IllegalArgumentException("target is null");
+        }
         IoTCloudAPI api = new IoTCloudAPI(context, tag, this.appID, this.appKey, this.baseUrl, this.owner, target, new ArrayList<Schema>(this.schemas.values()), this.installationID);
         saveInstance(api);
         return api;
@@ -817,6 +820,13 @@ public class IoTCloudAPI implements Parcelable {
     void setTarget(Target target) {
         this.target = target;
         saveInstance(this);
+    }
+    /**
+     * Get a tag.
+     * @return
+     */
+    public String getTag() {
+        return this.tag;
     }
 
     private Schema getSchema(String schemaName, int schemaVersion) {
