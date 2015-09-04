@@ -42,6 +42,7 @@ import org.junit.Assert;
 import org.junit.Before;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -252,7 +253,10 @@ public abstract class IoTCloudAPITestBase extends SmallTestBase {
         Assert.assertEquals("request body", expected, new JsonParser().parse(actual.getBody().readUtf8()));
     }
     protected void assertRequestHeader(Map<String, String> expected, RecordedRequest actual) {
-        Map<String, List<String>> actualMap = actual.getHeaders().toMultimap();
+        Map<String, List<String>> actualMap = new HashMap<String, List<String>>();
+        for (String headerName : actual.getHeaders().names()) {
+            actualMap.put(headerName, actual.getHeaders().values(headerName));
+        }
         // following headers are added by OkHttp client automatically. So we need to ignore them.
         actualMap.remove("Content-Length");
         actualMap.remove("Host");
