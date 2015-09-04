@@ -135,7 +135,7 @@ public class IoTCloudAPI implements Parcelable {
      * @param tag
      * @return IoTCloudAPI instance
      */
-    public IoTCloudAPI copyWithTarget(Target target, String tag) {
+    public IoTCloudAPI copyWithTarget(@NonNull Target target, @Nullable String tag) {
         IoTCloudAPI api = new IoTCloudAPI(context, tag, this.appID, this.appKey, this.baseUrl, this.owner, target, new ArrayList<Schema>(this.schemas.values()), this.installationID);
         saveInstance(api);
         return api;
