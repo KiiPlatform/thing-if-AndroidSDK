@@ -119,9 +119,18 @@ public class IoTCloudAPIBuilder {
         return new IoTCloudAPIBuilder(context, appID, appKey, baseUrl, owner);
     }
 
+    /**
+     * Instantiate new IoTCloudAPIBuilder without Context.
+     * This method is for internal use only. Do not call it from your application.
+     *
+     * @param appID Application ID given by Kii Cloud.
+     * @param appKey Application Key given by Kii Cloud.
+     * @param baseUrl Custom Site base URL.
+     * @param owner Specify who uses the IoTCloudAPI.
+     * @return IoTCloudAPIBuilder instance.
+     */
     @NonNull
-    @Deprecated
-    public static IoTCloudAPIBuilder newBuilder(
+    public static IoTCloudAPIBuilder _newBuilder(
             @NonNull String appID,
             @NonNull String appKey,
             @NonNull String baseUrl,

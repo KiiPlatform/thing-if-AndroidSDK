@@ -284,7 +284,7 @@ public class GsonRepository {
             String appKey = json.get("appKey").getAsString();
             String baseUrl = json.get("baseUrl").getAsString();
             Owner owner = DEFAULT_GSON.fromJson(json.getAsJsonObject("owner"), Owner.class);
-            IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(appID, appKey, baseUrl, owner);
+            IoTCloudAPIBuilder builder = IoTCloudAPIBuilder._newBuilder(appID, appKey, baseUrl, owner);
             if (json.has("target")) {
                 Target target = DEFAULT_GSON.fromJson(json.getAsJsonObject("target"), Target.class);
                 builder.setTarget(target);
