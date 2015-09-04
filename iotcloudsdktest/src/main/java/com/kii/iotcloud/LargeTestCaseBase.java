@@ -1,7 +1,10 @@
 package com.kii.iotcloud;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.support.test.InstrumentationRegistry;
+import android.test.AndroidTestCase;
 import android.test.InstrumentationTestCase;
-import android.test.mock.MockContext;
 
 import com.kii.cloud.rest.client.KiiRest;
 import com.kii.cloud.rest.client.model.storage.KiiNormalUser;
@@ -17,7 +20,7 @@ import com.kii.iotcloud.schema.SetColorTemperatureResult;
 import com.kii.iotcloud.schema.TurnPower;
 import com.kii.iotcloud.schema.TurnPowerResult;
 
-public abstract class LargeTestCaseBase extends InstrumentationTestCase {
+public abstract class LargeTestCaseBase extends AndroidTestCase {
 
     private static final String DEV_JP_SERVER = "https://api-development-jp.internal.kii.com";
     public static final String DEMO_THING_TYPE = "LED";
@@ -50,6 +53,7 @@ public abstract class LargeTestCaseBase extends InstrumentationTestCase {
             return this.appKey;
         }
     }
+
     protected Owner createNewOwner(TargetTestServer server) throws Exception {
         KiiRest rest = new KiiRest(server.getAppID(), server.getAppKey(), server.getBaseUrl() + "/api");
         KiiNormalUser user = new KiiNormalUser().setUsername("test-" + System.currentTimeMillis());
@@ -66,7 +70,7 @@ public abstract class LargeTestCaseBase extends InstrumentationTestCase {
     }
     protected IoTCloudAPI craeteIoTCloudAPIWithDemoSchema(TargetTestServer server) throws Exception {
         Owner owner = this.createNewOwner(server);
-        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(new MockContext(), server.getAppID(), server.getAppKey(), server.getBaseUrl(), owner);
+        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), server.getAppID(), server.getAppKey(), server.getBaseUrl(), owner);
         builder.addSchema(this.createDefaultSchema());
         return builder.build();
     }

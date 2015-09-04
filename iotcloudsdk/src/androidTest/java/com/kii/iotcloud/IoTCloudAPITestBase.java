@@ -1,6 +1,8 @@
 package com.kii.iotcloud;
 
-import android.test.mock.MockContext;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.support.test.InstrumentationRegistry;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -42,6 +44,7 @@ import org.junit.Assert;
 import org.junit.Before;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -76,11 +79,19 @@ public abstract class IoTCloudAPITestBase extends SmallTestBase {
         sb.addActionClass(TurnPower.class, TurnPowerResult.class);
         return sb.build();
     }
+    protected IoTCloudAPIBuilder craeteIoTCloudAPIBuilderWithDemoSchema(String appID, String appKey) throws Exception {
+        String ownerID = UUID.randomUUID().toString();
+        Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
+        URL baseUrl = this.server.getUrl("/");
+        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), appID, appKey, baseUrl.toString(), owner);
+        builder.addSchema(this.createDefaultSchema());
+        return builder;
+    }
     protected IoTCloudAPI craeteIoTCloudAPIWithDemoSchema(String appID, String appKey) throws Exception {
         String ownerID = UUID.randomUUID().toString();
         Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
         URL baseUrl = this.server.getUrl("/");
-        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(new MockContext(), appID, appKey, baseUrl.toString(), owner);
+        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), appID, appKey, baseUrl.toString(), owner);
         builder.addSchema(this.createDefaultSchema());
         return builder.build();
     }
@@ -88,7 +99,7 @@ public abstract class IoTCloudAPITestBase extends SmallTestBase {
         String ownerID = UUID.randomUUID().toString();
         Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
         URL baseUrl = this.server.getUrl("/");
-        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(new MockContext(), appID, appKey, baseUrl.toString(), owner);
+        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), appID, appKey, baseUrl.toString(), owner);
         builder.addSchema(schema);
         return builder.build();
     }
@@ -244,7 +255,10 @@ public abstract class IoTCloudAPITestBase extends SmallTestBase {
         Assert.assertEquals("request body", expected, new JsonParser().parse(actual.getBody().readUtf8()));
     }
     protected void assertRequestHeader(Map<String, String> expected, RecordedRequest actual) {
-        Map<String, List<String>> actualMap = actual.getHeaders().toMultimap();
+        Map<String, List<String>> actualMap = new HashMap<String, List<String>>();
+        for (String headerName : actual.getHeaders().names()) {
+            actualMap.put(headerName, actual.getHeaders().values(headerName));
+        }
         // following headers are added by OkHttp client automatically. So we need to ignore them.
         actualMap.remove("Content-Length");
         actualMap.remove("Host");
@@ -346,4 +360,11 @@ public abstract class IoTCloudAPITestBase extends SmallTestBase {
         this.assertPredicate(expected.getPredicate(), actual.getPredicate());
         this.assertCommand(schema, expected.getCommand(), actual.getCommand());
     }
+    protected void clearSharedPreferences() throws Exception {
+        SharedPreferences sharedPreferences = InstrumentationRegistry.getTargetContext().getSharedPreferences("com.kii.iotcloud.preferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.commit();
+    }
+
 }

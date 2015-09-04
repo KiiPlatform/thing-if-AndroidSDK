@@ -29,7 +29,7 @@ public class CommandTest extends LargeTestCaseBase {
         String thingPassword = "password";
 
         // on-boarding thing
-        Target target = api.onBoard(vendorThingID, thingPassword, DEMO_THING_TYPE, null);
+        Target target = api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, null);
         Assert.assertEquals(TypedID.Types.THING, target.getID().getType());
         Assert.assertNotNull(target.getAccessToken());
 
@@ -120,7 +120,7 @@ public class CommandTest extends LargeTestCaseBase {
         String thingPassword = "password";
 
         // on-boarding thing
-        Target target = api.onBoard(vendorThingID, thingPassword, DEMO_THING_TYPE, null);
+        Target target = api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, null);
         Assert.assertEquals(TypedID.Types.THING, target.getID().getType());
         Assert.assertNotNull(target.getAccessToken());
 

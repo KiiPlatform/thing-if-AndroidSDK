@@ -1,5 +1,7 @@
 package com.kii.iotcloud;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
@@ -9,11 +11,13 @@ import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import com.kii.iotcloud.command.Action;
 import com.kii.iotcloud.command.ActionResult;
 import com.kii.iotcloud.command.Command;
 import com.kii.iotcloud.exception.IoTCloudException;
 import com.kii.iotcloud.exception.IoTCloudRestException;
+import com.kii.iotcloud.exception.StoredIoTCloudAPIInstanceNotFoundException;
 import com.kii.iotcloud.exception.UnsupportedActionException;
 import com.kii.iotcloud.exception.UnsupportedSchemaException;
 import com.kii.iotcloud.internal.GsonRepository;
@@ -38,15 +42,18 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class operates an IoT device that is specified by {@link #onBoard(String, String, String, JSONObject)} method.
+ * This class operates an IoT device that is specified by {@link #onboard(String, String, String, JSONObject)} method.
  */
-public class IoTCloudAPI implements Parcelable, Serializable {
+public class IoTCloudAPI implements Parcelable {
 
+    private static final String SHARED_PREFERENCES_KEY_INSTANCE = "IoTCloudAPI_INSTANCE";
     private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
     private static final MediaType MEDIA_TYPE_INSTALLATION_CREATION_REQUEST = MediaType.parse("application/vnd.kii.InstallationCreationRequest+json");
     private static final MediaType MEDIA_TYPE_ONBOARDING_WITH_THING_ID_BY_OWNER_REQUEST = MediaType.parse("application/vnd.kii.OnboardingWithThingIDByOwner+json");
     private static final MediaType MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST = MediaType.parse("application/vnd.kii.OnboardingWithVendorThingIDByOwner+json");
 
+    private static Context context;
+    private final String tag;
     private final String appID;
     private final String appKey;
     private final String baseUrl;
@@ -56,21 +63,85 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     private final IoTRestClient restClient;
     private String installationID;
 
+    /**
+     * Try to load the instance of IoTCloudAPI using stored serialized instance.
+     *
+     * @param context
+     * @return IoTCloudAPI instance.
+     * @throws IllegalStateException Thrown when the instance has not stored.
+     */
+    public static IoTCloudAPI loadFromStoredInstance(@NonNull Context context) throws StoredIoTCloudAPIInstanceNotFoundException {
+        return loadFromStoredInstance(context, null);
+    }
+    /**
+     * Try to load the instance of IoTCloudAPI using stored serialized instance.
+     *
+     * @param context
+     * @param  tag
+     * @return IoTCloudAPI instance.
+     * @throws IllegalStateException Thrown when the instance has not stored.
+     */
+    public static IoTCloudAPI loadFromStoredInstance(@NonNull Context context, String tag) throws StoredIoTCloudAPIInstanceNotFoundException {
+        IoTCloudAPI.context = context.getApplicationContext();
+        SharedPreferences preferences = getSharedPreferences();
+        String serializedJson = preferences.getString(getSharedPreferencesKey(tag), null);
+        if (serializedJson != null) {
+            return GsonRepository.gson().fromJson(serializedJson, IoTCloudAPI.class);
+        }
+        throw new StoredIoTCloudAPIInstanceNotFoundException(tag);
+    }
+    private static void saveInstance(IoTCloudAPI instance) {
+        SharedPreferences preferences = getSharedPreferences();
+        if (preferences != null) {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString(getSharedPreferencesKey(instance.tag), GsonRepository.gson().toJson(instance));
+            editor.apply();
+        }
+    }
+    private static String getSharedPreferencesKey(String tag) {
+        return SHARED_PREFERENCES_KEY_INSTANCE + (tag == null ? "" : "_"  +tag);
+    }
+
     IoTCloudAPI(
+            @Nullable Context context,
+            @Nullable String tag,
             @NonNull String appID,
             @NonNull String appKey,
             @NonNull String baseUrl,
             @NonNull Owner owner,
-            @NonNull List<Schema> schemas) {
+            @Nullable Target target,
+            @NonNull List<Schema> schemas,
+            String installationID) {
         // Parameters are checked by IoTCloudAPIBuilder
+        if (context != null) {
+            IoTCloudAPI.context = context.getApplicationContext();
+        }
+        this.tag = tag;
         this.appID = appID;
         this.appKey = appKey;
         this.baseUrl = baseUrl;
         this.owner = owner;
+        this.target = target;
         for (Schema schema : schemas) {
             this.schemas.put(new Pair<String, Integer>(schema.getSchemaName(), schema.getSchemaVersion()), schema);
         }
+        this.installationID = installationID;
         this.restClient = new IoTRestClient();
+    }
+    /**
+     * Create the clone instance that has specified target and tag.
+     *
+     * @param target
+     * @param tag
+     * @return IoTCloudAPI instance
+     */
+    public IoTCloudAPI copyWithTarget(@NonNull Target target, @Nullable String tag) {
+        if (target == null) {
+            throw new IllegalArgumentException("target is null");
+        }
+        IoTCloudAPI api = new IoTCloudAPI(context, tag, this.appID, this.appKey, this.baseUrl, this.owner, target, new ArrayList<Schema>(this.schemas.values()), this.installationID);
+        saveInstance(api);
+        return api;
     }
 
     /**
@@ -89,17 +160,21 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      *                        About the format of this Document.
      * @return Target instance can be used to operate target, manage resources
      * of the target.
+     * @throws IllegalStateException Thrown when this instance is already onboarded.
      * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
      * @throws IoTCloudRestException Thrown when server returns error response.
      */
     @NonNull
     @WorkerThread
-    public Target onBoard(
+    public Target onboard(
             @NonNull String vendorThingID,
             @NonNull String thingPassword,
             @Nullable String thingType,
             @Nullable JSONObject thingProperties)
             throws IoTCloudException {
+        if (this.onboarded()) {
+            throw new IllegalStateException("This instance is already onboarded.");
+        }
         if (TextUtils.isEmpty(vendorThingID)) {
             throw new IllegalArgumentException("vendorThingID is null or empty");
         }
@@ -120,27 +195,31 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        return this.onBoard(MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST, requestBody);
+        return this.onboard(MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST, requestBody);
     }
 
     /**
      * On board IoT Cloud with the specified thing ID.
      * When you are sure that the on boarding process has been done,
      * this method is more convenient than
-     * {@link #onBoard(String, String, String, JSONObject)}.
+     * {@link #onboard(String, String, String, JSONObject)}.
      * @param thingID Thing ID given by IoT Cloud. Must be specified.
      * @param thingPassword Thing password given by vendor. Must be specified.
      * @return Target instance can be used to operate target, manage resources
      * of the target.
+     * @throws IllegalStateException Thrown when this instance is already onboarded.
      * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
      * @throws IoTCloudRestException Thrown when server returns error response.
      */
     @NonNull
     @WorkerThread
-    public Target onBoard(
+    public Target onboard(
             @NonNull String thingID,
             @NonNull String thingPassword) throws
             IoTCloudException {
+        if (this.onboarded()) {
+            throw new IllegalStateException("This instance is already onboarded.");
+        }
         if (TextUtils.isEmpty(thingID)) {
             throw new IllegalArgumentException("thingID is null or empty");
         }
@@ -155,10 +234,10 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        return this.onBoard(MEDIA_TYPE_ONBOARDING_WITH_THING_ID_BY_OWNER_REQUEST, requestBody);
+        return this.onboard(MEDIA_TYPE_ONBOARDING_WITH_THING_ID_BY_OWNER_REQUEST, requestBody);
     }
 
-    private Target onBoard(MediaType contentType, JSONObject requestBody) throws IoTCloudException {
+    private Target onboard(MediaType contentType, JSONObject requestBody) throws IoTCloudException {
         String path = MessageFormat.format("/iot-api/apps/{0}/onboardings", this.appID);
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
@@ -167,6 +246,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         String thingID = responseBody.optString("thingID", null);
         String accessToken = responseBody.optString("accessToken", null);
         this.target = new Target(new TypedID(TypedID.Types.THING, thingID), accessToken);
+        saveInstance(this);
         return this.target;
     }
 
@@ -174,7 +254,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
      * Checks whether on boarding is done.
      * @return true if done, otherwise false.
      */
-    public boolean onBoarded()
+    public boolean onboarded()
     {
         return this.target != null;
     }
@@ -218,6 +298,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MEDIA_TYPE_INSTALLATION_CREATION_REQUEST, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
         this.installationID = responseBody.optString("installationID", null);
+        saveInstance(this);
         return this.installationID;
     }
 
@@ -229,6 +310,9 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     @Nullable
     public String getInstallationID() {
         return this.installationID;
+    }
+    void setInstallationID(String installationID) {
+        this.installationID = installationID;
     }
 
     /**
@@ -686,7 +770,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
-        S ret = GsonRepository.gson(null).fromJson(responseBody.toString(), classOfS);
+        S ret = GsonRepository.gson().fromJson(responseBody.toString(), classOfS);
         return ret;
     }
 
@@ -726,11 +810,23 @@ public class IoTCloudAPI implements Parcelable, Serializable {
         return this.owner;
     }
 
+    /**
+     * Get target thing that is operated by the IoTCloudAPI.
+     * @return
+     */
     public Target getTarget() {
         return this.target;
     }
-    public void setTarget(Target target) {
+    void setTarget(Target target) {
         this.target = target;
+        saveInstance(this);
+    }
+    /**
+     * Get a tag.
+     * @return
+     */
+    public String getTag() {
+        return this.tag;
     }
 
     private Schema getSchema(String schemaName, int schemaVersion) {
@@ -786,9 +882,16 @@ public class IoTCloudAPI implements Parcelable, Serializable {
             throw e;
         }
     }
+    private static SharedPreferences getSharedPreferences() {
+        if (context != null) {
+            return context.getSharedPreferences("com.kii.iotcloud.preferences", Context.MODE_PRIVATE);
+        }
+        return null;
+    }
 
     // Implementation of Parcelable
     protected IoTCloudAPI(Parcel in) {
+        this.tag = in.readString();
         this.appID = in.readString();
         this.appKey = in.readString();
         this.baseUrl = in.readString();
@@ -818,6 +921,7 @@ public class IoTCloudAPI implements Parcelable, Serializable {
     }
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.tag);
         dest.writeString(this.appID);
         dest.writeString(this.appKey);
         dest.writeString(this.baseUrl);

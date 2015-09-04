@@ -1,8 +1,8 @@
 package com.kii.iotcloud;
 
 import android.support.test.runner.AndroidJUnit4;
-import android.test.mock.MockContext;
 
+import android.support.test.InstrumentationRegistry;
 import com.kii.iotcloud.schema.Schema;
 import com.kii.iotcloud.schema.SchemaBuilder;
 import com.kii.iotcloud.testschemas.LightState;
@@ -20,7 +20,7 @@ import org.junit.runner.RunWith;
 public class IoTCloudAPIBuilderTest extends SmallTestBase {
     @Test
     public void basicTest() throws Exception {
-        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(new MockContext(), "appid", "appkey", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
+        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "appid", "appkey", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
         SchemaBuilder sb = SchemaBuilder.newSchemaBuilder("SmartLight", "LightDemoSchema", 1, LightState.class);
         sb.addActionClass(TurnPower.class, TurnPowerResult.class);
         sb.addActionClass(SetColor.class, SetColorResult.class);
@@ -36,12 +36,12 @@ public class IoTCloudAPIBuilderTest extends SmallTestBase {
     }
     @Test(expected = IllegalStateException.class)
     public void buildWithEmptySchemasTest() throws Exception {
-        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(new MockContext(), "appid", "appkey", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
+        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "appid", "appkey", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
         builder.build();
     }
     @Test(expected = IllegalArgumentException.class)
     public void addSchemaWithNullSchemaTest() throws Exception {
-        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(new MockContext(), "appid", "appkey", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
+        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "appid", "appkey", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
         builder.addSchema(null);
     }
     @Test(expected = IllegalArgumentException.class)
@@ -50,34 +50,34 @@ public class IoTCloudAPIBuilderTest extends SmallTestBase {
     }
     @Test(expected = IllegalArgumentException.class)
     public void newBuilderWithNullAppIDTest() throws Exception {
-        IoTCloudAPIBuilder.newBuilder(new MockContext(), null, "appkey", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
+        IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), null, "appkey", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
     }
     @Test(expected = IllegalArgumentException.class)
     public void newBuilderWithEmptyAppIDTest() throws Exception {
-        IoTCloudAPIBuilder.newBuilder(new MockContext(), "", "appkey", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
+        IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "", "appkey", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
     }
     @Test(expected = IllegalArgumentException.class)
     public void newBuilderWithNullAppKeyTest() throws Exception {
-        IoTCloudAPIBuilder.newBuilder(new MockContext(), "appid", null, Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
+        IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "appid", null, Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
     }
     @Test(expected = IllegalArgumentException.class)
     public void newBuilderWithEmptyAppKeyTest() throws Exception {
-        IoTCloudAPIBuilder.newBuilder(new MockContext(), "appid", "", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
+        IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "appid", "", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
     }
     @Test(expected = IllegalArgumentException.class)
     public void newBuilderWithNullSiteTest() throws Exception {
-        IoTCloudAPIBuilder.newBuilder(new MockContext(), "appid", "appkey", (Site)null, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
+        IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "appid", "appkey", (Site)null, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
     }
     @Test(expected = IllegalArgumentException.class)
     public void newBuilderWithNullOwnerTest() throws Exception {
-        IoTCloudAPIBuilder.newBuilder(new MockContext(), "appid", "appkey", Site.JP, null);
+        IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "appid", "appkey", Site.JP, null);
     }
     @Test(expected = IllegalArgumentException.class)
     public void newBuilderWithNullBaseUrlTest() throws Exception {
-        IoTCloudAPIBuilder.newBuilder(new MockContext(), "appid", "appkey", (String)null, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
+        IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "appid", "appkey", (String)null, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
     }
     @Test(expected = IllegalArgumentException.class)
     public void newBuilderWithEmptyBaseUrlTest() throws Exception {
-        IoTCloudAPIBuilder.newBuilder(new MockContext(), "appid", "appkey", "", new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
+        IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "appid", "appkey", "", new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
     }
 }

@@ -58,13 +58,13 @@ public class Schema implements Parcelable {
         return this.schemaVersion;
     }
 
-    List<Class<? extends Action>> getActionClasses() {
+    public List<Class<? extends Action>> getActionClasses() {
         return this.actionClasses;
     }
-    List<Class<? extends ActionResult>> getActionResultClasses() {
+    public List<Class<? extends ActionResult>> getActionResultClasses() {
         return this.actionResultClasses;
     }
-    Class<? extends TargetState> getStateClass() {
+    public Class<? extends TargetState> getStateClass() {
         return this.stateClass;
     }
 

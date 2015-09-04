@@ -2,6 +2,7 @@ package com.kii.iotcloud;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.kii.iotcloud.schema.Schema;
@@ -20,10 +21,12 @@ public class IoTCloudAPIBuilder {
     private final Site site;
     private final String baseUrl;
     private final Owner owner;
+    private Target target;
+    private String installationID;
     private final List<Schema> schemas = new ArrayList<Schema>();
 
     private IoTCloudAPIBuilder(
-            @NonNull Context context,
+            @Nullable Context context,
             @NonNull String appID,
             @NonNull String appKey,
             @NonNull Site site,
@@ -36,7 +39,7 @@ public class IoTCloudAPIBuilder {
         this.owner = owner;
     }
     private IoTCloudAPIBuilder(
-            @NonNull Context context,
+            @Nullable Context context,
             @NonNull String appID,
             @NonNull String appKey,
             @NonNull String baseUrl,
@@ -116,6 +119,37 @@ public class IoTCloudAPIBuilder {
         return new IoTCloudAPIBuilder(context, appID, appKey, baseUrl, owner);
     }
 
+    /**
+     * Instantiate new IoTCloudAPIBuilder without Context.
+     * This method is for internal use only. Do not call it from your application.
+     *
+     * @param appID Application ID given by Kii Cloud.
+     * @param appKey Application Key given by Kii Cloud.
+     * @param baseUrl Custom Site base URL.
+     * @param owner Specify who uses the IoTCloudAPI.
+     * @return IoTCloudAPIBuilder instance.
+     */
+    @NonNull
+    public static IoTCloudAPIBuilder _newBuilder(
+            @NonNull String appID,
+            @NonNull String appKey,
+            @NonNull String baseUrl,
+            @NonNull Owner owner) {
+        if (TextUtils.isEmpty(appID)) {
+            throw new IllegalArgumentException("appID is null or empty");
+        }
+        if (TextUtils.isEmpty(appKey)) {
+            throw new IllegalArgumentException("appKey is null or empty");
+        }
+        if (TextUtils.isEmpty(baseUrl)) {
+            throw new IllegalArgumentException("baseUrl is null or empty");
+        }
+        if (owner == null) {
+            throw new IllegalArgumentException("owner is null");
+        }
+        return new IoTCloudAPIBuilder(null, appID, appKey, baseUrl, owner);
+    }
+
     /** Add Schema to the IoTCloudAPI.
      * @param schema
      * @return IoTCloudAPIBuilder instance for method chaining.
@@ -131,11 +165,39 @@ public class IoTCloudAPIBuilder {
         return this;
     }
 
+    /**
+     * Set target thing to the IoTCloudAPI.
+     * @param target
+     * @return
+     */
+    public IoTCloudAPIBuilder setTarget(Target target) {
+        this.target = target;
+        return this;
+    }
+
+    /**
+     * Set InstallationID to the IoTCloudAPI.
+     * @param installationID
+     * @return
+     */
+    public IoTCloudAPIBuilder setInstallationID(String installationID) {
+        this.installationID = installationID;
+        return this;
+    }
+
     /** Instantiate new IoTCloudAPI instance.
      * @return IoTCloudAPI instance.
      */
     @NonNull
     public IoTCloudAPI build() {
+        return build(null);
+    }
+    /** Instantiate new IoTCloudAPI instance.
+     * @param tag
+     * @return IoTCloudAPI instance.
+     */
+    @NonNull
+    public IoTCloudAPI build(String tag) {
         String baseUrl = this.baseUrl;
         if (this.site != null) {
             baseUrl = this.site.getBaseUrl();
@@ -144,7 +206,7 @@ public class IoTCloudAPIBuilder {
             throw new IllegalStateException("Builder has no schemas");
         }
         Log.d(TAG, MessageFormat.format("Initialize IoTCloudAPI AppID={0}, AppKey={1}, BaseUrl={2}", this.appID, this.appKey, baseUrl));
-        return new IoTCloudAPI(this.appID, this.appKey, baseUrl, this.owner, this.schemas);
+        return new IoTCloudAPI(this.context, tag, this.appID, this.appKey, baseUrl, this.owner, this.target, this.schemas, this.installationID);
     }
 
 }
