@@ -11,11 +11,17 @@ import com.kii.iotcloud.internal.GsonRepository;
 
 import org.json.JSONObject;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
 public class IoTCloudAPI_StoredInstanceTest extends IoTCloudAPITestBase {
+    @Before
+    public void before() throws Exception {
+        super.before();
+        this.clearSharedPreferences();
+    }
     @Test
     public void loadFromStoredInstanceTest() throws Exception {
         String vendorThingID = "v1234567890abcde";
@@ -79,10 +85,6 @@ public class IoTCloudAPI_StoredInstanceTest extends IoTCloudAPITestBase {
     }
     @Test(expected = StoredIoTCloudAPIInstanceNotFoundException.class)
     public void loadFromStoredInstanceWithoutStoredInstanceTest() throws Exception {
-        SharedPreferences sharedPreferences = InstrumentationRegistry.getTargetContext().getSharedPreferences("com.kii.iotcloud.preferences", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove("IoTCloudAPI_INSTANCE");
-        editor.commit();
         IoTCloudAPI.loadFromStoredInstance(InstrumentationRegistry.getTargetContext());
     }
 }

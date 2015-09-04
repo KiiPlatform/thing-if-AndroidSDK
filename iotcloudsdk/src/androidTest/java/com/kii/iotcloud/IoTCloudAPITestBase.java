@@ -1,5 +1,7 @@
 package com.kii.iotcloud;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.test.InstrumentationRegistry;
 
 import com.google.gson.JsonArray;
@@ -358,4 +360,11 @@ public abstract class IoTCloudAPITestBase extends SmallTestBase {
         this.assertPredicate(expected.getPredicate(), actual.getPredicate());
         this.assertCommand(schema, expected.getCommand(), actual.getCommand());
     }
+    protected void clearSharedPreferences() throws Exception {
+        SharedPreferences sharedPreferences = InstrumentationRegistry.getTargetContext().getSharedPreferences("com.kii.iotcloud.preferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.commit();
+    }
+
 }
