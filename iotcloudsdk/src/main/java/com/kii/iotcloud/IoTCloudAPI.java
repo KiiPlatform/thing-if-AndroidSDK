@@ -93,7 +93,7 @@ public class IoTCloudAPI implements Parcelable {
     /**
      * Clear all saved instances in the SharedPreferences.
      */
-    public static void clearAllStoredInstances() {
+    public static void removeAllStoredInstances() {
         SharedPreferences preferences = getSharedPreferences();
         SharedPreferences.Editor editor = preferences.edit();
         editor.clear();

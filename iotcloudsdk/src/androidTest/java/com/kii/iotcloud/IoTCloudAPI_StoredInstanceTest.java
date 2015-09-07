@@ -47,7 +47,7 @@ public class IoTCloudAPI_StoredInstanceTest extends IoTCloudAPITestBase {
         assertEquals(new JsonParser().parse(GsonRepository.gson().toJson(api)),
                 new JsonParser().parse(GsonRepository.gson().toJson(restoredApi)));
 
-        IoTCloudAPI.clearAllStoredInstances();
+        IoTCloudAPI.removeAllStoredInstances();
         try {
             IoTCloudAPI.loadFromStoredInstance(InstrumentationRegistry.getTargetContext(), "ThingB");
             fail("StoredIoTCloudAPIInstanceNotFoundException should be thrown");
