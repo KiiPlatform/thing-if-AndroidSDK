@@ -90,6 +90,26 @@ public class IoTCloudAPI implements Parcelable {
         }
         throw new StoredIoTCloudAPIInstanceNotFoundException(tag);
     }
+    /**
+     * Clear all saved instances in the SharedPreferences.
+     */
+    public static void clearAllStoredInstances() {
+        SharedPreferences preferences = getSharedPreferences();
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.clear();
+        editor.commit();
+    }
+    /**
+     * Remove saved specified instance in the SharedPreferences.
+     *
+     * @param tag
+     */
+    public static void removeStoredInstance(String tag) {
+        SharedPreferences preferences = getSharedPreferences();
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.remove(getSharedPreferencesKey(tag));
+        editor.commit();
+    }
     private static void saveInstance(IoTCloudAPI instance) {
         SharedPreferences preferences = getSharedPreferences();
         if (preferences != null) {
