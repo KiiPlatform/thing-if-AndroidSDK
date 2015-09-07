@@ -1,7 +1,5 @@
 package com.kii.iotcloud;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -48,6 +46,13 @@ public class IoTCloudAPI_StoredInstanceTest extends IoTCloudAPITestBase {
         assertEquals(api.getTarget().getAccessToken(), restoredApi.getTarget().getAccessToken());
         assertEquals(new JsonParser().parse(GsonRepository.gson().toJson(api)),
                 new JsonParser().parse(GsonRepository.gson().toJson(restoredApi)));
+
+        IoTCloudAPI.removeAllStoredInstances();
+        try {
+            IoTCloudAPI.loadFromStoredInstance(InstrumentationRegistry.getTargetContext(), "ThingB");
+            fail("StoredIoTCloudAPIInstanceNotFoundException should be thrown");
+        } catch (StoredIoTCloudAPIInstanceNotFoundException e) {
+        }
     }
     @Test
     public void loadFromStoredInstanceWithTagTest() throws Exception {
