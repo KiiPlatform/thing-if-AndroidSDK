@@ -31,23 +31,23 @@ public class Range extends Clause {
     }
     public static Range greaterThan(
             @NonNull String field,
-            @NonNull Number upperLimit) {
-        return new Range(field, upperLimit.longValue(), Boolean.FALSE, null, null);
-    }
-    public static Range greaterThanEquals(
-            @NonNull String field,
-            @NonNull Number upperLimit) {
-        return new Range(field, upperLimit.longValue(), Boolean.TRUE, null, null);
-    }
-    public static Range lessThan(
-            @NonNull String field,
             @NonNull Number lowerLimit) {
         return new Range(field, null, null, lowerLimit.longValue(), Boolean.FALSE);
     }
-    public static Range lessThanEquals(
+    public static Range greaterThanEquals(
             @NonNull String field,
             @NonNull Number lowerLimit) {
         return new Range(field, null, null, lowerLimit.longValue(), Boolean.TRUE);
+    }
+    public static Range lessThan(
+            @NonNull String field,
+            @NonNull Number upperLimit) {
+        return new Range(field, upperLimit.longValue(), Boolean.FALSE, null, null);
+    }
+    public static Range lessThanEquals(
+            @NonNull String field,
+            @NonNull Number upperLimit) {
+        return new Range(field, upperLimit.longValue(), Boolean.TRUE, null, null);
     }
 
     public String getField() {

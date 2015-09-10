@@ -106,13 +106,13 @@ public class GsonSerializationTest extends SmallTestBase {
         Assert.assertEquals((JsonObject) new JsonParser().parse("{\"type\":\"not\", \"clause\":{\"type\":\"eq\", \"field\":\"f1\", \"value\":\"str\"}}"), serializedStringNotEquals);
         Assert.assertEquals((JsonObject) new JsonParser().parse("{\"type\":\"not\", \"clause\":{\"type\":\"eq\", \"field\":\"f2\", \"value\":100}}"), serializedNumberNotEquals);
         Assert.assertEquals((JsonObject) new JsonParser().parse("{\"type\":\"not\", \"clause\":{\"type\":\"eq\", \"field\":\"f3\", \"value\":true}}"), serializedBooleanNotEquals);
-        Assert.assertEquals((JsonObject) new JsonParser().parse("{\"type\":\"range\", \"field\":\"f1\", \"upperLimit\":1, \"upperIncluded\":false}"), serializedGreaterThan);
-        Assert.assertEquals((JsonObject) new JsonParser().parse("{\"type\":\"range\", \"field\":\"f2\", \"upperLimit\":2, \"upperIncluded\":true}"), serializedGreaterThanEquals);
-        Assert.assertEquals((JsonObject) new JsonParser().parse("{\"type\":\"range\", \"field\":\"f3\", \"lowerLimit\":3, \"lowerIncluded\":false}"), serializedLessThan);
-        Assert.assertEquals((JsonObject) new JsonParser().parse("{\"type\":\"range\", \"field\":\"f4\", \"lowerLimit\":4, \"lowerIncluded\":true}"), serializedLessThanEquals);
+        Assert.assertEquals((JsonObject) new JsonParser().parse("{\"type\":\"range\", \"field\":\"f1\", \"lowerLimit\":1, \"lowerIncluded\":false}"), serializedGreaterThan);
+        Assert.assertEquals((JsonObject) new JsonParser().parse("{\"type\":\"range\", \"field\":\"f2\", \"lowerLimit\":2, \"lowerIncluded\":true}"), serializedGreaterThanEquals);
+        Assert.assertEquals((JsonObject) new JsonParser().parse("{\"type\":\"range\", \"field\":\"f3\", \"upperLimit\":3, \"upperIncluded\":false}"), serializedLessThan);
+        Assert.assertEquals((JsonObject) new JsonParser().parse("{\"type\":\"range\", \"field\":\"f4\", \"upperLimit\":4, \"upperIncluded\":true}"), serializedLessThanEquals);
         Assert.assertEquals((JsonObject) new JsonParser().parse("{\"type\":\"range\", \"field\":\"f5\", \"upperLimit\":5, \"upperIncluded\":true, \"lowerLimit\":6, \"lowerIncluded\":false}"), serializedRange);
-        Assert.assertEquals((JsonObject) new JsonParser().parse("{\"type\":\"and\", \"clauses\":[{\"type\":\"eq\", \"field\":\"f1\", \"value\":\"str\"}, {\"type\":\"range\", \"field\":\"f1\", \"upperLimit\":1, \"upperIncluded\":false}]}"), serializedAnd);
-        Assert.assertEquals((JsonObject) new JsonParser().parse("{\"type\":\"or\", \"clauses\":[{\"type\":\"eq\", \"field\":\"f2\", \"value\":100}, {\"type\":\"range\", \"field\":\"f3\", \"lowerLimit\":3, \"lowerIncluded\":false}]}"), serializedOr);
+        Assert.assertEquals((JsonObject) new JsonParser().parse("{\"type\":\"and\", \"clauses\":[{\"type\":\"eq\", \"field\":\"f1\", \"value\":\"str\"}, {\"type\":\"range\", \"field\":\"f1\", \"lowerLimit\":1, \"lowerIncluded\":false}]}"), serializedAnd);
+        Assert.assertEquals((JsonObject) new JsonParser().parse("{\"type\":\"or\", \"clauses\":[{\"type\":\"eq\", \"field\":\"f2\", \"value\":100}, {\"type\":\"range\", \"field\":\"f3\", \"upperLimit\":3, \"upperIncluded\":false}]}"), serializedOr);
 
         Assert.assertEquals(stringEquals, GsonRepository.gson().fromJson(serializedStringEquals, Clause.class));
         Assert.assertEquals(numberEquals, GsonRepository.gson().fromJson(serializedNumberEquals, Clause.class));
@@ -447,7 +447,7 @@ public class GsonSerializationTest extends SmallTestBase {
                         "            \"clauses\":[" +
                         "                {\"type\":\"eq\", \"field\":\"prefecture\", \"value\":\"Tokyo\"}," +
                         "                {\"type\":\"not\", \"clause\":{\"type\":\"eq\", \"field\":\"city\", \"value\":\"Akasaka\"}}," +
-                        "                {\"type\":\"range\", \"field\":\"temperature\", \"upperLimit\":25, \"upperIncluded\":true}" +
+                        "                {\"type\":\"range\", \"field\":\"temperature\", \"lowerLimit\":25, \"lowerIncluded\":true}" +
                         "            ]" +
                         "        }" +
                         "    }," +
