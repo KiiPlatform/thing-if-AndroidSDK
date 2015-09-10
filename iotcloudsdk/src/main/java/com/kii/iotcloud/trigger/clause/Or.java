@@ -1,7 +1,6 @@
 package com.kii.iotcloud.trigger.clause;
 
 import android.os.Parcel;
-import android.support.annotation.NonNull;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -9,10 +8,9 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 
-public class Or extends Clause {
-    private final Clause[] clauses;
-    public Or(@NonNull Clause... clauses) {
-        this.clauses = clauses;
+public class Or extends ContainerClause {
+    public Or(Clause... clauses) {
+        super(clauses);
     }
     @Override
     public JSONObject toJSONObject() {
@@ -30,29 +28,25 @@ public class Or extends Clause {
             throw new RuntimeException(e);
         }
     }
-    public Clause[] getClauses() {
-        return this.clauses;
-    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Or or = (Or) o;
-        return Arrays.equals(clauses, or.clauses);
+        return Arrays.equals(this.getClauses(), or.getClauses());
 
     }
     @Override
     public int hashCode() {
-        return Arrays.hashCode(clauses);
+        return Arrays.hashCode(this.getClauses());
     }
 
     // Implementation of Parcelable
     protected Or(Parcel in) {
         int length = in.readInt();
-        this.clauses = new Clause[length];
         for (int i = 0; i < length; i++) {
-            this.clauses[i] = in.readParcelable(getClass().getClassLoader());
+            this.clauses.add((Clause)in.readParcelable(getClass().getClassLoader()));
         }
     }
     public static final Creator<Or> CREATOR = new Creator<Or>() {
@@ -73,7 +67,7 @@ public class Or extends Clause {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.clauses.length);
+        dest.writeInt(this.clauses.size());
         for (Clause clause : this.clauses) {
             dest.writeParcelable(clause, flags);
         }

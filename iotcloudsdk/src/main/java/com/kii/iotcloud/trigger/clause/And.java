@@ -1,7 +1,6 @@
 package com.kii.iotcloud.trigger.clause;
 
 import android.os.Parcel;
-import android.support.annotation.NonNull;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -9,15 +8,10 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 
-public class And extends Clause {
-    private final Clause[] clauses;
-    public And(@NonNull Clause... clauses) {
-        this.clauses = clauses;
+public class And extends ContainerClause {
+    public And(Clause... clauses) {
+        super(clauses);
     }
-    public Clause[] getClauses() {
-        return this.clauses;
-    }
-
     @Override
     public JSONObject toJSONObject() {
         JSONObject ret = new JSONObject();
@@ -40,19 +34,21 @@ public class And extends Clause {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         And and = (And) o;
-        return Arrays.equals(clauses, and.clauses);
+        return Arrays.equals(this.getClauses(), and.getClauses());
+
     }
     @Override
     public int hashCode() {
-        return Arrays.hashCode(clauses);
+        return Arrays.hashCode(this.getClauses());
     }
+
 
     // Implementation of Parcelable
     protected And(Parcel in) {
+        super();
         int length = in.readInt();
-        this.clauses = new Clause[length];
         for (int i = 0; i < length; i++) {
-            this.clauses[i] = in.readParcelable(getClass().getClassLoader());
+            this.clauses.add((Clause)in.readParcelable(getClass().getClassLoader()));
         }
     }
     public static final Creator<And> CREATOR = new Creator<And>() {
@@ -73,7 +69,7 @@ public class And extends Clause {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.clauses.length);
+        dest.writeInt(this.clauses.size());
         for (Clause clause : this.clauses) {
             dest.writeParcelable(clause, flags);
         }
