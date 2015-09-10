@@ -20,4 +20,7 @@ public abstract class ContainerClause extends Clause {
     public void addClause(Clause clause) {
         this.clauses.add(clause);
     }
+    public boolean hasClause() {
+        return this.clauses.size() > 0;
+    }
 }
