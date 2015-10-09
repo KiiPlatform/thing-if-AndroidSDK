@@ -29,42 +29,42 @@ public class TypedID implements Parcelable {
     }
 
     private final Types type;
-    private final String ID;
+    private final String typedID;
     private final String qualifiedID;
 
-    public static TypedID fromString(@NonNull String id) {
-        if (TextUtils.isEmpty(id)) {
-            throw new IllegalArgumentException("id is null or empty");
+    public static TypedID fromString(@NonNull String typedID) {
+        if (TextUtils.isEmpty(typedID)) {
+            throw new IllegalArgumentException("typedID is null or empty");
         }
-        String[] ids = id.split(":");
+        String[] ids = typedID.split(":");
         if (ids.length != 2) {
-            throw new IllegalArgumentException(id + " is invalid format");
+            throw new IllegalArgumentException(typedID + " typedID invalid format");
         }
         Types type = Types.fromString(ids[0]);
         if (type == null) {
-            throw new IllegalArgumentException(ids[0] + " is unknown type");
+            throw new IllegalArgumentException(ids[0] + " typedID unknown type");
         }
         return new TypedID(type, ids[1]);
     }
 
-    public TypedID(@NonNull Types type, @NonNull String ID) {
+    public TypedID(@NonNull Types type, @NonNull String typedID) {
         if (type == null) {
             throw new IllegalArgumentException("type is null");
         }
-        if (TextUtils.isEmpty(ID)) {
-            throw new IllegalArgumentException("ID is null or empty");
+        if (TextUtils.isEmpty(typedID)) {
+            throw new IllegalArgumentException("typedID is null or empty");
         }
         this.type = type;
-        this.ID = ID;
-        this.qualifiedID = this.type.getValue() + ":" + this.ID;
+        this.typedID = typedID;
+        this.qualifiedID = this.type.getValue() + ":" + this.typedID;
     }
 
     public Types getType() {
         return this.type;
     }
 
-    public String getID() {
-        return this.ID;
+    public String getTypedID() {
+        return this.typedID;
     }
 
     @Override
@@ -73,12 +73,12 @@ public class TypedID implements Parcelable {
         if (o == null || getClass() != o.getClass()) return false;
         TypedID typedID = (TypedID) o;
         if (type != typedID.type) return false;
-        return ID.equals(typedID.ID);
+        return this.typedID.equals(typedID.typedID);
     }
     @Override
     public int hashCode() {
         int result = type.hashCode();
-        result = 31 * result + ID.hashCode();
+        result = 31 * result + typedID.hashCode();
         return result;
     }
 
@@ -90,8 +90,8 @@ public class TypedID implements Parcelable {
     // Implementation of Parcelable
     protected TypedID(Parcel in) {
         this.type = Types.fromString(in.readString());
-        this.ID = in.readString();
-        this.qualifiedID = this.type.getValue() + ":" + this.ID;
+        this.typedID = in.readString();
+        this.qualifiedID = this.type.getValue() + ":" + this.typedID;
     }
     public static final Creator<TypedID> CREATOR = new Creator<TypedID>() {
         @Override
@@ -111,6 +111,6 @@ public class TypedID implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(this.type.getValue());
-        parcel.writeString(this.ID);
+        parcel.writeString(this.typedID);
     }
 }
