@@ -40,7 +40,7 @@ public class IoTCloudAPI_StoredInstanceTest extends IoTCloudAPITestBase {
         assertEquals(api.getAppID(), restoredApi.getAppID());
         assertEquals(api.getAppKey(), restoredApi.getAppKey());
         assertEquals(api.getBaseUrl(), restoredApi.getBaseUrl());
-        assertEquals(api.getOwner().getID(), restoredApi.getOwner().getID());
+        assertEquals(api.getOwner().getTypedID(), restoredApi.getOwner().getTypedID());
         assertEquals(api.getOwner().getAccessToken(), restoredApi.getOwner().getAccessToken());
         assertEquals(api.getTarget().getTypedID(), restoredApi.getTarget().getTypedID());
         assertEquals(api.getTarget().getAccessToken(), restoredApi.getTarget().getAccessToken());
@@ -75,7 +75,7 @@ public class IoTCloudAPI_StoredInstanceTest extends IoTCloudAPITestBase {
         assertEquals(api.getAppID(), restoredApi.getAppID());
         assertEquals(api.getAppKey(), restoredApi.getAppKey());
         assertEquals(api.getBaseUrl(), restoredApi.getBaseUrl());
-        assertEquals(api.getOwner().getID(), restoredApi.getOwner().getID());
+        assertEquals(api.getOwner().getTypedID(), restoredApi.getOwner().getTypedID());
         assertEquals(api.getOwner().getAccessToken(), restoredApi.getOwner().getAccessToken());
         assertEquals(api.getTarget().getTypedID(), restoredApi.getTarget().getTypedID());
         assertEquals(api.getTarget().getAccessToken(), restoredApi.getTarget().getAccessToken());

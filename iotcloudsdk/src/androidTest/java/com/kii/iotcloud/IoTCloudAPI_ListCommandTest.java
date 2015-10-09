@@ -48,7 +48,7 @@ public class IoTCloudAPI_ListCommandTest extends IoTCloudAPITestBase {
 
         List<Action> command1Actions = new ArrayList<Action>();
         command1Actions.add(new TurnPower(true));
-        Command command1 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getID(), command1Actions);
+        Command command1 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), command1Actions);
         command1.addActionResult(new TurnPowerResult(true));
         CommandUtils.setCommandState(command1, CommandState.DELIVERED);
         CommandUtils.setFiredByTriggerID(command1, "trigger-1234");
@@ -57,7 +57,7 @@ public class IoTCloudAPI_ListCommandTest extends IoTCloudAPITestBase {
 
         List<Action> command2Actions = new ArrayList<Action>();
         command2Actions.add(new SetColor(10, 20, 30));
-        Command command2 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getID(), command2Actions);
+        Command command2 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), command2Actions);
         command2.addActionResult(new SetColorResult(false));
         CommandUtils.setCommandState(command2, CommandState.SENDING);
         CommandUtils.setCreated(command2, System.currentTimeMillis());
@@ -66,7 +66,7 @@ public class IoTCloudAPI_ListCommandTest extends IoTCloudAPITestBase {
         List<Action> command3Actions = new ArrayList<Action>();
         command3Actions.add(new SetColorTemperature(35));
         command3Actions.add(new SetBrightness(40));
-        Command command3 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getID(), command3Actions);
+        Command command3 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), command3Actions);
         command3.addActionResult(new SetColorTemperatureResult(true));
         command3.addActionResult(new SetBrightnessResult(true));
         CommandUtils.setCommandState(command3, CommandState.DONE);
@@ -119,7 +119,7 @@ public class IoTCloudAPI_ListCommandTest extends IoTCloudAPITestBase {
 
         List<Action> commandActions = new ArrayList<Action>();
         commandActions.add(new TurnPower(true));
-        Command command = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getID(), commandActions);
+        Command command = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), commandActions);
         command.addActionResult(new TurnPowerResult(true));
         CommandUtils.setCommandState(command, CommandState.DELIVERED);
         CommandUtils.setFiredByTriggerID(command, "trigger-1234");

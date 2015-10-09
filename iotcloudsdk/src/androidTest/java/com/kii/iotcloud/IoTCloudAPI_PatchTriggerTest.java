@@ -51,7 +51,7 @@ public class IoTCloudAPI_PatchTriggerTest extends IoTCloudAPITestBase {
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
-        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getID(), actions);
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
         this.addEmptyMockResponse(204);
         this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, false, null, schema);
 
@@ -108,7 +108,7 @@ public class IoTCloudAPI_PatchTriggerTest extends IoTCloudAPITestBase {
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
-        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getID(), actions);
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
         this.addEmptyMockResponse(403);
 
         try {
@@ -151,7 +151,7 @@ public class IoTCloudAPI_PatchTriggerTest extends IoTCloudAPITestBase {
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
-        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getID(), actions);
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
         this.addEmptyMockResponse(404);
 
         try {
@@ -194,7 +194,7 @@ public class IoTCloudAPI_PatchTriggerTest extends IoTCloudAPITestBase {
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
-        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getID(), actions);
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
         this.addEmptyMockResponse(503);
 
         try {

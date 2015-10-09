@@ -209,7 +209,7 @@ public class IoTCloudAPI implements Parcelable {
             if (thingProperties != null && thingProperties.length() > 0) {
                 requestBody.put("thingProperties", thingProperties);
             }
-            requestBody.put("owner", this.owner.getID().toString());
+            requestBody.put("owner", this.owner.getTypedID().toString());
         } catch (JSONException e) {
             // Won’t happen
         }
@@ -248,7 +248,7 @@ public class IoTCloudAPI implements Parcelable {
         try {
             requestBody.put("thingID", thingID);
             requestBody.put("thingPassword", thingPassword);
-            requestBody.put("owner", this.owner.getID().toString());
+            requestBody.put("owner", this.owner.getTypedID().toString());
         } catch (JSONException e) {
             // Won’t happen
         }
@@ -390,7 +390,7 @@ public class IoTCloudAPI implements Parcelable {
         String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands", this.appID, this.target.getTypedID().toString());
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
-        Command command = new Command(schemaName, schemaVersion, this.owner.getID(), actions);
+        Command command = new Command(schemaName, schemaVersion, this.owner.getTypedID(), actions);
         JSONObject requestBody = JsonUtils.newJson(GsonRepository.gson(schema).toJson(command));
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MEDIA_TYPE_JSON, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
@@ -533,7 +533,7 @@ public class IoTCloudAPI implements Parcelable {
         Map<String, String> headers = this.newHeader();
         JSONObject requestBody = new JSONObject();
         Schema schema = this.getSchema(schemaName, schemaVersion);
-        Command command = new Command(schemaName, schemaVersion, this.target.getTypedID(), this.owner.getID(), actions);
+        Command command = new Command(schemaName, schemaVersion, this.target.getTypedID(), this.owner.getTypedID(), actions);
         try {
             requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson(schema).toJson(predicate)));
             requestBody.put("command", JsonUtils.newJson(GsonRepository.gson(schema).toJson(command)));
@@ -630,7 +630,7 @@ public class IoTCloudAPI implements Parcelable {
         Map<String, String> headers = this.newHeader();
         JSONObject requestBody = new JSONObject();
         Schema schema = this.getSchema(schemaName, schemaVersion);
-        Command command = new Command(schemaName, schemaVersion, this.target.getTypedID(), this.owner.getID(), actions);
+        Command command = new Command(schemaName, schemaVersion, this.target.getTypedID(), this.owner.getTypedID(), actions);
         try {
             requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson(schema).toJson(predicate)));
             requestBody.put("command", JsonUtils.newJson(GsonRepository.gson(schema).toJson(command)));

@@ -44,7 +44,7 @@ public class CommandTest extends LargeTestCaseBase {
         Assert.assertEquals(DEMO_SCHEMA_NAME, command1.getSchemaName());
         Assert.assertEquals(DEMO_SCHEMA_VERSION, command1.getSchemaVersion());
         Assert.assertEquals(target.getTypedID(), command1.getTargetID());
-        Assert.assertEquals(api.getOwner().getID(), command1.getIssuerID());
+        Assert.assertEquals(api.getOwner().getTypedID(), command1.getIssuerID());
         Assert.assertNull(command1.getCommandState());
         Assert.assertNull(command1.getFiredByTriggerID());
         Assert.assertTrue(command1.getCreated() > 0);
@@ -66,7 +66,7 @@ public class CommandTest extends LargeTestCaseBase {
         Assert.assertEquals(DEMO_SCHEMA_NAME, command2.getSchemaName());
         Assert.assertEquals(DEMO_SCHEMA_VERSION, command2.getSchemaVersion());
         Assert.assertEquals(target.getTypedID(), command2.getTargetID());
-        Assert.assertEquals(api.getOwner().getID(), command2.getIssuerID());
+        Assert.assertEquals(api.getOwner().getTypedID(), command2.getIssuerID());
         Assert.assertNull(command2.getCommandState());
         Assert.assertNull(command2.getFiredByTriggerID());
         Assert.assertTrue(command2.getCreated() > command1.getCreated());
