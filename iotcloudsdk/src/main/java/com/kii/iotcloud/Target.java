@@ -7,18 +7,18 @@ import android.support.annotation.Nullable;
 
 public class Target implements Parcelable {
 
-    private final TypedID ID;
+    private final TypedID typedID;
     private final String accessToken;
 
     public Target(@NonNull TypedID ID, @Nullable String accessToken) {
         if (ID == null) {
             throw new IllegalArgumentException("ID is null");
         }
-        this.ID = ID;
+        this.typedID = ID;
         this.accessToken = accessToken;
     }
-    public TypedID getID() {
-        return this.ID;
+    public TypedID getTypedID() {
+        return this.typedID;
     }
     public String getAccessToken() {
         return this.accessToken;
@@ -26,7 +26,7 @@ public class Target implements Parcelable {
 
     // Implementation of Parcelable
     protected Target(Parcel in) {
-        this.ID = in.readParcelable(TypedID.class.getClassLoader());
+        this.typedID = in.readParcelable(TypedID.class.getClassLoader());
         this.accessToken = in.readString();
     }
     public static final Creator<Target> CREATOR = new Creator<Target>() {
@@ -47,7 +47,7 @@ public class Target implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeParcelable(this.ID, i);
+        parcel.writeParcelable(this.typedID, i);
         parcel.writeString(this.accessToken);
     }
 }

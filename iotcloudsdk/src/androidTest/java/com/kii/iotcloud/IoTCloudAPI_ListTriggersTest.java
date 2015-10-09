@@ -50,14 +50,14 @@ public class IoTCloudAPI_ListTriggersTest extends IoTCloudAPITestBase {
 
         List<Action> command1Actions = new ArrayList<Action>();
         command1Actions.add(new TurnPower(true));
-        Command command1 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getID(), api.getOwner().getID(), command1Actions);
+        Command command1 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getID(), command1Actions);
         Condition condition1 = new Condition(new Equals("power", true));
         Predicate predicate1 = new StatePredicate(condition1, TriggersWhen.CONDITION_FALSE_TO_TRUE);
         Trigger trigger1 = new Trigger(predicate1, command1);
 
         List<Action> command2Actions = new ArrayList<Action>();
         command2Actions.add(new SetColor(10, 20, 30));
-        Command command2 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getID(), api.getOwner().getID(), command2Actions);
+        Command command2 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getID(), command2Actions);
         Condition condition2 = new Condition(new Equals("power", false));
         Predicate predicate2 = new StatePredicate(condition2, TriggersWhen.CONDITION_CHANGED);
         Trigger trigger2 = new Trigger(predicate2, command2);
@@ -65,7 +65,7 @@ public class IoTCloudAPI_ListTriggersTest extends IoTCloudAPITestBase {
         List<Action> command3Actions = new ArrayList<Action>();
         command3Actions.add(new SetColorTemperature(35));
         command3Actions.add(new SetBrightness(40));
-        Command command3 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getID(), api.getOwner().getID(), command3Actions);
+        Command command3 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getID(), command3Actions);
         Condition condition3 = new Condition(new Equals("colorTemperature", 28));
         Predicate predicate3 = new StatePredicate(condition3, TriggersWhen.CONDITION_TRUE);
         Trigger trigger3 = new Trigger(predicate3, command3);
@@ -117,14 +117,14 @@ public class IoTCloudAPI_ListTriggersTest extends IoTCloudAPITestBase {
 
         List<Action> command1Actions = new ArrayList<Action>();
         command1Actions.add(new TurnPower(true));
-        Command command1 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getID(), api.getOwner().getID(), command1Actions);
+        Command command1 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getID(), command1Actions);
         Condition condition1 = new Condition(new Equals("power", true));
         Predicate predicate1 = new StatePredicate(condition1, TriggersWhen.CONDITION_FALSE_TO_TRUE);
         Trigger trigger1 = new Trigger(predicate1, command1);
 
         List<Action> command2Actions = new ArrayList<Action>();
         command2Actions.add(new SetColor(10, 20, 30));
-        Command command2 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getID(), api.getOwner().getID(), command2Actions);
+        Command command2 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getID(), command2Actions);
         Condition condition2 = new Condition(new Equals("power", false));
         Predicate predicate2 = new StatePredicate(condition2, TriggersWhen.CONDITION_CHANGED);
         Trigger trigger2 = new Trigger(predicate2, command2);
@@ -132,7 +132,7 @@ public class IoTCloudAPI_ListTriggersTest extends IoTCloudAPITestBase {
         List<Action> command3Actions = new ArrayList<Action>();
         command3Actions.add(new SetColorTemperature(35));
         command3Actions.add(new SetBrightness(40));
-        Command command3 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getID(), api.getOwner().getID(), command3Actions);
+        Command command3 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getID(), command3Actions);
         Condition condition3 = new Condition(new Equals("colorTemperature", 28));
         Predicate predicate3 = new StatePredicate(condition3, TriggersWhen.CONDITION_TRUE);
         Trigger trigger3 = new Trigger(predicate3, command3);

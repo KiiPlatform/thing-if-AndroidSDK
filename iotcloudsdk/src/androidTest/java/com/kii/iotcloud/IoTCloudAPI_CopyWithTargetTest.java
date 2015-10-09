@@ -43,7 +43,7 @@ public class IoTCloudAPI_CopyWithTargetTest extends IoTCloudAPITestBase {
         assertEquals(api.getBaseUrl(), copiedApi.getBaseUrl());
         assertEquals(api.getOwner().getID(), copiedApi.getOwner().getID());
         assertEquals(api.getOwner().getAccessToken(), copiedApi.getOwner().getAccessToken());
-        assertEquals(thingID2, copiedApi.getTarget().getID());
+        assertEquals(thingID2, copiedApi.getTarget().getTypedID());
         assertEquals("thing-access-token-4321", copiedApi.getTarget().getAccessToken());
     }
     @Test
@@ -101,7 +101,7 @@ public class IoTCloudAPI_CopyWithTargetTest extends IoTCloudAPITestBase {
         assertEquals(api.getBaseUrl(), copiedApi.getBaseUrl());
         assertEquals(api.getOwner().getID(), copiedApi.getOwner().getID());
         assertEquals(api.getOwner().getAccessToken(), copiedApi.getOwner().getAccessToken());
-        assertEquals(thingID2, copiedApi.getTarget().getID());
+        assertEquals(thingID2, copiedApi.getTarget().getTypedID());
         assertEquals("thing-access-token-4321", copiedApi.getTarget().getAccessToken());
     }
     @Test(expected = IllegalArgumentException.class)

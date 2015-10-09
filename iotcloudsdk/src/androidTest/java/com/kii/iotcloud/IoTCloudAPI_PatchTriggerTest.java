@@ -1,32 +1,18 @@
 package com.kii.iotcloud;
 
 import android.support.test.runner.AndroidJUnit4;
-import android.util.Pair;
 
 import com.google.gson.JsonObject;
 import com.kii.iotcloud.command.Action;
 import com.kii.iotcloud.command.Command;
-import com.kii.iotcloud.exception.BadRequestException;
 import com.kii.iotcloud.exception.ForbiddenException;
 import com.kii.iotcloud.exception.NotFoundException;
 import com.kii.iotcloud.exception.ServiceUnavailableException;
-import com.kii.iotcloud.exception.UnsupportedActionException;
-import com.kii.iotcloud.exception.UnsupportedSchemaException;
 import com.kii.iotcloud.internal.GsonRepository;
-import com.kii.iotcloud.internal.InternalUtils;
 import com.kii.iotcloud.schema.Schema;
-import com.kii.iotcloud.schema.SchemaBuilder;
-import com.kii.iotcloud.testschemas.LightState;
-import com.kii.iotcloud.testschemas.SetBrightness;
-import com.kii.iotcloud.testschemas.SetBrightnessResult;
 import com.kii.iotcloud.testschemas.SetColor;
-import com.kii.iotcloud.testschemas.SetColorResult;
 import com.kii.iotcloud.testschemas.SetColorTemperature;
-import com.kii.iotcloud.testschemas.SetColorTemperatureResult;
-import com.kii.iotcloud.testschemas.TurnPower;
-import com.kii.iotcloud.testschemas.TurnPowerResult;
 import com.kii.iotcloud.trigger.Condition;
-import com.kii.iotcloud.trigger.Predicate;
 import com.kii.iotcloud.trigger.StatePredicate;
 import com.kii.iotcloud.trigger.Trigger;
 import com.kii.iotcloud.trigger.TriggersWhen;
@@ -65,7 +51,7 @@ public class IoTCloudAPI_PatchTriggerTest extends IoTCloudAPITestBase {
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
-        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getID(), api.getOwner().getID(), actions);
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getID(), actions);
         this.addEmptyMockResponse(204);
         this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, false, null, schema);
 
@@ -122,7 +108,7 @@ public class IoTCloudAPI_PatchTriggerTest extends IoTCloudAPITestBase {
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
-        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getID(), api.getOwner().getID(), actions);
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getID(), actions);
         this.addEmptyMockResponse(403);
 
         try {
@@ -165,7 +151,7 @@ public class IoTCloudAPI_PatchTriggerTest extends IoTCloudAPITestBase {
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
-        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getID(), api.getOwner().getID(), actions);
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getID(), actions);
         this.addEmptyMockResponse(404);
 
         try {
@@ -208,7 +194,7 @@ public class IoTCloudAPI_PatchTriggerTest extends IoTCloudAPITestBase {
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
-        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getID(), api.getOwner().getID(), actions);
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getID(), actions);
         this.addEmptyMockResponse(503);
 
         try {

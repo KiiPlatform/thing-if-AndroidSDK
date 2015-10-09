@@ -40,7 +40,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         Assert.assertTrue(api.onboarded());
 
         // verify the result
-        Assert.assertEquals(new TypedID(TypedID.Types.THING, thingID), target.getID());
+        Assert.assertEquals(new TypedID(TypedID.Types.THING, thingID), target.getTypedID());
         Assert.assertEquals(accessToken, target.getAccessToken());
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -219,7 +219,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         Assert.assertTrue(api.onboarded());
 
         // verify the result
-        Assert.assertEquals(new TypedID(TypedID.Types.THING, thingID), target.getID());
+        Assert.assertEquals(new TypedID(TypedID.Types.THING, thingID), target.getTypedID());
         Assert.assertEquals(accessToken, target.getAccessToken());
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);

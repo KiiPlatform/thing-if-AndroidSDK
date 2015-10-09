@@ -60,7 +60,7 @@ public class IoTCloudAPI_GetTriggerTest extends IoTCloudAPITestBase {
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
-        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getID(), api.getOwner().getID(), actions);
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getID(), actions);
         this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, true, "COMMAND_EXECUTION_REJECTED", schema);
 
         api.setTarget(target);
@@ -189,7 +189,7 @@ public class IoTCloudAPI_GetTriggerTest extends IoTCloudAPITestBase {
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithSchema(APP_ID, APP_KEY, invalidSchema);
 
-        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getID(), api.getOwner().getID(), actions);
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getID(), actions);
         this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, true, "COMMAND_EXECUTION_REJECTED", schema);
 
         try {
@@ -232,7 +232,7 @@ public class IoTCloudAPI_GetTriggerTest extends IoTCloudAPITestBase {
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithSchema(APP_ID, APP_KEY, invalidSchema);
 
-        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getID(), api.getOwner().getID(), actions);
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getID(), actions);
         this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, true, "COMMAND_EXECUTION_REJECTED", schema);
 
         try {
@@ -274,7 +274,7 @@ public class IoTCloudAPI_GetTriggerTest extends IoTCloudAPITestBase {
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithSchema(APP_ID, APP_KEY, unsupportedSetColorSchema);
 
-        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getID(), api.getOwner().getID(), actions);
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getID(), actions);
         this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, true, "COMMAND_EXECUTION_REJECTED", schema);
 
         InternalUtils.gsonRepositoryClearCache();
