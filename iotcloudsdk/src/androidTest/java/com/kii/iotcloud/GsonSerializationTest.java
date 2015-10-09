@@ -209,9 +209,9 @@ public class GsonSerializationTest extends SmallTestBase {
         Assert.assertEquals("appid", deserializedApi.getAppID());
         Assert.assertEquals("appkey", deserializedApi.getAppKey());
         Assert.assertEquals(Site.JP.getBaseUrl(), deserializedApi.getBaseUrl());
-        Assert.assertEquals(new TypedID(TypedID.Types.USER, "user1234"), deserializedApi.getOwner().getID());
+        Assert.assertEquals(new TypedID(TypedID.Types.USER, "user1234"), deserializedApi.getOwner().getTypedID());
         Assert.assertEquals("user-access-token-1234", deserializedApi.getOwner().getAccessToken());
-        Assert.assertEquals(new TypedID(TypedID.Types.THING, "th.1234567890"), deserializedApi.getTarget().getID());
+        Assert.assertEquals(new TypedID(TypedID.Types.THING, "th.1234567890"), deserializedApi.getTarget().getTypedID());
         Assert.assertEquals("thing-access-token-1234", deserializedApi.getTarget().getAccessToken());
         Assert.assertEquals(1, deserializedApi.getSchemas().size());
         Assert.assertEquals("SmartLight", deserializedApi.getSchemas().get(0).getThingType());

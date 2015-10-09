@@ -16,7 +16,7 @@ public class TargetParcelableTest extends SmallTestBase {
         target.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
         Target deserializedTarget = Target.CREATOR.createFromParcel(parcel);
-        Assert.assertEquals(target.getID(), deserializedTarget.getID());
+        Assert.assertEquals(target.getTypedID(), deserializedTarget.getTypedID());
         Assert.assertEquals(target.getAccessToken(), deserializedTarget.getAccessToken());
     }
 }

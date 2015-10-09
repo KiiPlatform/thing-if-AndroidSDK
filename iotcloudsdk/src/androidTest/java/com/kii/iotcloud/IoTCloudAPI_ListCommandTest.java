@@ -3,24 +3,13 @@ package com.kii.iotcloud;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Pair;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.kii.iotcloud.command.Action;
-import com.kii.iotcloud.command.ActionResult;
 import com.kii.iotcloud.command.Command;
 import com.kii.iotcloud.command.CommandState;
 import com.kii.iotcloud.command.CommandUtils;
 import com.kii.iotcloud.exception.BadRequestException;
-import com.kii.iotcloud.exception.ForbiddenException;
 import com.kii.iotcloud.exception.NotFoundException;
-import com.kii.iotcloud.exception.ServiceUnavailableException;
-import com.kii.iotcloud.exception.UnsupportedActionException;
-import com.kii.iotcloud.exception.UnsupportedSchemaException;
-import com.kii.iotcloud.internal.GsonRepository;
-import com.kii.iotcloud.internal.InternalUtils;
 import com.kii.iotcloud.schema.Schema;
-import com.kii.iotcloud.schema.SchemaBuilder;
-import com.kii.iotcloud.testschemas.LightState;
 import com.kii.iotcloud.testschemas.SetBrightness;
 import com.kii.iotcloud.testschemas.SetBrightnessResult;
 import com.kii.iotcloud.testschemas.SetColor;
@@ -59,7 +48,7 @@ public class IoTCloudAPI_ListCommandTest extends IoTCloudAPITestBase {
 
         List<Action> command1Actions = new ArrayList<Action>();
         command1Actions.add(new TurnPower(true));
-        Command command1 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getID(), api.getOwner().getID(), command1Actions);
+        Command command1 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), command1Actions);
         command1.addActionResult(new TurnPowerResult(true));
         CommandUtils.setCommandState(command1, CommandState.DELIVERED);
         CommandUtils.setFiredByTriggerID(command1, "trigger-1234");
@@ -68,7 +57,7 @@ public class IoTCloudAPI_ListCommandTest extends IoTCloudAPITestBase {
 
         List<Action> command2Actions = new ArrayList<Action>();
         command2Actions.add(new SetColor(10, 20, 30));
-        Command command2 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getID(), api.getOwner().getID(), command2Actions);
+        Command command2 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), command2Actions);
         command2.addActionResult(new SetColorResult(false));
         CommandUtils.setCommandState(command2, CommandState.SENDING);
         CommandUtils.setCreated(command2, System.currentTimeMillis());
@@ -77,7 +66,7 @@ public class IoTCloudAPI_ListCommandTest extends IoTCloudAPITestBase {
         List<Action> command3Actions = new ArrayList<Action>();
         command3Actions.add(new SetColorTemperature(35));
         command3Actions.add(new SetBrightness(40));
-        Command command3 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getID(), api.getOwner().getID(), command3Actions);
+        Command command3 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), command3Actions);
         command3.addActionResult(new SetColorTemperatureResult(true));
         command3.addActionResult(new SetBrightnessResult(true));
         CommandUtils.setCommandState(command3, CommandState.DONE);
@@ -130,7 +119,7 @@ public class IoTCloudAPI_ListCommandTest extends IoTCloudAPITestBase {
 
         List<Action> commandActions = new ArrayList<Action>();
         commandActions.add(new TurnPower(true));
-        Command command = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getID(), api.getOwner().getID(), commandActions);
+        Command command = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), commandActions);
         command.addActionResult(new TurnPowerResult(true));
         CommandUtils.setCommandState(command, CommandState.DELIVERED);
         CommandUtils.setFiredByTriggerID(command, "trigger-1234");
