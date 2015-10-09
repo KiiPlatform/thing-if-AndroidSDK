@@ -63,11 +63,11 @@ public class GsonSerializationTest extends SmallTestBase {
         thingID = GsonRepository.gson().fromJson(serializedThingID, TypedID.class);
 
         Assert.assertEquals(TypedID.Types.USER, userID.getType());
-        Assert.assertEquals("12345", userID.getID());
+        Assert.assertEquals("12345", userID.getTypedID());
         Assert.assertEquals(TypedID.Types.GRPUP, groupID.getType());
-        Assert.assertEquals("67890", groupID.getID());
+        Assert.assertEquals("67890", groupID.getTypedID());
         Assert.assertEquals(TypedID.Types.THING, thingID.getType());
-        Assert.assertEquals("12345", thingID.getID());
+        Assert.assertEquals("12345", thingID.getTypedID());
     }
 
     @Test
