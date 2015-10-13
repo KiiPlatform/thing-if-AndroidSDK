@@ -54,6 +54,37 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
         this.assertRequestBody(expectedRequestBody, request);
     }
     @Test
+    public void installPushGCMDevelopmentTest() throws Exception {
+        String deviceToken = UUID.randomUUID().toString();
+        String installationID = UUID.randomUUID().toString();
+
+        this.addMockResponseForInstallPush(201, installationID);
+
+        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        Assert.assertNull(api.getInstallationID());
+        String result = api.installPush(deviceToken, PushBackend.GCM,true);
+        Assert.assertNotNull(api.getInstallationID());
+        // verify the result
+        Assert.assertEquals(installationID, result);
+        // verify the request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(KII_CLOUD_BASE_PATH + "/installations", request.getPath());
+        Assert.assertEquals("POST", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        expectedRequestHeaders.put("Content-Type", "application/vnd.kii.InstallationCreationRequest+json");
+        this.assertRequestHeader(expectedRequestHeaders, request);
+
+        JsonObject expectedRequestBody = new JsonObject();
+        expectedRequestBody.addProperty("installationRegistrationID", deviceToken);
+        expectedRequestBody.addProperty("deviceType", PushBackend.GCM.getDeviceType());
+        expectedRequestBody.addProperty("development", true);
+        this.assertRequestBody(expectedRequestBody, request);
+    }
+    @Test
     public void installPushJPushTest() throws Exception {
         String deviceToken = UUID.randomUUID().toString();
         String installationID = UUID.randomUUID().toString();
