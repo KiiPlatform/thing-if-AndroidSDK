@@ -278,7 +278,7 @@ public class IoTCloudAPI implements Parcelable {
     }
 
     /**
-     * Install push notification to receive notification from IoT Cloud.
+     * Install push notification to receive notification from IoT Cloud. This will install on production environment.
      * IoT Cloud will send notification when the Target replies to the Command.
      * Application can receive the notification and check the result of Command
      * fired by Application or registered Trigger.
@@ -291,6 +291,7 @@ public class IoTCloudAPI implements Parcelable {
      * @return Installation ID used in IoT Cloud.
      * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
      * @throws IoTCloudRestException Thrown when server returns error response.
+     * @see #installPush(String, PushBackend, boolean) for development/production environment installation.
      */
     @NonNull
     @WorkerThread
@@ -298,9 +299,36 @@ public class IoTCloudAPI implements Parcelable {
             @Nullable String deviceToken,
             @NonNull PushBackend pushBackend
     ) throws IoTCloudException {
+        return this.installPush(deviceToken,pushBackend,false);
+    }
+
+    /**
+     * Install push notification to receive notification from IoT Cloud.
+     * IoT Cloud will send notification when the Target replies to the Command.
+     * Application can receive the notification and check the result of Command
+     * fired by Application or registered Trigger.
+     * After installation is done Installation ID is managed in this class.
+     * @param deviceToken for GCM, specify token obtained by
+     *                    InstanceID.getToken().
+     *                    for JPUSH, specify id obtained by
+     *                    JPushInterface.getUdid().
+     * @param pushBackend Specify backend to use.
+     * @param development Specify development flag to use. Indicates if the installation is for development or production environment.
+     * @return Installation ID used in IoT Cloud.
+     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
+     * @throws IoTCloudRestException Thrown when server returns error response.
+     */
+    @NonNull
+    @WorkerThread
+    public String installPush(
+            @Nullable String deviceToken,
+            @NonNull PushBackend pushBackend,
+            boolean development
+    ) throws IoTCloudException{
         if (pushBackend == null) {
             throw new IllegalArgumentException("pushBackend is null");
         }
+
         String path = MessageFormat.format("/api/apps/{0}/installations", this.appID);
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
@@ -308,6 +336,9 @@ public class IoTCloudAPI implements Parcelable {
         try {
             if (!TextUtils.isEmpty(deviceToken)) {
                 requestBody.put("installationRegistrationID", deviceToken);
+            }
+            if (development){
+                requestBody.put("development", true);
             }
             requestBody.put("deviceType", pushBackend.getDeviceType());
         } catch (JSONException e) {
@@ -319,7 +350,6 @@ public class IoTCloudAPI implements Parcelable {
         saveInstance(this);
         return this.installationID;
     }
-
     /**
      * Get installationID if the push is already installed.
      * null will be returned if the push installation has not been done.
