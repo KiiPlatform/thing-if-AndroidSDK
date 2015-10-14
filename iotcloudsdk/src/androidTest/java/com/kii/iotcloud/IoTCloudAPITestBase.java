@@ -52,7 +52,7 @@ import java.util.UUID;
 public abstract class IoTCloudAPITestBase extends SmallTestBase {
     protected static final String APP_ID = "smalltest";
     protected static final String APP_KEY = "abcdefghijklmnopqrstuvwxyz123456789";
-    protected static final String BASE_PATH = "/iot-api/apps/" + APP_ID;
+    protected static final String BASE_PATH = "/thing-if/apps/" + APP_ID;
     protected static final String KII_CLOUD_BASE_PATH = "/api/apps/" + APP_ID;
     protected static final String DEMO_THING_TYPE = "LED";
     protected static final String DEMO_SCHEMA_NAME = "SmartLightDemo";
