@@ -105,3 +105,17 @@ task makeAAR(dependsOn: [clean, setBranch, setVer, assemble]) {
     }
 }
 
+task javadocArchive(type: Zip, dependsOn: [generateJavadoc, setBranch, setVer]) {
+    from 'build/outputs/javadoc'
+    destinationDir = file('build/outputs/javadoc')
+    archiveName = 'apidoc.zip'
+    doLast{
+        copy {
+            from 'build/outputs/javadoc/apidoc.zip'
+            into './'
+            rename "apidoc.zip", "apidoc-${branchString}-${versionString}.zip"
+        }
+    }
+}
+
+

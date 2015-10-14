@@ -27,8 +27,8 @@ test:
     - ./gradlew :iotcloudsdk:generateJavadoc
     - cp -fr iotcloudsdk/build/outputs/javadoc $CIRCLE_ARTIFACTS/javadoc/
     # archive java doc
-    # - ./gradlew :iotcloudsdk:javadocArchive
-    # - cp iotcloudsdk/build/outputs/apidoc*.zip $CIRCLE_ARTIFACTS
+    - ./gradlew :iotcloudsdk:javadocArchive
+    - cp iotcloudsdk/apidoc*.zip $CIRCLE_ARTIFACTS
 
   override:
     # start the emulator
