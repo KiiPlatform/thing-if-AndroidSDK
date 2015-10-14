@@ -5,6 +5,10 @@ android {
     buildToolsVersion "22.0.1"
     publishNonDefault true
 
+    lintOptions {
+        abortOnError false
+    }
+
     defaultConfig {
         minSdkVersion 10
         targetSdkVersion 22
