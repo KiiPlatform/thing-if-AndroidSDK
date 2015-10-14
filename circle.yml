@@ -32,17 +32,17 @@ test:
 
   override:
     # start the emulator
-    # - emulator -memory 512 -avd my-android-10 -no-audio -no-window:
-    #     background: true
-    #     parallel: true
+    - emulator -memory 512 -avd my-android-10 -no-audio -no-window:
+        background: true
+        parallel: true
     # wait for it to have booted
-    # - circle-android wait-for-boot
-    # run tests  against the emulator.
-    # - ./gradlew :iotcloudsdktest:allTest
+    - circle-android wait-for-boot
+    # run small tests  against the emulator.
+    - ./gradlew :iotcloudsdk:connectedAndroidTest
     # copy the test results to the test results directory.
-    # - cp -r iotcloudsdktest/junit-results/*.xml $CIRCLE_TEST_REPORTS
+    - cp -r iotcloudsdk/build/outputs/*.xml $CIRCLE_TEST_REPORTS/small_tests.xml
     # copy the logcat file to test results directory.
-    # - adb logcat -d > logcat.txt
-    # - mv logcat.txt $CIRCLE_ARTIFACTS/logcat_test.txt
+    - adb logcat -d > logcat.txt
+    - mv logcat.txt $CIRCLE_ARTIFACTS/logcat_small_test.txt
 
 # vim:set tw=2 ts=2 sw=2 tw=0 et fenc=utf8:
