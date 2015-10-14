@@ -1,4 +1,6 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion 22
@@ -116,6 +118,69 @@ task javadocArchive(type: Zip, dependsOn: [generateJavadoc, setBranch, setVer]) 
             rename "apidoc.zip", "apidoc-${branchString}-${versionString}.zip"
         }
     }
+}
+
+def getLogicalVersion(){
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'sh', 'getLogicalVersion.sh'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
+}
+
+// Configure  maven publish
+publishing {
+    publications {
+        kiiArchives(MavenPublication) {
+            groupId "com.kii.thing-if"
+            artifactId "thing-if"
+            version "${project.getLogicalVersion()}"
+
+            artifact(javadocArchive){
+                classifier 'documentation'
+                extension 'zip'
+            }
+            artifact("${project.buildDir}/outputs/aar/${project.name.trim()}-release.aar"){
+                classifier 'library'
+                extension 'aar'
+            }
+        }
+    }
+}
+
+// configure for bintrayUpload task
+bintray {
+    user = 'yongpingchen'
+    key = '70d679465cf6b5169fa01bbd58c91c24a9adb326'
+
+    //the files to deploy are the result of maven publication
+    publications = ['kiiArchives']
+    dryRun = false; // deploy files
+
+    publish = true //If version should be auto published after an upload
+
+    //Package configuration. The plugin will use the repo and name properties to check if the package already exists. In that case, there's no need to configure the other package properties (like userOrg, desc, etc).
+    pkg {
+        repo = 'KiiAndroidSDK'
+        name = 'thing-if'
+        userOrg = 'kii'
+        websiteUrl = 'http://documentation.kii.com/'
+        issueTrackerUrl = 'http://community.kii.com/'
+        labels = ['Thing']
+        publicDownloadNumbers = true
+        version {
+            name = "${project.getLogicalVersion()}" //Bintray logical version name
+            desc = 'Thing Interaction Framework'
+            released  = new Date()
+            vcsTag = "${project.getLogicalVersion()}"
+        }
+    }
+}
+
+// generate documentation and pom.xml before hand
+bintrayUpload {
+    dependsOn javadocArchive, 'generatePomFileForKiiArchivesPublication'
 }
 
 
