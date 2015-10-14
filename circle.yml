@@ -21,8 +21,8 @@ test:
     # save lint reports of sdk
     - mkdir $CIRCLE_ARTIFACTS/lintReports; cp -fr iotcloudsdk/build/outputs/lint-results* $CIRCLE_ARTIFACTS/lintReports/
     # generate sdk aar file
-    # - ./gradlew :iotcloudsdk:makeAAR
-    # - cp -fr iotcloudsdk/build/artifacts/* $CIRCLE_ARTIFACTS
+    - ./gradlew :iotcloudsdk:makeAAR
+    - cp -fr iotcloudsdk/build/artifacts/* $CIRCLE_ARTIFACTS
     # generate java doc
     - ./gradlew :iotcloudsdk:generateJavadoc
     - cp -fr iotcloudsdk/build/outputs/javadoc $CIRCLE_ARTIFACTS/javadoc/
