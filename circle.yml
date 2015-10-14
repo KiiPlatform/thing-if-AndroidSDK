@@ -40,7 +40,7 @@ test:
     # run small tests  against the emulator.
     - ./gradlew :iotcloudsdk:connectedAndroidTest
     # copy the test results to the test results directory.
-    - cp -r iotcloudsdk/build/outputs/*.xml $CIRCLE_TEST_REPORTS/small_tests.xml
+    - cp -r iotcloudsdk/build/outputs/androidTest-results/connected/*.xml $CIRCLE_TEST_REPORTS/small_tests.xml
     # copy the logcat file to test results directory.
     - adb logcat -d > logcat.txt
     - mv logcat.txt $CIRCLE_ARTIFACTS/logcat_small_test.txt
