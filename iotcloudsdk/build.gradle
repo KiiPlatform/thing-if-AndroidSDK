@@ -74,7 +74,7 @@ task setBranch << {
 
     def stdout = new ByteArrayOutputStream()
     exec {
-        commandLine 'sh', './getBranch.sh'
+        commandLine 'sh', 'build_scripts/getBranch.sh'
 
         standardOutput = stdout
     }
@@ -123,7 +123,7 @@ task javadocArchive(type: Zip, dependsOn: [generateJavadoc, setBranch, setVer]) 
 def getLogicalVersion(){
     def stdout = new ByteArrayOutputStream()
     exec {
-        commandLine 'sh', 'getLogicalVersion.sh'
+        commandLine 'sh', 'build_scripts/getLogicalVersion.sh'
         standardOutput = stdout
     }
     return stdout.toString().trim()
@@ -182,5 +182,3 @@ bintray {
 bintrayUpload {
     dependsOn javadocArchive, 'generatePomFileForKiiArchivesPublication'
 }
-
-
