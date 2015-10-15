@@ -45,4 +45,11 @@ test:
     - adb logcat -d > logcat.txt
     - mv logcat.txt $CIRCLE_ARTIFACTS/logcat_small_test.txt
 
+    # run largetests
+    - ./gradlew :iotcloudsdktest:allTest
+    - mkdir $CIRCLE_TEST_REPORTS/largetests; cp -r iotcloudsdktest/junit-results/*.xml $CIRCLE_TEST_REPORTS/largetests/
+    # copy the logcat file to test results directory.
+    - adb logcat -d > logcat.txt
+    - mv logcat.txt $CIRCLE_ARTIFACTS/logcat_large_test.txt
+
 # vim:set tw=2 ts=2 sw=2 tw=0 et fenc=utf8:
