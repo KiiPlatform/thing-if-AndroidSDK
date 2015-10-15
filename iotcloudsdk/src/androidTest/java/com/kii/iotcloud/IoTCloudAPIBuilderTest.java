@@ -31,7 +31,7 @@ public class IoTCloudAPIBuilderTest extends SmallTestBase {
         Assert.assertEquals("appid", api.getAppID());
         Assert.assertEquals("appkey", api.getAppKey());
         Assert.assertEquals(Site.JP.getBaseUrl(), api.getBaseUrl());
-        Assert.assertEquals(new TypedID(TypedID.Types.USER, "user1234"), api.getOwner().getID());
+        Assert.assertEquals(new TypedID(TypedID.Types.USER, "user1234"), api.getOwner().getTypedID());
         Assert.assertEquals("token", api.getOwner().getAccessToken());
     }
     @Test(expected = IllegalStateException.class)

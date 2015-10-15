@@ -11,7 +11,7 @@ import android.text.TextUtils;
  */
 public class Owner implements Parcelable {
 
-    private final TypedID ID;
+    private final TypedID typedID;
     private final String accessToken;
 
     public Owner(@NonNull TypedID ownerID, @NonNull String accessToken) {
@@ -21,12 +21,12 @@ public class Owner implements Parcelable {
         if (TextUtils.isEmpty(accessToken)) {
             throw new IllegalArgumentException("accessToken is null or empty");
         }
-        this.ID = ownerID;
+        this.typedID = ownerID;
         this.accessToken = accessToken;
     }
 
-    public TypedID getID() {
-        return this.ID;
+    public TypedID getTypedID() {
+        return this.typedID;
     }
 
     public String getAccessToken() {
@@ -35,7 +35,7 @@ public class Owner implements Parcelable {
 
     // Implementation of Parcelable
     protected Owner(Parcel in) {
-        this.ID = in.readParcelable(TypedID.class.getClassLoader());
+        this.typedID = in.readParcelable(TypedID.class.getClassLoader());
         this.accessToken = in.readString();
     }
     public static final Creator<Owner> CREATOR = new Creator<Owner>() {
@@ -55,7 +55,7 @@ public class Owner implements Parcelable {
     }
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeParcelable(this.ID, i);
+        parcel.writeParcelable(this.typedID, i);
         parcel.writeString(this.accessToken);
     }
 }

@@ -41,9 +41,9 @@ public class IoTCloudAPI_CopyWithTargetTest extends IoTCloudAPITestBase {
         assertEquals(api.getAppID(), copiedApi.getAppID());
         assertEquals(api.getAppKey(), copiedApi.getAppKey());
         assertEquals(api.getBaseUrl(), copiedApi.getBaseUrl());
-        assertEquals(api.getOwner().getID(), copiedApi.getOwner().getID());
+        assertEquals(api.getOwner().getTypedID(), copiedApi.getOwner().getTypedID());
         assertEquals(api.getOwner().getAccessToken(), copiedApi.getOwner().getAccessToken());
-        assertEquals(thingID2, copiedApi.getTarget().getID());
+        assertEquals(thingID2, copiedApi.getTarget().getTypedID());
         assertEquals("thing-access-token-4321", copiedApi.getTarget().getAccessToken());
     }
     @Test
@@ -68,7 +68,7 @@ public class IoTCloudAPI_CopyWithTargetTest extends IoTCloudAPITestBase {
         assertEquals(api.getAppID(), copiedApi.getAppID());
         assertEquals(api.getAppKey(), copiedApi.getAppKey());
         assertEquals(api.getBaseUrl(), copiedApi.getBaseUrl());
-        assertEquals(api.getOwner().getID(), copiedApi.getOwner().getID());
+        assertEquals(api.getOwner().getTypedID(), copiedApi.getOwner().getTypedID());
         assertEquals(api.getOwner().getAccessToken(), copiedApi.getOwner().getAccessToken());
         assertEquals(new JsonParser().parse(GsonRepository.gson().toJson(api)),
                 new JsonParser().parse(GsonRepository.gson().toJson(copiedApi)));
@@ -99,9 +99,9 @@ public class IoTCloudAPI_CopyWithTargetTest extends IoTCloudAPITestBase {
         assertEquals(api.getAppID(), copiedApi.getAppID());
         assertEquals(api.getAppKey(), copiedApi.getAppKey());
         assertEquals(api.getBaseUrl(), copiedApi.getBaseUrl());
-        assertEquals(api.getOwner().getID(), copiedApi.getOwner().getID());
+        assertEquals(api.getOwner().getTypedID(), copiedApi.getOwner().getTypedID());
         assertEquals(api.getOwner().getAccessToken(), copiedApi.getOwner().getAccessToken());
-        assertEquals(thingID2, copiedApi.getTarget().getID());
+        assertEquals(thingID2, copiedApi.getTarget().getTypedID());
         assertEquals("thing-access-token-4321", copiedApi.getTarget().getAccessToken());
     }
     @Test(expected = IllegalArgumentException.class)

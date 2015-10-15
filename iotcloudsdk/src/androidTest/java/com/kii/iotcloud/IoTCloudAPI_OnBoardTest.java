@@ -40,7 +40,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         Assert.assertTrue(api.onboarded());
 
         // verify the result
-        Assert.assertEquals(new TypedID(TypedID.Types.THING, thingID), target.getID());
+        Assert.assertEquals(new TypedID(TypedID.Types.THING, thingID), target.getTypedID());
         Assert.assertEquals(accessToken, target.getAccessToken());
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -55,7 +55,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         this.assertRequestHeader(expectedRequestHeaders, request);
 
         JsonObject expectedRequestBody = new JsonObject();
-        expectedRequestBody.addProperty("owner", api.getOwner().getID().toString());
+        expectedRequestBody.addProperty("owner", api.getOwner().getTypedID().toString());
         expectedRequestBody.addProperty("vendorThingID", vendorThingID);
         expectedRequestBody.addProperty("thingPassword", thingPassword);
         expectedRequestBody.addProperty("thingType", DEMO_THING_TYPE);
@@ -91,7 +91,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         this.assertRequestHeader(expectedRequestHeaders, request);
 
         JsonObject expectedRequestBody = new JsonObject();
-        expectedRequestBody.addProperty("owner", api.getOwner().getID().toString());
+        expectedRequestBody.addProperty("owner", api.getOwner().getTypedID().toString());
         expectedRequestBody.addProperty("vendorThingID", vendorThingID);
         expectedRequestBody.addProperty("thingPassword", thingPassword);
         expectedRequestBody.addProperty("thingType", DEMO_THING_TYPE);
@@ -127,7 +127,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         this.assertRequestHeader(expectedRequestHeaders, request);
 
         JsonObject expectedRequestBody = new JsonObject();
-        expectedRequestBody.addProperty("owner", api.getOwner().getID().toString());
+        expectedRequestBody.addProperty("owner", api.getOwner().getTypedID().toString());
         expectedRequestBody.addProperty("vendorThingID", vendorThingID);
         expectedRequestBody.addProperty("thingPassword", thingPassword);
         expectedRequestBody.addProperty("thingType", DEMO_THING_TYPE);
@@ -163,7 +163,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         this.assertRequestHeader(expectedRequestHeaders, request);
 
         JsonObject expectedRequestBody = new JsonObject();
-        expectedRequestBody.addProperty("owner", api.getOwner().getID().toString());
+        expectedRequestBody.addProperty("owner", api.getOwner().getTypedID().toString());
         expectedRequestBody.addProperty("vendorThingID", vendorThingID);
         expectedRequestBody.addProperty("thingPassword", thingPassword);
         expectedRequestBody.addProperty("thingType", DEMO_THING_TYPE);
@@ -219,7 +219,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         Assert.assertTrue(api.onboarded());
 
         // verify the result
-        Assert.assertEquals(new TypedID(TypedID.Types.THING, thingID), target.getID());
+        Assert.assertEquals(new TypedID(TypedID.Types.THING, thingID), target.getTypedID());
         Assert.assertEquals(accessToken, target.getAccessToken());
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -234,7 +234,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         this.assertRequestHeader(expectedRequestHeaders, request);
 
         JsonObject expectedRequestBody = new JsonObject();
-        expectedRequestBody.addProperty("owner", api.getOwner().getID().toString());
+        expectedRequestBody.addProperty("owner", api.getOwner().getTypedID().toString());
         expectedRequestBody.addProperty("thingID", thingID);
         expectedRequestBody.addProperty("thingPassword", thingPassword);
         this.assertRequestBody(expectedRequestBody, request);

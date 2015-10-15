@@ -49,7 +49,7 @@ public class IoTCloudAPI_PostNewCommandTest extends IoTCloudAPITestBase {
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
         this.addMockResponseForPostNewCommand(201, commandID);
-        this.addMockResponseForGetCommand(200, commandID, api.getOwner().getID(), thingID, actions, null, null, created, modified, schema);
+        this.addMockResponseForGetCommand(200, commandID, api.getOwner().getTypedID(), thingID, actions, null, null, created, modified, schema);
 
         api.setTarget(target);
         Command command = api.postNewCommand(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
@@ -57,7 +57,7 @@ public class IoTCloudAPI_PostNewCommandTest extends IoTCloudAPITestBase {
         Assert.assertEquals(commandID, command.getCommandID());
         Assert.assertEquals(DEMO_SCHEMA_NAME, command.getSchemaName());
         Assert.assertEquals(DEMO_SCHEMA_VERSION, command.getSchemaVersion());
-        Assert.assertEquals(api.getOwner().getID(), command.getIssuerID());
+        Assert.assertEquals(api.getOwner().getTypedID(), command.getIssuerID());
         Assert.assertEquals(thingID, command.getTargetID());
         Assert.assertEquals(created, command.getCreated());
         Assert.assertEquals(modified, command.getModified());
@@ -84,7 +84,7 @@ public class IoTCloudAPI_PostNewCommandTest extends IoTCloudAPITestBase {
         JsonObject expectedRequestBody = new JsonObject();
         expectedRequestBody.addProperty("schema", DEMO_SCHEMA_NAME);
         expectedRequestBody.addProperty("schemaVersion", DEMO_SCHEMA_VERSION);
-        expectedRequestBody.addProperty("issuer", api.getOwner().getID().toString());
+        expectedRequestBody.addProperty("issuer", api.getOwner().getTypedID().toString());
         JsonArray expectedActions = new JsonArray();
         for (Action action : actions) {
             expectedActions.add(GsonRepository.gson(schema).toJsonTree(action));
@@ -138,7 +138,7 @@ public class IoTCloudAPI_PostNewCommandTest extends IoTCloudAPITestBase {
         JsonObject expectedRequestBody = new JsonObject();
         expectedRequestBody.addProperty("schema", DEMO_SCHEMA_NAME);
         expectedRequestBody.addProperty("schemaVersion", DEMO_SCHEMA_VERSION);
-        expectedRequestBody.addProperty("issuer", api.getOwner().getID().toString());
+        expectedRequestBody.addProperty("issuer", api.getOwner().getTypedID().toString());
         JsonArray expectedActions = new JsonArray();
         for (Action action : actions) {
             expectedActions.add(GsonRepository.gson(schema).toJsonTree(action));
@@ -182,7 +182,7 @@ public class IoTCloudAPI_PostNewCommandTest extends IoTCloudAPITestBase {
         JsonObject expectedRequestBody = new JsonObject();
         expectedRequestBody.addProperty("schema", DEMO_SCHEMA_NAME);
         expectedRequestBody.addProperty("schemaVersion", DEMO_SCHEMA_VERSION);
-        expectedRequestBody.addProperty("issuer", api.getOwner().getID().toString());
+        expectedRequestBody.addProperty("issuer", api.getOwner().getTypedID().toString());
         JsonArray expectedActions = new JsonArray();
         for (Action action : actions) {
             expectedActions.add(GsonRepository.gson(schema).toJsonTree(action));
@@ -225,7 +225,7 @@ public class IoTCloudAPI_PostNewCommandTest extends IoTCloudAPITestBase {
         JsonObject expectedRequestBody = new JsonObject();
         expectedRequestBody.addProperty("schema", DEMO_SCHEMA_NAME);
         expectedRequestBody.addProperty("schemaVersion", DEMO_SCHEMA_VERSION);
-        expectedRequestBody.addProperty("issuer", api.getOwner().getID().toString());
+        expectedRequestBody.addProperty("issuer", api.getOwner().getTypedID().toString());
         JsonArray expectedActions = new JsonArray();
         for (Action action : actions) {
             expectedActions.add(GsonRepository.gson(schema).toJsonTree(action));

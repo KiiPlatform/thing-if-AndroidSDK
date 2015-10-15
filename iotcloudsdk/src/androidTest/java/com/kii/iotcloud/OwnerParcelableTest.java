@@ -16,7 +16,7 @@ public class OwnerParcelableTest extends SmallTestBase {
         owner.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
         Owner deserializedOwner = Owner.CREATOR.createFromParcel(parcel);
-        Assert.assertEquals(owner.getID(), deserializedOwner.getID());
+        Assert.assertEquals(owner.getTypedID(), deserializedOwner.getTypedID());
         Assert.assertEquals(owner.getAccessToken(), deserializedOwner.getAccessToken());
     }
 }

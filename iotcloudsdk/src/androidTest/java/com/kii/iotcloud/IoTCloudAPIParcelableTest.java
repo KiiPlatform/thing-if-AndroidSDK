@@ -49,7 +49,7 @@ public class IoTCloudAPIParcelableTest extends SmallTestBase {
         Assert.assertEquals(appKey, deserializedApi.getAppKey());
         Assert.assertEquals(baseUrl, deserializedApi.getBaseUrl());
         Assert.assertEquals(appID, deserializedApi.getAppID());
-        Assert.assertEquals(ownerID, deserializedApi.getOwner().getID());
+        Assert.assertEquals(ownerID, deserializedApi.getOwner().getTypedID());
         Assert.assertEquals(ownerAccessToken, deserializedApi.getOwner().getAccessToken());
 
         Assert.assertEquals(1, deserializedApi.getSchemas().size());

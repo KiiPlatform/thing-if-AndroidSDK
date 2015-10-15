@@ -62,7 +62,7 @@ public class IoTCloudAPI_GetCommandTest extends IoTCloudAPITestBase {
         CommandState state = CommandState.DELIVERED;
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        this.addMockResponseForGetCommand(200, commandID, api.getOwner().getID(), thingID, actions, actionResults, state, created, modified, schema);
+        this.addMockResponseForGetCommand(200, commandID, api.getOwner().getTypedID(), thingID, actions, actionResults, state, created, modified, schema);
 
         api.setTarget(target);
         Command command = api.getCommand(commandID);
@@ -71,7 +71,7 @@ public class IoTCloudAPI_GetCommandTest extends IoTCloudAPITestBase {
         Assert.assertEquals(commandID, command.getCommandID());
         Assert.assertEquals(DEMO_SCHEMA_NAME, command.getSchemaName());
         Assert.assertEquals(DEMO_SCHEMA_VERSION, command.getSchemaVersion());
-        Assert.assertEquals(api.getOwner().getID(), command.getIssuerID());
+        Assert.assertEquals(api.getOwner().getTypedID(), command.getIssuerID());
         Assert.assertEquals(thingID, command.getTargetID());
         Assert.assertEquals(created, command.getCreated());
         Assert.assertEquals(modified, command.getModified());
@@ -212,7 +212,7 @@ public class IoTCloudAPI_GetCommandTest extends IoTCloudAPITestBase {
         CommandState state = CommandState.DELIVERED;
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithSchema(APP_ID, APP_KEY, invalidSchema);
-        this.addMockResponseForGetCommand(200, commandID, api.getOwner().getID(), thingID, actions, actionResults, state, created, modified, schema);
+        this.addMockResponseForGetCommand(200, commandID, api.getOwner().getTypedID(), thingID, actions, actionResults, state, created, modified, schema);
 
         try {
             api.setTarget(target);
@@ -260,7 +260,7 @@ public class IoTCloudAPI_GetCommandTest extends IoTCloudAPITestBase {
         CommandState state = CommandState.DELIVERED;
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithSchema(APP_ID, APP_KEY, invalidSchema);
-        this.addMockResponseForGetCommand(200, commandID, api.getOwner().getID(), thingID, actions, actionResults, state, created, modified, schema);
+        this.addMockResponseForGetCommand(200, commandID, api.getOwner().getTypedID(), thingID, actions, actionResults, state, created, modified, schema);
 
         try {
             api.setTarget(target);
@@ -303,7 +303,7 @@ public class IoTCloudAPI_GetCommandTest extends IoTCloudAPITestBase {
         CommandState state = CommandState.DELIVERED;
 
         IoTCloudAPI api = this.craeteIoTCloudAPIWithSchema(APP_ID, APP_KEY, unsupportedSetColorSchema);
-        this.addMockResponseForGetCommand(200, commandID, api.getOwner().getID(), thingID, actions, actionResults, state, created, modified, schema);
+        this.addMockResponseForGetCommand(200, commandID, api.getOwner().getTypedID(), thingID, actions, actionResults, state, created, modified, schema);
 
         InternalUtils.gsonRepositoryClearCache();
         try {
