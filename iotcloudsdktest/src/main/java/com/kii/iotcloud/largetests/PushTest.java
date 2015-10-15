@@ -1,6 +1,9 @@
-package com.kii.iotcloud;
+package com.kii.iotcloud.largetests;
 
 import android.support.test.runner.AndroidJUnit4;
+
+import com.kii.iotcloud.IoTCloudAPI;
+import com.kii.iotcloud.PushBackend;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
