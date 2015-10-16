@@ -50,7 +50,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Customize json serialization and deserialization for domain model of IoTCloudSDK.
+ * Customize json serialization and deserialization for domain model of ThingIFSDK.
  * This class is for internal use only. Do not use it from your application.
  */
 public class GsonRepository {

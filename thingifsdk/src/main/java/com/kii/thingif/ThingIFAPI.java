@@ -14,9 +14,9 @@ import com.google.gson.JsonParseException;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.ActionResult;
 import com.kii.thingif.command.Command;
-import com.kii.thingif.exception.IoTCloudException;
-import com.kii.thingif.exception.IoTCloudRestException;
-import com.kii.thingif.exception.StoredIoTCloudAPIInstanceNotFoundException;
+import com.kii.thingif.exception.ThingIFException;
+import com.kii.thingif.exception.ThingIFRestException;
+import com.kii.thingif.exception.StoredThingIFAPIInstanceNotFoundException;
 import com.kii.thingif.exception.UnsupportedActionException;
 import com.kii.thingif.exception.UnsupportedSchemaException;
 import com.kii.thingif.internal.GsonRepository;
@@ -44,7 +44,7 @@ import java.util.Map;
  */
 public class ThingIFAPI implements Parcelable {
 
-    private static final String SHARED_PREFERENCES_KEY_INSTANCE = "IoTCloudAPI_INSTANCE";
+    private static final String SHARED_PREFERENCES_KEY_INSTANCE = "ThingIFAPI_INSTANCE";
     private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
     private static final MediaType MEDIA_TYPE_INSTALLATION_CREATION_REQUEST = MediaType.parse("application/vnd.kii.InstallationCreationRequest+json");
     private static final MediaType MEDIA_TYPE_ONBOARDING_WITH_THING_ID_BY_OWNER_REQUEST = MediaType.parse("application/vnd.kii.OnboardingWithThingIDByOwner+json");
@@ -62,31 +62,31 @@ public class ThingIFAPI implements Parcelable {
     private String installationID;
 
     /**
-     * Try to load the instance of IoTCloudAPI using stored serialized instance.
+     * Try to load the instance of ThingIFAPI using stored serialized instance.
      *
      * @param context
-     * @return IoTCloudAPI instance.
+     * @return ThingIFAPI instance.
      * @throws IllegalStateException Thrown when the instance has not stored.
      */
-    public static ThingIFAPI loadFromStoredInstance(@NonNull Context context) throws StoredIoTCloudAPIInstanceNotFoundException {
+    public static ThingIFAPI loadFromStoredInstance(@NonNull Context context) throws StoredThingIFAPIInstanceNotFoundException {
         return loadFromStoredInstance(context, null);
     }
     /**
-     * Try to load the instance of IoTCloudAPI using stored serialized instance.
+     * Try to load the instance of ThingIFAPI using stored serialized instance.
      *
      * @param context
      * @param  tag
-     * @return IoTCloudAPI instance.
+     * @return ThingIFAPI instance.
      * @throws IllegalStateException Thrown when the instance has not stored.
      */
-    public static ThingIFAPI loadFromStoredInstance(@NonNull Context context, String tag) throws StoredIoTCloudAPIInstanceNotFoundException {
+    public static ThingIFAPI loadFromStoredInstance(@NonNull Context context, String tag) throws StoredThingIFAPIInstanceNotFoundException {
         ThingIFAPI.context = context.getApplicationContext();
         SharedPreferences preferences = getSharedPreferences();
         String serializedJson = preferences.getString(getSharedPreferencesKey(tag), null);
         if (serializedJson != null) {
             return GsonRepository.gson().fromJson(serializedJson, ThingIFAPI.class);
         }
-        throw new StoredIoTCloudAPIInstanceNotFoundException(tag);
+        throw new StoredThingIFAPIInstanceNotFoundException(tag);
     }
     /**
      * Clear all saved instances in the SharedPreferences.
@@ -130,7 +130,7 @@ public class ThingIFAPI implements Parcelable {
             @Nullable Target target,
             @NonNull List<Schema> schemas,
             String installationID) {
-        // Parameters are checked by IoTCloudAPIBuilder
+        // Parameters are checked by ThingIFAPIBuilder
         if (context != null) {
             ThingIFAPI.context = context.getApplicationContext();
         }
@@ -151,7 +151,7 @@ public class ThingIFAPI implements Parcelable {
      *
      * @param target
      * @param tag
-     * @return IoTCloudAPI instance
+     * @return ThingIFAPI instance
      */
     public ThingIFAPI copyWithTarget(@NonNull Target target, @Nullable String tag) {
         if (target == null) {
@@ -179,8 +179,8 @@ public class ThingIFAPI implements Parcelable {
      * @return Target instance can be used to operate target, manage resources
      * of the target.
      * @throws IllegalStateException Thrown when this instance is already onboarded.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
-     * @throws IoTCloudRestException Thrown when server returns error response.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
      */
     @NonNull
     @WorkerThread
@@ -189,7 +189,7 @@ public class ThingIFAPI implements Parcelable {
             @NonNull String thingPassword,
             @Nullable String thingType,
             @Nullable JSONObject thingProperties)
-            throws IoTCloudException {
+            throws ThingIFException {
         if (this.onboarded()) {
             throw new IllegalStateException("This instance is already onboarded.");
         }
@@ -226,15 +226,15 @@ public class ThingIFAPI implements Parcelable {
      * @return Target instance can be used to operate target, manage resources
      * of the target.
      * @throws IllegalStateException Thrown when this instance is already onboarded.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
-     * @throws IoTCloudRestException Thrown when server returns error response.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
      */
     @NonNull
     @WorkerThread
     public Target onboard(
             @NonNull String thingID,
             @NonNull String thingPassword) throws
-            IoTCloudException {
+            ThingIFException {
         if (this.onboarded()) {
             throw new IllegalStateException("This instance is already onboarded.");
         }
@@ -255,7 +255,7 @@ public class ThingIFAPI implements Parcelable {
         return this.onboard(MEDIA_TYPE_ONBOARDING_WITH_THING_ID_BY_OWNER_REQUEST, requestBody);
     }
 
-    private Target onboard(MediaType contentType, JSONObject requestBody) throws IoTCloudException {
+    private Target onboard(MediaType contentType, JSONObject requestBody) throws ThingIFException {
         String path = MessageFormat.format("/thing-if/apps/{0}/onboardings", this.appID);
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
@@ -289,8 +289,8 @@ public class ThingIFAPI implements Parcelable {
      *                    JPushInterface.getUdid().
      * @param pushBackend Specify backend to use.
      * @return Installation ID used in IoT Cloud.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
-     * @throws IoTCloudRestException Thrown when server returns error response.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
      * @see #installPush(String, PushBackend, boolean) for development/production environment installation.
      */
     @NonNull
@@ -298,7 +298,7 @@ public class ThingIFAPI implements Parcelable {
     public String installPush(
             @Nullable String deviceToken,
             @NonNull PushBackend pushBackend
-    ) throws IoTCloudException {
+    ) throws ThingIFException {
         return this.installPush(deviceToken,pushBackend,false);
     }
 
@@ -315,8 +315,8 @@ public class ThingIFAPI implements Parcelable {
      * @param pushBackend Specify backend to use.
      * @param development Specify development flag to use. Indicates if the installation is for development or production environment.
      * @return Installation ID used in IoT Cloud.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
-     * @throws IoTCloudRestException Thrown when server returns error response.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
      */
     @NonNull
     @WorkerThread
@@ -324,7 +324,7 @@ public class ThingIFAPI implements Parcelable {
             @Nullable String deviceToken,
             @NonNull PushBackend pushBackend,
             boolean development
-    ) throws IoTCloudException{
+    ) throws ThingIFException{
         if (pushBackend == null) {
             throw new IllegalArgumentException("pushBackend is null");
         }
@@ -370,12 +370,12 @@ public class ThingIFAPI implements Parcelable {
      *                       {@link #installPush(String, PushBackend)}
      *                       if null is specified, value obtained by
      *                       {@link #getInstallationID()} is used.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
-     * @throws IoTCloudRestException Thrown when server returns error response.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
      */
     @NonNull
     @WorkerThread
-    public void uninstallPush(@NonNull String installationID) throws IoTCloudException {
+    public void uninstallPush(@NonNull String installationID) throws ThingIFException {
         if (installationID == null) {
             throw new IllegalArgumentException("installationID is null");
         }
@@ -397,15 +397,15 @@ public class ThingIFAPI implements Parcelable {
      * the target Asynchronously and may not finished. Actual Result will be
      * delivered through push notification or you can check the latest status
      * of the command by calling {@link #getCommand}.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
-     * @throws IoTCloudRestException Thrown when server returns error response.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
      */
     @NonNull
     @WorkerThread
     public Command postNewCommand(
             @NonNull String schemaName,
             int schemaVersion,
-            @NonNull List<Action> actions) throws IoTCloudException {
+            @NonNull List<Action> actions) throws ThingIFException {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
@@ -436,8 +436,8 @@ public class ThingIFAPI implements Parcelable {
      *                  and can be obtained by {@link Command#getCommandID}
      *
      * @return Command instance.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
-     * @throws IoTCloudRestException Thrown when server returns error response.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
      * @throws UnsupportedSchemaException Thrown when the returned response has a schema that cannot handle this instance.
      * @throws UnsupportedActionException Thrown when the returned response has a action that cannot handle this instance.
      */
@@ -445,7 +445,7 @@ public class ThingIFAPI implements Parcelable {
     @WorkerThread
     public Command getCommand(
             @NonNull String commandID)
-            throws IoTCloudException {
+            throws ThingIFException {
 
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
@@ -482,15 +482,15 @@ public class ThingIFAPI implements Parcelable {
      *                      to get the result from the next page.
      * @return 1st Element is Commands belongs to the Target. 2nd element is
      * paginationKey if there is next page to be obtained.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
-     * @throws IoTCloudRestException Thrown when server returns error response.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
      * @throws UnsupportedSchemaException Thrown when the returned response has a schema that cannot handle this instance.
      * @throws UnsupportedActionException Thrown when the returned response has a action that cannot handle this instance.
      */
     public Pair<List<Command>, String> listCommands (
             int bestEffortLimit,
             @Nullable String paginationKey)
-            throws IoTCloudException {
+            throws ThingIFException {
 
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
@@ -533,8 +533,8 @@ public class ThingIFAPI implements Parcelable {
      *                trigger.
      * @param predicate Specify when the Trigger fires command.
      * @return Instance of the Trigger registered in IoT Cloud.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
-     * @throws IoTCloudRestException Thrown when server returns error response.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
      */
     @NonNull
     @WorkerThread
@@ -543,7 +543,7 @@ public class ThingIFAPI implements Parcelable {
             int schemaVersion,
             @NonNull List<Action> actions,
             @NonNull Predicate predicate)
-            throws IoTCloudException {
+            throws ThingIFException {
 
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
@@ -580,8 +580,8 @@ public class ThingIFAPI implements Parcelable {
      * Get specified Trigger.
      * @param triggerID ID of the Trigger to get.
      * @return Trigger instance.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
-     * @throws IoTCloudRestException Thrown when server returns error response.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
      * @throws UnsupportedSchemaException Thrown when the returned response has a schema that cannot handle this instance.
      * @throws UnsupportedActionException Thrown when the returned response has a action that cannot handle this instance.
      */
@@ -589,7 +589,7 @@ public class ThingIFAPI implements Parcelable {
     @WorkerThread
     public Trigger getTrigger(
             @NonNull String triggerID)
-            throws IoTCloudException {
+            throws ThingIFException {
 
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
@@ -625,8 +625,8 @@ public class ThingIFAPI implements Parcelable {
      * @param predicate Modified predicate.
      *                  If null NonNull actions must be specified.
      * @return Updated Trigger instance.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
-     * @throws IoTCloudRestException Thrown when server returns error response.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
      * @throws IllegalArgumentException when both actions and predicates are null
      */
     @NonNull
@@ -637,7 +637,7 @@ public class ThingIFAPI implements Parcelable {
             int schemaVersion,
             @Nullable List<Action> actions,
             @Nullable Predicate predicate) throws
-            IoTCloudException {
+            ThingIFException {
 
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
@@ -679,15 +679,15 @@ public class ThingIFAPI implements Parcelable {
      * @param triggerID ID of the Trigger to be enabled(/disabled).
      * @param enable specify whether enable of disable the Trigger.
      * @return Updated Trigger Instance.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
-     * @throws IoTCloudRestException Thrown when server returns error response.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
      */
     @NonNull
     @WorkerThread
     public Trigger enableTrigger(
             @NonNull String triggerID,
             boolean enable)
-            throws IoTCloudException {
+            throws ThingIFException {
 
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
@@ -707,14 +707,14 @@ public class ThingIFAPI implements Parcelable {
      * Delete the specified Trigger.
      * @param triggerID ID of the Trigger to be deleted.
      * @return Deleted Trigger Instance.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
-     * @throws IoTCloudRestException Thrown when server returns error response.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
      */
     @NonNull
     @WorkerThread
     public Trigger deleteTrigger(
             @NonNull String triggerID) throws
-            IoTCloudException {
+            ThingIFException {
 
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
@@ -746,8 +746,8 @@ public class ThingIFAPI implements Parcelable {
      * by IoT Cloud. paginationKey is null when there is next page to be obtained.
      * Obtained paginationKey can be used to get the rest of the items stored
      * in the target.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
-     * @throws IoTCloudRestException Thrown when server returns error response.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
      * @throws UnsupportedSchemaException Thrown when the returned response has a schema that cannot handle this instance.
      * @throws UnsupportedActionException Thrown when the returned response has a action that cannot handle this instance.
      */
@@ -756,7 +756,7 @@ public class ThingIFAPI implements Parcelable {
     public Pair<List<Trigger>, String> listTriggers(
             int bestEffortLimit,
             @Nullable String paginationKey) throws
-            IoTCloudException {
+            ThingIFException {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
@@ -798,13 +798,13 @@ public class ThingIFAPI implements Parcelable {
      * @param classOfS Specify class of the State.
      * @param <S> State class.
      * @return Instance of Target State.
-     * @throws IoTCloudException Thrown when failed to connect IoT Cloud Server.
-     * @throws IoTCloudRestException Thrown when server returns error response.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
      */
     @NonNull
     @WorkerThread
     public <S extends TargetState> S getTargetState(
-            @NonNull Class<S> classOfS) throws IoTCloudException {
+            @NonNull Class<S> classOfS) throws ThingIFException {
 
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
@@ -851,7 +851,7 @@ public class ThingIFAPI implements Parcelable {
         return new ArrayList<Schema>(this.schemas.values());
     }
     /**
-     * Get owner who uses the IoTCloudAPI.
+     * Get owner who uses the ThingIFAPI.
      * @return
      */
     public Owner getOwner() {
@@ -859,7 +859,7 @@ public class ThingIFAPI implements Parcelable {
     }
 
     /**
-     * Get target thing that is operated by the IoTCloudAPI.
+     * Get target thing that is operated by the ThingIFAPI.
      * @return
      */
     public Target getTarget() {
@@ -880,7 +880,7 @@ public class ThingIFAPI implements Parcelable {
     private Schema getSchema(String schemaName, int schemaVersion) {
         return this.schemas.get(new Pair<String, Integer>(schemaName, schemaVersion));
     }
-    private Action generateAction(String schemaName, int schemaVersion, String actionName, JSONObject actionParameters) throws IoTCloudException {
+    private Action generateAction(String schemaName, int schemaVersion, String actionName, JSONObject actionParameters) throws ThingIFException {
         Schema schema = this.getSchema(schemaName, schemaVersion);
         if (schema == null) {
             throw new UnsupportedSchemaException(schemaName, schemaVersion);
@@ -892,7 +892,7 @@ public class ThingIFAPI implements Parcelable {
         String json = actionParameters == null ? "{}" : actionParameters.toString();
         return this.deserialize(schema, json, actionClass);
     }
-    private ActionResult generateActionResult(String schemaName, int schemaVersion, String actionName, JSONObject actionResult) throws IoTCloudException {
+    private ActionResult generateActionResult(String schemaName, int schemaVersion, String actionName, JSONObject actionResult) throws ThingIFException {
         Schema schema = this.getSchema(schemaName, schemaVersion);
         if (schema == null) {
             throw new UnsupportedSchemaException(schemaName, schemaVersion);
@@ -917,15 +917,15 @@ public class ThingIFAPI implements Parcelable {
         }
         return headers;
     }
-    private <T> T deserialize(Schema schema, JSONObject json, Class<T> clazz) throws IoTCloudException {
+    private <T> T deserialize(Schema schema, JSONObject json, Class<T> clazz) throws ThingIFException {
         return this.deserialize(schema, json.toString(), clazz);
     }
-    private <T> T deserialize(Schema schema, String json, Class<T> clazz) throws IoTCloudException {
+    private <T> T deserialize(Schema schema, String json, Class<T> clazz) throws ThingIFException {
         try {
             return GsonRepository.gson(schema).fromJson(json, clazz);
         } catch (JsonParseException e) {
-            if (e.getCause() instanceof IoTCloudException) {
-                throw (IoTCloudException)e.getCause();
+            if (e.getCause() instanceof ThingIFException) {
+                throw (ThingIFException)e.getCause();
             }
             throw e;
         }

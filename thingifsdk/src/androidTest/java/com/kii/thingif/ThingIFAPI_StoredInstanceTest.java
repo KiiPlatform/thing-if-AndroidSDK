@@ -4,7 +4,7 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.google.gson.JsonParser;
-import com.kii.thingif.exception.StoredIoTCloudAPIInstanceNotFoundException;
+import com.kii.thingif.exception.StoredThingIFAPIInstanceNotFoundException;
 import com.kii.thingif.internal.GsonRepository;
 
 import org.json.JSONObject;
@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
-public class ThingIFAPI_StoredInstanceTest extends IoTCloudAPITestBase {
+public class ThingIFAPI_StoredInstanceTest extends ThingIFAPITestBase {
     @Before
     public void before() throws Exception {
         super.before();
@@ -30,7 +30,7 @@ public class ThingIFAPI_StoredInstanceTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         Assert.assertFalse(api.onboarded());
         Target target = api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
         Assert.assertTrue(api.onboarded());
@@ -50,8 +50,8 @@ public class ThingIFAPI_StoredInstanceTest extends IoTCloudAPITestBase {
         ThingIFAPI.removeAllStoredInstances();
         try {
             ThingIFAPI.loadFromStoredInstance(InstrumentationRegistry.getTargetContext(), "ThingB");
-            fail("StoredIoTCloudAPIInstanceNotFoundException should be thrown");
-        } catch (StoredIoTCloudAPIInstanceNotFoundException e) {
+            fail("StoredThingIFAPIInstanceNotFoundException should be thrown");
+        } catch (StoredThingIFAPIInstanceNotFoundException e) {
         }
     }
     @Test
@@ -64,7 +64,7 @@ public class ThingIFAPI_StoredInstanceTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
-        ThingIFAPIBuilder builder = this.craeteIoTCloudAPIBuilderWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPIBuilder builder = this.craeteThingIFAPIBuilderWithDemoSchema(APP_ID, APP_KEY);
         ThingIFAPI api = builder.build("ThingA");
         Assert.assertFalse(api.onboarded());
         Target target = api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
@@ -84,11 +84,11 @@ public class ThingIFAPI_StoredInstanceTest extends IoTCloudAPITestBase {
 
         try {
             ThingIFAPI.loadFromStoredInstance(InstrumentationRegistry.getTargetContext(), "ThingB");
-            fail("StoredIoTCloudAPIInstanceNotFoundException should be thrown");
-        } catch (StoredIoTCloudAPIInstanceNotFoundException e) {
+            fail("StoredThingIFAPIInstanceNotFoundException should be thrown");
+        } catch (StoredThingIFAPIInstanceNotFoundException e) {
         }
     }
-    @Test(expected = StoredIoTCloudAPIInstanceNotFoundException.class)
+    @Test(expected = StoredThingIFAPIInstanceNotFoundException.class)
     public void loadFromStoredInstanceWithoutStoredInstanceTest() throws Exception {
         ThingIFAPI.loadFromStoredInstance(InstrumentationRegistry.getTargetContext());
     }

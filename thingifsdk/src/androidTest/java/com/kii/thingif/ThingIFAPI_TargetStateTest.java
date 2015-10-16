@@ -15,10 +15,10 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * https://github.com/KiiCorp/IoTCloud/blob/master/rest_api_spec/states-endpoint.yaml
+ * https://github.com/KiiCorp/ThingIF/blob/master/rest_api_spec/states-endpoint.yaml
  */
 @RunWith(AndroidJUnit4.class)
-public class ThingIFAPI_TargetStateTest extends IoTCloudAPITestBase {
+public class ThingIFAPI_TargetStateTest extends ThingIFAPITestBase {
     @Test
     public void basicTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
@@ -34,7 +34,7 @@ public class ThingIFAPI_TargetStateTest extends IoTCloudAPITestBase {
                 "}";
         this.addMockResponse(200, new JsonParser().parse(responseBody));
 
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         LightState lightState = api.getTargetState(LightState.class);
         // verify the result
@@ -55,7 +55,7 @@ public class ThingIFAPI_TargetStateTest extends IoTCloudAPITestBase {
     }
     @Test(expected = IllegalStateException.class)
     public void getTargetStateWithNullTargetTest() throws Exception {
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.getTargetState(LightState.class);
     }
     @Test(expected = IllegalArgumentException.class)
@@ -63,7 +63,7 @@ public class ThingIFAPI_TargetStateTest extends IoTCloudAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         Target target = new Target(thingID, accessToken);
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         api.getTargetState(null);
     }

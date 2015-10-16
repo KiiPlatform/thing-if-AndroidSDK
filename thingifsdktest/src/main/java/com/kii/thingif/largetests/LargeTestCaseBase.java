@@ -70,7 +70,7 @@ public abstract class LargeTestCaseBase extends AndroidTestCase {
         sb.addActionClass(TurnPower.class, TurnPowerResult.class);
         return sb.build();
     }
-    protected ThingIFAPI craeteIoTCloudAPIWithDemoSchema(TargetTestServer server) throws Exception {
+    protected ThingIFAPI craeteThingIFAPIWithDemoSchema(TargetTestServer server) throws Exception {
         Owner owner = this.createNewOwner(server);
         ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), server.getAppID(), server.getAppKey(), server.getBaseUrl(), owner);
         builder.addSchema(this.createDefaultSchema());

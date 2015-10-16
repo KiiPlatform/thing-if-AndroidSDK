@@ -36,10 +36,10 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * https://github.com/KiiCorp/IoTCloud/blob/master/rest_api_spec/command-endpoint.yaml
+ * https://github.com/KiiCorp/ThingIF/blob/master/rest_api_spec/command-endpoint.yaml
  */
 @RunWith(AndroidJUnit4.class)
-public class ThingIFAPI_GetCommandTest extends IoTCloudAPITestBase {
+public class ThingIFAPI_GetCommandTest extends ThingIFAPITestBase {
     @Test
     public void getCommandTest() throws Exception {
         Schema schema = this.createDefaultSchema();
@@ -61,7 +61,7 @@ public class ThingIFAPI_GetCommandTest extends IoTCloudAPITestBase {
         actionResults.add(setColorTemperatureResult);
         CommandState state = CommandState.DELIVERED;
 
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addMockResponseForGetCommand(200, commandID, api.getOwner().getTypedID(), thingID, actions, actionResults, state, created, modified, schema);
 
         api.setTarget(target);
@@ -107,13 +107,13 @@ public class ThingIFAPI_GetCommandTest extends IoTCloudAPITestBase {
         String commandID = "command-1234";
         Target target = new Target(thingID, accessToken);
 
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(403);
 
         try {
             api.setTarget(target);
             api.getCommand(commandID);
-            Assert.fail("IoTCloudRestException should be thrown");
+            Assert.fail("ThingIFRestException should be thrown");
         } catch (ForbiddenException e) {
         }
         // verify the request
@@ -135,13 +135,13 @@ public class ThingIFAPI_GetCommandTest extends IoTCloudAPITestBase {
         String commandID = "command-1234";
         Target target = new Target(thingID, accessToken);
 
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(404);
 
         try {
             api.setTarget(target);
             api.getCommand(commandID);
-            Assert.fail("IoTCloudRestException should be thrown");
+            Assert.fail("ThingIFRestException should be thrown");
         } catch (NotFoundException e) {
         }
         // verify the request
@@ -163,13 +163,13 @@ public class ThingIFAPI_GetCommandTest extends IoTCloudAPITestBase {
         String commandID = "command-1234";
         Target target = new Target(thingID, accessToken);
 
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(503);
 
         try {
             api.setTarget(target);
             api.getCommand(commandID);
-            Assert.fail("IoTCloudRestException should be thrown");
+            Assert.fail("ThingIFRestException should be thrown");
         } catch (ServiceUnavailableException e) {
         }
         // verify the request
@@ -211,7 +211,7 @@ public class ThingIFAPI_GetCommandTest extends IoTCloudAPITestBase {
         actionResults.add(setColorTemperatureResult);
         CommandState state = CommandState.DELIVERED;
 
-        ThingIFAPI api = this.craeteIoTCloudAPIWithSchema(APP_ID, APP_KEY, invalidSchema);
+        ThingIFAPI api = this.craeteThingIFAPIWithSchema(APP_ID, APP_KEY, invalidSchema);
         this.addMockResponseForGetCommand(200, commandID, api.getOwner().getTypedID(), thingID, actions, actionResults, state, created, modified, schema);
 
         try {
@@ -259,7 +259,7 @@ public class ThingIFAPI_GetCommandTest extends IoTCloudAPITestBase {
         actionResults.add(setColorTemperatureResult);
         CommandState state = CommandState.DELIVERED;
 
-        ThingIFAPI api = this.craeteIoTCloudAPIWithSchema(APP_ID, APP_KEY, invalidSchema);
+        ThingIFAPI api = this.craeteThingIFAPIWithSchema(APP_ID, APP_KEY, invalidSchema);
         this.addMockResponseForGetCommand(200, commandID, api.getOwner().getTypedID(), thingID, actions, actionResults, state, created, modified, schema);
 
         try {
@@ -302,7 +302,7 @@ public class ThingIFAPI_GetCommandTest extends IoTCloudAPITestBase {
         actionResults.add(setColorResult);
         CommandState state = CommandState.DELIVERED;
 
-        ThingIFAPI api = this.craeteIoTCloudAPIWithSchema(APP_ID, APP_KEY, unsupportedSetColorSchema);
+        ThingIFAPI api = this.craeteThingIFAPIWithSchema(APP_ID, APP_KEY, unsupportedSetColorSchema);
         this.addMockResponseForGetCommand(200, commandID, api.getOwner().getTypedID(), thingID, actions, actionResults, state, created, modified, schema);
 
         InternalUtils.gsonRepositoryClearCache();
@@ -327,7 +327,7 @@ public class ThingIFAPI_GetCommandTest extends IoTCloudAPITestBase {
     public void getCommandWithNullTargetTest() throws Exception {
         String commandID = "command-1234";
 
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.getCommand(commandID);
     }
     @Test(expected = IllegalArgumentException.class)
@@ -336,7 +336,7 @@ public class ThingIFAPI_GetCommandTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new Target(thingID, accessToken);
 
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         api.getCommand(null);
     }
@@ -346,7 +346,7 @@ public class ThingIFAPI_GetCommandTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new Target(thingID, accessToken);
 
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         api.getCommand("");
     }

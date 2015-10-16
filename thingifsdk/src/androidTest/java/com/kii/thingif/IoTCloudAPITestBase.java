@@ -49,7 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public abstract class IoTCloudAPITestBase extends SmallTestBase {
+public abstract class ThingIFAPITestBase extends SmallTestBase {
     protected static final String APP_ID = "smalltest";
     protected static final String APP_KEY = "abcdefghijklmnopqrstuvwxyz123456789";
     protected static final String BASE_PATH = "/thing-if/apps/" + APP_ID;
@@ -79,7 +79,7 @@ public abstract class IoTCloudAPITestBase extends SmallTestBase {
         sb.addActionClass(TurnPower.class, TurnPowerResult.class);
         return sb.build();
     }
-    protected ThingIFAPIBuilder craeteIoTCloudAPIBuilderWithDemoSchema(String appID, String appKey) throws Exception {
+    protected ThingIFAPIBuilder craeteThingIFAPIBuilderWithDemoSchema(String appID, String appKey) throws Exception {
         String ownerID = UUID.randomUUID().toString();
         Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
         URL baseUrl = this.server.getUrl("/");
@@ -87,7 +87,7 @@ public abstract class IoTCloudAPITestBase extends SmallTestBase {
         builder.addSchema(this.createDefaultSchema());
         return builder;
     }
-    protected ThingIFAPI craeteIoTCloudAPIWithDemoSchema(String appID, String appKey) throws Exception {
+    protected ThingIFAPI craeteThingIFAPIWithDemoSchema(String appID, String appKey) throws Exception {
         String ownerID = UUID.randomUUID().toString();
         Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
         URL baseUrl = this.server.getUrl("/");
@@ -95,7 +95,7 @@ public abstract class IoTCloudAPITestBase extends SmallTestBase {
         builder.addSchema(this.createDefaultSchema());
         return builder.build();
     }
-    protected ThingIFAPI craeteIoTCloudAPIWithSchema(String appID, String appKey, Schema schema) throws Exception {
+    protected ThingIFAPI craeteThingIFAPIWithSchema(String appID, String appKey, Schema schema) throws Exception {
         String ownerID = UUID.randomUUID().toString();
         Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
         URL baseUrl = this.server.getUrl("/");

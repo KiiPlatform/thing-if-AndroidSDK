@@ -34,7 +34,7 @@ import java.util.UUID;
 public class TriggerTest extends LargeTestCaseBase {
     @Test
     public void basicStatePredicateTriggerTest() throws Exception {
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(TargetTestServer.DEV_SERVER_1);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(TargetTestServer.DEV_SERVER_1);
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
 
@@ -251,7 +251,7 @@ public class TriggerTest extends LargeTestCaseBase {
     }
     @Test
     public void listTriggersEmptyResultTest() throws Exception {
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(TargetTestServer.DEV_SERVER_1);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(TargetTestServer.DEV_SERVER_1);
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
 

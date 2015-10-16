@@ -28,10 +28,10 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * https://github.com/KiiCorp/IoTCloud/blob/master/rest_api_spec/trigger-endpoint.yaml
+ * https://github.com/KiiCorp/ThingIF/blob/master/rest_api_spec/trigger-endpoint.yaml
  */
 @RunWith(AndroidJUnit4.class)
-public class ThingIFAPI_DeleteTriggerTest extends IoTCloudAPITestBase {
+public class ThingIFAPI_DeleteTriggerTest extends ThingIFAPITestBase {
     @Test
     public void deleteTriggerTest() throws Exception {
         Schema schema = this.createDefaultSchema();
@@ -47,7 +47,7 @@ public class ThingIFAPI_DeleteTriggerTest extends IoTCloudAPITestBase {
         actions.add(setColorTemperature);
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
         Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
         this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, false, null, schema);
@@ -86,13 +86,13 @@ public class ThingIFAPI_DeleteTriggerTest extends IoTCloudAPITestBase {
         String triggerID = "trigger-1234";
         Target target = new Target(thingID, accessToken);
 
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(403);
 
         try {
             api.setTarget(target);
             api.deleteTrigger(triggerID);
-            Assert.fail("IoTCloudRestException should be thrown");
+            Assert.fail("ThingIFRestException should be thrown");
         } catch (ForbiddenException e) {
         }
         // verify the 1st request
@@ -114,13 +114,13 @@ public class ThingIFAPI_DeleteTriggerTest extends IoTCloudAPITestBase {
         String triggerID = "trigger-1234";
         Target target = new Target(thingID, accessToken);
 
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(404);
 
         try {
             api.setTarget(target);
             api.deleteTrigger(triggerID);
-            Assert.fail("IoTCloudRestException should be thrown");
+            Assert.fail("ThingIFRestException should be thrown");
         } catch (NotFoundException e) {
         }
         // verify the 1st request
@@ -142,13 +142,13 @@ public class ThingIFAPI_DeleteTriggerTest extends IoTCloudAPITestBase {
         String triggerID = "trigger-1234";
         Target target = new Target(thingID, accessToken);
 
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(503);
 
         try {
             api.setTarget(target);
             api.deleteTrigger(triggerID);
-            Assert.fail("IoTCloudRestException should be thrown");
+            Assert.fail("ThingIFRestException should be thrown");
         } catch (ServiceUnavailableException e) {
         }
         // verify the 1st request
@@ -166,7 +166,7 @@ public class ThingIFAPI_DeleteTriggerTest extends IoTCloudAPITestBase {
     public void deleteTriggerWithNullTargetTest() throws Exception {
         String triggerID = "trigger-1234";
 
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.deleteTrigger(triggerID);
     }
     @Test(expected = IllegalArgumentException.class)
@@ -175,7 +175,7 @@ public class ThingIFAPI_DeleteTriggerTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new Target(thingID, accessToken);
 
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         api.deleteTrigger(null);
     }
@@ -185,7 +185,7 @@ public class ThingIFAPI_DeleteTriggerTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new Target(thingID, accessToken);
 
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         api.deleteTrigger("");
     }

@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 public class PushTest extends LargeTestCaseBase {
     @Test
     public void basicTest() throws Exception {
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(TargetTestServer.DEV_SERVER_1);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(TargetTestServer.DEV_SERVER_1);
         String installationID = api.installPush("GCM-REGISTRATION-ID", PushBackend.GCM);
         api.uninstallPush(installationID);
     }

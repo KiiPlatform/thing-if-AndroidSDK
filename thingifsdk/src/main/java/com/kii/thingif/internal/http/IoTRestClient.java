@@ -7,8 +7,8 @@ import com.kii.thingif.exception.ConflictException;
 import com.kii.thingif.exception.ForbiddenException;
 import com.kii.thingif.exception.GatewayTimeoutException;
 import com.kii.thingif.exception.InternalServerErrorException;
-import com.kii.thingif.exception.IoTCloudException;
-import com.kii.thingif.exception.IoTCloudRestException;
+import com.kii.thingif.exception.ThingIFException;
+import com.kii.thingif.exception.ThingIFRestException;
 import com.kii.thingif.exception.NotFoundException;
 import com.kii.thingif.exception.ServiceUnavailableException;
 import com.kii.thingif.exception.UnauthorizedException;
@@ -51,13 +51,13 @@ public class IoTRestClient {
      *
      * @param request
      * @return
-     * @throws IoTCloudException
+     * @throws ThingIFException
      */
-    public JSONObject sendRequest(IoTRestRequest request) throws IoTCloudException {
+    public JSONObject sendRequest(IoTRestRequest request) throws ThingIFException {
         Response response = this.execute(request);
         return this.parseResponseAsJsonObject(request, response);
     }
-    private Response execute(IoTRestRequest request) throws IoTCloudException {
+    private Response execute(IoTRestRequest request) throws ThingIFException {
         Builder builder = new Builder();
         builder.url(request.getUrl());
         builder.headers(Headers.of(request.getHeaders()));
@@ -89,7 +89,7 @@ public class IoTRestClient {
         try {
             return httpClient.newCall(builder.build()).execute();
         } catch (IOException e) {
-            throw new IoTCloudException(request.getCurl(), e);
+            throw new ThingIFException(request.getCurl(), e);
         }
     }
     protected RequestBody createRequestBody(final MediaType contentType, final Object entity) {
@@ -130,15 +130,15 @@ public class IoTRestClient {
         }
         throw new RuntimeException("Unexpected entity type.");
     }
-    private void parseResponse(IoTRestRequest request, Response response) throws IoTCloudException {
+    private void parseResponse(IoTRestRequest request, Response response) throws ThingIFException {
         try {
             String body = response.body().string();
             this.checkHttpStatus(request, response, body);
         } catch (IOException e) {
-            throw new IoTCloudException(request.getCurl(), e);
+            throw new ThingIFException(request.getCurl(), e);
         }
     }
-    private String parseResponseAsString(IoTRestRequest request, Response response) throws IoTCloudException {
+    private String parseResponseAsString(IoTRestRequest request, Response response) throws ThingIFException {
         try {
             String body = response.body().string();
             this.checkHttpStatus(request, response, body);
@@ -147,10 +147,10 @@ public class IoTRestClient {
             }
             return body;
         } catch (IOException e) {
-            throw new IoTCloudException(request.getCurl(), e);
+            throw new ThingIFException(request.getCurl(), e);
         }
     }
-    private JSONObject parseResponseAsJsonObject(IoTRestRequest request, Response response) throws IoTCloudException {
+    private JSONObject parseResponseAsJsonObject(IoTRestRequest request, Response response) throws ThingIFException {
         try {
             String body = response.body().string();
             this.checkHttpStatus(request, response, body);
@@ -160,12 +160,12 @@ public class IoTRestClient {
             }
             return new JSONObject(body);
         } catch (JSONException e) {
-            throw new IoTCloudException(request.getCurl(), e);
+            throw new ThingIFException(request.getCurl(), e);
         } catch (IOException e) {
-            throw new IoTCloudException(request.getCurl(), e);
+            throw new ThingIFException(request.getCurl(), e);
         }
     }
-    private JSONArray parseResponseAsJsonArray(IoTRestRequest request, Response response) throws IoTCloudException {
+    private JSONArray parseResponseAsJsonArray(IoTRestRequest request, Response response) throws ThingIFException {
         try {
             String body = response.body().string();
             this.checkHttpStatus(request, response, body);
@@ -174,12 +174,12 @@ public class IoTRestClient {
             }
             return new JSONArray(body);
         } catch (JSONException e) {
-            throw new IoTCloudException(request.getCurl(), e);
+            throw new ThingIFException(request.getCurl(), e);
         } catch (IOException e) {
-            throw new IoTCloudException(request.getCurl(), e);
+            throw new ThingIFException(request.getCurl(), e);
         }
     }
-    private InputStream parseResponseAsInputStream(IoTRestRequest request, Response response) throws IoTCloudException {
+    private InputStream parseResponseAsInputStream(IoTRestRequest request, Response response) throws ThingIFException {
         try {
             if (!response.isSuccessful()) {
                 String body = response.body().string();
@@ -187,10 +187,10 @@ public class IoTRestClient {
             }
             return response.body().byteStream();
         } catch (IOException e) {
-            throw new IoTCloudException(request.getCurl(), e);
+            throw new ThingIFException(request.getCurl(), e);
         }
     }
-    private void checkHttpStatus(IoTRestRequest request, Response response, String responseBody) throws IoTCloudRestException {
+    private void checkHttpStatus(IoTRestRequest request, Response response, String responseBody) throws ThingIFRestException {
         if (!response.isSuccessful()) {
             JSONObject errorDetail = null;
             try {
@@ -216,7 +216,7 @@ public class IoTRestClient {
                 case 504:
                     throw new GatewayTimeoutException(request.getCurl(), errorDetail);
                 default:
-                    throw new IoTCloudRestException(request.getCurl(), response.code(), errorDetail);
+                    throw new ThingIFRestException(request.getCurl(), response.code(), errorDetail);
             }
         }
     }

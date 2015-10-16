@@ -52,13 +52,13 @@ public class ThingIFAPIBuilder {
         this.owner = owner;
     }
 
-    /** Instantiate new IoTCloudAPIBuilder.
+    /** Instantiate new ThingIFAPIBuilder.
      * @param context Application context.
      * @param appID Application ID given by Kii Cloud.
      * @param appKey Application Key given by Kii Cloud.
      * @param site Application Site specified when create application.
-     * @param owner Specify who uses the IoTCloudAPI.
-     * @return IoTCloudAPIBuilder instance.
+     * @param owner Specify who uses the ThingIFAPI.
+     * @return ThingIFAPIBuilder instance.
      */
     @NonNull
     public static ThingIFAPIBuilder newBuilder(
@@ -85,14 +85,14 @@ public class ThingIFAPIBuilder {
         return new ThingIFAPIBuilder(context, appID, appKey, site, owner);
     }
 
-    /** Instantiate new IoTCloudAPIBuilder with custom URL.
+    /** Instantiate new ThingIFAPIBuilder with custom URL.
      * For Custom plan users who run Kii Cloud on premise and need to use your own site URL.
      * @param context Application Context.
      * @param appID Application ID given by Kii Cloud.
      * @param appKey Application Key given by Kii Cloud.
      * @param baseUrl Custom Site base URL.
-     * @param owner Specify who uses the IoTCloudAPI.
-     * @return IoTCloudAPIBuilder instance.
+     * @param owner Specify who uses the ThingIFAPI.
+     * @return ThingIFAPIBuilder instance.
      */
     @NonNull
     public static ThingIFAPIBuilder newBuilder(
@@ -120,14 +120,14 @@ public class ThingIFAPIBuilder {
     }
 
     /**
-     * Instantiate new IoTCloudAPIBuilder without Context.
+     * Instantiate new ThingIFAPIBuilder without Context.
      * This method is for internal use only. Do not call it from your application.
      *
      * @param appID Application ID given by Kii Cloud.
      * @param appKey Application Key given by Kii Cloud.
      * @param baseUrl Custom Site base URL.
-     * @param owner Specify who uses the IoTCloudAPI.
-     * @return IoTCloudAPIBuilder instance.
+     * @param owner Specify who uses the ThingIFAPI.
+     * @return ThingIFAPIBuilder instance.
      */
     @NonNull
     public static ThingIFAPIBuilder _newBuilder(
@@ -150,9 +150,9 @@ public class ThingIFAPIBuilder {
         return new ThingIFAPIBuilder(null, appID, appKey, baseUrl, owner);
     }
 
-    /** Add Schema to the IoTCloudAPI.
+    /** Add Schema to the ThingIFAPI.
      * @param schema
-     * @return IoTCloudAPIBuilder instance for method chaining.
+     * @return ThingIFAPIBuilder instance for method chaining.
      */
     @NonNull
     public ThingIFAPIBuilder addSchema(
@@ -166,7 +166,7 @@ public class ThingIFAPIBuilder {
     }
 
     /**
-     * Set target thing to the IoTCloudAPI.
+     * Set target thing to the ThingIFAPI.
      * @param target
      * @return
      */
@@ -176,7 +176,7 @@ public class ThingIFAPIBuilder {
     }
 
     /**
-     * Set InstallationID to the IoTCloudAPI.
+     * Set InstallationID to the ThingIFAPI.
      * @param installationID
      * @return
      */
@@ -185,16 +185,16 @@ public class ThingIFAPIBuilder {
         return this;
     }
 
-    /** Instantiate new IoTCloudAPI instance.
-     * @return IoTCloudAPI instance.
+    /** Instantiate new ThingIFAPI instance.
+     * @return ThingIFAPI instance.
      */
     @NonNull
     public ThingIFAPI build() {
         return build(null);
     }
-    /** Instantiate new IoTCloudAPI instance.
+    /** Instantiate new ThingIFAPI instance.
      * @param tag
-     * @return IoTCloudAPI instance.
+     * @return ThingIFAPI instance.
      */
     @NonNull
     public ThingIFAPI build(String tag) {
@@ -205,7 +205,7 @@ public class ThingIFAPIBuilder {
         if (this.schemas.size() == 0) {
             throw new IllegalStateException("Builder has no schemas");
         }
-        Log.d(TAG, MessageFormat.format("Initialize IoTCloudAPI AppID={0}, AppKey={1}, BaseUrl={2}", this.appID, this.appKey, baseUrl));
+        Log.d(TAG, MessageFormat.format("Initialize ThingIFAPI AppID={0}, AppKey={1}, BaseUrl={2}", this.appID, this.appKey, baseUrl));
         return new ThingIFAPI(this.context, tag, this.appID, this.appKey, baseUrl, this.owner, this.target, this.schemas, this.installationID);
     }
 

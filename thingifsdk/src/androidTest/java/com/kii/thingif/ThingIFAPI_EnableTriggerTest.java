@@ -28,10 +28,10 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * https://github.com/KiiCorp/IoTCloud/blob/master/rest_api_spec/trigger-endpoint.yaml
+ * https://github.com/KiiCorp/ThingIF/blob/master/rest_api_spec/trigger-endpoint.yaml
  */
 @RunWith(AndroidJUnit4.class)
-public class ThingIFAPI_EnableTriggerTest extends IoTCloudAPITestBase {
+public class ThingIFAPI_EnableTriggerTest extends ThingIFAPITestBase {
     @Test
     public void enableTriggerTest() throws Exception {
         Schema schema = this.createDefaultSchema();
@@ -47,7 +47,7 @@ public class ThingIFAPI_EnableTriggerTest extends IoTCloudAPITestBase {
         actions.add(setColorTemperature);
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
         Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
         this.addEmptyMockResponse(204);
@@ -92,7 +92,7 @@ public class ThingIFAPI_EnableTriggerTest extends IoTCloudAPITestBase {
         actions.add(setColorTemperature);
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
         Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
         this.addEmptyMockResponse(204);
@@ -128,12 +128,12 @@ public class ThingIFAPI_EnableTriggerTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         String triggerID = "trigger-1234";
         Target target = new Target(thingID, accessToken);
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(403);
         try {
             api.setTarget(target);
             api.enableTrigger(triggerID, false);
-            Assert.fail("IoTCloudRestException should be thrown");
+            Assert.fail("ThingIFRestException should be thrown");
         } catch (ForbiddenException e) {
         }
         // verify the request
@@ -147,12 +147,12 @@ public class ThingIFAPI_EnableTriggerTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         String triggerID = "trigger-1234";
         Target target = new Target(thingID, accessToken);
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(404);
         try {
             api.setTarget(target);
             api.enableTrigger(triggerID, false);
-            Assert.fail("IoTCloudRestException should be thrown");
+            Assert.fail("ThingIFRestException should be thrown");
         } catch (NotFoundException e) {
         }
         // verify the request
@@ -166,12 +166,12 @@ public class ThingIFAPI_EnableTriggerTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         String triggerID = "trigger-1234";
         Target target = new Target(thingID, accessToken);
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(503);
         try {
             api.setTarget(target);
             api.enableTrigger(triggerID, false);
-            Assert.fail("IoTCloudRestException should be thrown");
+            Assert.fail("ThingIFRestException should be thrown");
         } catch (ServiceUnavailableException e) {
         }
         // verify the request
@@ -182,7 +182,7 @@ public class ThingIFAPI_EnableTriggerTest extends IoTCloudAPITestBase {
     @Test(expected = IllegalStateException.class)
     public void enableTriggerWithNullTargetTest() throws Exception {
         String triggerID = "trigger-1234";
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.enableTrigger(triggerID, false);
     }
     @Test(expected = IllegalArgumentException.class)
@@ -190,7 +190,7 @@ public class ThingIFAPI_EnableTriggerTest extends IoTCloudAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         Target target = new Target(thingID, accessToken);
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         api.enableTrigger(null, false);
     }
@@ -199,7 +199,7 @@ public class ThingIFAPI_EnableTriggerTest extends IoTCloudAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         Target target = new Target(thingID, accessToken);
-        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         api.enableTrigger("", false);
     }
