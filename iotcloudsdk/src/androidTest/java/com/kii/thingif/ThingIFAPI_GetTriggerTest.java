@@ -3,9 +3,7 @@ package com.kii.thingif;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.kii.thingif.command.Action;
-import com.kii.thingif.command.ActionResult;
 import com.kii.thingif.command.Command;
-import com.kii.thingif.command.CommandState;
 import com.kii.thingif.exception.ForbiddenException;
 import com.kii.thingif.exception.NotFoundException;
 import com.kii.thingif.exception.ServiceUnavailableException;
@@ -23,6 +21,11 @@ import com.kii.thingif.testschemas.SetColorTemperature;
 import com.kii.thingif.testschemas.SetColorTemperatureResult;
 import com.kii.thingif.testschemas.TurnPower;
 import com.kii.thingif.testschemas.TurnPowerResult;
+import com.kii.thingif.trigger.Condition;
+import com.kii.thingif.trigger.StatePredicate;
+import com.kii.thingif.trigger.Trigger;
+import com.kii.thingif.trigger.TriggersWhen;
+import com.kii.thingif.trigger.clause.Equals;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import org.junit.Assert;
@@ -36,61 +39,41 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * https://github.com/KiiCorp/IoTCloud/blob/master/rest_api_spec/command-endpoint.yaml
+ * https://github.com/KiiCorp/IoTCloud/blob/master/rest_api_spec/trigger-endpoint.yaml
  */
 @RunWith(AndroidJUnit4.class)
-public class IoTCloudAPI_GetCommandTest extends IoTCloudAPITestBase {
+public class ThingIFAPI_GetTriggerTest extends IoTCloudAPITestBase {
     @Test
-    public void getCommandTest() throws Exception {
+    public void getTriggerTest() throws Exception {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        String commandID = "command-1234";
-        Long created = System.currentTimeMillis();
-        Long modified = System.currentTimeMillis();
+        String triggerID = "trigger-1234";
         Target target = new Target(thingID, accessToken);
+
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
         SetColorTemperature setColorTemperature = new SetColorTemperature(25);
         actions.add(setColor);
         actions.add(setColorTemperature);
-        List<ActionResult> actionResults = new ArrayList<ActionResult>();
-        SetColorResult setColorResult = new SetColorResult(true);
-        SetColorTemperatureResult setColorTemperatureResult = new SetColorTemperatureResult(false);
-        actionResults.add(setColorResult);
-        actionResults.add(setColorTemperatureResult);
-        CommandState state = CommandState.DELIVERED;
+        StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        this.addMockResponseForGetCommand(200, commandID, api.getOwner().getTypedID(), thingID, actions, actionResults, state, created, modified, schema);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
+        this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, true, "COMMAND_EXECUTION_REJECTED", schema);
 
         api.setTarget(target);
-        Command command = api.getCommand(commandID);
-
+        Trigger trigger = api.getTrigger(triggerID);
         // verify the result
-        Assert.assertEquals(commandID, command.getCommandID());
-        Assert.assertEquals(DEMO_SCHEMA_NAME, command.getSchemaName());
-        Assert.assertEquals(DEMO_SCHEMA_VERSION, command.getSchemaVersion());
-        Assert.assertEquals(api.getOwner().getTypedID(), command.getIssuerID());
-        Assert.assertEquals(thingID, command.getTargetID());
-        Assert.assertEquals(created, command.getCreated());
-        Assert.assertEquals(modified, command.getModified());
-        Assert.assertEquals(state, command.getCommandState());
-        Assert.assertNull(command.getFiredByTriggerID());
-        Assert.assertEquals(2, command.getActions().size());
-        Assert.assertEquals(setColor.getActionName(), ((SetColor) command.getActions().get(0)).getActionName());
-        Assert.assertArrayEquals(setColor.color, ((SetColor) command.getActions().get(0)).color);
-        Assert.assertEquals(setColorTemperature.getActionName(), ((SetColorTemperature) command.getActions().get(1)).getActionName());
-        Assert.assertEquals(setColorTemperature.colorTemperature, ((SetColorTemperature) command.getActions().get(1)).colorTemperature);
-        Assert.assertEquals(2, command.getActionResults().size());
-        Assert.assertEquals(setColorResult.getActionName(), ((SetColorResult)command.getActionResults().get(0)).getActionName());
-        Assert.assertEquals(setColorResult.succeeded, ((SetColorResult) command.getActionResults().get(0)).succeeded);
-        Assert.assertEquals(setColorTemperatureResult.getActionName(), ((SetColorTemperatureResult)command.getActionResults().get(1)).getActionName());
-        Assert.assertEquals(setColorTemperatureResult.succeeded, ((SetColorTemperatureResult) command.getActionResults().get(1)).succeeded);
-
+        Assert.assertEquals(triggerID, trigger.getTriggerID());
+        Assert.assertEquals(true, trigger.disabled());
+        Assert.assertEquals("COMMAND_EXECUTION_REJECTED", trigger.getDisabledReason());
+        this.assertPredicate(predicate, trigger.getPredicate());
+        this.assertCommand(schema, expectedCommand, trigger.getCommand());
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/commands/" + commandID, request.getPath());
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers/" + triggerID, request.getPath());
         Assert.assertEquals("GET", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
@@ -100,25 +83,25 @@ public class IoTCloudAPI_GetCommandTest extends IoTCloudAPITestBase {
         this.assertRequestHeader(expectedRequestHeaders, request);
     }
     @Test
-    public void getCommand403ErrorTest() throws Exception {
+    public void getTrigger403ErrorTest() throws Exception {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        String commandID = "command-1234";
+        String triggerID = "trigger-1234";
         Target target = new Target(thingID, accessToken);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(403);
 
         try {
             api.setTarget(target);
-            api.getCommand(commandID);
+            api.getTrigger(triggerID);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (ForbiddenException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/commands/" + commandID, request.getPath());
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers/" + triggerID, request.getPath());
         Assert.assertEquals("GET", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
@@ -128,25 +111,25 @@ public class IoTCloudAPI_GetCommandTest extends IoTCloudAPITestBase {
         this.assertRequestHeader(expectedRequestHeaders, request);
     }
     @Test
-    public void getCommand404ErrorTest() throws Exception {
+    public void getTrigger404ErrorTest() throws Exception {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        String commandID = "command-1234";
+        String triggerID = "trigger-1234";
         Target target = new Target(thingID, accessToken);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(404);
 
         try {
             api.setTarget(target);
-            api.getCommand(commandID);
+            api.getTrigger(triggerID);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (NotFoundException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/commands/" + commandID, request.getPath());
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers/" + triggerID, request.getPath());
         Assert.assertEquals("GET", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
@@ -156,25 +139,25 @@ public class IoTCloudAPI_GetCommandTest extends IoTCloudAPITestBase {
         this.assertRequestHeader(expectedRequestHeaders, request);
     }
     @Test
-    public void getCommand503ErrorTest() throws Exception {
+    public void getTrigger503ErrorTest() throws Exception {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        String commandID = "command-1234";
+        String triggerID = "trigger-1234";
         Target target = new Target(thingID, accessToken);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(503);
 
         try {
             api.setTarget(target);
-            api.getCommand(commandID);
+            api.getTrigger(triggerID);
             Assert.fail("IoTCloudRestException should be thrown");
         } catch (ServiceUnavailableException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/commands/" + commandID, request.getPath());
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers/" + triggerID, request.getPath());
         Assert.assertEquals("GET", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
@@ -184,7 +167,7 @@ public class IoTCloudAPI_GetCommandTest extends IoTCloudAPITestBase {
         this.assertRequestHeader(expectedRequestHeaders, request);
     }
     @Test
-    public void getCommandWithInvalidSchemaNameTest() throws Exception {
+    public void getTriggerWithInvalidSchemaNameTest() throws Exception {
         Schema schema = this.createDefaultSchema();
         SchemaBuilder sb = SchemaBuilder.newSchemaBuilder(DEMO_THING_TYPE, DEMO_SCHEMA_NAME + "_invalid", DEMO_SCHEMA_VERSION, LightState.class);
         sb.addActionClass(SetColor.class, SetColorResult.class);
@@ -192,37 +175,32 @@ public class IoTCloudAPI_GetCommandTest extends IoTCloudAPITestBase {
         sb.addActionClass(SetColorTemperature.class, SetColorTemperatureResult.class);
         sb.addActionClass(TurnPower.class, TurnPowerResult.class);
         Schema invalidSchema = sb.build();
-
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        String commandID = "command-1234";
-        Long created = System.currentTimeMillis();
-        Long modified = System.currentTimeMillis();
+        String triggerID = "trigger-1234";
         Target target = new Target(thingID, accessToken);
+
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
         SetColorTemperature setColorTemperature = new SetColorTemperature(25);
         actions.add(setColor);
         actions.add(setColorTemperature);
-        List<ActionResult> actionResults = new ArrayList<ActionResult>();
-        SetColorResult setColorResult = new SetColorResult(true);
-        SetColorTemperatureResult setColorTemperatureResult = new SetColorTemperatureResult(false);
-        actionResults.add(setColorResult);
-        actionResults.add(setColorTemperatureResult);
-        CommandState state = CommandState.DELIVERED;
+        StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithSchema(APP_ID, APP_KEY, invalidSchema);
-        this.addMockResponseForGetCommand(200, commandID, api.getOwner().getTypedID(), thingID, actions, actionResults, state, created, modified, schema);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithSchema(APP_ID, APP_KEY, invalidSchema);
+
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
+        this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, true, "COMMAND_EXECUTION_REJECTED", schema);
 
         try {
             api.setTarget(target);
-            api.getCommand(commandID);
+            api.getTrigger(triggerID);
             Assert.fail("UnsupportedSchemaException should be thrown");
         } catch (UnsupportedSchemaException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/commands/" + commandID, request.getPath());
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers/" + triggerID, request.getPath());
         Assert.assertEquals("GET", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
@@ -232,7 +210,7 @@ public class IoTCloudAPI_GetCommandTest extends IoTCloudAPITestBase {
         this.assertRequestHeader(expectedRequestHeaders, request);
     }
     @Test
-    public void getCommandWithInvalidSchemaVersionTest() throws Exception {
+    public void getTriggerWithInvalidSchemaVersionTest() throws Exception {
         Schema schema = this.createDefaultSchema();
         SchemaBuilder sb = SchemaBuilder.newSchemaBuilder(DEMO_THING_TYPE, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION + 1, LightState.class);
         sb.addActionClass(SetColor.class, SetColorResult.class);
@@ -240,37 +218,32 @@ public class IoTCloudAPI_GetCommandTest extends IoTCloudAPITestBase {
         sb.addActionClass(SetColorTemperature.class, SetColorTemperatureResult.class);
         sb.addActionClass(TurnPower.class, TurnPowerResult.class);
         Schema invalidSchema = sb.build();
-
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        String commandID = "command-1234";
-        Long created = System.currentTimeMillis();
-        Long modified = System.currentTimeMillis();
+        String triggerID = "trigger-1234";
         Target target = new Target(thingID, accessToken);
+
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
         SetColorTemperature setColorTemperature = new SetColorTemperature(25);
         actions.add(setColor);
         actions.add(setColorTemperature);
-        List<ActionResult> actionResults = new ArrayList<ActionResult>();
-        SetColorResult setColorResult = new SetColorResult(true);
-        SetColorTemperatureResult setColorTemperatureResult = new SetColorTemperatureResult(false);
-        actionResults.add(setColorResult);
-        actionResults.add(setColorTemperatureResult);
-        CommandState state = CommandState.DELIVERED;
+        StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithSchema(APP_ID, APP_KEY, invalidSchema);
-        this.addMockResponseForGetCommand(200, commandID, api.getOwner().getTypedID(), thingID, actions, actionResults, state, created, modified, schema);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithSchema(APP_ID, APP_KEY, invalidSchema);
+
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
+        this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, true, "COMMAND_EXECUTION_REJECTED", schema);
 
         try {
             api.setTarget(target);
-            api.getCommand(commandID);
+            api.getTrigger(triggerID);
             Assert.fail("UnsupportedSchemaException should be thrown");
         } catch (UnsupportedSchemaException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/commands/" + commandID, request.getPath());
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers/" + triggerID, request.getPath());
         Assert.assertEquals("GET", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
@@ -280,41 +253,40 @@ public class IoTCloudAPI_GetCommandTest extends IoTCloudAPITestBase {
         this.assertRequestHeader(expectedRequestHeaders, request);
     }
     @Test
-    public void getCommandWithUnknownActionTest() throws Exception {
+    public void getTriggerWithUnknownActionTest() throws Exception {
         Schema schema = this.createDefaultSchema();
         SchemaBuilder sb = SchemaBuilder.newSchemaBuilder(DEMO_THING_TYPE, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, LightState.class);
         sb.addActionClass(SetBrightness.class, SetBrightnessResult.class);
         sb.addActionClass(SetColorTemperature.class, SetColorTemperatureResult.class);
         sb.addActionClass(TurnPower.class, TurnPowerResult.class);
         Schema unsupportedSetColorSchema = sb.build();
-
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        String commandID = "command-1234";
-        Long created = System.currentTimeMillis();
-        Long modified = System.currentTimeMillis();
+        String triggerID = "trigger-1234";
         Target target = new Target(thingID, accessToken);
+
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
+        SetColorTemperature setColorTemperature = new SetColorTemperature(25);
         actions.add(setColor);
-        List<ActionResult> actionResults = new ArrayList<ActionResult>();
-        SetColorResult setColorResult = new SetColorResult(true);
-        actionResults.add(setColorResult);
-        CommandState state = CommandState.DELIVERED;
+        actions.add(setColorTemperature);
+        StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithSchema(APP_ID, APP_KEY, unsupportedSetColorSchema);
-        this.addMockResponseForGetCommand(200, commandID, api.getOwner().getTypedID(), thingID, actions, actionResults, state, created, modified, schema);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithSchema(APP_ID, APP_KEY, unsupportedSetColorSchema);
+
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
+        this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, true, "COMMAND_EXECUTION_REJECTED", schema);
 
         InternalUtils.gsonRepositoryClearCache();
         try {
             api.setTarget(target);
-            api.getCommand(commandID);
+            api.getTrigger(triggerID);
             Assert.fail("UnsupportedActionException should be thrown");
         } catch (UnsupportedActionException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/commands/" + commandID, request.getPath());
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers/" + triggerID, request.getPath());
         Assert.assertEquals("GET", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
@@ -324,30 +296,32 @@ public class IoTCloudAPI_GetCommandTest extends IoTCloudAPITestBase {
         this.assertRequestHeader(expectedRequestHeaders, request);
     }
     @Test(expected = IllegalStateException.class)
-    public void getCommandWithNullTargetTest() throws Exception {
-        String commandID = "command-1234";
+    public void getTriggerWithNullTargetTest() throws Exception {
+        String triggerID = "trigger-1234";
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.getCommand(commandID);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.getTrigger(triggerID);
     }
     @Test(expected = IllegalArgumentException.class)
-    public void getCommandWithNullCommandIDTest() throws Exception {
+    public void getTriggerWithNullTriggerIDTest() throws Exception {
+        Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         Target target = new Target(thingID, accessToken);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
-        api.getCommand(null);
+        api.getTrigger(null);
     }
     @Test(expected = IllegalArgumentException.class)
-    public void getCommandWithEmptyCommandIDTest() throws Exception {
+    public void getTriggerWithEmptyTriggerIDTest() throws Exception {
+        Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         Target target = new Target(thingID, accessToken);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
-        api.getCommand("");
+        api.getTrigger("");
     }
 }

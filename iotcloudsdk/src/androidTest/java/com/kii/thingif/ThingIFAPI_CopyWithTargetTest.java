@@ -14,7 +14,7 @@ import org.junit.runner.RunWith;
  *
  */
 @RunWith(AndroidJUnit4.class)
-public class IoTCloudAPI_CopyWithTargetTest extends IoTCloudAPITestBase {
+public class ThingIFAPI_CopyWithTargetTest extends IoTCloudAPITestBase {
     @Test
     public void basicTest() throws Exception {
         String vendorThingID = "v1234567890abcde";
@@ -25,7 +25,7 @@ public class IoTCloudAPI_CopyWithTargetTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIBuilderWithDemoSchema(APP_ID, APP_KEY).build("ThingA");
+        ThingIFAPI api = this.craeteIoTCloudAPIBuilderWithDemoSchema(APP_ID, APP_KEY).build("ThingA");
         Assert.assertEquals(api.getTag(), "ThingA");
         Assert.assertFalse(api.onboarded());
         Target target1 = api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
@@ -34,7 +34,7 @@ public class IoTCloudAPI_CopyWithTargetTest extends IoTCloudAPITestBase {
         String accessToken2 = "thing-access-token-4321";
         Target target2 = new Target(thingID2, accessToken2);
 
-        IoTCloudAPI copiedApi = api.copyWithTarget(target2, "ThingB");
+        ThingIFAPI copiedApi = api.copyWithTarget(target2, "ThingB");
         Assert.assertEquals(copiedApi.getTag(), "ThingB");
         Assert.assertNotEquals(api.hashCode(), copiedApi.hashCode());
         Assert.assertNotEquals(api.getTarget().hashCode(), copiedApi.getTarget().hashCode());
@@ -56,12 +56,12 @@ public class IoTCloudAPI_CopyWithTargetTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIBuilderWithDemoSchema(APP_ID, APP_KEY).build("ThingA");
+        ThingIFAPI api = this.craeteIoTCloudAPIBuilderWithDemoSchema(APP_ID, APP_KEY).build("ThingA");
         Assert.assertEquals(api.getTag(), "ThingA");
         Assert.assertFalse(api.onboarded());
         Target target = api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
 
-        IoTCloudAPI copiedApi =  api.copyWithTarget(target, "ThingA");
+        ThingIFAPI copiedApi =  api.copyWithTarget(target, "ThingA");
         Assert.assertEquals(copiedApi.getTag(), "ThingA");
         Assert.assertNotEquals(api.hashCode(), copiedApi.hashCode());
         Assert.assertEquals(api.getTarget().hashCode(), copiedApi.getTarget().hashCode());
@@ -83,7 +83,7 @@ public class IoTCloudAPI_CopyWithTargetTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIBuilderWithDemoSchema(APP_ID, APP_KEY).build("ThingA");
+        ThingIFAPI api = this.craeteIoTCloudAPIBuilderWithDemoSchema(APP_ID, APP_KEY).build("ThingA");
         Assert.assertEquals(api.getTag(), "ThingA");
         Assert.assertFalse(api.onboarded());
         Target target1 = api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
@@ -92,7 +92,7 @@ public class IoTCloudAPI_CopyWithTargetTest extends IoTCloudAPITestBase {
         String accessToken2 = "thing-access-token-4321";
         Target target2 = new Target(thingID2, accessToken2);
 
-        IoTCloudAPI copiedApi = api.copyWithTarget(target2, null);
+        ThingIFAPI copiedApi = api.copyWithTarget(target2, null);
         Assert.assertNull(copiedApi.getTag());
         Assert.assertNotEquals(api.hashCode(), copiedApi.hashCode());
         Assert.assertNotEquals(api.getTarget().hashCode(), copiedApi.getTarget().hashCode());
@@ -114,7 +114,7 @@ public class IoTCloudAPI_CopyWithTargetTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         Assert.assertFalse(api.onboarded());
         Target target = api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
 

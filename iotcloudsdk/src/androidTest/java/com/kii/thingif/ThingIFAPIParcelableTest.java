@@ -18,7 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
-public class IoTCloudAPIParcelableTest extends SmallTestBase {
+public class ThingIFAPIParcelableTest extends SmallTestBase {
     @Test
     public void test() throws Exception {
         String appID = "a12345";
@@ -35,15 +35,15 @@ public class IoTCloudAPIParcelableTest extends SmallTestBase {
         sb.addActionClass(SetColor.class, SetColorResult.class);
         sb.addActionClass(SetBrightness.class, SetBrightnessResult.class);
         Schema schema = sb.build();
-        IoTCloudAPIBuilder icab = IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), appID, appKey, baseUrl, owner);
+        ThingIFAPIBuilder icab = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), appID, appKey, baseUrl, owner);
         icab.addSchema(schema);
 
-        IoTCloudAPI api = icab.build();
+        ThingIFAPI api = icab.build();
 
         Parcel parcel = Parcel.obtain();
         api.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
-        IoTCloudAPI deserializedApi = IoTCloudAPI.CREATOR.createFromParcel(parcel);
+        ThingIFAPI deserializedApi = ThingIFAPI.CREATOR.createFromParcel(parcel);
 
         Assert.assertEquals(appID, deserializedApi.getAppID());
         Assert.assertEquals(appKey, deserializedApi.getAppKey());

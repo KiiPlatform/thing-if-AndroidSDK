@@ -79,27 +79,27 @@ public abstract class IoTCloudAPITestBase extends SmallTestBase {
         sb.addActionClass(TurnPower.class, TurnPowerResult.class);
         return sb.build();
     }
-    protected IoTCloudAPIBuilder craeteIoTCloudAPIBuilderWithDemoSchema(String appID, String appKey) throws Exception {
+    protected ThingIFAPIBuilder craeteIoTCloudAPIBuilderWithDemoSchema(String appID, String appKey) throws Exception {
         String ownerID = UUID.randomUUID().toString();
         Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
         URL baseUrl = this.server.getUrl("/");
-        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), appID, appKey, baseUrl.toString(), owner);
+        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), appID, appKey, baseUrl.toString(), owner);
         builder.addSchema(this.createDefaultSchema());
         return builder;
     }
-    protected IoTCloudAPI craeteIoTCloudAPIWithDemoSchema(String appID, String appKey) throws Exception {
+    protected ThingIFAPI craeteIoTCloudAPIWithDemoSchema(String appID, String appKey) throws Exception {
         String ownerID = UUID.randomUUID().toString();
         Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
         URL baseUrl = this.server.getUrl("/");
-        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), appID, appKey, baseUrl.toString(), owner);
+        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), appID, appKey, baseUrl.toString(), owner);
         builder.addSchema(this.createDefaultSchema());
         return builder.build();
     }
-    protected IoTCloudAPI craeteIoTCloudAPIWithSchema(String appID, String appKey, Schema schema) throws Exception {
+    protected ThingIFAPI craeteIoTCloudAPIWithSchema(String appID, String appKey, Schema schema) throws Exception {
         String ownerID = UUID.randomUUID().toString();
         Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
         URL baseUrl = this.server.getUrl("/");
-        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), appID, appKey, baseUrl.toString(), owner);
+        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), appID, appKey, baseUrl.toString(), owner);
         builder.addSchema(schema);
         return builder.build();
     }

@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
  * https://github.com/KiiCorp/IoTCloud/blob/master/rest_api_spec/trigger-endpoint.yaml
  */
 @RunWith(AndroidJUnit4.class)
-public class IoTCloudAPI_PostNewTriggerTest extends IoTCloudAPITestBase {
+public class ThingIFAPI_PostNewTriggerTest extends IoTCloudAPITestBase {
     @Test
     public void postNewTriggerTest() throws Exception {
         Schema schema = this.createDefaultSchema();
@@ -49,7 +49,7 @@ public class IoTCloudAPI_PostNewTriggerTest extends IoTCloudAPITestBase {
         actions.add(setColorTemperature);
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
         Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
         this.addMockResponseForPostNewTrigger(201, triggerID);
@@ -105,7 +105,7 @@ public class IoTCloudAPI_PostNewTriggerTest extends IoTCloudAPITestBase {
         actions.add(setColorTemperature);
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
         Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
         this.addEmptyMockResponse(403);
@@ -147,7 +147,7 @@ public class IoTCloudAPI_PostNewTriggerTest extends IoTCloudAPITestBase {
         actions.add(setColorTemperature);
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
         Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
         this.addEmptyMockResponse(404);
@@ -189,7 +189,7 @@ public class IoTCloudAPI_PostNewTriggerTest extends IoTCloudAPITestBase {
         actions.add(setColorTemperature);
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
         Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
         this.addEmptyMockResponse(503);
@@ -226,7 +226,7 @@ public class IoTCloudAPI_PostNewTriggerTest extends IoTCloudAPITestBase {
         actions.add(setColorTemperature);
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
     }
     @Test(expected = IllegalArgumentException.class)
@@ -242,7 +242,7 @@ public class IoTCloudAPI_PostNewTriggerTest extends IoTCloudAPITestBase {
         actions.add(setColorTemperature);
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         api.postNewTrigger(null, DEMO_SCHEMA_VERSION, actions, predicate);
     }
@@ -259,7 +259,7 @@ public class IoTCloudAPI_PostNewTriggerTest extends IoTCloudAPITestBase {
         actions.add(setColorTemperature);
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         api.postNewTrigger("", DEMO_SCHEMA_VERSION, actions, predicate);
     }
@@ -271,7 +271,7 @@ public class IoTCloudAPI_PostNewTriggerTest extends IoTCloudAPITestBase {
 
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, null, predicate);
     }
@@ -284,7 +284,7 @@ public class IoTCloudAPI_PostNewTriggerTest extends IoTCloudAPITestBase {
         List<Action> actions = new ArrayList<Action>();
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
     }
@@ -300,7 +300,7 @@ public class IoTCloudAPI_PostNewTriggerTest extends IoTCloudAPITestBase {
         actions.add(setColor);
         actions.add(setColorTemperature);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, null);
     }

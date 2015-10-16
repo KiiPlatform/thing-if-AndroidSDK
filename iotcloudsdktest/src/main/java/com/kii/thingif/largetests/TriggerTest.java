@@ -4,7 +4,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.text.TextUtils;
 import android.util.Pair;
 
-import com.kii.thingif.IoTCloudAPI;
+import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.Target;
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
@@ -34,7 +34,7 @@ import java.util.UUID;
 public class TriggerTest extends LargeTestCaseBase {
     @Test
     public void basicStatePredicateTriggerTest() throws Exception {
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(TargetTestServer.DEV_SERVER_1);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(TargetTestServer.DEV_SERVER_1);
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
 
@@ -251,7 +251,7 @@ public class TriggerTest extends LargeTestCaseBase {
     }
     @Test
     public void listTriggersEmptyResultTest() throws Exception {
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(TargetTestServer.DEV_SERVER_1);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(TargetTestServer.DEV_SERVER_1);
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
 

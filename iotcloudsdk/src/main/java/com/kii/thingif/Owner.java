@@ -7,7 +7,7 @@ import android.text.TextUtils;
 
 /**
  * Represents owner of things.
- * All {@link com.kii.thingif.IoTCloudAPI} operations will be performed with the owner's access token.
+ * All {@link ThingIFAPI} operations will be performed with the owner's access token.
  */
 public class Owner implements Parcelable {
 

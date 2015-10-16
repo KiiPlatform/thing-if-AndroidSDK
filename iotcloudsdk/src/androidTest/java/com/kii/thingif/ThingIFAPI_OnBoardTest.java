@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
  * https://github.com/KiiCorp/IoTCloud/blob/master/rest_api_spec/onboarding-swagger.yml
  */
 @RunWith(AndroidJUnit4.class)
-public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
+public class ThingIFAPI_OnBoardTest extends IoTCloudAPITestBase {
 
     @Test
     public void onboardWithVendorThingIDByOwnerTest() throws Exception {
@@ -34,7 +34,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         Assert.assertFalse(api.onboarded());
         Target target = api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
         Assert.assertTrue(api.onboarded());
@@ -72,7 +72,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         this.addEmptyMockResponse(403);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
             api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
             Assert.fail("IoTCloudRestException should be thrown");
@@ -108,7 +108,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         this.addEmptyMockResponse(404);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
             api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
             Assert.fail("IoTCloudRestException should be thrown");
@@ -144,7 +144,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         this.addEmptyMockResponse(500);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
             api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
             Assert.fail("IoTCloudRestException should be thrown");
@@ -180,7 +180,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         Assert.assertFalse(api.onboarded());
         Target target = api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
         Assert.assertTrue(api.onboarded());
@@ -188,22 +188,22 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithVendorThingIDByOwnerWithNullVendorThingIDTest() throws Exception {
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         Target target = api.onboard(null, "password", DEMO_THING_TYPE, null);
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithVendorThingIDByOwnerWithEmptyVendorThingIDTest() throws Exception {
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         Target target = api.onboard("", "password", DEMO_THING_TYPE, null);
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithVendorThingIDByOwnerWithNullVendorThingPasswordTest() throws Exception {
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         Target target = api.onboard("v1234567890abcde", null, DEMO_THING_TYPE, null);
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithVendorThingIDByOwnerWithEmptyVendorThingPasswordTest() throws Exception {
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         Target target = api.onboard("v1234567890abcde", "", DEMO_THING_TYPE, null);
     }
     @Test
@@ -213,7 +213,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         Assert.assertFalse(api.onboarded());
         Target target = api.onboard(thingID, thingPassword);
         Assert.assertTrue(api.onboarded());
@@ -246,7 +246,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(403, null, null);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
             api.onboard(thingID, thingPassword);
             Assert.fail("IoTCloudRestException should be thrown");
@@ -260,7 +260,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(404, null, null);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
             api.onboard(thingID, thingPassword);
             Assert.fail("IoTCloudRestException should be thrown");
@@ -274,7 +274,7 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(500, null, null);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
             api.onboard(thingID, thingPassword);
             Assert.fail("IoTCloudRestException should be thrown");
@@ -283,22 +283,22 @@ public class IoTCloudAPI_OnBoardTest extends IoTCloudAPITestBase {
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithThingIDByOwnerTestWithNullThingIDTest() throws Exception {
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         Target target = api.onboard(null, "password");
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithThingIDByOwnerTestWithEmptyThingIDTest() throws Exception {
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         Target target = api.onboard("", "password");
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithThingIDByOwnerTestWithNullPasswordTest() throws Exception {
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         Target target = api.onboard("th.1234567890", null);
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithThingIDByOwnerTestWithEmptyPasswordTest() throws Exception {
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         Target target = api.onboard("th.1234567890", "");
     }
 }

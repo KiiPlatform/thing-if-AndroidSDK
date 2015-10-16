@@ -42,7 +42,7 @@ import java.util.Map;
 /**
  * This class operates an IoT device that is specified by {@link #onboard(String, String, String, JSONObject)} method.
  */
-public class IoTCloudAPI implements Parcelable {
+public class ThingIFAPI implements Parcelable {
 
     private static final String SHARED_PREFERENCES_KEY_INSTANCE = "IoTCloudAPI_INSTANCE";
     private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
@@ -68,7 +68,7 @@ public class IoTCloudAPI implements Parcelable {
      * @return IoTCloudAPI instance.
      * @throws IllegalStateException Thrown when the instance has not stored.
      */
-    public static IoTCloudAPI loadFromStoredInstance(@NonNull Context context) throws StoredIoTCloudAPIInstanceNotFoundException {
+    public static ThingIFAPI loadFromStoredInstance(@NonNull Context context) throws StoredIoTCloudAPIInstanceNotFoundException {
         return loadFromStoredInstance(context, null);
     }
     /**
@@ -79,12 +79,12 @@ public class IoTCloudAPI implements Parcelable {
      * @return IoTCloudAPI instance.
      * @throws IllegalStateException Thrown when the instance has not stored.
      */
-    public static IoTCloudAPI loadFromStoredInstance(@NonNull Context context, String tag) throws StoredIoTCloudAPIInstanceNotFoundException {
-        IoTCloudAPI.context = context.getApplicationContext();
+    public static ThingIFAPI loadFromStoredInstance(@NonNull Context context, String tag) throws StoredIoTCloudAPIInstanceNotFoundException {
+        ThingIFAPI.context = context.getApplicationContext();
         SharedPreferences preferences = getSharedPreferences();
         String serializedJson = preferences.getString(getSharedPreferencesKey(tag), null);
         if (serializedJson != null) {
-            return GsonRepository.gson().fromJson(serializedJson, IoTCloudAPI.class);
+            return GsonRepository.gson().fromJson(serializedJson, ThingIFAPI.class);
         }
         throw new StoredIoTCloudAPIInstanceNotFoundException(tag);
     }
@@ -108,7 +108,7 @@ public class IoTCloudAPI implements Parcelable {
         editor.remove(getSharedPreferencesKey(tag));
         editor.commit();
     }
-    private static void saveInstance(IoTCloudAPI instance) {
+    private static void saveInstance(ThingIFAPI instance) {
         SharedPreferences preferences = getSharedPreferences();
         if (preferences != null) {
             SharedPreferences.Editor editor = preferences.edit();
@@ -120,7 +120,7 @@ public class IoTCloudAPI implements Parcelable {
         return SHARED_PREFERENCES_KEY_INSTANCE + (tag == null ? "" : "_"  +tag);
     }
 
-    IoTCloudAPI(
+    ThingIFAPI(
             @Nullable Context context,
             @Nullable String tag,
             @NonNull String appID,
@@ -132,7 +132,7 @@ public class IoTCloudAPI implements Parcelable {
             String installationID) {
         // Parameters are checked by IoTCloudAPIBuilder
         if (context != null) {
-            IoTCloudAPI.context = context.getApplicationContext();
+            ThingIFAPI.context = context.getApplicationContext();
         }
         this.tag = tag;
         this.appID = appID;
@@ -153,11 +153,11 @@ public class IoTCloudAPI implements Parcelable {
      * @param tag
      * @return IoTCloudAPI instance
      */
-    public IoTCloudAPI copyWithTarget(@NonNull Target target, @Nullable String tag) {
+    public ThingIFAPI copyWithTarget(@NonNull Target target, @Nullable String tag) {
         if (target == null) {
             throw new IllegalArgumentException("target is null");
         }
-        IoTCloudAPI api = new IoTCloudAPI(context, tag, this.appID, this.appKey, this.baseUrl, this.owner, target, new ArrayList<Schema>(this.schemas.values()), this.installationID);
+        ThingIFAPI api = new ThingIFAPI(context, tag, this.appID, this.appKey, this.baseUrl, this.owner, target, new ArrayList<Schema>(this.schemas.values()), this.installationID);
         saveInstance(api);
         return api;
     }
@@ -938,7 +938,7 @@ public class IoTCloudAPI implements Parcelable {
     }
 
     // Implementation of Parcelable
-    protected IoTCloudAPI(Parcel in) {
+    protected ThingIFAPI(Parcel in) {
         this.tag = in.readString();
         this.appID = in.readString();
         this.appKey = in.readString();
@@ -952,15 +952,15 @@ public class IoTCloudAPI implements Parcelable {
         this.restClient = new IoTRestClient();
         this.installationID = in.readString();
     }
-    public static final Creator<IoTCloudAPI> CREATOR = new Creator<IoTCloudAPI>() {
+    public static final Creator<ThingIFAPI> CREATOR = new Creator<ThingIFAPI>() {
         @Override
-        public IoTCloudAPI createFromParcel(Parcel in) {
-            return new IoTCloudAPI(in);
+        public ThingIFAPI createFromParcel(Parcel in) {
+            return new ThingIFAPI(in);
         }
 
         @Override
-        public IoTCloudAPI[] newArray(int size) {
-            return new IoTCloudAPI[size];
+        public ThingIFAPI[] newArray(int size) {
+            return new ThingIFAPI[size];
         }
     };
     @Override

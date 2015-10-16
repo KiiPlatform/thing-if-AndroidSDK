@@ -168,13 +168,13 @@ public class GsonSerializationTest extends SmallTestBase {
 
     @Test
     public void iotCloudAPITest() throws Exception {
-        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "appid", "appkey", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "user-access-token-1234"));
+        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "appid", "appkey", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "user-access-token-1234"));
         SchemaBuilder sb = SchemaBuilder.newSchemaBuilder("SmartLight", "LightDemoSchema", 1, LightState.class);
         sb.addActionClass(TurnPower.class, TurnPowerResult.class);
         sb.addActionClass(SetColor.class, SetColorResult.class);
         Schema schema = sb.build();
         builder.addSchema(schema);
-        IoTCloudAPI api = builder.build();
+        ThingIFAPI api = builder.build();
         Target target = new Target(new TypedID(TypedID.Types.THING, "th.1234567890"), "thing-access-token-1234");
         api.setTarget(target);
 
@@ -205,7 +205,7 @@ public class GsonSerializationTest extends SmallTestBase {
         JsonObject serializedJson = (JsonObject) new JsonParser().parse(GsonRepository.gson().toJson(api));
         Assert.assertEquals(expectedJson, serializedJson);
 
-        IoTCloudAPI deserializedApi = GsonRepository.gson().fromJson(serializedJson, IoTCloudAPI.class);
+        ThingIFAPI deserializedApi = GsonRepository.gson().fromJson(serializedJson, ThingIFAPI.class);
         Assert.assertEquals("appid", deserializedApi.getAppID());
         Assert.assertEquals("appkey", deserializedApi.getAppKey());
         Assert.assertEquals(Site.JP.getBaseUrl(), deserializedApi.getBaseUrl());

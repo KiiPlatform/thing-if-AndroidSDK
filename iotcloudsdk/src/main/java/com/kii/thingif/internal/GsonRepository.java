@@ -16,8 +16,8 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.kii.thingif.IoTCloudAPI;
-import com.kii.thingif.IoTCloudAPIBuilder;
+import com.kii.thingif.ThingIFAPI;
+import com.kii.thingif.ThingIFAPIBuilder;
 import com.kii.thingif.Owner;
 import com.kii.thingif.Target;
 import com.kii.thingif.TargetState;
@@ -252,9 +252,9 @@ public class GsonRepository {
         }
     };
 
-    private static final JsonSerializer<IoTCloudAPI> IOT_CLOUD_API_SERIALIZER = new JsonSerializer<IoTCloudAPI>() {
+    private static final JsonSerializer<ThingIFAPI> IOT_CLOUD_API_SERIALIZER = new JsonSerializer<ThingIFAPI>() {
         @Override
-        public JsonElement serialize(IoTCloudAPI src, Type typeOfSrc, JsonSerializationContext context) {
+        public JsonElement serialize(ThingIFAPI src, Type typeOfSrc, JsonSerializationContext context) {
             if (src == null) {
                 return null;
             }
@@ -273,9 +273,9 @@ public class GsonRepository {
             return json;
         }
     };
-    private static final JsonDeserializer<IoTCloudAPI> IOT_CLOUD_API_DESERIALIZER = new JsonDeserializer<IoTCloudAPI>() {
+    private static final JsonDeserializer<ThingIFAPI> IOT_CLOUD_API_DESERIALIZER = new JsonDeserializer<ThingIFAPI>() {
         @Override
-        public IoTCloudAPI deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        public ThingIFAPI deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             if (jsonElement == null) {
                 return null;
             }
@@ -284,7 +284,7 @@ public class GsonRepository {
             String appKey = json.get("appKey").getAsString();
             String baseUrl = json.get("baseUrl").getAsString();
             Owner owner = DEFAULT_GSON.fromJson(json.getAsJsonObject("owner"), Owner.class);
-            IoTCloudAPIBuilder builder = IoTCloudAPIBuilder._newBuilder(appID, appKey, baseUrl, owner);
+            ThingIFAPIBuilder builder = ThingIFAPIBuilder._newBuilder(appID, appKey, baseUrl, owner);
             if (json.has("target")) {
                 Target target = DEFAULT_GSON.fromJson(json.getAsJsonObject("target"), Target.class);
                 builder.setTarget(target);
@@ -314,8 +314,8 @@ public class GsonRepository {
                 .registerTypeHierarchyAdapter(Predicate.class, PREDICATE_DESERIALIZER)
                 .registerTypeAdapter(Schema.class, SCHEMA_SERIALIZER)
                 .registerTypeAdapter(Schema.class, SCHEMA_DESERIALIZER)
-                .registerTypeAdapter(IoTCloudAPI.class, IOT_CLOUD_API_SERIALIZER)
-                .registerTypeAdapter(IoTCloudAPI.class, IOT_CLOUD_API_DESERIALIZER)
+                .registerTypeAdapter(ThingIFAPI.class, IOT_CLOUD_API_SERIALIZER)
+                .registerTypeAdapter(ThingIFAPI.class, IOT_CLOUD_API_DESERIALIZER)
                 .create();
     }
 
@@ -395,8 +395,8 @@ public class GsonRepository {
                     .registerTypeAdapter(ActionResult.class, ACTION_RESULT_DESERIALIZER)
                     .registerTypeAdapter(Schema.class, SCHEMA_SERIALIZER)
                     .registerTypeAdapter(Schema.class, SCHEMA_DESERIALIZER)
-                    .registerTypeAdapter(IoTCloudAPI.class, IOT_CLOUD_API_SERIALIZER)
-                    .registerTypeAdapter(IoTCloudAPI.class, IOT_CLOUD_API_DESERIALIZER)
+                    .registerTypeAdapter(ThingIFAPI.class, IOT_CLOUD_API_SERIALIZER)
+                    .registerTypeAdapter(ThingIFAPI.class, IOT_CLOUD_API_DESERIALIZER)
                     .create();
             REPOSITORY.put(new Pair<String, Integer>(schema.getSchemaName(), schema.getSchemaVersion()), gson);
         }

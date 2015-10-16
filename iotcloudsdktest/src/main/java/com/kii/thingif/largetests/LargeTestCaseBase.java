@@ -5,8 +5,8 @@ import android.test.AndroidTestCase;
 
 import com.kii.cloud.rest.client.KiiRest;
 import com.kii.cloud.rest.client.model.storage.KiiNormalUser;
-import com.kii.thingif.IoTCloudAPI;
-import com.kii.thingif.IoTCloudAPIBuilder;
+import com.kii.thingif.ThingIFAPI;
+import com.kii.thingif.ThingIFAPIBuilder;
 import com.kii.thingif.Owner;
 import com.kii.thingif.Site;
 import com.kii.thingif.TypedID;
@@ -70,9 +70,9 @@ public abstract class LargeTestCaseBase extends AndroidTestCase {
         sb.addActionClass(TurnPower.class, TurnPowerResult.class);
         return sb.build();
     }
-    protected IoTCloudAPI craeteIoTCloudAPIWithDemoSchema(TargetTestServer server) throws Exception {
+    protected ThingIFAPI craeteIoTCloudAPIWithDemoSchema(TargetTestServer server) throws Exception {
         Owner owner = this.createNewOwner(server);
-        IoTCloudAPIBuilder builder = IoTCloudAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), server.getAppID(), server.getAppKey(), server.getBaseUrl(), owner);
+        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), server.getAppID(), server.getAppKey(), server.getBaseUrl(), owner);
         builder.addSchema(this.createDefaultSchema());
         return builder.build();
     }

@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  * https://github.com/KiiCorp/IoTCloud/blob/master/rest_api_spec/trigger-endpoint.yaml
  */
 @RunWith(AndroidJUnit4.class)
-public class IoTCloudAPI_ListTriggersTest extends IoTCloudAPITestBase {
+public class ThingIFAPI_ListTriggersTest extends IoTCloudAPITestBase {
     @Test
     public void listTriggersTest() throws Exception {
         Schema schema = this.createDefaultSchema();
@@ -45,7 +45,7 @@ public class IoTCloudAPI_ListTriggersTest extends IoTCloudAPITestBase {
         Target target = new Target(thingID, accessToken);
         String paginationKey = "pagination-12345-key";
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
 
         List<Action> command1Actions = new ArrayList<Action>();
@@ -112,7 +112,7 @@ public class IoTCloudAPI_ListTriggersTest extends IoTCloudAPITestBase {
         Target target = new Target(thingID, accessToken);
         String paginationKey = "pagination-12345-key";
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
 
         List<Action> command1Actions = new ArrayList<Action>();
@@ -178,7 +178,7 @@ public class IoTCloudAPI_ListTriggersTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new Target(thingID, accessToken);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(400);
         try {
             api.setTarget(target);
@@ -204,7 +204,7 @@ public class IoTCloudAPI_ListTriggersTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new Target(thingID, accessToken);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(403);
         try {
             api.setTarget(target);
@@ -230,7 +230,7 @@ public class IoTCloudAPI_ListTriggersTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new Target(thingID, accessToken);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(404);
         try {
             api.setTarget(target);
@@ -256,7 +256,7 @@ public class IoTCloudAPI_ListTriggersTest extends IoTCloudAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new Target(thingID, accessToken);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(503);
         try {
             api.setTarget(target);
@@ -277,7 +277,7 @@ public class IoTCloudAPI_ListTriggersTest extends IoTCloudAPITestBase {
     }
     @Test(expected = IllegalStateException.class)
     public void listTriggersWithNullTargetTest() throws Exception {
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         api.listTriggers(10, null);
     }
 }

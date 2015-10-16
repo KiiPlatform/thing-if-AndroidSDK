@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
  * http://docs.kii.com/rest/#notification_management-manage_the_user_thing_device_installation-delete_the_installation
  */
 @RunWith(AndroidJUnit4.class)
-public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
+public class ThingIFAPI_PushTest extends IoTCloudAPITestBase {
     @Test
     public void installPushGCMTest() throws Exception {
         String deviceToken = UUID.randomUUID().toString();
@@ -30,7 +30,7 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
 
         this.addMockResponseForInstallPush(201, installationID);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         Assert.assertNull(api.getInstallationID());
         String result = api.installPush(deviceToken, PushBackend.GCM);
         Assert.assertNotNull(api.getInstallationID());
@@ -60,7 +60,7 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
 
         this.addMockResponseForInstallPush(201, installationID);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         Assert.assertNull(api.getInstallationID());
         String result = api.installPush(deviceToken, PushBackend.GCM,true);
         Assert.assertNotNull(api.getInstallationID());
@@ -91,7 +91,7 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
 
         this.addMockResponseForInstallPush(201, installationID);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         Assert.assertNull(api.getInstallationID());
         String result = api.installPush(deviceToken, PushBackend.JPUSH);
         Assert.assertNotNull(api.getInstallationID());
@@ -119,7 +119,7 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
         String deviceToken = UUID.randomUUID().toString();
         this.addEmptyMockResponse(400);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
             api.installPush(deviceToken, PushBackend.GCM);
             Assert.fail("IoTCloudRestException should be thrown");
@@ -149,7 +149,7 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
         String deviceToken = UUID.randomUUID().toString();
         this.addEmptyMockResponse(401);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
             api.installPush(deviceToken, PushBackend.GCM);
             Assert.fail("IoTCloudRestException should be thrown");
@@ -179,7 +179,7 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
         String deviceToken = UUID.randomUUID().toString();
         this.addEmptyMockResponse(404);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
             api.installPush(deviceToken, PushBackend.GCM);
             Assert.fail("IoTCloudRestException should be thrown");
@@ -206,7 +206,7 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
     @Test(expected = IllegalArgumentException.class)
     public void installPushWithNullPushBackendTest() throws Exception {
         String deviceToken = UUID.randomUUID().toString();
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         api.installPush(deviceToken, null);
     }
     @Test
@@ -215,7 +215,7 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
 
         this.addEmptyMockResponse(204);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         api.uninstallPush(installationID);
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -234,7 +234,7 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
 
         this.addEmptyMockResponse(401);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
             api.uninstallPush(installationID);
             Assert.fail("IoTCloudRestException should be thrown");
@@ -257,7 +257,7 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
 
         this.addEmptyMockResponse(404);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
             api.uninstallPush(installationID);
             Assert.fail("IoTCloudRestException should be thrown");
@@ -276,7 +276,7 @@ public class IoTCloudAPI_PushTest extends IoTCloudAPITestBase {
     }
     @Test(expected = IllegalArgumentException.class)
     public void uninstallPushWithNullInstallationIDTest() throws Exception {
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         api.uninstallPush(null);
     }
 }

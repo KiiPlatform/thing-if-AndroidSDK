@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  * https://github.com/KiiCorp/IoTCloud/blob/master/rest_api_spec/command-endpoint.yaml
  */
 @RunWith(AndroidJUnit4.class)
-public class IoTCloudAPI_ListCommandTest extends IoTCloudAPITestBase {
+public class ThingIFAPI_ListCommandTest extends IoTCloudAPITestBase {
     @Test
     public void listCommandsTest() throws Exception {
         Schema schema = this.createDefaultSchema();
@@ -43,7 +43,7 @@ public class IoTCloudAPI_ListCommandTest extends IoTCloudAPITestBase {
         Target target = new Target(thingID, accessToken);
         String paginationKey = "pagination-12345-key";
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
 
         List<Action> command1Actions = new ArrayList<Action>();
@@ -115,7 +115,7 @@ public class IoTCloudAPI_ListCommandTest extends IoTCloudAPITestBase {
         Target target = new Target(thingID, accessToken);
         String paginationKey = "pagination-12345-key";
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
         List<Action> commandActions = new ArrayList<Action>();
         commandActions.add(new TurnPower(true));
@@ -155,7 +155,7 @@ public class IoTCloudAPI_ListCommandTest extends IoTCloudAPITestBase {
         Target target = new Target(thingID, accessToken);
         String paginationKey = "pagination-12345-key";
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
         this.addEmptyMockResponse(400);
 
@@ -184,7 +184,7 @@ public class IoTCloudAPI_ListCommandTest extends IoTCloudAPITestBase {
         Target target = new Target(thingID, accessToken);
         String paginationKey = "pagination-12345-key";
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
         this.addEmptyMockResponse(404);
 
@@ -207,7 +207,7 @@ public class IoTCloudAPI_ListCommandTest extends IoTCloudAPITestBase {
     }
     @Test(expected = IllegalStateException.class)
     public void listCommandsWithNullTargetTest() throws Exception {
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         api.listCommands(10, null);
     }
 

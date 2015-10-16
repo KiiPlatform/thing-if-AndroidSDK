@@ -12,9 +12,9 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IoTCloudAPIBuilder {
+public class ThingIFAPIBuilder {
 
-    private static final String TAG = IoTCloudAPIBuilder.class.getSimpleName();
+    private static final String TAG = ThingIFAPIBuilder.class.getSimpleName();
     private final Context context;
     private final String appID;
     private final String appKey;
@@ -25,7 +25,7 @@ public class IoTCloudAPIBuilder {
     private String installationID;
     private final List<Schema> schemas = new ArrayList<Schema>();
 
-    private IoTCloudAPIBuilder(
+    private ThingIFAPIBuilder(
             @Nullable Context context,
             @NonNull String appID,
             @NonNull String appKey,
@@ -38,7 +38,7 @@ public class IoTCloudAPIBuilder {
         this.baseUrl = null;
         this.owner = owner;
     }
-    private IoTCloudAPIBuilder(
+    private ThingIFAPIBuilder(
             @Nullable Context context,
             @NonNull String appID,
             @NonNull String appKey,
@@ -61,7 +61,7 @@ public class IoTCloudAPIBuilder {
      * @return IoTCloudAPIBuilder instance.
      */
     @NonNull
-    public static IoTCloudAPIBuilder newBuilder(
+    public static ThingIFAPIBuilder newBuilder(
             @NonNull Context context,
             @NonNull String appID,
             @NonNull String appKey,
@@ -82,7 +82,7 @@ public class IoTCloudAPIBuilder {
         if (owner == null) {
             throw new IllegalArgumentException("owner is null");
         }
-        return new IoTCloudAPIBuilder(context, appID, appKey, site, owner);
+        return new ThingIFAPIBuilder(context, appID, appKey, site, owner);
     }
 
     /** Instantiate new IoTCloudAPIBuilder with custom URL.
@@ -95,7 +95,7 @@ public class IoTCloudAPIBuilder {
      * @return IoTCloudAPIBuilder instance.
      */
     @NonNull
-    public static IoTCloudAPIBuilder newBuilder(
+    public static ThingIFAPIBuilder newBuilder(
             @NonNull Context context,
             @NonNull String appID,
             @NonNull String appKey,
@@ -116,7 +116,7 @@ public class IoTCloudAPIBuilder {
         if (owner == null) {
             throw new IllegalArgumentException("owner is null");
         }
-        return new IoTCloudAPIBuilder(context, appID, appKey, baseUrl, owner);
+        return new ThingIFAPIBuilder(context, appID, appKey, baseUrl, owner);
     }
 
     /**
@@ -130,7 +130,7 @@ public class IoTCloudAPIBuilder {
      * @return IoTCloudAPIBuilder instance.
      */
     @NonNull
-    public static IoTCloudAPIBuilder _newBuilder(
+    public static ThingIFAPIBuilder _newBuilder(
             @NonNull String appID,
             @NonNull String appKey,
             @NonNull String baseUrl,
@@ -147,7 +147,7 @@ public class IoTCloudAPIBuilder {
         if (owner == null) {
             throw new IllegalArgumentException("owner is null");
         }
-        return new IoTCloudAPIBuilder(null, appID, appKey, baseUrl, owner);
+        return new ThingIFAPIBuilder(null, appID, appKey, baseUrl, owner);
     }
 
     /** Add Schema to the IoTCloudAPI.
@@ -155,7 +155,7 @@ public class IoTCloudAPIBuilder {
      * @return IoTCloudAPIBuilder instance for method chaining.
      */
     @NonNull
-    public IoTCloudAPIBuilder addSchema(
+    public ThingIFAPIBuilder addSchema(
             @NonNull Schema schema) {
         if (schema == null) {
             throw new IllegalArgumentException("schema is null");
@@ -170,7 +170,7 @@ public class IoTCloudAPIBuilder {
      * @param target
      * @return
      */
-    public IoTCloudAPIBuilder setTarget(Target target) {
+    public ThingIFAPIBuilder setTarget(Target target) {
         this.target = target;
         return this;
     }
@@ -180,7 +180,7 @@ public class IoTCloudAPIBuilder {
      * @param installationID
      * @return
      */
-    public IoTCloudAPIBuilder setInstallationID(String installationID) {
+    public ThingIFAPIBuilder setInstallationID(String installationID) {
         this.installationID = installationID;
         return this;
     }
@@ -189,7 +189,7 @@ public class IoTCloudAPIBuilder {
      * @return IoTCloudAPI instance.
      */
     @NonNull
-    public IoTCloudAPI build() {
+    public ThingIFAPI build() {
         return build(null);
     }
     /** Instantiate new IoTCloudAPI instance.
@@ -197,7 +197,7 @@ public class IoTCloudAPIBuilder {
      * @return IoTCloudAPI instance.
      */
     @NonNull
-    public IoTCloudAPI build(String tag) {
+    public ThingIFAPI build(String tag) {
         String baseUrl = this.baseUrl;
         if (this.site != null) {
             baseUrl = this.site.getBaseUrl();
@@ -206,7 +206,7 @@ public class IoTCloudAPIBuilder {
             throw new IllegalStateException("Builder has no schemas");
         }
         Log.d(TAG, MessageFormat.format("Initialize IoTCloudAPI AppID={0}, AppKey={1}, BaseUrl={2}", this.appID, this.appKey, baseUrl));
-        return new IoTCloudAPI(this.context, tag, this.appID, this.appKey, baseUrl, this.owner, this.target, this.schemas, this.installationID);
+        return new ThingIFAPI(this.context, tag, this.appID, this.appKey, baseUrl, this.owner, this.target, this.schemas, this.installationID);
     }
 
 }

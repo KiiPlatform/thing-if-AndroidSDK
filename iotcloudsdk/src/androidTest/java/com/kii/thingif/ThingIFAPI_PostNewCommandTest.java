@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  * https://github.com/KiiCorp/IoTCloud/blob/master/rest_api_spec/command-endpoint.yaml
  */
 @RunWith(AndroidJUnit4.class)
-public class IoTCloudAPI_PostNewCommandTest extends IoTCloudAPITestBase {
+public class ThingIFAPI_PostNewCommandTest extends IoTCloudAPITestBase {
     @Test
     public void postNewCommandTest() throws Exception {
         Schema schema = this.createDefaultSchema();
@@ -46,7 +46,7 @@ public class IoTCloudAPI_PostNewCommandTest extends IoTCloudAPITestBase {
         actions.add(setColor);
         actions.add(setColorTemperature);
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
         this.addMockResponseForPostNewCommand(201, commandID);
         this.addMockResponseForGetCommand(200, commandID, api.getOwner().getTypedID(), thingID, actions, null, null, created, modified, schema);
@@ -113,7 +113,7 @@ public class IoTCloudAPI_PostNewCommandTest extends IoTCloudAPITestBase {
         List<Action> actions = new ArrayList<Action>();
         actions.add(new SetColor(128, 0, 255));
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
         this.addEmptyMockResponse(400);
 
@@ -156,7 +156,7 @@ public class IoTCloudAPI_PostNewCommandTest extends IoTCloudAPITestBase {
         List<Action> actions = new ArrayList<Action>();
         actions.add(new SetColor(128, 0, 255));
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
         this.addEmptyMockResponse(403);
 
@@ -200,7 +200,7 @@ public class IoTCloudAPI_PostNewCommandTest extends IoTCloudAPITestBase {
         List<Action> actions = new ArrayList<Action>();
         actions.add(new SetColor(128, 0, 255));
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
 
         this.addEmptyMockResponse(503);
 
@@ -239,7 +239,7 @@ public class IoTCloudAPI_PostNewCommandTest extends IoTCloudAPITestBase {
         actions.add(new SetColor(128, 0, 255));
         actions.add(new SetColorTemperature(25));
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         api.postNewCommand(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
     }
     @Test(expected = UnsupportedSchemaException.class)
@@ -249,7 +249,7 @@ public class IoTCloudAPI_PostNewCommandTest extends IoTCloudAPITestBase {
         actions.add(new SetColor(128, 0, 255));
         actions.add(new SetColorTemperature(25));
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         api.postNewCommand(null, DEMO_SCHEMA_VERSION, actions);
     }
@@ -257,7 +257,7 @@ public class IoTCloudAPI_PostNewCommandTest extends IoTCloudAPITestBase {
     public void postNewCommandWithNullActionsTest() throws Exception {
         Target target = new Target(new TypedID(TypedID.Types.THING, "th.1234567890"), "thing-access-token-1234");
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         api.postNewCommand(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, null);
     }
@@ -266,7 +266,7 @@ public class IoTCloudAPI_PostNewCommandTest extends IoTCloudAPITestBase {
         Target target = new Target(new TypedID(TypedID.Types.THING, "th.1234567890"), "thing-access-token-1234");
         List<Action> actions = new ArrayList<Action>();
 
-        IoTCloudAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.craeteIoTCloudAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         api.postNewCommand(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
     }
