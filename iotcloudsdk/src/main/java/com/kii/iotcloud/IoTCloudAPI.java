@@ -256,7 +256,7 @@ public class IoTCloudAPI implements Parcelable {
     }
 
     private Target onboard(MediaType contentType, JSONObject requestBody) throws IoTCloudException {
-        String path = MessageFormat.format("/iot-api/apps/{0}/onboardings", this.appID);
+        String path = MessageFormat.format("/thing-if/apps/{0}/onboardings", this.appID);
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, contentType, requestBody);
@@ -417,7 +417,7 @@ public class IoTCloudAPI implements Parcelable {
             throw new IllegalArgumentException("actions is null or empty");
         }
 
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands", this.appID, this.target.getTypedID().toString());
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/commands", this.appID, this.target.getTypedID().toString());
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         Command command = new Command(schemaName, schemaVersion, this.owner.getTypedID(), actions);
@@ -453,7 +453,7 @@ public class IoTCloudAPI implements Parcelable {
         if (TextUtils.isEmpty(commandID)) {
             throw new IllegalArgumentException("commandID is null or empty");
         }
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands/{2}", this.appID, this.target.getTypedID().toString(), commandID);
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/commands/{2}", this.appID, this.target.getTypedID().toString(), commandID);
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
@@ -495,7 +495,7 @@ public class IoTCloudAPI implements Parcelable {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/commands", this.appID, this.target.getTypedID().toString());
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/commands", this.appID, this.target.getTypedID().toString());
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
@@ -558,7 +558,7 @@ public class IoTCloudAPI implements Parcelable {
             throw new IllegalArgumentException("predicate is null");
         }
 
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers", this.appID, this.target.getTypedID().toString());
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers", this.appID, this.target.getTypedID().toString());
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         JSONObject requestBody = new JSONObject();
@@ -598,7 +598,7 @@ public class IoTCloudAPI implements Parcelable {
             throw new IllegalArgumentException("triggerID is null or empty");
         }
 
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}", this.appID, this.target.getTypedID().toString(), triggerID);
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}", this.appID, this.target.getTypedID().toString(), triggerID);
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
@@ -655,7 +655,7 @@ public class IoTCloudAPI implements Parcelable {
             throw new IllegalArgumentException("predicate is null");
         }
 
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}", this.appID, this.target.getTypedID().toString(), triggerID);
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}", this.appID, this.target.getTypedID().toString(), triggerID);
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         JSONObject requestBody = new JSONObject();
@@ -695,7 +695,7 @@ public class IoTCloudAPI implements Parcelable {
         if (TextUtils.isEmpty(triggerID)) {
             throw new IllegalArgumentException("triggerID is null or empty");
         }
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}/{3}", this.appID, this.target.getTypedID().toString(), triggerID, (enable ? "enable" : "disable"));
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}/{3}", this.appID, this.target.getTypedID().toString(), triggerID, (enable ? "enable" : "disable"));
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.PUT, headers);
@@ -724,7 +724,7 @@ public class IoTCloudAPI implements Parcelable {
         }
 
         Trigger trigger = this.getTrigger(triggerID);
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers/{2}", this.appID, target.getTypedID().toString(), triggerID);
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}", this.appID, target.getTypedID().toString(), triggerID);
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.DELETE, headers);
@@ -761,7 +761,7 @@ public class IoTCloudAPI implements Parcelable {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
 
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/triggers", this.appID, this.target.getTypedID().toString());
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers", this.appID, this.target.getTypedID().toString());
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
@@ -813,7 +813,7 @@ public class IoTCloudAPI implements Parcelable {
             throw new IllegalArgumentException("classOfS is null");
         }
 
-        String path = MessageFormat.format("/iot-api/apps/{0}/targets/{1}/states", this.appID, this.target.getTypedID().toString());
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/states", this.appID, this.target.getTypedID().toString());
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);

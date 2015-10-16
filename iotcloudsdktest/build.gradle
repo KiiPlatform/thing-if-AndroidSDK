@@ -4,8 +4,14 @@ android {
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
 
+    android {
+        lintOptions {
+            abortOnError false
+        }
+    }
+
     defaultConfig {
-        applicationId "com.kii.iotcloud.test"
+        applicationId "com.kii.iotcloud.largetests"
         minSdkVersion 10
         targetSdkVersion 22
         versionCode 1
@@ -31,6 +37,12 @@ dependencies {
     compile 'com.kii.cloud.rest.client:kii-rest-client4j:0.5.5'
     compile 'com.android.support.test:runner:0.3'
     compile 'com.android.support.test:rules:0.3'
-    compile 'com.android.support.test.espresso:espresso-core:2.2'
-    compile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
+}
+
+task allTest(dependsOn: 'installDebug') {
+    doFirst {
+        exec {
+            commandLine 'sh', './testall.sh'
+        }
+    }
 }
