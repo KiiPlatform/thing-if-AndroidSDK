@@ -141,14 +141,14 @@ public class GsonSerializationTest extends SmallTestBase {
                         "    \"thingType\":\"ThingType\"," +
                         "    \"schemaName\":\"SchemaName1\"," +
                         "    \"schemaVersion\":10," +
-                        "    \"stateClass\":\"com.kii.iotcloud.testschemas.LightState\"," +
+                        "    \"stateClass\":\"com.kii.thingif.testschemas.LightState\"," +
                         "    \"actionClasses\":[" +
-                        "        \"com.kii.iotcloud.testschemas.SetColor\"," +
-                        "        \"com.kii.iotcloud.testschemas.SetColorTemperature\"" +
+                        "        \"com.kii.thingif.testschemas.SetColor\"," +
+                        "        \"com.kii.thingif.testschemas.SetColorTemperature\"" +
                         "    ]," +
                         "    \"actionResultClasses\":[" +
-                        "        \"com.kii.iotcloud.testschemas.SetColorResult\"," +
-                        "        \"com.kii.iotcloud.testschemas.SetColorTemperatureResult\"" +
+                        "        \"com.kii.thingif.testschemas.SetColorResult\"," +
+                        "        \"com.kii.thingif.testschemas.SetColorTemperatureResult\"" +
                         "    ]" +
                         "}");
 
@@ -190,14 +190,14 @@ public class GsonSerializationTest extends SmallTestBase {
                         "            \"thingType\":\"SmartLight\"," +
                         "            \"schemaName\":\"LightDemoSchema\"," +
                         "            \"schemaVersion\":1," +
-                        "            \"stateClass\":\"com.kii.iotcloud.testschemas.LightState\"," +
+                        "            \"stateClass\":\"com.kii.thingif.testschemas.LightState\"," +
                         "            \"actionClasses\":[" +
-                        "                \"com.kii.iotcloud.testschemas.TurnPower\"," +
-                        "                \"com.kii.iotcloud.testschemas.SetColor\"" +
+                        "                \"com.kii.thingif.testschemas.TurnPower\"," +
+                        "                \"com.kii.thingif.testschemas.SetColor\"" +
                         "            ]," +
                         "            \"actionResultClasses\":[" +
-                        "                \"com.kii.iotcloud.testschemas.TurnPowerResult\"," +
-                        "                \"com.kii.iotcloud.testschemas.SetColorResult\"" +
+                        "                \"com.kii.thingif.testschemas.TurnPowerResult\"," +
+                        "                \"com.kii.thingif.testschemas.SetColorResult\"" +
                         "            ]" +
                         "        }" +
                         "    ]" +

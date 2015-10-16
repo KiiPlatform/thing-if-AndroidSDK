@@ -361,7 +361,7 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         this.assertCommand(schema, expected.getCommand(), actual.getCommand());
     }
     protected void clearSharedPreferences() throws Exception {
-        SharedPreferences sharedPreferences = InstrumentationRegistry.getTargetContext().getSharedPreferences("com.kii.iotcloud.preferences", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = InstrumentationRegistry.getTargetContext().getSharedPreferences("com.kii.thingif.preferences", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
         editor.commit();

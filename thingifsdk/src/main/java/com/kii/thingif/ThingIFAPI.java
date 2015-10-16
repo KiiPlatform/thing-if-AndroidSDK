@@ -932,7 +932,7 @@ public class ThingIFAPI implements Parcelable {
     }
     private static SharedPreferences getSharedPreferences() {
         if (context != null) {
-            return context.getSharedPreferences("com.kii.iotcloud.preferences", Context.MODE_PRIVATE);
+            return context.getSharedPreferences("com.kii.thingif.preferences", Context.MODE_PRIVATE);
         }
         return null;
     }

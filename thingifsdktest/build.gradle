@@ -11,7 +11,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.kii.iotcloud.largetests"
+        applicationId "com.kii.thingif.largetests"
         minSdkVersion 10
         targetSdkVersion 22
         versionCode 1
