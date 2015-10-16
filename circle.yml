@@ -1,0 +1,59 @@
+machine:
+  environment:
+    ADB_INSTALL_TIMEOUT: 5
+
+dependencies:
+  pre:
+    - echo y | android update sdk --no-ui --filter platform
+    - echo y | android update sdk --no-ui --all --filter build-tools-22.0.1
+    - echo no | android create avd --force --name my-android-17 --target android-17 --sdcard 128M
+    - >
+      cat ~/.android/avd/my-android-17.avd/config.ini |
+      sed -e 's/^\(vm\.heapSize=\)[0-9]*$/\1128/' |
+      sed -e 's/^\(hw\.ramSize=\)[0-9]*$/\1512/' >
+      ~/.android/avd/my-android-17.avd/config2.ini
+    - mv ~/.android/avd/my-android-17.avd/config2.ini ~/.android/avd/my-android-17.avd/config.ini
+
+test:
+  pre:
+    # build sdk
+    - ./gradlew :iotcloudsdk:build
+    # save lint reports of sdk
+    - mkdir $CIRCLE_ARTIFACTS/lintReports; cp -fr iotcloudsdk/build/outputs/lint-results* $CIRCLE_ARTIFACTS/lintReports/
+    # generate sdk aar file
+    - ./gradlew :iotcloudsdk:makeAAR
+    - cp -fr iotcloudsdk/build/artifacts/* $CIRCLE_ARTIFACTS
+    # generate java doc
+    - ./gradlew :iotcloudsdk:generateJavadoc
+    - cp -fr iotcloudsdk/build/outputs/javadoc $CIRCLE_ARTIFACTS/javadoc/
+    # archive java doc
+    - ./gradlew :iotcloudsdk:javadocArchive
+    - cp iotcloudsdk/apidoc*.zip $CIRCLE_ARTIFACTS
+
+  override:
+    # start the emulator
+    - emulator -memory 512 -avd my-android-17 -no-audio -no-window:
+        background: true
+        parallel: true
+    # wait for it to have booted
+    - circle-android wait-for-boot
+    # run small tests  against the emulator.
+    - ./gradlew :iotcloudsdk:connectedAndroidTest
+    # copy the test results to the test results directory.
+    - cp -r iotcloudsdk/build/outputs/androidTest-results/connected/*.xml $CIRCLE_TEST_REPORTS/small_tests.xml
+    # copy the logcat file to test results directory.
+    - adb logcat -d > logcat.txt
+    - mv logcat.txt $CIRCLE_ARTIFACTS/logcat_small_test.txt
+
+    # run largetests
+    - >
+      if [ "$RUN_LTEST" == "true" ]; then
+        ./gradlew :iotcloudsdktest:allTest
+        mkdir $CIRCLE_TEST_REPORTS/largetests; cp -r iotcloudsdktest/junit-results/*.xml $CIRCLE_TEST_REPORTS/largetests/
+        # copy the logcat file to test results directory.
+        adb logcat -d > logcat.txt
+        mv logcat.txt $CIRCLE_ARTIFACTS/logcat_large_test.txt
+      fi
+    - >
+
+# vim:set tw=2 ts=2 sw=2 tw=0 et fenc=utf8:

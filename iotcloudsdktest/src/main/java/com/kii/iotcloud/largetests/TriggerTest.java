@@ -1,9 +1,12 @@
-package com.kii.iotcloud;
+package com.kii.iotcloud.largetests;
 
 import android.support.test.runner.AndroidJUnit4;
 import android.text.TextUtils;
 import android.util.Pair;
 
+import com.kii.iotcloud.IoTCloudAPI;
+import com.kii.iotcloud.Target;
+import com.kii.iotcloud.TypedID;
 import com.kii.iotcloud.command.Action;
 import com.kii.iotcloud.command.Command;
 import com.kii.iotcloud.schema.LightState;

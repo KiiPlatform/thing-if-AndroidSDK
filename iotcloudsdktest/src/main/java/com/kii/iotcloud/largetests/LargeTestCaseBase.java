@@ -1,4 +1,4 @@
-package com.kii.iotcloud;
+package com.kii.iotcloud.largetests;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,6 +8,11 @@ import android.test.InstrumentationTestCase;
 
 import com.kii.cloud.rest.client.KiiRest;
 import com.kii.cloud.rest.client.model.storage.KiiNormalUser;
+import com.kii.iotcloud.IoTCloudAPI;
+import com.kii.iotcloud.IoTCloudAPIBuilder;
+import com.kii.iotcloud.Owner;
+import com.kii.iotcloud.Site;
+import com.kii.iotcloud.TypedID;
 import com.kii.iotcloud.schema.LightState;
 import com.kii.iotcloud.schema.Schema;
 import com.kii.iotcloud.schema.SchemaBuilder;

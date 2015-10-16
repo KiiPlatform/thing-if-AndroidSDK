@@ -5,6 +5,10 @@ android {
     buildToolsVersion "22.0.1"
     publishNonDefault true
 
+    lintOptions {
+        abortOnError false
+    }
+
     defaultConfig {
         minSdkVersion 10
         targetSdkVersion 22
@@ -23,6 +27,12 @@ android {
         exclude 'LICENSE.txt'
     }
 }
+
+ext {
+    branchString = null
+    versionString = null
+}
+
 
 task generateJavadoc(type: Javadoc) {
     title = "Kii IoT Cloud SDK for Android"
@@ -56,4 +66,54 @@ dependencies {
     androidTestCompile 'com.android.support.test:rules:0.3'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2'
     androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
+}
+
+task setBranch << {
+
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'sh', 'build_scripts/getBranch.sh'
+
+        standardOutput = stdout
+    }
+    branchString = stdout.toString().trim()
+}
+
+task setVer << {
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git'
+        args 'rev-list', '-n1', '--abbrev-commit', 'HEAD'
+        standardOutput = stdout
+    }
+    versionString = stdout.toString().trim()
+}
+
+task makeAAR(dependsOn: [clean, setBranch, setVer, assemble]) {
+    mustRunAfter clean
+    doLast {
+        def releaseAARName = "${project.name.trim()}-release-" +
+                "${branchString}-${versionString}.aar"
+        def debugAARName = "${project.name.trim()}-debug-" +
+                "${branchString}-${versionString}.aar"
+        copy {
+            from "${project.buildDir}/outputs/aar"
+            into "${project.buildDir}/artifacts"
+            rename "${project.name.trim()}-release.aar", releaseAARName
+            rename "${project.name.trim()}-debug.aar", debugAARName
+        }
+    }
+}
+
+task javadocArchive(type: Zip, dependsOn: [generateJavadoc, setBranch, setVer]) {
+    from 'build/outputs/javadoc'
+    destinationDir = file('build/outputs/javadoc')
+    archiveName = 'apidoc.zip'
+    doLast{
+        copy {
+            from 'build/outputs/javadoc/apidoc.zip'
+            into './'
+            rename "apidoc.zip", "apidoc-${branchString}-${versionString}.zip"
+        }
+    }
 }
