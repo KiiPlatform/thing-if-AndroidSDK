@@ -1,1 +1,1 @@
-include ':thingifsdk', ':thingifsdktest'
+include ':thingif', ':thingiftest'
