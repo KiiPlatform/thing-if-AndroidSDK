@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.kii.iotcloud">
+    package="com.kii.thingif">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <application android:allowBackup="true"
