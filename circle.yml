@@ -17,18 +17,18 @@ dependencies:
 test:
   pre:
     # build sdk
-    - ./gradlew :iotcloudsdk:build
+    - ./gradlew :thingif:build
     # save lint reports of sdk
-    - mkdir $CIRCLE_ARTIFACTS/lintReports; cp -fr iotcloudsdk/build/outputs/lint-results* $CIRCLE_ARTIFACTS/lintReports/
+    - mkdir $CIRCLE_ARTIFACTS/lintReports; cp -fr thingif/build/outputs/lint-results* $CIRCLE_ARTIFACTS/lintReports/
     # generate sdk aar file
-    - ./gradlew :iotcloudsdk:makeAAR
-    - cp -fr iotcloudsdk/build/artifacts/* $CIRCLE_ARTIFACTS
+    - ./gradlew :thingif:makeAAR
+    - cp -fr thingif/build/artifacts/* $CIRCLE_ARTIFACTS
     # generate java doc
-    - ./gradlew :iotcloudsdk:generateJavadoc
-    - cp -fr iotcloudsdk/build/outputs/javadoc $CIRCLE_ARTIFACTS/javadoc/
+    - ./gradlew :thingif:generateJavadoc
+    - cp -fr thingif/build/outputs/javadoc $CIRCLE_ARTIFACTS/javadoc/
     # archive java doc
-    - ./gradlew :iotcloudsdk:javadocArchive
-    - cp iotcloudsdk/apidoc*.zip $CIRCLE_ARTIFACTS
+    - ./gradlew :thingif:javadocArchive
+    - cp thingif/apidoc*.zip $CIRCLE_ARTIFACTS
 
   override:
     # start the emulator
@@ -38,9 +38,9 @@ test:
     # wait for it to have booted
     - circle-android wait-for-boot
     # run small tests  against the emulator.
-    - ./gradlew :iotcloudsdk:connectedAndroidTest
+    - ./gradlew :thingif:connectedAndroidTest
     # copy the test results to the test results directory.
-    - cp -r iotcloudsdk/build/outputs/androidTest-results/connected/*.xml $CIRCLE_TEST_REPORTS/small_tests.xml
+    - cp -r thingif/build/outputs/androidTest-results/connected/*.xml $CIRCLE_TEST_REPORTS/small_tests.xml
     # copy the logcat file to test results directory.
     - adb logcat -d > logcat.txt
     - mv logcat.txt $CIRCLE_ARTIFACTS/logcat_small_test.txt
@@ -48,8 +48,8 @@ test:
     # run largetests
     - >
       if [ "$RUN_LTEST" == "true" ]; then
-        ./gradlew :iotcloudsdktest:allTest
-        mkdir $CIRCLE_TEST_REPORTS/largetests; cp -r iotcloudsdktest/junit-results/*.xml $CIRCLE_TEST_REPORTS/largetests/
+        ./gradlew :thingiftest:allTest
+        mkdir $CIRCLE_TEST_REPORTS/largetests; cp -r thingiftest/junit-results/*.xml $CIRCLE_TEST_REPORTS/largetests/
         # copy the logcat file to test results directory.
         adb logcat -d > logcat.txt
         mv logcat.txt $CIRCLE_ARTIFACTS/logcat_large_test.txt

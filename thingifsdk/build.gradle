@@ -39,8 +39,8 @@ task generateJavadoc(type: Javadoc) {
     description "Kii IoT Cloud SDK for Android"
     source = files() {
         fileTree(dir:'src/main/java').matching {
-            exclude 'com/kii/iotcloud/internal/**'
-            include 'com/kii/iotcloud/**'
+            exclude 'com/kii/thingif/internal/**'
+            include 'com/kii/thingif/**'
         }
     }
 
