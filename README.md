@@ -1,4 +1,4 @@
-# IoTCloud-AndroidSDK
+# ThingIF-AndroidSDK
 
 Android SDK for Kii IoT Cloud.<br>
 The service is under development.<br>
