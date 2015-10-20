@@ -117,3 +117,13 @@ task javadocArchive(type: Zip, dependsOn: [generateJavadoc, setBranch, setVer]) 
         }
     }
 }
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadocJar(type: Jar, dependsOn: generateJavadoc) {
+    classifier = 'javadoc'
+    from generateJavadoc.destinationDir
+}
