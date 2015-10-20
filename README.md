@@ -38,12 +38,10 @@ compile 'com.kii:thing-if:xx.yy.zzz:library@aar' // xx.yy.zz is the version numb
 
 - Import it to your project as library module, then add the dependency of thing-if AndroidSDK to the "build.gradle" file locating under the target module.
 
-# Usage
-
-Please check the [Documentation](http://documentation.kii.com/en/starts/iotsdk/) from Kii Cloud.
-
 # Sample Project
 
 A sample project using thing-if AndroidSDK can be found [here](https://github.com/KiiPlatform/thing-if-AndroidSample).
 
 # License
+
+thing-if AndroidSDK is released under the MIT license. See LICENSE for details.
