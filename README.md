@@ -11,14 +11,14 @@ compile 'com.google.code.gson:gson:2.3.1'
 compile 'com.squareup.okhttp:okhttp:2.4.0'
 ```
 
-# Get SDK Library File
+# Add SDK Library
 
-There are two ways to add the library.
+There are two ways to add the library to your project.
 
 * Downloading from JCenter repository
-* Generating locally from source code
+* Import downloaded thing-if AndroidSDK project as library module
 
-We recommend your project to using JCenter to let it fetch released library, but you can also generate library from source code if you would like to use the features under development from the branch other than master.
+We recommend your project to using JCenter to let it fetch released library, but you can import the downloaded project as library module if you would like to use the features under development from the branch other than master.
 
 ## Download from JCenter
 
@@ -28,42 +28,16 @@ Add the following dependencies in the "build.gradle" file that locates under the
 compile 'com.kii:thing-if:xx.yy.zzz:library@aar' // xx.yy.zz is the version number of thing-if AndroidSDK to use
 ```
 
-## Manually
+## Import thing-if AndroidSDK as Library Module
 
-### Generate Locally
-
-- Clone the source code of thing-if AndroidSDK from Github and checkout the branch to generate library from.
+- Clone the source code of thing-if AndroidSDK project from Github and checkout the appropriate branch.
 
   ```bash
   $ git clone https://github.com/KiiPlatform/thing-if-AndroidSDK.git
   ```
 
-- Generate locally. If generate successfully, an aar file `thingif-release*.aar` can be found under folder `thing-if-AndroidSDK/thingif/build/artifacts/`
+- Import it to your project as library module, then add the dependency of thing-if AndroidSDK to the "build.gradle" file locating under the target module.
 
-  ```bash
-  $ cd thing-if-AndroidSDK
-  $ ./gradlew :thingif:makeAAR
-  ```
-
-- Copy the generated library (thingif-release*.aar) to your project's "libs" directory.
-
-  The directory is the "libs" under your module directory. It is "app/libs" by default.
-
-- Add the following in the "build.gradle" file that locates under the target module to build. The file should be under the "app" directory by default.
-
-  ```xml
-  repositories {
-    flatDir {
-      dirs 'libs'
-    }
-  }
-
-  dependencies {
-    compile 'com.example.library:thingif-release*@aar' // "thingif-release*" should replace with real name of the generated aar file without .aar extension
-    compile 'com.google.code.gson:gson:2.3.1'
-    compile 'com.squareup.okhttp:okhttp:2.4.0'
-  }
-  ```
 # Usage
 
 Please check the [Documentation](http://documentation.kii.com/en/starts/iotsdk/) from Kii Cloud.
