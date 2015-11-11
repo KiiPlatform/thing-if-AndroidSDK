@@ -6,12 +6,16 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.kii.thingif.exception.ThingIFException;
 import com.kii.thingif.internal.http.IoTRestClient;
 
+import org.json.JSONObject;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class GatewayAPI implements Parcelable {
+public abstract class GatewayAPI implements Parcelable {
 
     protected static Context context;
     protected final String appID;
@@ -44,6 +48,37 @@ public class GatewayAPI implements Parcelable {
         return headers;
     }
 
+    /**
+     *
+     * @return
+     * @throws ThingIFException
+     */
+    public abstract String onboardGateway() throws ThingIFException;
+    /**
+     *
+     * @return
+     * @throws ThingIFException
+     */
+    public abstract String getGatewayID() throws ThingIFException;
+    /**
+     *
+     * @return
+     * @throws ThingIFException
+     */
+    public abstract List<JSONObject> listNoOnboardedEndNodes() throws ThingIFException;
+    /**
+     *
+     * @param thingID
+     * @param venderThingID
+     * @throws ThingIFException
+     */
+    public abstract void notifyOnboardingCompletion(String thingID, String venderThingID) throws ThingIFException;
+    /**
+     *
+     * @throws ThingIFException
+     */
+    public abstract void restore() throws ThingIFException;
+
 
     // Implementation of Parcelable
     protected GatewayAPI(Parcel in) {
@@ -57,7 +92,13 @@ public class GatewayAPI implements Parcelable {
     public static final Creator<GatewayAPI> CREATOR = new Creator<GatewayAPI>() {
         @Override
         public GatewayAPI createFromParcel(Parcel in) {
-            return new GatewayAPI(in);
+            String className = in.readString();
+            if (GatewayAPI4Gateway.class.getName().equals(className)) {
+                return new GatewayAPI4Gateway(in);
+            } else if (GatewayAPI4EndNode.class.getName().equals(className)) {
+                return new GatewayAPI4EndNode(in);
+            }
+            throw new AssertionError("detected unknown class " + className);
         }
 
         @Override
@@ -72,6 +113,7 @@ public class GatewayAPI implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(getClass().getName());
         dest.writeString(this.appID);
         dest.writeString(this.appKey);
         dest.writeSerializable(this.site);

@@ -1,6 +1,7 @@
 package com.kii.thingif;
 
 import android.content.Context;
+import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
@@ -30,6 +31,9 @@ public class GatewayAPI4EndNode extends GatewayAPI {
             @NonNull String accessToken) {
         super(context, appID, appKey, site, baseUrl, accessToken);
     }
+    protected GatewayAPI4EndNode(Parcel in) {
+        super(in);
+    }
 
     /**
      * Onboard the Gateway for the end node app
@@ -47,7 +51,10 @@ public class GatewayAPI4EndNode extends GatewayAPI {
         JSONObject responseBody = this.restClient.sendRequest(request);
         return responseBody.optString("thingID", null);
     }
-
+    @Override
+    public String getGatewayID() throws ThingIFException {
+        throw new UnsupportedOperationException();
+    }
     /**
      * List connected end nodes which has not been onboarded.
      *
@@ -103,5 +110,4 @@ public class GatewayAPI4EndNode extends GatewayAPI {
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers);
         this.restClient.sendRequest(request);
     }
-
 }
