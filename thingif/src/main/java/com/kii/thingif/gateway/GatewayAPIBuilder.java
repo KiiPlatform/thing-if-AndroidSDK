@@ -1,4 +1,4 @@
-package com.kii.thingif;
+package com.kii.thingif.gateway;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 
+import com.kii.thingif.Site;
 import com.kii.thingif.exception.ThingIFException;
 
 public class GatewayAPIBuilder {

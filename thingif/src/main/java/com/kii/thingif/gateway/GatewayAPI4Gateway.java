@@ -1,4 +1,4 @@
-package com.kii.thingif;
+package com.kii.thingif.gateway;
 
 import android.content.Context;
 import android.os.Parcel;
@@ -8,6 +8,8 @@ import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 import android.util.Base64;
 
+import com.kii.thingif.MediaTypes;
+import com.kii.thingif.Site;
 import com.kii.thingif.exception.ThingIFException;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
