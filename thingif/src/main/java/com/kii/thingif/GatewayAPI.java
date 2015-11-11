@@ -5,6 +5,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
+import android.text.TextUtils;
 
 import com.kii.thingif.exception.ThingIFException;
 import com.kii.thingif.internal.http.IoTRestClient;
@@ -22,15 +24,14 @@ public abstract class GatewayAPI implements Parcelable {
     protected final String appKey;
     protected final Site site;
     protected final String baseUrl;
-    protected final String accessToken;
+    protected String accessToken;
     protected final IoTRestClient restClient;
 
     GatewayAPI(@Nullable Context context,
                @NonNull String appID,
                @NonNull String appKey,
                @NonNull Site site,
-               @NonNull String baseUrl,
-               @NonNull String accessToken) {
+               @NonNull String baseUrl) {
         if (context != null) {
             GatewayAPI.context = context.getApplicationContext();
         }
@@ -38,7 +39,6 @@ public abstract class GatewayAPI implements Parcelable {
         this.appKey = appKey;
         this.site = site;
         this.baseUrl = baseUrl;
-        this.accessToken = accessToken;
         this.restClient = new IoTRestClient();
     }
 
@@ -50,35 +50,57 @@ public abstract class GatewayAPI implements Parcelable {
 
     /**
      *
-     * @return
+     * @param username
+     * @param password
      * @throws ThingIFException
      */
+    @WorkerThread
+    public abstract void login(String username, String password) throws ThingIFException;
+    /**
+     * Onboard the Gateway
+     * @return Thing ID
+     * @throws ThingIFException Thrown when gateway returns error response.
+     * @throws IllegalStateException Thrown when user is not logged in.
+     */
+    @WorkerThread
     public abstract String onboardGateway() throws ThingIFException;
     /**
-     *
-     * @return
-     * @throws ThingIFException
+     * Get Gateway ID
+     * @return Thing ID
+     * @throws ThingIFException Thrown when gateway returns error response.
+     * @throws IllegalStateException Thrown when user is not logged in.
      */
+    @WorkerThread
     public abstract String getGatewayID() throws ThingIFException;
     /**
+     * List connected end nodes which has not been onboarded.
      *
-     * @return
-     * @throws ThingIFException
+     * @return List of end nodes
+     * @throws ThingIFException Thrown when gateway returns error response.
+     * @throws IllegalStateException Thrown when user is not logged in.
      */
+    @WorkerThread
     public abstract List<JSONObject> listNoOnboardedEndNodes() throws ThingIFException;
     /**
      *
      * @param thingID
      * @param venderThingID
      * @throws ThingIFException
+     * @throws IllegalStateException Thrown when user is not logged in.
      */
+    @WorkerThread
     public abstract void notifyOnboardingCompletion(String thingID, String venderThingID) throws ThingIFException;
     /**
      *
      * @throws ThingIFException
+     * @throws IllegalStateException Thrown when user is not logged in.
      */
+    @WorkerThread
     public abstract void restore() throws ThingIFException;
 
+    public boolean isLoggedIn() {
+        return !TextUtils.isEmpty(this.accessToken);
+    }
 
     // Implementation of Parcelable
     protected GatewayAPI(Parcel in) {

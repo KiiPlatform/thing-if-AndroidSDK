@@ -5,19 +5,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
-import android.util.Base64;
 
 import com.kii.thingif.exception.ThingIFException;
-import com.kii.thingif.internal.http.IoTRestClient;
-import com.kii.thingif.internal.http.IoTRestRequest;
-import com.kii.thingif.internal.utils.Path;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Map;
 
 public class GatewayAPIBuilder {
 
@@ -82,12 +71,6 @@ public class GatewayAPIBuilder {
         if (TextUtils.isEmpty(hostname)) {
             throw new IllegalArgumentException("hostname is null or empty");
         }
-        if (TextUtils.isEmpty(username)) {
-            throw new IllegalArgumentException("username is null or empty");
-        }
-        if (TextUtils.isEmpty(password)) {
-            throw new IllegalArgumentException("password is null or empty");
-        }
         return new GatewayAPIBuilder(context, appID, appKey, site, hostname, username, password);
     }
 
@@ -98,28 +81,9 @@ public class GatewayAPIBuilder {
      */
     @WorkerThread
     @NonNull
-    public GatewayAPI4Gateway build4Gateway() throws ThingIFException {
+    public GatewayAPI build4Gateway() throws ThingIFException {
         String baseUrl = "http://" + this.hostname;
-        String path = MessageFormat.format("/{0}/token", this.site.name());
-        String url = Path.combine(baseUrl, path);
-
-        String credential = this.appID + ":" + this.appKey;
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put("Authorization", Base64.encodeToString(credential.getBytes(), Base64.NO_WRAP));
-
-        JSONObject requestBody = new JSONObject();
-        try {
-            requestBody.put("username", this.username);
-            requestBody.put("password", this.password);
-        } catch (JSONException e) {
-            // Won’t happen
-        }
-
-        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MediaTypes.MEDIA_TYPE_JSON, requestBody);
-        JSONObject responseBody = new IoTRestClient().sendRequest(request);
-        String accessToken = responseBody.optString("accessToken", null);
-
-        return new GatewayAPI4Gateway(this.context, this.appID, this.appKey, this.site, baseUrl, accessToken);
+        return new GatewayAPI4Gateway(this.context, this.appID, this.appKey, this.site, baseUrl);
     }
     /**
      * Instantiate new GatewayAPI4EndNode instance.
@@ -128,27 +92,8 @@ public class GatewayAPIBuilder {
      */
     @WorkerThread
     @NonNull
-    public GatewayAPI4EndNode build4EndNode() throws ThingIFException {
+    public GatewayAPI build4EndNode() throws ThingIFException {
         String baseUrl = "http://" + this.hostname;
-        String path = MessageFormat.format("/{0}/token", this.site.name());
-        String url = Path.combine(baseUrl, path);
-
-        String credential = this.appID + ":" + this.appKey;
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put("Authorization", Base64.encodeToString(credential.getBytes(), Base64.NO_WRAP));
-
-        JSONObject requestBody = new JSONObject();
-        try {
-            requestBody.put("username", this.username);
-            requestBody.put("password", this.password);
-        } catch (JSONException e) {
-            // Won’t happen
-        }
-
-        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MediaTypes.MEDIA_TYPE_JSON, requestBody);
-        JSONObject responseBody = new IoTRestClient().sendRequest(request);
-        String accessToken = responseBody.optString("accessToken", null);
-
-        return new GatewayAPI4EndNode(this.context, this.appID, this.appKey, this.site, baseUrl, accessToken);
+        return new GatewayAPI4EndNode(this.context, this.appID, this.appKey, this.site, baseUrl);
     }
 }
