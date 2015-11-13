@@ -35,8 +35,8 @@ ext {
 
 
 task generateJavadoc(type: Javadoc) {
-    title = "Kii IoT Cloud SDK for Android"
-    description "Kii IoT Cloud SDK for Android"
+    title = "Kii thing-if SDK for Android"
+    description "Kii thing-if SDK for Android"
     source = files() {
         fileTree(dir:'src/main/java').matching {
             exclude 'com/kii/thingif/internal/**'
