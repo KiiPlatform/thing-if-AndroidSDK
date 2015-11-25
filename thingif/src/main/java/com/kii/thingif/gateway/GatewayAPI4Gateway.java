@@ -50,7 +50,7 @@ public class GatewayAPI4Gateway extends GatewayAPI {
 
         String credential = this.appID + ":" + this.appKey;
         Map<String, String> headers = new HashMap<String, String>();
-        headers.put("Authorization", Base64.encodeToString(credential.getBytes(), Base64.NO_WRAP));
+        headers.put("Authorization", "Basic " + Base64.encodeToString(credential.getBytes(), Base64.NO_WRAP));
 
         JSONObject requestBody = new JSONObject();
         try {
