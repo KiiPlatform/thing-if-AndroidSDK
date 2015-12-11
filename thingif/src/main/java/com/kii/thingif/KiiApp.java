@@ -1,5 +1,9 @@
 package com.kii.thingif;
 
+import android.text.TextUtils;
+
+import org.w3c.dom.Text;
+
 /** Represents Application on Kii Cloud */
 public class KiiApp {
     private String appID;
@@ -14,8 +18,18 @@ public class KiiApp {
      * @param appID ID of the app.
      * @param appKey Key of the app.
      * @param site Site of the app.
+     * @throws  IllegalArgumentException when appID, appKey and site is null or empty string.
      */
     public KiiApp(String appID, String appKey, Site site) {
+        if (TextUtils.isEmpty(appID)) {
+            throw new IllegalArgumentException("appID is null or empty.");
+        }
+        if (TextUtils.isEmpty(appKey)) {
+            throw new IllegalArgumentException("appKey is null or empty.");
+        }
+        if (site == null) {
+            throw new IllegalArgumentException("site is null.");
+        }
         this.appID = appID;
         this.appKey = appKey;
         this.hostName = site.getHostName();
@@ -30,8 +44,18 @@ public class KiiApp {
      * @param appID ID of the app.
      * @param appKey Key of the app.
      * @param hostName Host Name of the app.
+     * @throws  IllegalArgumentException when appID, appKey and hostName is null or empty string.
      */
     public KiiApp(String appID, String appKey, String hostName) {
+        if (TextUtils.isEmpty(appID)) {
+            throw new IllegalArgumentException("appID is null or empty.");
+        }
+        if (TextUtils.isEmpty(appKey)) {
+            throw new IllegalArgumentException("appKey is null or empty.");
+        }
+        if (TextUtils.isEmpty(hostName)) {
+            throw new IllegalArgumentException("hostName is null or empty.");
+        }
         this.appID = appID;
         this.appKey = appKey;
         this.hostName = hostName;
