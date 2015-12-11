@@ -83,7 +83,8 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         String ownerID = UUID.randomUUID().toString();
         Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
         URL baseUrl = this.server.getUrl("/");
-        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), appID, appKey, baseUrl.toString(), owner);
+        KiiApp app = new KiiApp(appID, appKey, baseUrl.toString());
+        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), app, owner);
         builder.addSchema(this.createDefaultSchema());
         return builder;
     }
@@ -91,7 +92,8 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         String ownerID = UUID.randomUUID().toString();
         Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
         URL baseUrl = this.server.getUrl("/");
-        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), appID, appKey, baseUrl.toString(), owner);
+        KiiApp app = new KiiApp(appID, appKey, baseUrl.toString());
+        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), app, owner);
         builder.addSchema(this.createDefaultSchema());
         return builder.build();
     }
@@ -99,7 +101,8 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         String ownerID = UUID.randomUUID().toString();
         Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
         URL baseUrl = this.server.getUrl("/");
-        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), appID, appKey, baseUrl.toString(), owner);
+        KiiApp app = new KiiApp(appID, appKey, baseUrl.toString());
+        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), app, owner);
         builder.addSchema(schema);
         return builder.build();
     }

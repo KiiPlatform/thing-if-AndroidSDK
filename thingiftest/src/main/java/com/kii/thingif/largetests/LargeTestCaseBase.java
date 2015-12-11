@@ -5,6 +5,7 @@ import android.test.AndroidTestCase;
 
 import com.kii.cloud.rest.client.KiiRest;
 import com.kii.cloud.rest.client.model.storage.KiiNormalUser;
+import com.kii.thingif.KiiApp;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.ThingIFAPIBuilder;
 import com.kii.thingif.Owner;
@@ -72,7 +73,8 @@ public abstract class LargeTestCaseBase extends AndroidTestCase {
     }
     protected ThingIFAPI craeteThingIFAPIWithDemoSchema(TargetTestServer server) throws Exception {
         Owner owner = this.createNewOwner(server);
-        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), server.getAppID(), server.getAppKey(), server.getBaseUrl(), owner);
+        KiiApp app = new KiiApp(server.getAppID(), server.getAppKey(), server.getBaseUrl());
+        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), app, owner);
         builder.addSchema(this.createDefaultSchema());
         return builder.build();
     }
