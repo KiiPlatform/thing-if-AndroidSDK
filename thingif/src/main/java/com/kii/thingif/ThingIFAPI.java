@@ -119,9 +119,7 @@ public class ThingIFAPI implements Parcelable {
     ThingIFAPI(
             @Nullable Context context,
             @Nullable String tag,
-            @NonNull String appID,
-            @NonNull String appKey,
-            @NonNull String baseUrl,
+            @NonNull KiiApp app,
             @NonNull Owner owner,
             @Nullable Target target,
             @NonNull List<Schema> schemas,
@@ -131,9 +129,9 @@ public class ThingIFAPI implements Parcelable {
             ThingIFAPI.context = context.getApplicationContext();
         }
         this.tag = tag;
-        this.appID = appID;
-        this.appKey = appKey;
-        this.baseUrl = baseUrl;
+        this.appID = app.getAppID();
+        this.appKey = app.getAppKey();
+        this.baseUrl = app.getBaseUrl();
         this.owner = owner;
         this.target = target;
         for (Schema schema : schemas) {
@@ -153,7 +151,8 @@ public class ThingIFAPI implements Parcelable {
         if (target == null) {
             throw new IllegalArgumentException("target is null");
         }
-        ThingIFAPI api = new ThingIFAPI(context, tag, this.appID, this.appKey, this.baseUrl, this.owner, target, new ArrayList<Schema>(this.schemas.values()), this.installationID);
+        KiiApp app = new KiiApp(this.appID, this.appKey, this.baseUrl);
+        ThingIFAPI api = new ThingIFAPI(context, tag, app, this.owner, target, new ArrayList<Schema>(this.schemas.values()), this.installationID);
         saveInstance(api);
         return api;
     }

@@ -1,16 +1,28 @@
 package com.kii.thingif;
 
 public enum Site {
-    US("https://api.kii.com"),
-    JP("https://api-jp.kii.com"),
-    CN3("https://api-cn3.kii.com"),
-    SG("https://api-sg.kii.com");
+    US("api.kii.com"),
+    JP("api-jp.kii.com"),
+    CN3("api-cn3.kii.com"),
+    SG("api-sg.kii.com");
 
+    private final String hostName;
     private final String baseUrl;
-    private Site(String baseUrl) {
-        this.baseUrl = baseUrl;
+    private Site(String hostName) {
+        this.hostName = hostName;
+        this.baseUrl = "https://" + hostName;
     }
-    public String getBaseUrl() {
-        return this.baseUrl;
+
+    public String getHostName() {
+        return this.hostName;
+    }
+
+    public static Site getSite(String hostName) {
+        for (Site s : Site.values()) {
+            if (hostName.equals(s.hostName)) {
+                return s;
+            }
+        }
+        return null;
     }
 }
