@@ -17,6 +17,10 @@ public enum Site {
         return this.hostName;
     }
 
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
     public static Site getSite(String hostName) {
         for (Site s : Site.values()) {
             if (hostName.equals(s.hostName)) {
