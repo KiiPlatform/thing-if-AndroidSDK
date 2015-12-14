@@ -23,7 +23,7 @@ public class ThingIFAPIParcelableTest extends SmallTestBase {
     public void test() throws Exception {
         String appID = "a12345";
         String appKey = "a1234567890k";
-        String baseUrl = "https://kii.com";
+        String appHost = "api-jp.kii.com";
         String thingType = "SmartLight";
         String schemaName = "DemoLight";
         int schemaVersion = 2;
@@ -35,7 +35,7 @@ public class ThingIFAPIParcelableTest extends SmallTestBase {
         sb.addActionClass(SetColor.class, SetColorResult.class);
         sb.addActionClass(SetBrightness.class, SetBrightnessResult.class);
         Schema schema = sb.build();
-        KiiApp app = new KiiApp(appID, appKey, baseUrl);
+        KiiApp app = new KiiApp(appID, appKey, appHost);
         ThingIFAPIBuilder icab = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), app, owner);
         icab.addSchema(schema);
 
@@ -48,7 +48,7 @@ public class ThingIFAPIParcelableTest extends SmallTestBase {
 
         Assert.assertEquals(appID, deserializedApi.getAppID());
         Assert.assertEquals(appKey, deserializedApi.getAppKey());
-        Assert.assertEquals(baseUrl, deserializedApi.getBaseUrl());
+        Assert.assertEquals("https://" + appHost, deserializedApi.getBaseUrl());
         Assert.assertEquals(appID, deserializedApi.getAppID());
         Assert.assertEquals(ownerID, deserializedApi.getOwner().getTypedID());
         Assert.assertEquals(ownerAccessToken, deserializedApi.getOwner().getAccessToken());
