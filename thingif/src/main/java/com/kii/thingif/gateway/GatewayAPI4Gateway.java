@@ -8,6 +8,7 @@ import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 import android.util.Base64;
 
+import com.kii.thingif.KiiApp;
 import com.kii.thingif.MediaTypes;
 import com.kii.thingif.Site;
 import com.kii.thingif.exception.ThingIFException;
@@ -27,11 +28,8 @@ public class GatewayAPI4Gateway extends GatewayAPI {
 
     GatewayAPI4Gateway(
             @Nullable Context context,
-            @NonNull String appID,
-            @NonNull String appKey,
-            @NonNull Site site,
-            @NonNull String baseUrl) {
-        super(context, appID, appKey, site, baseUrl);
+            @NonNull KiiApp app) {
+        super(context, app);
     }
     protected GatewayAPI4Gateway(Parcel in) {
         super(in);
@@ -45,7 +43,7 @@ public class GatewayAPI4Gateway extends GatewayAPI {
         if (TextUtils.isEmpty(password)) {
             throw new IllegalArgumentException("password is null or empty");
         }
-        String path = MessageFormat.format("/{0}/token", this.site.name());
+        String path = MessageFormat.format("/{0}/token", this.siteName);
         String url = Path.combine(baseUrl, path);
 
         String credential = this.appID + ":" + this.appKey;
@@ -94,7 +92,7 @@ public class GatewayAPI4Gateway extends GatewayAPI {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");
         }
-        String path = MessageFormat.format("/{0}/apps/{1}/gateway/id", this.site.name(), this.appID);
+        String path = MessageFormat.format("/{0}/apps/{1}/gateway/id", this.siteName, this.appID);
         String url = Path.combine(this.baseUrl, path);
         Map<String, String> headers = this.newHeader();
 

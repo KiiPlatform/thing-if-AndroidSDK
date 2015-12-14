@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 
+import com.kii.thingif.KiiApp;
 import com.kii.thingif.Site;
 import com.kii.thingif.exception.ThingIFException;
 import com.kii.thingif.internal.http.IoTRestClient;
@@ -23,23 +24,20 @@ public abstract class GatewayAPI implements Parcelable {
     protected static Context context;
     protected final String appID;
     protected final String appKey;
-    protected final Site site;
+    protected final String siteName;
     protected final String baseUrl;
     protected String accessToken;
     protected final IoTRestClient restClient;
 
     GatewayAPI(@Nullable Context context,
-               @NonNull String appID,
-               @NonNull String appKey,
-               @NonNull Site site,
-               @NonNull String baseUrl) {
+               @NonNull KiiApp app) {
         if (context != null) {
             GatewayAPI.context = context.getApplicationContext();
         }
-        this.appID = appID;
-        this.appKey = appKey;
-        this.site = site;
-        this.baseUrl = baseUrl;
+        this.appID = app.getAppID();
+        this.appKey = app.getAppKey();
+        this.siteName = app.getSiteName();
+        this.baseUrl = app.getBaseUrl();
         this.restClient = new IoTRestClient();
     }
 
@@ -107,7 +105,7 @@ public abstract class GatewayAPI implements Parcelable {
     protected GatewayAPI(Parcel in) {
         this.appID = in.readString();
         this.appKey = in.readString();
-        this.site = (Site)in.readSerializable();
+        this.siteName = in.readString();
         this.baseUrl = in.readString();
         this.accessToken = in.readString();
         this.restClient = new IoTRestClient();
@@ -139,7 +137,7 @@ public abstract class GatewayAPI implements Parcelable {
         dest.writeString(getClass().getName());
         dest.writeString(this.appID);
         dest.writeString(this.appKey);
-        dest.writeSerializable(this.site);
+        dest.writeString(this.siteName);
         dest.writeString(this.baseUrl);
         dest.writeString(this.accessToken);
     }

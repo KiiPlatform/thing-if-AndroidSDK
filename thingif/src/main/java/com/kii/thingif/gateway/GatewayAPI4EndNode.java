@@ -8,6 +8,7 @@ import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 import android.util.Base64;
 
+import com.kii.thingif.KiiApp;
 import com.kii.thingif.MediaTypes;
 import com.kii.thingif.Site;
 import com.kii.thingif.exception.ThingIFException;
@@ -29,11 +30,8 @@ public class GatewayAPI4EndNode extends GatewayAPI {
 
     GatewayAPI4EndNode(
             @Nullable Context context,
-            @NonNull String appID,
-            @NonNull String appKey,
-            @NonNull Site site,
-            @NonNull String baseUrl) {
-        super(context, appID, appKey, site, baseUrl);
+            @NonNull KiiApp app) {
+        super(context, app);
     }
     protected GatewayAPI4EndNode(Parcel in) {
         super(in);
@@ -47,7 +45,7 @@ public class GatewayAPI4EndNode extends GatewayAPI {
         if (TextUtils.isEmpty(password)) {
             throw new IllegalArgumentException("password is null or empty");
         }
-        String path = MessageFormat.format("/{0}/token", this.site.name());
+        String path = MessageFormat.format("/{0}/token", this.siteName);
         String url = Path.combine(baseUrl, path);
 
         String credential = this.appID + ":" + this.appKey;
@@ -77,7 +75,7 @@ public class GatewayAPI4EndNode extends GatewayAPI {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");
         }
-        String path = MessageFormat.format("/{0}/apps/{1}/gateway/onboarding", this.site.name(), this.appID);
+        String path = MessageFormat.format("/{0}/apps/{1}/gateway/onboarding", this.siteName, this.appID);
         String url = Path.combine(baseUrl, path);
         Map<String, String> headers = this.newHeader();
 
@@ -101,7 +99,7 @@ public class GatewayAPI4EndNode extends GatewayAPI {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");
         }
-        String path = MessageFormat.format("/{0}/apps/{1}/gateway/end-nodes/pending", this.site.name(), this.appID);
+        String path = MessageFormat.format("/{0}/apps/{1}/gateway/end-nodes/pending", this.siteName, this.appID);
         String url = Path.combine(baseUrl, path);
         Map<String, String> headers = this.newHeader();
 
@@ -128,7 +126,7 @@ public class GatewayAPI4EndNode extends GatewayAPI {
         if (TextUtils.isEmpty(venderThingID)) {
             throw new IllegalArgumentException("venderThingID is null or empty");
         }
-        String path = MessageFormat.format("/{0}/apps/{1}/gateway/end-nodes/VENDOR_THING_ID:{2}", this.site.name(), this.appID, venderThingID);
+        String path = MessageFormat.format("/{0}/apps/{1}/gateway/end-nodes/VENDOR_THING_ID:{2}", this.siteName, this.appID, venderThingID);
         String url = Path.combine(baseUrl, path);
         Map<String, String> headers = this.newHeader();
 
@@ -146,7 +144,7 @@ public class GatewayAPI4EndNode extends GatewayAPI {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");
         }
-        String path = MessageFormat.format("/{0}/apps/{1}/gateway/restore", this.site.name(), this.appID);
+        String path = MessageFormat.format("/{0}/apps/{1}/gateway/restore", this.siteName, this.appID);
         String url = Path.combine(baseUrl, path);
         Map<String, String> headers = this.newHeader();
 
