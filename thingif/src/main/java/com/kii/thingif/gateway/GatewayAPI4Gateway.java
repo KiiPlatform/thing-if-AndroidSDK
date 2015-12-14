@@ -101,7 +101,7 @@ public class GatewayAPI4Gateway extends GatewayAPI {
         return responseBody.optString("thingID", null);
     }
     @Override
-    public List<JSONObject> listNoOnboardedEndNodes() throws ThingIFException {
+    public List<JSONObject> listPendingEndNodes() throws ThingIFException {
         throw new UnsupportedOperationException();
     }
 

@@ -95,7 +95,7 @@ public class GatewayAPI4EndNode extends GatewayAPI {
      */
     @NonNull
     @WorkerThread
-    public List<JSONObject> listNoOnboardedEndNodes() throws ThingIFException {
+    public List<JSONObject> listPendingEndNodes() throws ThingIFException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");
         }

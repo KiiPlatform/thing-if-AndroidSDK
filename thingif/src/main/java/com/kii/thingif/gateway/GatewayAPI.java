@@ -47,56 +47,67 @@ public abstract class GatewayAPI implements Parcelable {
         return headers;
     }
 
-    /**
-     *
-     * @param username
-     * @param password
+    /** Login to the Gateway.
+     * Local authentication for the Gateway access.
+     * Required prior to call other APIs access to the gateway.
+     * @param username Username of the Gateway.
+     * @param password Password of the Gateway.
      * @throws ThingIFException
      */
     @WorkerThread
     public abstract void login(String username, String password) throws ThingIFException;
-    /**
-     * Onboard the Gateway
-     * @return Thing ID
+
+    /** Let the Gateway Onboard.
+     * @return Thing ID assigned by Kii Cloud.
      * @throws ThingIFException Thrown when gateway returns error response.
      * @throws IllegalStateException Thrown when user is not logged in.
+     * See {@link #login(String, String)}
      */
     @WorkerThread
     public abstract String onboardGateway() throws ThingIFException;
+
     /**
      * Get Gateway ID
-     * @return Thing ID
+     * @return Thing ID assigned by Kii Cloud.
      * @throws ThingIFException Thrown when gateway returns error response.
      * @throws IllegalStateException Thrown when user is not logged in.
+     * See {@link #login(String, String)}
      */
     @WorkerThread
     public abstract String getGatewayID() throws ThingIFException;
-    /**
-     * List connected end nodes which has not been onboarded.
-     *
-     * @return List of end nodes
+
+    /** List connected end nodes which has not been onboarded.
+     * @return List of end nodes connected to the gateway but waiting for onboarding.
      * @throws ThingIFException Thrown when gateway returns error response.
      * @throws IllegalStateException Thrown when user is not logged in.
+     * See {@link #login(String, String)}
      */
     @WorkerThread
-    public abstract List<JSONObject> listNoOnboardedEndNodes() throws ThingIFException;
-    /**
-     *
-     * @param thingID
-     * @param venderThingID
+    public abstract List<JSONObject> listPendingEndNodes() throws ThingIFException;
+
+    /** Notify Onboarding completion
+     * Call this api when the End Node onboarding is done.
+     * After the call succeeded, End Node will be fully connected to Kii Cloud through the Gateway.
+     * @param endNodeThingID ID of the end-node assigned by Kii Cloud.
+     * @param endNodeVenderThingID ID of the end-node assigned by End Node vendor.
      * @throws ThingIFException
      * @throws IllegalStateException Thrown when user is not logged in.
+     * See {@link #login(String, String)}
      */
     @WorkerThread
-    public abstract void notifyOnboardingCompletion(String thingID, String venderThingID) throws ThingIFException;
-    /**
-     *
+    public abstract void notifyOnboardingCompletion(String endNodeThingID, String endNodeVenderThingID) throws ThingIFException;
+
+    /** Restore the Gateway
      * @throws ThingIFException
      * @throws IllegalStateException Thrown when user is not logged in.
+     * See {@link #login(String, String)}
      */
     @WorkerThread
     public abstract void restore() throws ThingIFException;
 
+    /** Check If user is logged in to the Gateway.
+     * @return true if user is logged in, false otherwise.
+     */
     public boolean isLoggedIn() {
         return !TextUtils.isEmpty(this.accessToken);
     }
