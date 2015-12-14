@@ -35,7 +35,8 @@ public class ThingIFAPIParcelableTest extends SmallTestBase {
         sb.addActionClass(SetColor.class, SetColorResult.class);
         sb.addActionClass(SetBrightness.class, SetBrightnessResult.class);
         Schema schema = sb.build();
-        ThingIFAPIBuilder icab = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), appID, appKey, baseUrl, owner);
+        KiiApp app = new KiiApp(appID, appKey, baseUrl);
+        ThingIFAPIBuilder icab = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), app, owner);
         icab.addSchema(schema);
 
         ThingIFAPI api = icab.build();
