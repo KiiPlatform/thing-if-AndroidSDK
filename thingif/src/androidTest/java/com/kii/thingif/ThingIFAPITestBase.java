@@ -43,6 +43,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -71,8 +72,14 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         this.server.shutdown();
     }
 
-    public KiiApp getApp(String appId, String appKey) {
-        KiiApp app = new KiiApp(appId, appKey, server.getHostName());
+    public KiiApp getApp(String appId, String appKey) throws NoSuchFieldException, IllegalAccessException {
+        String hostName = server.getHostName() + ":" + server.getPort();
+        KiiApp app = new KiiApp(appId, appKey, hostName);
+        // Use http for test instead of https.
+        Class c = app.getClass();
+        Field f = c.getDeclaredField("baseUrl");
+        f.setAccessible(true);
+        f.set(app, "http://" + hostName);
         return app;
     }
 
