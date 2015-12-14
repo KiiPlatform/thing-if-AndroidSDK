@@ -812,6 +812,12 @@ public class ThingIFAPI implements Parcelable {
         return ret;
     }
 
+    /** Get Kii App
+     * @return Kii Cloud Application.
+     */
+    public KiiApp getApp() {
+        return this.app;
+    }
     /**
      * Get AppID
      * @return
