@@ -588,7 +588,7 @@ public class ThingIFAPI implements Parcelable {
             throw new IllegalArgumentException("triggerID is null or empty");
         }
 
-        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}", this.app.getBaseUrl(), this.target.getTypedID().toString(), triggerID);
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}", this.app.getAppID(), this.target.getTypedID().toString(), triggerID);
         String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
