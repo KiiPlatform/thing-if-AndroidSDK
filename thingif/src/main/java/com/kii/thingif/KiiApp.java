@@ -36,7 +36,7 @@ public class KiiApp implements Parcelable {
         this.appID = appID;
         this.appKey = appKey;
         this.hostName = site.getHostName();
-        this.baseUrl = "https://" + this.hostName;
+        this.baseUrl = site.getBaseUrl();
         this.siteName = site.name();
     }
 
