@@ -2,6 +2,7 @@ package com.kii.thingif.gateway;
 
 import android.content.Context;
 import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
@@ -37,6 +38,17 @@ public class GatewayAPI4EndNode extends GatewayAPI {
         super(in);
     }
 
+    public static final Parcelable.Creator<GatewayAPI4EndNode> CREATOR
+            = new Parcelable.Creator<GatewayAPI4EndNode>() {
+        public GatewayAPI4EndNode createFromParcel(Parcel in) {
+            return new GatewayAPI4EndNode(in);
+        }
+
+        public GatewayAPI4EndNode[] newArray(int size) {
+            return new GatewayAPI4EndNode[size];
+        }
+    };
+
     @Override
     public void login(String username, String password) throws ThingIFException {
         if (TextUtils.isEmpty(username)) {
@@ -64,13 +76,10 @@ public class GatewayAPI4EndNode extends GatewayAPI {
         JSONObject responseBody = new IoTRestClient().sendRequest(request);
         this.accessToken = responseBody.optString("accessToken", null);
     }
-    /**
-     * Onboard the Gateway for the end node app
-     * @return Thing ID
-     * @throws ThingIFException Thrown when gateway returns error response.
-     */
+
     @NonNull
     @WorkerThread
+    @Override
     public String onboardGateway() throws ThingIFException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");
@@ -83,18 +92,15 @@ public class GatewayAPI4EndNode extends GatewayAPI {
         JSONObject responseBody = this.restClient.sendRequest(request);
         return responseBody.optString("thingID", null);
     }
+
     @Override
     public String getGatewayID() throws ThingIFException {
         throw new UnsupportedOperationException();
     }
-    /**
-     * List connected end nodes which has not been onboarded.
-     *
-     * @return List of end nodes
-     * @throws ThingIFException Thrown when gateway returns error response.
-     */
+
     @NonNull
     @WorkerThread
+    @Override
     public List<JSONObject> listPendingEndNodes() throws ThingIFException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");
@@ -115,7 +121,9 @@ public class GatewayAPI4EndNode extends GatewayAPI {
         // TODO:consider to define the model for the end node
         return nodes;
     }
+
     @WorkerThread
+    @Override
     public void notifyOnboardingCompletion(String thingID, String venderThingID) throws ThingIFException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");
@@ -139,7 +147,9 @@ public class GatewayAPI4EndNode extends GatewayAPI {
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.PUT, headers, MediaTypes.MEDIA_TYPE_JSON, requestBody);
         this.restClient.sendRequest(request);
     }
+
     @WorkerThread
+    @Override
     public void restore() throws ThingIFException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");

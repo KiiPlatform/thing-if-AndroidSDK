@@ -2,6 +2,7 @@ package com.kii.thingif.gateway;
 
 import android.content.Context;
 import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
@@ -35,6 +36,17 @@ public class GatewayAPI4Gateway extends GatewayAPI {
         super(in);
     }
 
+    public static final Parcelable.Creator<GatewayAPI4Gateway> CREATOR
+            = new Parcelable.Creator<GatewayAPI4Gateway>() {
+        public GatewayAPI4Gateway createFromParcel(Parcel in) {
+            return new GatewayAPI4Gateway(in);
+        }
+
+        public GatewayAPI4Gateway[] newArray(int size) {
+            return new GatewayAPI4Gateway[size];
+        }
+    };
+
     @Override
     public void login(String username, String password) throws ThingIFException {
         if (TextUtils.isEmpty(username)) {
@@ -62,13 +74,10 @@ public class GatewayAPI4Gateway extends GatewayAPI {
         JSONObject responseBody = new IoTRestClient().sendRequest(request);
         this.accessToken = responseBody.optString("accessToken", null);
     }
-    /**
-     * Onboard the Gateway for the Gateway App
-     * @return Thing ID
-     * @throws ThingIFException Thrown when gateway returns error response.
-     */
+
     @NonNull
     @WorkerThread
+    @Override
     public String onboardGateway() throws ThingIFException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");
@@ -81,13 +90,10 @@ public class GatewayAPI4Gateway extends GatewayAPI {
         JSONObject responseBody = this.restClient.sendRequest(request);
         return responseBody.optString("thingID", null);
     }
-    /**
-     * Get Gateway ID
-     * @return Thing ID
-     * @throws ThingIFException Thrown when gateway returns error response.
-     */
+
     @NonNull
     @WorkerThread
+    @Override
     public String getGatewayID() throws ThingIFException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");
@@ -110,12 +116,8 @@ public class GatewayAPI4Gateway extends GatewayAPI {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     *
-     * @throws ThingIFException
-     * @throws IllegalStateException
-     */
     @WorkerThread
+    @Override
     public void restore() throws ThingIFException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");
