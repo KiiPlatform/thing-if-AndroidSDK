@@ -2,6 +2,7 @@ package com.kii.thingif;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 /** Represents Application on Kii Cloud */
@@ -180,7 +181,11 @@ public class KiiApp implements Parcelable {
          * @return builder instance.
          * @throws IllegalArgumentException when appID, appKey or hostName is null or empty.
          */
-        public static Builder builderWithHostName(String appID, String appKey, String hostName) {
+        @NonNull
+        public static Builder builderWithHostName(
+                @NonNull String appID,
+                @NonNull String appKey,
+                @NonNull String hostName) {
             if (TextUtils.isEmpty(appID)) {
                 throw new IllegalArgumentException("appID is null or empty.");
             }
@@ -200,6 +205,7 @@ public class KiiApp implements Parcelable {
          * @param port port number. 0 or less than 0 would be ignored.
          * @return builder instance.
          */
+        @NonNull
         public Builder setPort(int port) {
             this.port = port;
             return this;
@@ -211,7 +217,8 @@ public class KiiApp implements Parcelable {
          * @return builder instance.
          * @throws IllegalArgumentException when schema is null or empty.
          */
-        public Builder setSchema(String schema) {
+        @NonNull
+        public Builder setSchema(@NonNull String schema) {
             if (TextUtils.isEmpty(schema)) {
                 throw new IllegalArgumentException("schema is null or empty");
             }
@@ -227,7 +234,8 @@ public class KiiApp implements Parcelable {
          * @return builder instance
          * @throws IllegalArgumentException when siteName is null or empty.
          */
-        public Builder setSiteName(String siteName) {
+        @NonNull
+        public Builder setSiteName(@NonNull String siteName) {
             if (TextUtils.isEmpty(siteName)) {
                 throw new IllegalArgumentException("siteName is null or empty");
             }
@@ -238,6 +246,7 @@ public class KiiApp implements Parcelable {
         /** Build KiiApp instance.
          * @return KiiApp instance.
          */
+        @NonNull
         public KiiApp build() {
             KiiApp app = new KiiApp(appID, appKey, hostName);
             app.baseUrl = this.schema + "://" + this.hostName;
