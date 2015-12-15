@@ -4,8 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import org.w3c.dom.Text;
-
 /** Represents Application on Kii Cloud */
 public class KiiApp implements Parcelable {
     private String appID;
@@ -149,5 +147,87 @@ public class KiiApp implements Parcelable {
         dest.writeString(hostName);
         dest.writeString(baseUrl);
         dest.writeString(siteName);
+    }
+
+
+    /** KiiApp Builder.
+     * Provides fine grained control on creating KiiApp instance.<br>
+     * For Private/ Dedicated Kii Cloud instance users.<br><br>
+     *
+     * Public Kii Cloud user who uses apps created on https://developer.kii.com does not need to
+     * interact with this Builder. Just use {@link KiiApp(String, String, Site)} is fine.
+     */
+    public static class Builder {
+        final private String hostName;
+        final private String appID;
+        final private String appKey;
+        private String siteName;
+        private int port;
+        private String schema;
+
+        Builder(String appID, String appKey, String hostName) {
+            this.appID = appID;
+            this.appKey = appKey;
+            this.hostName = hostName;
+            this.port = -1;
+            this.schema = "https";
+        }
+
+        /** Build with host name
+         * @param appID ID of the app.
+         * @param appKey Key of the app.
+         * @param hostName Hostname where the private/ dedicated Kii Cloud is hosted.
+         * @return builder instance.
+         */
+        public static Builder builderWithHostName(String appID, String appKey, String hostName) {
+            Builder b = new Builder(appID, appKey, hostName);
+            b.siteName = "CUSTOM";
+            return b;
+        }
+
+        /** Set port number
+         * Optional. By default no port is specified.
+         * @param port port number. 0 or less than 0 would be ignored.
+         * @return builder instance.
+         */
+        public Builder setPort(int port) {
+            this.port = port;
+            return this;
+        }
+
+        /** Set schema
+         * Optional. By default https is used.
+         * @param schema url schema.
+         * @return builder instance.
+         */
+        public Builder setSchema(String schema) {
+            this.schema = schema;
+            return this;
+        }
+
+        /** Set site name.
+         * Optional. by Default "CUSTOM" is applied.
+         * This site name should match with your Gateway Agent configuration
+         * if you interact Gateway Agent with this SDK.
+         * @param siteName
+         * @return builder instance
+         */
+        public Builder setSiteName(String siteName) {
+            this.siteName = siteName;
+            return this;
+        }
+
+        /** Build KiiApp instance.
+         * @return KiiApp instance.
+         */
+        public KiiApp build() {
+            KiiApp app = new KiiApp(appID, appKey, hostName);
+            app.baseUrl = this.schema + "://" + this.hostName;
+            if (this.port > 0) {
+                app.baseUrl = app.baseUrl + ":" + this.port;
+            }
+            app.siteName = this.siteName;
+            return app;
+        }
     }
 }
