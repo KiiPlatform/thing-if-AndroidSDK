@@ -28,7 +28,7 @@ test:
     - cp -fr thingif/build/outputs/javadoc $CIRCLE_ARTIFACTS/javadoc/
     # archive java doc
     - ./gradlew :thingif:javadocArchive
-    - cp thingif/apidoc*.zip $CIRCLE_ARTIFACTS
+    - cp thingif/build/outputs/archive/apidoc*.zip $CIRCLE_ARTIFACTS
 
   override:
     # start the emulator
