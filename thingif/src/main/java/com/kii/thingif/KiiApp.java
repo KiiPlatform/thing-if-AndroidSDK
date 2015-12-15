@@ -50,7 +50,7 @@ public class KiiApp implements Parcelable {
      * @param hostName Host Name of the app.
      * @throws  IllegalArgumentException when appID, appKey and hostName is null or empty string.
      */
-    public KiiApp(String appID, String appKey, String hostName) {
+    KiiApp(String appID, String appKey, String hostName) {
         if (TextUtils.isEmpty(appID)) {
             throw new IllegalArgumentException("appID is null or empty.");
         }
@@ -79,7 +79,7 @@ public class KiiApp implements Parcelable {
      * @param hostName Host name of the app.
      * @param siteName Site name of the app. (Corresponds to Gateway Agent configuration.)
      */
-    public KiiApp(String appID, String appKey, String hostName, String siteName) {
+    KiiApp(String appID, String appKey, String hostName, String siteName) {
         if (TextUtils.isEmpty(appID)) {
             throw new IllegalArgumentException("appID is null or empty.");
         }
