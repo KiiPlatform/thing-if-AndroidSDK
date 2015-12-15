@@ -39,11 +39,3 @@ dependencies {
     compile 'com.android.support.test:runner:0.3'
     compile 'com.android.support.test:rules:0.3'
 }
-
-task allTest(dependsOn: 'installDebug') {
-    doFirst {
-        exec {
-            commandLine 'sh', './testall.sh'
-        }
-    }
-}
