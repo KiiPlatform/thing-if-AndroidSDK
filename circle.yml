@@ -48,8 +48,9 @@ test:
     # run largetests
     - >
       if [ "$RUN_LTEST" == "true" ]; then
-        ./gradlew :thingiftest:allTest
-        mkdir $CIRCLE_TEST_REPORTS/largetests; cp -r thingiftest/junit-results/*.xml $CIRCLE_TEST_REPORTS/largetests/
+        ./gradlew :thingiftest:connectedAndroidTest
+        mkdir $CIRCLE_TEST_REPORTS/largetests
+        cp -r thingiftest/build/outputs/androidTest-results/connected/*.xml $CIRCLE_TEST_REPORTS/largetests/
         # copy the logcat file to test results directory.
         adb logcat -d > logcat.txt
         mv logcat.txt $CIRCLE_ARTIFACTS/logcat_large_test.txt
