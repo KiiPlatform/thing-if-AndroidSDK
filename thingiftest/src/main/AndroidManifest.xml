@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-sdk tools:overrideLibrary="android.support.test.uiautomator.v18"/>
     <instrumentation
-        android:name="pl.polidea.instrumentation.PolideaInstrumentationTestRunner"
+        android:name="android.test.InstrumentationTestRunner"
         android:targetPackage="com.kii.thingif.largetests" />
 
     <application android:allowBackup="true" android:label="@string/app_name"
