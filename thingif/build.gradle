@@ -54,7 +54,7 @@ android.libraryVariants.all { variant ->
         def androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
         def compiledClasses = files("${project.projectDir}/build/intermediates/classes/release/")
         classpath = files(androidJar) + files(compiledClasses) + files(variant.javaCompile.classpath.files)
-        destinationDir = file("build/outputs/archive")
+        destinationDir = file("build/outputs/javadoc")
 
         options.bottom = "Copyright 2015 Kii Corporation. All rights reserved. (Last updated on ${getDate()})"
         options.locale = 'en_US'
@@ -64,8 +64,12 @@ android.libraryVariants.all { variant ->
     task ("javadocArchive", type: Zip, dependsOn: [clean, generateJavadoc, setBranch, setVer], overwrite:true) {
         mustRunAfter clean
         from 'build/outputs/javadoc'
-        destinationDir = file('build/outputs/javadoc')
-        archiveName = 'apidoc-${branchString}-${versionString}.zip'
+        def dest = 'build/outputs/archive'
+        destinationDir = file(dest)
+        archiveName = "apidoc.zip"
+        doLast{
+            file(dest + "/apidoc.zip").renameTo(file(dest + "/apidoc-${branchString}-${versionString}.zip"))
+        }
     }
 
     task ("javadocJar", type: Jar, dependsOn: [clean, generateJavadoc], overwrite:true) {
