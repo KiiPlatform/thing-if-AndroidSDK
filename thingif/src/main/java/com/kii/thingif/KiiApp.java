@@ -178,8 +178,18 @@ public class KiiApp implements Parcelable {
          * @param appKey Key of the app.
          * @param hostName Hostname where the private/ dedicated Kii Cloud is hosted.
          * @return builder instance.
+         * @throws IllegalArgumentException when appID, appKey or hostName is null or empty.
          */
         public static Builder builderWithHostName(String appID, String appKey, String hostName) {
+            if (TextUtils.isEmpty(appID)) {
+                throw new IllegalArgumentException("appID is null or empty.");
+            }
+            if (TextUtils.isEmpty(appKey)) {
+                throw new IllegalArgumentException("appKey is null or empty.");
+            }
+            if (TextUtils.isEmpty(hostName)) {
+                throw new IllegalArgumentException("hostName is null or empty.");
+            }
             Builder b = new Builder(appID, appKey, hostName);
             b.siteName = "CUSTOM";
             return b;
@@ -199,8 +209,12 @@ public class KiiApp implements Parcelable {
          * Optional. By default https is used.
          * @param schema url schema.
          * @return builder instance.
+         * @throws IllegalArgumentException when schema is null or empty.
          */
         public Builder setSchema(String schema) {
+            if (TextUtils.isEmpty(schema)) {
+                throw new IllegalArgumentException("schema is null or empty");
+            }
             this.schema = schema;
             return this;
         }
@@ -211,8 +225,12 @@ public class KiiApp implements Parcelable {
          * if you interact Gateway Agent with this SDK.
          * @param siteName
          * @return builder instance
+         * @throws IllegalArgumentException when siteName is null or empty.
          */
         public Builder setSiteName(String siteName) {
+            if (TextUtils.isEmpty(siteName)) {
+                throw new IllegalArgumentException("siteName is null or empty");
+            }
             this.siteName = siteName;
             return this;
         }
