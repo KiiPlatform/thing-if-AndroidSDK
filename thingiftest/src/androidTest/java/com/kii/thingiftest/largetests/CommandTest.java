@@ -1,18 +1,19 @@
-package com.kii.thingif.largetests;
+package com.kii.thingiftest.largetests;
 
 import android.support.test.runner.AndroidJUnit4;
 import android.text.TextUtils;
 import android.util.Pair;
 
-import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.Target;
+import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
-import com.kii.thingif.schema.SetBrightness;
-import com.kii.thingif.schema.SetColor;
-import com.kii.thingif.schema.SetColorTemperature;
-import com.kii.thingif.schema.TurnPower;
+import com.kii.thingiftest.largetests.LargeTestCaseBase;
+import com.kii.thingiftest.schema.SetBrightness;
+import com.kii.thingiftest.schema.SetColor;
+import com.kii.thingiftest.schema.SetColorTemperature;
+import com.kii.thingiftest.schema.TurnPower;
 
 import org.junit.Assert;
 
