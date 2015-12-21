@@ -80,19 +80,7 @@ public class KiiApp implements Parcelable {
      * @param siteName Site name of the app. (Corresponds to Gateway Agent configuration.)
      */
     KiiApp(String appID, String appKey, String hostName, String siteName) {
-        if (TextUtils.isEmpty(appID)) {
-            throw new IllegalArgumentException("appID is null or empty.");
-        }
-        if (TextUtils.isEmpty(appKey)) {
-            throw new IllegalArgumentException("appKey is null or empty.");
-        }
-        if (TextUtils.isEmpty(hostName)) {
-            throw new IllegalArgumentException("hostName is null or empty.");
-        }
-        this.appID = appID;
-        this.appKey = appKey;
-        this.hostName = hostName;
-        this.baseUrl = "https://" + hostName;
+        this(appID, appKey, hostName);
         this.siteName = siteName;
     }
 
