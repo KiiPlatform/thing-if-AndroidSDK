@@ -440,7 +440,7 @@ public class GsonSerializationTest extends SmallTestBase {
                         "        \"target\":\"thing:1234\"" +
                         "    }," +
                         "    \"predicate\":{" +
-                        "        \"eventSource\":\"STATES\"," +
+                        "        \"eventSource\":\"states\"," +
                         "        \"triggersWhen\":\"CONDITION_FALSE_TO_TRUE\"," +
                         "        \"condition\":{" +
                         "            \"type\":\"and\"," +
