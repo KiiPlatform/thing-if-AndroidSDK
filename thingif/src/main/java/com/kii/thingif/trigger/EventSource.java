@@ -3,8 +3,8 @@ package com.kii.thingif.trigger;
 import android.text.TextUtils;
 
 public enum EventSource {
-    STATES("states"),
-    SCHEDULE("schedule");
+    STATES("STATES"),
+    SCHEDULE("SCHEDULE");
     private final String value;
     private EventSource(String value) {
         this.value = value;
