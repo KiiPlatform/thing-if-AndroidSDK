@@ -201,16 +201,16 @@ public class KiiApp implements Parcelable {
 
         /** Set schema
          * Optional. By default https is used.
-         * @param schema url schema.
+         * @param urlSchema url schema.
          * @return builder instance.
          * @throws IllegalArgumentException when schema is null or empty.
          */
         @NonNull
-        public Builder setSchema(@NonNull String schema) {
-            if (TextUtils.isEmpty(schema)) {
+        public Builder setURLSchema(@NonNull String urlSchema) {
+            if (TextUtils.isEmpty(urlSchema)) {
                 throw new IllegalArgumentException("schema is null or empty");
             }
-            this.schema = schema;
+            this.schema = urlSchema;
             return this;
         }
 
