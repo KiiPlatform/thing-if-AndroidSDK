@@ -9,6 +9,7 @@ import com.kii.thingif.Target;
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
+import com.kii.thingif.command.CommandState;
 import com.kii.thingif.schema.SetBrightness;
 import com.kii.thingif.schema.SetColor;
 import com.kii.thingif.schema.SetColorTemperature;
@@ -48,7 +49,7 @@ public class CommandTest extends LargeTestCaseBase {
         Assert.assertEquals(DEMO_SCHEMA_VERSION, command1.getSchemaVersion());
         Assert.assertEquals(target.getTypedID(), command1.getTargetID());
         Assert.assertEquals(api.getOwner().getTypedID(), command1.getIssuerID());
-        Assert.assertNull(command1.getCommandState());
+        Assert.assertEquals(CommandState.SENDING, command1.getCommandState());
         Assert.assertNull(command1.getFiredByTriggerID());
         Assert.assertTrue(command1.getCreated() > 0);
         Assert.assertTrue(command1.getModified() > 0);
@@ -58,6 +59,13 @@ public class CommandTest extends LargeTestCaseBase {
         Assert.assertEquals(setColorTemperature.getActionName(), command1.getActions().get(1).getActionName());
         Assert.assertEquals(setColorTemperature.colorTemperature, ((SetColorTemperature)command1.getActions().get(1)).colorTemperature);
         Assert.assertNull(command1.getActionResults());
+
+        // get created command
+        String commandID = command1.getCommandID();
+        Command command1Copy = api.getCommand(commandID);
+        CommandState state = command1Copy.getCommandState();
+        Assert.assertEquals(CommandState.SENDING, state);
+
         // create new command
         List<Action> actions2 = new ArrayList<Action>();
         SetBrightness setBrightness = new SetBrightness(50);
@@ -70,7 +78,7 @@ public class CommandTest extends LargeTestCaseBase {
         Assert.assertEquals(DEMO_SCHEMA_VERSION, command2.getSchemaVersion());
         Assert.assertEquals(target.getTypedID(), command2.getTargetID());
         Assert.assertEquals(api.getOwner().getTypedID(), command2.getIssuerID());
-        Assert.assertNull(command2.getCommandState());
+        Assert.assertEquals(CommandState.SENDING, command2.getCommandState());
         Assert.assertNull(command2.getFiredByTriggerID());
         Assert.assertTrue(command2.getCreated() > command1.getCreated());
         Assert.assertTrue(command2.getModified() > command1.getModified());
@@ -95,7 +103,7 @@ public class CommandTest extends LargeTestCaseBase {
             }
         }
 
-        Assert.assertNull(command1.getCommandState());
+        Assert.assertEquals(CommandState.SENDING, command1.getCommandState());
         Assert.assertNull(command1.getFiredByTriggerID());
         Assert.assertTrue(command1.getCreated() > 0);
         Assert.assertTrue(command1.getModified() > 0);
@@ -105,7 +113,7 @@ public class CommandTest extends LargeTestCaseBase {
         Assert.assertEquals(setColorTemperature.getActionName(), command1.getActions().get(1).getActionName());
         Assert.assertEquals(setColorTemperature.colorTemperature, ((SetColorTemperature) command1.getActions().get(1)).colorTemperature);
         Assert.assertNull(command1.getActionResults());
-        Assert.assertNull(command2.getCommandState());
+        Assert.assertEquals(CommandState.SENDING, command2.getCommandState());
         Assert.assertNull(command2.getFiredByTriggerID());
         Assert.assertTrue(command2.getCreated() > command1.getCreated());
         Assert.assertTrue(command2.getModified() > command1.getModified());
