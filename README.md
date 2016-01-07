@@ -25,7 +25,7 @@ We recommend your project to using JCenter to let it fetch released library, but
 Add the following dependencies in the "build.gradle" file that locates under the target module to build. The file should be under the "app" directory by default.
 
 ```
-compile 'com.kii:thing-if:xx.yy.zzz:library@aar' // xx.yy.zz is the version number of thing-if AndroidSDK to use
+compile 'com.kii:thing-if-sdk:xx.yy.zzz:library@aar' // xx.yy.zz is the version number of thing-if AndroidSDK to use
 ```
 
 ## Import thing-if AndroidSDK as Library Module

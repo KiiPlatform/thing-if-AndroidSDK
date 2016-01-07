@@ -9,7 +9,7 @@ public class TypedID implements Parcelable {
 
     public enum Types {
         USER("user"),
-        GRPUP("group"),
+        GROUP("group"),
         THING("thing");
         private final String value;
         private Types(String value) {
