@@ -47,7 +47,7 @@ public class GsonSerializationTest extends SmallTestBase {
     @Test
     public void typedIDTest() throws Exception {
         TypedID userID = new TypedID(TypedID.Types.USER, "12345");
-        TypedID groupID = new TypedID(TypedID.Types.GRPUP, "67890");
+        TypedID groupID = new TypedID(TypedID.Types.GROUP, "67890");
         TypedID thingID = new TypedID(TypedID.Types.THING, "12345");
 
         String serializedUserID = GsonRepository.gson().toJson(userID);
@@ -64,7 +64,7 @@ public class GsonSerializationTest extends SmallTestBase {
 
         Assert.assertEquals(TypedID.Types.USER, userID.getType());
         Assert.assertEquals("12345", userID.getID());
-        Assert.assertEquals(TypedID.Types.GRPUP, groupID.getType());
+        Assert.assertEquals(TypedID.Types.GROUP, groupID.getType());
         Assert.assertEquals("67890", groupID.getID());
         Assert.assertEquals(TypedID.Types.THING, thingID.getType());
         Assert.assertEquals("12345", thingID.getID());
