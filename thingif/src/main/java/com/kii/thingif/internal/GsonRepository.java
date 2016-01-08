@@ -16,6 +16,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.kii.thingif.KiiApp;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.ThingIFAPIBuilder;
 import com.kii.thingif.Owner;
@@ -259,9 +260,7 @@ public class GsonRepository {
                 return null;
             }
             JsonObject json = new JsonObject();
-            json.addProperty("appID", src.getAppID());
-            json.addProperty("appKey", src.getAppKey());
-            json.addProperty("baseUrl", src.getBaseUrl());
+            json.add("app", DEFAULT_GSON.toJsonTree(src.getApp()));
             json.add("owner", DEFAULT_GSON.toJsonTree(src.getOwner()));
             json.add("target", DEFAULT_GSON.toJsonTree(src.getTarget()));
             JsonArray schemas = new JsonArray();
@@ -280,11 +279,9 @@ public class GsonRepository {
                 return null;
             }
             JsonObject json = (JsonObject)jsonElement;
-            String appID = json.get("appID").getAsString();
-            String appKey = json.get("appKey").getAsString();
-            String baseUrl = json.get("baseUrl").getAsString();
+            KiiApp app = DEFAULT_GSON.fromJson(json.getAsJsonObject("app"), KiiApp.class);
             Owner owner = DEFAULT_GSON.fromJson(json.getAsJsonObject("owner"), Owner.class);
-            ThingIFAPIBuilder builder = ThingIFAPIBuilder._newBuilder(appID, appKey, baseUrl, owner);
+            ThingIFAPIBuilder builder = ThingIFAPIBuilder._newBuilder(app, owner);
             if (json.has("target")) {
                 Target target = DEFAULT_GSON.fromJson(json.getAsJsonObject("target"), Target.class);
                 builder.setTarget(target);

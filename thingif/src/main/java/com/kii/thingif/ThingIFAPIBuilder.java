@@ -16,10 +16,7 @@ public class ThingIFAPIBuilder {
 
     private static final String TAG = ThingIFAPIBuilder.class.getSimpleName();
     private final Context context;
-    private final String appID;
-    private final String appKey;
-    private final Site site;
-    private final String baseUrl;
+    private final KiiApp app;
     private final Owner owner;
     private Target target;
     private String installationID;
@@ -27,127 +24,55 @@ public class ThingIFAPIBuilder {
 
     private ThingIFAPIBuilder(
             @Nullable Context context,
-            @NonNull String appID,
-            @NonNull String appKey,
-            @NonNull Site site,
+            @NonNull KiiApp app,
             @NonNull Owner owner) {
         this.context = context;
-        this.appID = appID;
-        this.appKey = appKey;
-        this.site = site;
-        this.baseUrl = null;
-        this.owner = owner;
-    }
-    private ThingIFAPIBuilder(
-            @Nullable Context context,
-            @NonNull String appID,
-            @NonNull String appKey,
-            @NonNull String baseUrl,
-            @NonNull Owner owner) {
-        this.context = context;
-        this.appID = appID;
-        this.appKey = appKey;
-        this.site = null;
-        this.baseUrl = baseUrl;
+        this.app = app;
         this.owner = owner;
     }
 
     /** Instantiate new ThingIFAPIBuilder.
      * @param context Application context.
-     * @param appID Application ID given by Kii Cloud.
-     * @param appKey Application Key given by Kii Cloud.
-     * @param site Application Site specified when create application.
+     * @param app Kii Cloud Application.
      * @param owner Specify who uses the ThingIFAPI.
      * @return ThingIFAPIBuilder instance.
      */
     @NonNull
     public static ThingIFAPIBuilder newBuilder(
             @NonNull Context context,
-            @NonNull String appID,
-            @NonNull String appKey,
-            @NonNull Site site,
+            @NonNull KiiApp app,
             @NonNull Owner owner) {
         if (context == null) {
             throw new IllegalArgumentException("context is null");
         }
-        if (TextUtils.isEmpty(appID)) {
-            throw new IllegalArgumentException("appID is null or empty");
-        }
-        if (TextUtils.isEmpty(appKey)) {
-            throw new IllegalArgumentException("appKey is null or empty");
-        }
-        if (site == null) {
-            throw new IllegalArgumentException("site is null");
+        if (app == null) {
+            throw new IllegalArgumentException("app is null");
         }
         if (owner == null) {
             throw new IllegalArgumentException("owner is null");
         }
-        return new ThingIFAPIBuilder(context, appID, appKey, site, owner);
-    }
-
-    /** Instantiate new ThingIFAPIBuilder with custom URL.
-     * For Custom plan users who run Kii Cloud on premise and need to use your own site URL.
-     * @param context Application Context.
-     * @param appID Application ID given by Kii Cloud.
-     * @param appKey Application Key given by Kii Cloud.
-     * @param baseUrl Custom Site base URL.
-     * @param owner Specify who uses the ThingIFAPI.
-     * @return ThingIFAPIBuilder instance.
-     */
-    @NonNull
-    public static ThingIFAPIBuilder newBuilder(
-            @NonNull Context context,
-            @NonNull String appID,
-            @NonNull String appKey,
-            @NonNull String baseUrl,
-            @NonNull Owner owner) {
-        if (context == null) {
-            throw new IllegalArgumentException("context is null");
-        }
-        if (TextUtils.isEmpty(appID)) {
-            throw new IllegalArgumentException("appID is null or empty");
-        }
-        if (TextUtils.isEmpty(appKey)) {
-            throw new IllegalArgumentException("appKey is null or empty");
-        }
-        if (TextUtils.isEmpty(baseUrl)) {
-            throw new IllegalArgumentException("baseUrl is null or empty");
-        }
-        if (owner == null) {
-            throw new IllegalArgumentException("owner is null");
-        }
-        return new ThingIFAPIBuilder(context, appID, appKey, baseUrl, owner);
+        return new ThingIFAPIBuilder(context, app, owner);
     }
 
     /**
      * Instantiate new ThingIFAPIBuilder without Context.
      * This method is for internal use only. Do not call it from your application.
      *
-     * @param appID Application ID given by Kii Cloud.
-     * @param appKey Application Key given by Kii Cloud.
-     * @param baseUrl Custom Site base URL.
+     * @param app Kii Cloud Application.
      * @param owner Specify who uses the ThingIFAPI.
      * @return ThingIFAPIBuilder instance.
      */
     @NonNull
     public static ThingIFAPIBuilder _newBuilder(
-            @NonNull String appID,
-            @NonNull String appKey,
-            @NonNull String baseUrl,
+            @NonNull KiiApp app,
             @NonNull Owner owner) {
-        if (TextUtils.isEmpty(appID)) {
-            throw new IllegalArgumentException("appID is null or empty");
-        }
-        if (TextUtils.isEmpty(appKey)) {
-            throw new IllegalArgumentException("appKey is null or empty");
-        }
-        if (TextUtils.isEmpty(baseUrl)) {
-            throw new IllegalArgumentException("baseUrl is null or empty");
+        if (app == null) {
+            throw new IllegalArgumentException("app is null");
         }
         if (owner == null) {
             throw new IllegalArgumentException("owner is null");
         }
-        return new ThingIFAPIBuilder(null, appID, appKey, baseUrl, owner);
+        return new ThingIFAPIBuilder(null, app, owner);
     }
 
     /** Add Schema to the ThingIFAPI.
@@ -198,15 +123,11 @@ public class ThingIFAPIBuilder {
      */
     @NonNull
     public ThingIFAPI build(String tag) {
-        String baseUrl = this.baseUrl;
-        if (this.site != null) {
-            baseUrl = this.site.getBaseUrl();
-        }
         if (this.schemas.size() == 0) {
             throw new IllegalStateException("Builder has no schemas");
         }
-        Log.d(TAG, MessageFormat.format("Initialize ThingIFAPI AppID={0}, AppKey={1}, BaseUrl={2}", this.appID, this.appKey, baseUrl));
-        return new ThingIFAPI(this.context, tag, this.appID, this.appKey, baseUrl, this.owner, this.target, this.schemas, this.installationID);
+        Log.d(TAG, MessageFormat.format("Initialize ThingIFAPI AppID={0}, AppKey={1}, BaseUrl={2}", app.getAppID(), app.getAppKey(), app.getBaseUrl()));
+        return new ThingIFAPI(this.context, tag, app, this.owner, this.target, this.schemas, this.installationID);
     }
 
 }

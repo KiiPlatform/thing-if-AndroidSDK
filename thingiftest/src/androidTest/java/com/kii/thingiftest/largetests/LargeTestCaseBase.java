@@ -1,26 +1,28 @@
-package com.kii.thingif.largetests;
+package com.kii.thingiftest.largetests;
 
+import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.test.AndroidTestCase;
 
 import com.kii.cloud.rest.client.KiiRest;
 import com.kii.cloud.rest.client.model.storage.KiiNormalUser;
-import com.kii.thingif.ThingIFAPI;
-import com.kii.thingif.ThingIFAPIBuilder;
+import com.kii.thingif.KiiApp;
 import com.kii.thingif.Owner;
 import com.kii.thingif.Site;
+import com.kii.thingif.ThingIFAPI;
+import com.kii.thingif.ThingIFAPIBuilder;
 import com.kii.thingif.TypedID;
-import com.kii.thingif.schema.LightState;
 import com.kii.thingif.schema.Schema;
 import com.kii.thingif.schema.SchemaBuilder;
-import com.kii.thingif.schema.SetBrightness;
-import com.kii.thingif.schema.SetBrightnessResult;
-import com.kii.thingif.schema.SetColor;
-import com.kii.thingif.schema.SetColorResult;
-import com.kii.thingif.schema.SetColorTemperature;
-import com.kii.thingif.schema.SetColorTemperatureResult;
-import com.kii.thingif.schema.TurnPower;
-import com.kii.thingif.schema.TurnPowerResult;
+import com.kii.thingiftest.schema.LightState;
+import com.kii.thingiftest.schema.SetBrightness;
+import com.kii.thingiftest.schema.SetBrightnessResult;
+import com.kii.thingiftest.schema.SetColor;
+import com.kii.thingiftest.schema.SetColorResult;
+import com.kii.thingiftest.schema.SetColorTemperature;
+import com.kii.thingiftest.schema.SetColorTemperatureResult;
+import com.kii.thingiftest.schema.TurnPower;
+import com.kii.thingiftest.schema.TurnPowerResult;
 
 public abstract class LargeTestCaseBase extends AndroidTestCase {
 
@@ -72,7 +74,15 @@ public abstract class LargeTestCaseBase extends AndroidTestCase {
     }
     protected ThingIFAPI craeteThingIFAPIWithDemoSchema(TargetTestServer server) throws Exception {
         Owner owner = this.createNewOwner(server);
-        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), server.getAppID(), server.getAppKey(), server.getBaseUrl(), owner);
+        String hostname = server.getBaseUrl().substring("https://".length());
+        KiiApp app = KiiApp.Builder.builderWithHostName(server.getAppID(), server.getAppKey(), hostname).build();
+        Context ctx = null;
+        try {
+            ctx = InstrumentationRegistry.getTargetContext();
+        } catch (Exception e) {
+            ctx = getContext();
+        }
+        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(ctx, app, owner);
         builder.addSchema(this.createDefaultSchema());
         return builder.build();
     }
