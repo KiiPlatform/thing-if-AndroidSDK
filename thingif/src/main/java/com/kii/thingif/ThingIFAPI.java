@@ -665,6 +665,7 @@ public class ThingIFAPI implements Parcelable {
         try {
             requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson(schema).toJson(predicate)));
             requestBody.put("command", JsonUtils.newJson(GsonRepository.gson(schema).toJson(command)));
+            requestBody.put("triggersWhat", "COMMAND");
         } catch (JSONException e) {
             // Won’t happen
         }
