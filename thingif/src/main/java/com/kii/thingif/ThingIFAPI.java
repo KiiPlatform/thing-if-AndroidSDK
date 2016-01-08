@@ -63,21 +63,44 @@ public class ThingIFAPI implements Parcelable {
 
     /**
      * Try to load the instance of ThingIFAPI using stored serialized instance.
+     * <BR>
+     * Instance is automatically saved when following methods are called.
+     * <BR>
+     * {@link #onboard(String, String, String, JSONObject)}, {@link #onboard(String, String)},
+     * {@link #copyWithTarget(Target, String)}
+     * and {@link #installPush} has been successfully completed.
+     * <BR>
+     * (When {@link #copyWithTarget(Target, String)} is called, only the copied instance is saved.)
+     * <BR>
+     * <BR>
      *
-     * @param context
+     * If the ThingIFAPI instance is build without the tag, all instance is saved in same place
+     * and overwritten when the instance is saved.
+     * <BR>
+     * <BR>
+     *
+     * If the ThingIFAPI instance is build with the tag(optional), tag is used as key to distinguish
+     * the storage area to save the instance. This would be useful to saving multiple instance.
+     * You need specify tag to load the instance by the
+     * {@link #loadFromStoredInstance(Context, String) api}.
+     *
+     * @param context context
      * @return ThingIFAPI instance.
-     * @throws IllegalStateException Thrown when the instance has not stored.
+     * @throws StoredThingIFAPIInstanceNotFoundException when the instance has not stored yet.
      */
     public static ThingIFAPI loadFromStoredInstance(@NonNull Context context) throws StoredThingIFAPIInstanceNotFoundException {
         return loadFromStoredInstance(context, null);
     }
+
     /**
      * Try to load the instance of ThingIFAPI using stored serialized instance.
+     * <BR>
+     * For details please refer to the {@link #loadFromStoredInstance(Context)} document.
      *
-     * @param context
-     * @param  tag
+     * @param context context
+     * @param  tag specified when the ThingIFAPI has been built.
      * @return ThingIFAPI instance.
-     * @throws IllegalStateException Thrown when the instance has not stored.
+     * @throws StoredThingIFAPIInstanceNotFoundException when the instance has not stored yet.
      */
     public static ThingIFAPI loadFromStoredInstance(@NonNull Context context, String tag) throws StoredThingIFAPIInstanceNotFoundException {
         ThingIFAPI.context = context.getApplicationContext();
