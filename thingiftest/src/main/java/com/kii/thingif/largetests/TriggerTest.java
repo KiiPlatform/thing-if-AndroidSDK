@@ -247,7 +247,7 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertEquals(EventSource.STATES, updatedTrigger2Predicate.getEventSource());
         Assert.assertEquals(TriggersWhen.CONDITION_FALSE_TO_TRUE, updatedTrigger2Predicate.getTriggersWhen());
         Assert.assertEquals("brightness", ((Range)updatedTrigger2Predicate.getCondition().getClause()).getField());
-        Assert.assertEquals(100, (long)((Range)updatedTrigger2Predicate.getCondition().getClause()).getUpperLimit());
+        Assert.assertEquals(100, (long)((Range)updatedTrigger2Predicate.getCondition().getClause()).getLowerLimit());
     }
     @Test
     public void listTriggersEmptyResultTest() throws Exception {
