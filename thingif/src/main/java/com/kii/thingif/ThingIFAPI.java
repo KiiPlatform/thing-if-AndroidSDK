@@ -84,7 +84,7 @@ public class ThingIFAPI implements Parcelable {
         SharedPreferences preferences = getSharedPreferences();
         String serializedJson = preferences.getString(getSharedPreferencesKey(tag), null);
         if (serializedJson != null) {
-            return GsonRepository.gson().fromJson(serializedJson, ThingIFAPI.class);
+            return  GsonRepository.gson().fromJson(serializedJson, ThingIFAPI.class);
         }
         throw new StoredThingIFAPIInstanceNotFoundException(tag);
     }
