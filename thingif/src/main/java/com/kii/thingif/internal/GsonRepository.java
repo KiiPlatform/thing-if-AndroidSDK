@@ -262,6 +262,10 @@ public class GsonRepository {
             json.addProperty("appID", src.getAppID());
             json.addProperty("appKey", src.getAppKey());
             json.addProperty("baseUrl", src.getBaseUrl());
+            String tag = src.getTag();
+            if (!TextUtils.isEmpty(tag)) {
+                json.addProperty("tag", tag);
+            }
             json.add("owner", DEFAULT_GSON.toJsonTree(src.getOwner()));
             json.add("target", DEFAULT_GSON.toJsonTree(src.getTarget()));
             JsonArray schemas = new JsonArray();
@@ -283,6 +287,9 @@ public class GsonRepository {
             String appID = json.get("appID").getAsString();
             String appKey = json.get("appKey").getAsString();
             String baseUrl = json.get("baseUrl").getAsString();
+            String tag = null;
+            if (json.has("tag"))
+                tag = json.get("tag").getAsString();
             Owner owner = DEFAULT_GSON.fromJson(json.getAsJsonObject("owner"), Owner.class);
             ThingIFAPIBuilder builder = ThingIFAPIBuilder._newBuilder(appID, appKey, baseUrl, owner);
             if (json.has("target")) {
@@ -297,7 +304,7 @@ public class GsonRepository {
             if (json.has("installationID")) {
                 builder.setInstallationID(json.get("installationID").getAsString());
             }
-            return builder.build();
+            return builder.build(tag);
         }
     };
     static {
