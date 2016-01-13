@@ -95,7 +95,7 @@ public class ThingIFAPI implements Parcelable {
         SharedPreferences preferences = getSharedPreferences();
         SharedPreferences.Editor editor = preferences.edit();
         editor.clear();
-        editor.commit();
+        editor.apply();
     }
     /**
      * Remove saved specified instance in the SharedPreferences.
@@ -106,7 +106,7 @@ public class ThingIFAPI implements Parcelable {
         SharedPreferences preferences = getSharedPreferences();
         SharedPreferences.Editor editor = preferences.edit();
         editor.remove(getSharedPreferencesKey(tag));
-        editor.commit();
+        editor.apply();
     }
     private static void saveInstance(ThingIFAPI instance) {
         SharedPreferences preferences = getSharedPreferences();
