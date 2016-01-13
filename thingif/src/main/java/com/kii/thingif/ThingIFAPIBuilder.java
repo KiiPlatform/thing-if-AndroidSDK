@@ -20,6 +20,7 @@ public class ThingIFAPIBuilder {
     private final Owner owner;
     private Target target;
     private String installationID;
+    private String tag;
     private final List<Schema> schemas = new ArrayList<Schema>();
 
     private ThingIFAPIBuilder(
@@ -100,6 +101,25 @@ public class ThingIFAPIBuilder {
         return this;
     }
 
+    /** Set tag to this ThingIFAPI instance.
+     * tag is used to distinguish storage area of instance.
+     * <br>
+     * If the api instance is tagged with same string, It will be overwritten.
+     * <br>
+     * If the api instance is tagged with different string, Different key is used to store the
+     * instance.
+     * <br>
+     * <br>
+     * Please refer to {@link ThingIFAPI#loadFromStoredInstance(Context, String)} as well.
+     * @param tag if null or empty string is passed, it will be ignored.
+     * @return builder instance for chaining call.
+     */
+    @NonNull
+    public ThingIFAPIBuilder setTag(@Nullable String tag) {
+        this.tag = tag;
+        return this;
+    }
+
     /**
      * Set InstallationID to the ThingIFAPI.
      * @param installationID
@@ -112,22 +132,15 @@ public class ThingIFAPIBuilder {
 
     /** Instantiate new ThingIFAPI instance.
      * @return ThingIFAPI instance.
+     * @throws IllegalStateException when schema is not present.
      */
     @NonNull
     public ThingIFAPI build() {
-        return build(null);
-    }
-    /** Instantiate new ThingIFAPI instance.
-     * @param tag
-     * @return ThingIFAPI instance.
-     */
-    @NonNull
-    public ThingIFAPI build(String tag) {
         if (this.schemas.size() == 0) {
             throw new IllegalStateException("Builder has no schemas");
         }
         Log.d(TAG, MessageFormat.format("Initialize ThingIFAPI AppID={0}, AppKey={1}, BaseUrl={2}", app.getAppID(), app.getAppKey(), app.getBaseUrl()));
-        return new ThingIFAPI(this.context, tag, app, this.owner, this.target, this.schemas, this.installationID);
+        return new ThingIFAPI(this.context, this.tag, app, this.owner, this.target, this.schemas, this.installationID);
     }
 
 }
