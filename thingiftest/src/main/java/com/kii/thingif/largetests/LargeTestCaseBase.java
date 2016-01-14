@@ -24,13 +24,13 @@ import com.kii.thingif.schema.TurnPowerResult;
 
 public abstract class LargeTestCaseBase extends AndroidTestCase {
 
-    private static final String DEV_JP_SERVER = "https://api-development-jp.internal.kii.com";
+    private static final String DEV_JP_SERVER = "https://api-jp.kii.com";
     public static final String DEMO_THING_TYPE = "LED";
     public static final String DEMO_SCHEMA_NAME = "SmartLightDemo";
     public static final int DEMO_SCHEMA_VERSION = 1;
 
     public enum TargetTestServer {
-        DEV_SERVER_1(DEV_JP_SERVER, "50a62843", "2bde7d4e3eed1ad62c306dd2144bb2b0");
+        DEV_SERVER_1(DEV_JP_SERVER, "9ab34d8b", "7a950d78956ed39f3b0815f0f001b43b");
 
         private final String appID;
         private final String appKey;

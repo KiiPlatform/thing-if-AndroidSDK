@@ -84,7 +84,7 @@ public class ThingIFAPI implements Parcelable {
         SharedPreferences preferences = getSharedPreferences();
         String serializedJson = preferences.getString(getSharedPreferencesKey(tag), null);
         if (serializedJson != null) {
-            return GsonRepository.gson().fromJson(serializedJson, ThingIFAPI.class);
+            return  GsonRepository.gson().fromJson(serializedJson, ThingIFAPI.class);
         }
         throw new StoredThingIFAPIInstanceNotFoundException(tag);
     }
@@ -566,6 +566,7 @@ public class ThingIFAPI implements Parcelable {
         Command command = new Command(schemaName, schemaVersion, this.target.getTypedID(), this.owner.getTypedID(), actions);
         try {
             requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson(schema).toJson(predicate)));
+            requestBody.put("triggersWhat", "COMMAND");
             requestBody.put("command", JsonUtils.newJson(GsonRepository.gson(schema).toJson(command)));
         } catch (JSONException e) {
             // Won’t happen
@@ -664,6 +665,7 @@ public class ThingIFAPI implements Parcelable {
         try {
             requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson(schema).toJson(predicate)));
             requestBody.put("command", JsonUtils.newJson(GsonRepository.gson(schema).toJson(command)));
+            requestBody.put("triggersWhat", "COMMAND");
         } catch (JSONException e) {
             // Won’t happen
         }

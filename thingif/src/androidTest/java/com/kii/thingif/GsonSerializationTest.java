@@ -225,6 +225,66 @@ public class GsonSerializationTest extends SmallTestBase {
     }
 
     @Test
+    public void iotCloudAPIWithTagTest() throws Exception {
+        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "appid", "appkey", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "user-access-token-1234"));
+        SchemaBuilder sb = SchemaBuilder.newSchemaBuilder("SmartLight", "LightDemoSchema", 1, LightState.class);
+        sb.addActionClass(TurnPower.class, TurnPowerResult.class);
+        sb.addActionClass(SetColor.class, SetColorResult.class);
+        Schema schema = sb.build();
+        builder.addSchema(schema);
+        ThingIFAPI api = builder.build("mytag");
+        Target target = new Target(new TypedID(TypedID.Types.THING, "th.1234567890"), "thing-access-token-1234");
+        api.setTarget(target);
+
+        JsonObject expectedJson = (JsonObject) new JsonParser().parse(
+                "{" +
+                        "    \"appID\":\"appid\"," +
+                        "    \"appKey\":\"appkey\"," +
+                        "    \"baseUrl\":\"https://api-jp.kii.com\"," +
+                        "    \"owner\":{\"typedID\":\"user:user1234\",\"accessToken\":\"user-access-token-1234\"}," +
+                        "    \"target\":{\"typedID\":\"thing:th.1234567890\",\"accessToken\":\"thing-access-token-1234\"}," +
+                        "    \"tag\" : \"mytag\"," +
+                        "    \"schemas\":[" +
+                        "        {" +
+                        "            \"thingType\":\"SmartLight\"," +
+                        "            \"schemaName\":\"LightDemoSchema\"," +
+                        "            \"schemaVersion\":1," +
+                        "            \"stateClass\":\"com.kii.thingif.testschemas.LightState\"," +
+                        "            \"actionClasses\":[" +
+                        "                \"com.kii.thingif.testschemas.TurnPower\"," +
+                        "                \"com.kii.thingif.testschemas.SetColor\"" +
+                        "            ]," +
+                        "            \"actionResultClasses\":[" +
+                        "                \"com.kii.thingif.testschemas.TurnPowerResult\"," +
+                        "                \"com.kii.thingif.testschemas.SetColorResult\"" +
+                        "            ]" +
+                        "        }" +
+                        "    ]" +
+                        "}");
+        JsonObject serializedJson = (JsonObject) new JsonParser().parse(GsonRepository.gson().toJson(api));
+        Assert.assertEquals(expectedJson, serializedJson);
+
+        ThingIFAPI deserializedApi = GsonRepository.gson().fromJson(serializedJson, ThingIFAPI.class);
+        Assert.assertEquals("appid", deserializedApi.getAppID());
+        Assert.assertEquals("appkey", deserializedApi.getAppKey());
+        Assert.assertEquals(Site.JP.getBaseUrl(), deserializedApi.getBaseUrl());
+        Assert.assertEquals("mytag", deserializedApi.getTag());
+        Assert.assertEquals(new TypedID(TypedID.Types.USER, "user1234"), deserializedApi.getOwner().getTypedID());
+        Assert.assertEquals("user-access-token-1234", deserializedApi.getOwner().getAccessToken());
+        Assert.assertEquals(new TypedID(TypedID.Types.THING, "th.1234567890"), deserializedApi.getTarget().getTypedID());
+        Assert.assertEquals("thing-access-token-1234", deserializedApi.getTarget().getAccessToken());
+        Assert.assertEquals(1, deserializedApi.getSchemas().size());
+        Assert.assertEquals("SmartLight", deserializedApi.getSchemas().get(0).getThingType());
+        Assert.assertEquals("LightDemoSchema", deserializedApi.getSchemas().get(0).getSchemaName());
+        Assert.assertEquals(1, deserializedApi.getSchemas().get(0).getSchemaVersion());
+        Assert.assertEquals(LightState.class, deserializedApi.getSchemas().get(0).getStateClass());
+        Assert.assertEquals(TurnPower.class, deserializedApi.getSchemas().get(0).getActionClasses().get(0));
+        Assert.assertEquals(SetColor.class, deserializedApi.getSchemas().get(0).getActionClasses().get(1));
+        Assert.assertEquals(TurnPowerResult.class, deserializedApi.getSchemas().get(0).getActionResultClasses().get(0));
+        Assert.assertEquals(SetColorResult.class, deserializedApi.getSchemas().get(0).getActionResultClasses().get(1));
+    }
+
+    @Test
     public void actionTest() throws Exception {
         // Define the schema
         SchemaBuilder sb = SchemaBuilder.newSchemaBuilder("ThingType", "SchemaName1", 10, LightState.class);

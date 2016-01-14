@@ -2,7 +2,9 @@ package com.kii.thingif;
 
 import android.support.test.runner.AndroidJUnit4;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
 import com.kii.thingif.exception.ForbiddenException;
@@ -78,6 +80,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         JsonObject expectedRequestBody = new JsonObject();
         expectedRequestBody.add("command", GsonRepository.gson(schema).toJsonTree(expectedCommand));
         expectedRequestBody.add("predicate", GsonRepository.gson(schema).toJsonTree(predicate));
+        expectedRequestBody.add("triggersWhat", new JsonPrimitive("COMMAND"));
         this.assertRequestBody(expectedRequestBody, request1);
 
         // verify the 2nd request
@@ -131,6 +134,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         JsonObject expectedRequestBody = new JsonObject();
         expectedRequestBody.add("command", GsonRepository.gson(schema).toJsonTree(expectedCommand));
         expectedRequestBody.add("predicate", GsonRepository.gson(schema).toJsonTree(predicate));
+        expectedRequestBody.add("triggersWhat", new JsonPrimitive("COMMAND"));
         this.assertRequestBody(expectedRequestBody, request);
     }
     @Test
@@ -173,6 +177,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         JsonObject expectedRequestBody = new JsonObject();
         expectedRequestBody.add("command", GsonRepository.gson(schema).toJsonTree(expectedCommand));
         expectedRequestBody.add("predicate", GsonRepository.gson(schema).toJsonTree(predicate));
+        expectedRequestBody.add("triggersWhat", new JsonPrimitive("COMMAND"));
         this.assertRequestBody(expectedRequestBody, request);
     }
     @Test
@@ -215,6 +220,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         JsonObject expectedRequestBody = new JsonObject();
         expectedRequestBody.add("command", GsonRepository.gson(schema).toJsonTree(expectedCommand));
         expectedRequestBody.add("predicate", GsonRepository.gson(schema).toJsonTree(predicate));
+        expectedRequestBody.add("triggersWhat", new JsonPrimitive("COMMAND"));
         this.assertRequestBody(expectedRequestBody, request);
     }
     @Test(expected = IllegalStateException.class)
