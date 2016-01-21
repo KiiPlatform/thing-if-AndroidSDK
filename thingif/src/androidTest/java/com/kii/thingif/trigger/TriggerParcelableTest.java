@@ -11,6 +11,7 @@ import com.kii.thingif.testschemas.SetColor;
 import com.kii.thingif.testschemas.SetColorTemperature;
 import com.kii.thingif.trigger.clause.Equals;
 
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,11 +41,18 @@ public class TriggerParcelableTest extends SmallTestBase {
         String triggerID = "trigger1234";
         boolean disabled = true;
         String disabledReason = "reasonXXXX";
+        String title = "Title of Trigger";
+        String description = "Description of Trigger";
+        JSONObject metadata = new JSONObject();
+        metadata.put("sound", "phone.mp3");
 
         Trigger trigger = new Trigger(predicate, command);
         trigger.setTriggerID(triggerID);
         trigger.setDisabled(disabled);
         trigger.setDisabledReason(disabledReason);
+        trigger.setTitle(title);
+        trigger.setDescription(description);
+        trigger.setMetadata(metadata);
 
         Parcel parcel = Parcel.obtain();
         trigger.writeToParcel(parcel, 0);
@@ -60,10 +68,13 @@ public class TriggerParcelableTest extends SmallTestBase {
         Assert.assertEquals(setColorTemperature.colorTemperature, ((SetColorTemperature) deserializedTrigger.getCommand().getActions().get(1)).colorTemperature);
 
         Assert.assertEquals(equals, ((StatePredicate)deserializedTrigger.getPredicate()).getCondition().getClause());
-        Assert.assertEquals(TriggersWhen.CONDITION_TRUE, ((StatePredicate)deserializedTrigger.getPredicate()).getTriggersWhen());
+        Assert.assertEquals(TriggersWhen.CONDITION_TRUE, ((StatePredicate) deserializedTrigger.getPredicate()).getTriggersWhen());
 
         Assert.assertEquals(triggerID, deserializedTrigger.getTriggerID());
         Assert.assertEquals(disabled, deserializedTrigger.disabled());
         Assert.assertEquals(disabledReason, deserializedTrigger.getDisabledReason());
+        Assert.assertEquals(title, deserializedTrigger.getTitle());
+        Assert.assertEquals(description, deserializedTrigger.getDescription());
+        assertJSONObject(metadata, deserializedTrigger.getMetadata());
     }
 }

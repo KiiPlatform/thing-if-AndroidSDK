@@ -220,7 +220,6 @@ public class Command implements Parcelable {
     void setModified(Long modified) {
         this.modified = modified;
     }
-
     /**
      *
      * @return

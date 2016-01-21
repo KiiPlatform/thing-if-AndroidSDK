@@ -529,7 +529,13 @@ public class GsonSerializationTest extends SmallTestBase {
                         "            ]" +
                         "        }" +
                         "    }," +
-                        "    \"disabled\":false" +
+                        "    \"disabled\":false," +
+                        "    \"title\":\"Title of Trigger\"," +
+                        "    \"description\":\"Description of Trigger\"," +
+                        "    \"metadata\":{" +
+                        "        \"sound\":\"noisy.mp3\"," +
+                        "        \"led\":\"red\"" +
+                        "    }" +
                         "}");
 
         // Command
@@ -548,7 +554,12 @@ public class GsonSerializationTest extends SmallTestBase {
         Predicate predicate = new StatePredicate(condition, TriggersWhen.CONDITION_FALSE_TO_TRUE);
         // Trigger
         Trigger trigger = new Trigger(predicate, command);
-
+        trigger.setTitle("Title of Trigger");
+        trigger.setDescription("Description of Trigger");
+        JSONObject metadata = new JSONObject();
+        metadata.put("sound", "noisy.mp3");
+        metadata.put("led", "red");
+        trigger.setMetadata(metadata);
 
         Gson gson = GsonRepository.gson(schema);
         JsonObject serializedJson = (JsonObject) new JsonParser().parse(gson.toJson(trigger));
@@ -559,6 +570,10 @@ public class GsonSerializationTest extends SmallTestBase {
         trigger = gson.fromJson(serializedJson.toString(), Trigger.class);
 
         Assert.assertEquals("Trigger-1234567", trigger.getTriggerID());
+        Assert.assertEquals("Title of Trigger", trigger.getTitle());
+        Assert.assertEquals("Description of Trigger", trigger.getDescription());
+        Assert.assertEquals("noisy.mp3", trigger.getMetadata().getString("sound"));
+        Assert.assertEquals("red", trigger.getMetadata().getString("led"));
 
         command = trigger.getCommand();
         Assert.assertEquals("SchemaName1", command.getSchemaName());
