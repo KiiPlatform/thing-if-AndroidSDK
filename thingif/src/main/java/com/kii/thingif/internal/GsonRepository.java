@@ -41,6 +41,9 @@ import com.kii.thingif.trigger.clause.Or;
 import com.kii.thingif.trigger.clause.Clause;
 import com.kii.thingif.trigger.clause.Range;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,6 +62,26 @@ public class GsonRepository {
     private static final Gson DEFAULT_GSON;
     private static final Gson PURE_GSON = new Gson();
 
+
+    private static final JsonSerializer<JSONObject> ORG_JSON_OBJECT_SERIALIZER = new JsonSerializer<JSONObject>() {
+        @Override
+        public JsonElement serialize(JSONObject src, Type typeOfSrc, JsonSerializationContext context) {
+            return src == null ? null : new JsonParser().parse(src.toString());
+        }
+    };
+    private static final JsonDeserializer<JSONObject> ORG_JSON_OBJECT_DESERIALIZER = new JsonDeserializer<JSONObject>() {
+        @Override
+        public JSONObject deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            if (json == null) {
+                return null;
+            }
+            try {
+                return new JSONObject(json.toString());
+            } catch (JSONException e) {
+                throw new JsonParseException(e);
+            }
+        }
+    };
     private static final JsonSerializer<TypedID> TYPED_ID_SERIALIZER = new JsonSerializer<TypedID>() {
         @Override
         public JsonElement serialize(TypedID src, Type typeOfSrc, JsonSerializationContext context) {
@@ -309,6 +332,8 @@ public class GsonRepository {
     };
     static {
         DEFAULT_GSON = new GsonBuilder()
+                .registerTypeAdapter(JSONObject.class, ORG_JSON_OBJECT_SERIALIZER)
+                .registerTypeAdapter(JSONObject.class, ORG_JSON_OBJECT_DESERIALIZER)
                 .registerTypeAdapter(TypedID.class, TYPED_ID_SERIALIZER)
                 .registerTypeAdapter(TypedID.class, TYPED_ID_DESERIALIZER)
                 .registerTypeHierarchyAdapter(Action.class, ACTION_SERIALIZER)
@@ -388,6 +413,8 @@ public class GsonRepository {
                 }
             };
             gson = new GsonBuilder()
+                    .registerTypeAdapter(JSONObject.class, ORG_JSON_OBJECT_SERIALIZER)
+                    .registerTypeAdapter(JSONObject.class, ORG_JSON_OBJECT_DESERIALIZER)
                     .registerTypeAdapter(TypedID.class, TYPED_ID_SERIALIZER)
                     .registerTypeAdapter(TypedID.class, TYPED_ID_DESERIALIZER)
                     .registerTypeHierarchyAdapter(Action.class, ACTION_SERIALIZER)

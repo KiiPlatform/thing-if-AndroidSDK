@@ -34,6 +34,7 @@ import com.kii.thingif.trigger.clause.Or;
 import com.kii.thingif.trigger.clause.Range;
 
 
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -361,7 +362,13 @@ public class GsonSerializationTest extends SmallTestBase {
                         "      {\"setColorTemperature\":{\"colorTemperature\":25}}" +
                         "    ]," +
                         "    \"issuer\":\"user:9876\"," +
-                        "    \"target\":\"thing:1234\"" +
+                        "    \"target\":\"thing:1234\"," +
+                        "    \"title\":\"Title of Command\"," +
+                        "    \"description\":\"Description of Command\"," +
+                        "    \"metadata\":{" +
+                        "        \"sound\":\"noisy.mp3\"," +
+                        "        \"led\":\"red\"" +
+                        "    }" +
                         "}");
 
         List<Action> actions = new ArrayList<Action>();
@@ -370,6 +377,12 @@ public class GsonSerializationTest extends SmallTestBase {
         Command command = new Command("SchemaName1", 10, new TypedID(TypedID.Types.THING, "1234"), new TypedID(TypedID.Types.USER, "9876"), actions);
         command.addActionResult(new SetColorResult(true));
         command.addActionResult(new SetColorTemperatureResult(false));
+        command.setTitle("Title of Command");
+        command.setDescription("Description of Command");
+        JSONObject metadata = new JSONObject();
+        metadata.put("sound", "noisy.mp3");
+        metadata.put("led", "red");
+        command.setMetadata(metadata);
         Gson gson = GsonRepository.gson(schema);
         JsonObject serializedJson = (JsonObject) new JsonParser().parse(gson.toJson(command));
 
@@ -393,6 +406,11 @@ public class GsonSerializationTest extends SmallTestBase {
 
         SetColorTemperatureResult setColorTemperatureResult = (SetColorTemperatureResult) command.getActionResults().get(1);
         Assert.assertFalse(setColorTemperatureResult.succeeded);
+
+        Assert.assertEquals("Title of Command", command.getTitle());
+        Assert.assertEquals("Description of Command", command.getDescription());
+        Assert.assertEquals("noisy.mp3", command.getMetadata().getString("sound"));
+        Assert.assertEquals("red", command.getMetadata().getString("led"));
     }
 
     // SchedulePredicate is not implemented yet.

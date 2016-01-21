@@ -35,6 +35,7 @@ public class ServerCode implements Parcelable {
         this.endpoint = endpoint;
         this.executorAccessToken = executorAccessToken;
         this.targetAppID = targetAppID;
+        // TODO:Do we need to check nested JSON?
         this.parameters = parameters;
     }
 

@@ -10,6 +10,7 @@ import com.kii.thingif.testschemas.SetColorResult;
 import com.kii.thingif.testschemas.SetColorTemperature;
 import com.kii.thingif.testschemas.SetColorTemperatureResult;
 
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +39,10 @@ public class CommandParcelableTest extends SmallTestBase {
         String firedByTriggerID = "trigger1234";
         Long created = 123456789L;
         Long modified = 987654321L;
+        String title = "Title of Command";
+        String description = "Description of Command";
+        JSONObject metadata = new JSONObject();
+        metadata.put("sound", "noisy.mp3");
 
         Command command = new Command(schemaName, schemaVersion, target, issuer, actions);
         command.addActionResult(setColorResult);
@@ -47,6 +52,9 @@ public class CommandParcelableTest extends SmallTestBase {
         command.setFiredByTriggerID(firedByTriggerID);
         command.setCreated(created);
         command.setModified(modified);
+        command.setTitle(title);
+        command.setDescription(description);
+        command.setMetadata(metadata);
 
         Parcel parcel = Parcel.obtain();
         command.writeToParcel(parcel, 0);
@@ -67,5 +75,8 @@ public class CommandParcelableTest extends SmallTestBase {
         Assert.assertEquals(firedByTriggerID, deserializedCommand.getFiredByTriggerID());
         Assert.assertEquals(created, deserializedCommand.getCreated());
         Assert.assertEquals(modified, deserializedCommand.getModified());
+        Assert.assertEquals(title, deserializedCommand.getTitle());
+        Assert.assertEquals(description, deserializedCommand.getDescription());
+        assertJSONObject(metadata, deserializedCommand.getMetadata());
     }
 }
