@@ -7,6 +7,7 @@ import android.text.TextUtils;
 
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Command;
+import com.kii.thingif.servercode.ServerCode;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,8 +18,9 @@ import org.json.JSONObject;
 public class Trigger implements Parcelable {
 
     private String triggerID;
-    private Predicate predicate;
-    private Command command;
+    private final Predicate predicate;
+    private final Command command;
+    private final ServerCode serverCode;
     private boolean disabled;
     private String disabledReason;
     private String title;
@@ -34,6 +36,18 @@ public class Trigger implements Parcelable {
         }
         this.predicate = predicate;
         this.command = command;
+        this.serverCode = null;
+    }
+    public Trigger(@NonNull Predicate predicate, @NonNull ServerCode serverCode) {
+        if (predicate == null) {
+            throw new IllegalArgumentException("predicate is null");
+        }
+        if (serverCode == null) {
+            throw new IllegalArgumentException("serverCode is null");
+        }
+        this.predicate = predicate;
+        this.command = null;
+        this.serverCode = serverCode;
     }
 
     public String getTriggerID() {
@@ -62,6 +76,15 @@ public class Trigger implements Parcelable {
 
     public Command getCommand() {
         return this.command;
+    }
+    public ServerCode getServerCode() {
+        return this.serverCode;
+    }
+    public TriggersWhat getTriggersWhat() {
+        if (this.command != null) {
+            return TriggersWhat.COMMAND;
+        }
+        return TriggersWhat.SERVER_CODE;
     }
     public String getDisabledReason() {
         return this.disabledReason;
@@ -124,6 +147,7 @@ public class Trigger implements Parcelable {
         this.triggerID = in.readString();
         this.predicate = in.readParcelable(Predicate.class.getClassLoader());
         this.command = in.readParcelable(Command.class.getClassLoader());
+        this.serverCode = in.readParcelable(Command.class.getClassLoader());
         this.disabled = (in.readByte() != 0);
         this.disabledReason = in.readString();
         this.title = in.readString();
@@ -160,6 +184,7 @@ public class Trigger implements Parcelable {
         dest.writeString(this.triggerID);
         dest.writeParcelable(this.predicate, flags);
         dest.writeParcelable(this.command, flags);
+        dest.writeParcelable(this.serverCode, flags);
         dest.writeByte((byte) (this.disabled ? 1 : 0));
         dest.writeString(this.disabledReason);
         dest.writeString(this.title);

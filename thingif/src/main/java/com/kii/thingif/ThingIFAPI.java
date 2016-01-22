@@ -23,10 +23,12 @@ import com.kii.thingif.internal.GsonRepository;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
 import com.kii.thingif.schema.Schema;
+import com.kii.thingif.servercode.ServerCode;
 import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.Trigger;
 import com.kii.thingif.internal.utils.JsonUtils;
 import com.kii.thingif.internal.utils.Path;
+import com.kii.thingif.trigger.TriggersWhat;
 import com.squareup.okhttp.MediaType;
 
 import org.json.JSONArray;
@@ -299,7 +301,7 @@ public class ThingIFAPI implements Parcelable {
             @Nullable String deviceToken,
             @NonNull PushBackend pushBackend
     ) throws ThingIFException {
-        return this.installPush(deviceToken,pushBackend,false);
+        return this.installPush(deviceToken, pushBackend, false);
     }
 
     /**
@@ -526,7 +528,7 @@ public class ThingIFAPI implements Parcelable {
     }
 
     /**
-     * Post new Trigger to IoT Cloud.
+     * Post new Trigger with commands to IoT Cloud.
      * @param schemaName name of the schema.
      * @param schemaVersion version of schema.
      * @param actions Specify actions included in the Command is fired by the
@@ -557,20 +559,58 @@ public class ThingIFAPI implements Parcelable {
         if (predicate == null) {
             throw new IllegalArgumentException("predicate is null");
         }
-
-        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers", this.appID, this.target.getTypedID().toString());
-        String url = Path.combine(this.baseUrl, path);
-        Map<String, String> headers = this.newHeader();
         JSONObject requestBody = new JSONObject();
         Schema schema = this.getSchema(schemaName, schemaVersion);
         Command command = new Command(schemaName, schemaVersion, this.target.getTypedID(), this.owner.getTypedID(), actions);
         try {
             requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson(schema).toJson(predicate)));
-            requestBody.put("triggersWhat", "COMMAND");
+            requestBody.put("triggersWhat", TriggersWhat.COMMAND.name());
             requestBody.put("command", JsonUtils.newJson(GsonRepository.gson(schema).toJson(command)));
         } catch (JSONException e) {
             // Won’t happen
         }
+        return this.postNewTrigger(requestBody);
+    }
+
+    /**
+     * Post new Trigger with server code to IoT Cloud.
+     *
+     * @param serverCode Specify server code you want to execute.
+     * @param predicate Specify when the Trigger fires command.
+     * @return Instance of the Trigger registered in IoT Cloud.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     */
+    @NonNull
+    @WorkerThread
+    public Trigger postNewTrigger(
+            @NonNull ServerCode serverCode,
+            @NonNull Predicate predicate)
+            throws ThingIFException {
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
+        }
+        if (serverCode == null) {
+            throw new IllegalArgumentException("serverCode is null");
+        }
+        if (predicate == null) {
+            throw new IllegalArgumentException("predicate is null");
+        }
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson().toJson(predicate)));
+            requestBody.put("triggersWhat", TriggersWhat.SERVER_CODE.name());
+            requestBody.put("serverCode", JsonUtils.newJson(GsonRepository.gson().toJson(serverCode)));
+        } catch (JSONException e) {
+            // Won’t happen
+        }
+        return this.postNewTrigger(requestBody);
+    }
+    private Trigger postNewTrigger(@NonNull JSONObject requestBody) throws ThingIFException {
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers", this.appID, this.target.getTypedID().toString());
+        String url = Path.combine(this.baseUrl, path);
+        Map<String, String> headers = this.newHeader();
+
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MEDIA_TYPE_JSON, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
         String triggerID = responseBody.optString("triggerID", null);
@@ -656,19 +696,50 @@ public class ThingIFAPI implements Parcelable {
             throw new IllegalArgumentException("predicate is null");
         }
 
-        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}", this.appID, this.target.getTypedID().toString(), triggerID);
-        String url = Path.combine(this.baseUrl, path);
-        Map<String, String> headers = this.newHeader();
         JSONObject requestBody = new JSONObject();
         Schema schema = this.getSchema(schemaName, schemaVersion);
         Command command = new Command(schemaName, schemaVersion, this.target.getTypedID(), this.owner.getTypedID(), actions);
         try {
             requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson(schema).toJson(predicate)));
             requestBody.put("command", JsonUtils.newJson(GsonRepository.gson(schema).toJson(command)));
-            requestBody.put("triggersWhat", "COMMAND");
+            requestBody.put("triggersWhat", TriggersWhat.COMMAND.name());
         } catch (JSONException e) {
             // Won’t happen
         }
+        return this.patchTrigger(triggerID, requestBody);
+    }
+    @NonNull
+    @WorkerThread
+    public Trigger patchTrigger(
+            @NonNull String triggerID,
+            @NonNull ServerCode serverCode,
+            @Nullable Predicate predicate) throws ThingIFException {
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
+        }
+        if (TextUtils.isEmpty(triggerID)) {
+            throw new IllegalArgumentException("triggerID is null or empty");
+        }
+        if (serverCode == null) {
+            throw new IllegalArgumentException("serverCode is null");
+        }
+        if (predicate == null) {
+            throw new IllegalArgumentException("predicate is null");
+        }
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson().toJson(predicate)));
+            requestBody.put("serverCode", JsonUtils.newJson(GsonRepository.gson().toJson(serverCode)));
+            requestBody.put("triggersWhat", TriggersWhat.SERVER_CODE.name());
+        } catch (JSONException e) {
+            // Won’t happen
+        }
+        return this.patchTrigger(triggerID, requestBody);
+    }
+    private Trigger patchTrigger(@NonNull String triggerID, @NonNull JSONObject requestBody) throws ThingIFException {
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}", this.appID, this.target.getTypedID().toString(), triggerID);
+        String url = Path.combine(this.baseUrl, path);
+        Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.PATCH, headers, MEDIA_TYPE_JSON, requestBody);
         this.restClient.sendRequest(request);
         return this.getTrigger(triggerID);
