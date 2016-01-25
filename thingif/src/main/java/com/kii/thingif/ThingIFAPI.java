@@ -645,12 +645,15 @@ public class ThingIFAPI implements Parcelable {
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
 
+        Schema schema = null;
         JSONObject commandObject = responseBody.optJSONObject("command");
-        String schemaName = commandObject.optString("schema", null);
-        int schemaVersion = commandObject.optInt("schemaVersion");
-        Schema schema = this.getSchema(schemaName, schemaVersion);
-        if (schema == null) {
-            throw new UnsupportedSchemaException(schemaName, schemaVersion);
+        if (commandObject != null) {
+            String schemaName = commandObject.optString("schema", null);
+            int schemaVersion = commandObject.optInt("schemaVersion");
+            schema = this.getSchema(schemaName, schemaVersion);
+            if (schema == null) {
+                throw new UnsupportedSchemaException(schemaName, schemaVersion);
+            }
         }
         return this.deserialize(schema, responseBody, Trigger.class);
     }
@@ -853,11 +856,14 @@ public class ThingIFAPI implements Parcelable {
             for (int i = 0; i < triggerArray.length(); i++) {
                 JSONObject triggerJson = triggerArray.optJSONObject(i);
                 JSONObject commandJson = triggerJson.optJSONObject("command");
-                String schemaName = commandJson.optString("schema", null);
-                int schemaVersion = commandJson.optInt("schemaVersion");
-                Schema schema = this.getSchema(schemaName, schemaVersion);
-                if (schema == null) {
-                    throw new UnsupportedSchemaException(schemaName, schemaVersion);
+                Schema schema = null;
+                if (commandJson != null) {
+                    String schemaName = commandJson.optString("schema", null);
+                    int schemaVersion = commandJson.optInt("schemaVersion");
+                    schema = this.getSchema(schemaName, schemaVersion);
+                    if (schema == null) {
+                        throw new UnsupportedSchemaException(schemaName, schemaVersion);
+                    }
                 }
                 triggers.add(this.deserialize(schema, triggerJson, Trigger.class));
             }
