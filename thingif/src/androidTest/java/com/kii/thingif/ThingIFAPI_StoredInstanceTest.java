@@ -64,8 +64,9 @@ public class ThingIFAPI_StoredInstanceTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
-        ThingIFAPIBuilder builder = this.craeteThingIFAPIBuilderWithDemoSchema(APP_ID, APP_KEY);
-        ThingIFAPI api = builder.build("ThingA");
+        ThingIFAPIBuilder builder = this.craeteThingIFAPIBuilderWithDemoSchema(APP_ID, APP_KEY).
+                setTag("ThingA");
+        ThingIFAPI api = builder.build();
         Assert.assertFalse(api.onboarded());
         Target target = api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
         Assert.assertTrue(api.onboarded());

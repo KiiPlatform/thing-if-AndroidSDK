@@ -25,7 +25,8 @@ public class ThingIFAPI_CopyWithTargetTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIBuilderWithDemoSchema(APP_ID, APP_KEY).build("ThingA");
+        ThingIFAPI api = this.craeteThingIFAPIBuilderWithDemoSchema(APP_ID, APP_KEY).
+                setTag("ThingA").build();
         Assert.assertEquals(api.getTag(), "ThingA");
         Assert.assertFalse(api.onboarded());
         Target target1 = api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
@@ -56,7 +57,8 @@ public class ThingIFAPI_CopyWithTargetTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIBuilderWithDemoSchema(APP_ID, APP_KEY).build("ThingA");
+        ThingIFAPI api = this.craeteThingIFAPIBuilderWithDemoSchema(APP_ID, APP_KEY).
+                setTag("ThingA").build();
         Assert.assertEquals(api.getTag(), "ThingA");
         Assert.assertFalse(api.onboarded());
         Target target = api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
@@ -83,7 +85,8 @@ public class ThingIFAPI_CopyWithTargetTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIBuilderWithDemoSchema(APP_ID, APP_KEY).build("ThingA");
+        ThingIFAPI api = this.craeteThingIFAPIBuilderWithDemoSchema(APP_ID, APP_KEY).
+                setTag("ThingA").build();
         Assert.assertEquals(api.getTag(), "ThingA");
         Assert.assertFalse(api.onboarded());
         Target target1 = api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
