@@ -223,7 +223,7 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
                 responseBody.add("actionResults", array);
             }
             if (state != null) {
-                responseBody.addProperty("state", state.name());
+                responseBody.addProperty("commandState", state.name());
             }
             responseBody.addProperty("schema", schema.getSchemaName());
             responseBody.addProperty("schemaVersion", schema.getSchemaVersion());

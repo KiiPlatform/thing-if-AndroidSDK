@@ -27,7 +27,7 @@ public class Command implements Parcelable {
     private final TypedID issuerID;
     private final List<Action> actions;
     private List<ActionResult> actionResults;
-    @SerializedName("state")
+    @SerializedName("commandState")
     private CommandState commandState;
     private String firedByTriggerID;
     @SerializedName("createdAt")

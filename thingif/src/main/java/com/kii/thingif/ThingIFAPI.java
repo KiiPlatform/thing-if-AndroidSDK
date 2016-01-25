@@ -78,7 +78,7 @@ public class ThingIFAPI implements Parcelable {
         SharedPreferences preferences = getSharedPreferences();
         String serializedJson = preferences.getString(getSharedPreferencesKey(tag), null);
         if (serializedJson != null) {
-            return GsonRepository.gson().fromJson(serializedJson, ThingIFAPI.class);
+            return  GsonRepository.gson().fromJson(serializedJson, ThingIFAPI.class);
         }
         throw new StoredThingIFAPIInstanceNotFoundException(tag);
     }
@@ -89,7 +89,7 @@ public class ThingIFAPI implements Parcelable {
         SharedPreferences preferences = getSharedPreferences();
         SharedPreferences.Editor editor = preferences.edit();
         editor.clear();
-        editor.commit();
+        editor.apply();
     }
     /**
      * Remove saved specified instance in the SharedPreferences.
@@ -100,7 +100,7 @@ public class ThingIFAPI implements Parcelable {
         SharedPreferences preferences = getSharedPreferences();
         SharedPreferences.Editor editor = preferences.edit();
         editor.remove(getSharedPreferencesKey(tag));
-        editor.commit();
+        editor.apply();
     }
     private static void saveInstance(ThingIFAPI instance) {
         SharedPreferences preferences = getSharedPreferences();
@@ -556,6 +556,7 @@ public class ThingIFAPI implements Parcelable {
         Command command = new Command(schemaName, schemaVersion, this.target.getTypedID(), this.owner.getTypedID(), actions);
         try {
             requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson(schema).toJson(predicate)));
+            requestBody.put("triggersWhat", "COMMAND");
             requestBody.put("command", JsonUtils.newJson(GsonRepository.gson(schema).toJson(command)));
         } catch (JSONException e) {
             // Won’t happen
@@ -654,6 +655,7 @@ public class ThingIFAPI implements Parcelable {
         try {
             requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson(schema).toJson(predicate)));
             requestBody.put("command", JsonUtils.newJson(GsonRepository.gson(schema).toJson(command)));
+            requestBody.put("triggersWhat", "COMMAND");
         } catch (JSONException e) {
             // Won’t happen
         }

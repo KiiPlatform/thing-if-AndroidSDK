@@ -261,6 +261,10 @@ public class GsonRepository {
             }
             JsonObject json = new JsonObject();
             json.add("app", DEFAULT_GSON.toJsonTree(src.getApp()));
+            String tag = src.getTag();
+            if (!TextUtils.isEmpty(tag)) {
+                json.addProperty("tag", tag);
+            }
             json.add("owner", DEFAULT_GSON.toJsonTree(src.getOwner()));
             json.add("target", DEFAULT_GSON.toJsonTree(src.getTarget()));
             JsonArray schemas = new JsonArray();
@@ -280,6 +284,9 @@ public class GsonRepository {
             }
             JsonObject json = (JsonObject)jsonElement;
             KiiApp app = DEFAULT_GSON.fromJson(json.getAsJsonObject("app"), KiiApp.class);
+            String tag = null;
+            if (json.has("tag"))
+                tag = json.get("tag").getAsString();
             Owner owner = DEFAULT_GSON.fromJson(json.getAsJsonObject("owner"), Owner.class);
             ThingIFAPIBuilder builder = ThingIFAPIBuilder._newBuilder(app, owner);
             if (json.has("target")) {
@@ -294,7 +301,7 @@ public class GsonRepository {
             if (json.has("installationID")) {
                 builder.setInstallationID(json.get("installationID").getAsString());
             }
-            return builder.build();
+            return builder.build(tag);
         }
     };
     static {
