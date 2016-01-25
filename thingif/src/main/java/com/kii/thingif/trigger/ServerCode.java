@@ -1,4 +1,4 @@
-package com.kii.thingif.servercode;
+package com.kii.thingif.trigger;
 
 import android.os.Parcel;
 import android.os.Parcelable;

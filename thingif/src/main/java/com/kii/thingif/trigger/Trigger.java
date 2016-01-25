@@ -7,7 +7,6 @@ import android.text.TextUtils;
 
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Command;
-import com.kii.thingif.servercode.ServerCode;
 
 import org.json.JSONException;
 import org.json.JSONObject;

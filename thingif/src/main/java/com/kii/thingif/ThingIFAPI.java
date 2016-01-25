@@ -23,7 +23,7 @@ import com.kii.thingif.internal.GsonRepository;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
 import com.kii.thingif.schema.Schema;
-import com.kii.thingif.servercode.ServerCode;
+import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.Trigger;
 import com.kii.thingif.internal.utils.JsonUtils;
