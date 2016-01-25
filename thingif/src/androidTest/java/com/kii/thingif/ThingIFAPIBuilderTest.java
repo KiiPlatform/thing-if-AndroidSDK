@@ -20,7 +20,7 @@ import org.junit.runner.RunWith;
 public class ThingIFAPIBuilderTest extends SmallTestBase {
     @Test
     public void basicTest() throws Exception {
-        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "appid", "appkey", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
+        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), new KiiApp("appid", "appkey", Site.JP), new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
         SchemaBuilder sb = SchemaBuilder.newSchemaBuilder("SmartLight", "LightDemoSchema", 1, LightState.class);
         sb.addActionClass(TurnPower.class, TurnPowerResult.class);
         sb.addActionClass(SetColor.class, SetColorResult.class);
@@ -36,48 +36,48 @@ public class ThingIFAPIBuilderTest extends SmallTestBase {
     }
     @Test(expected = IllegalStateException.class)
     public void buildWithEmptySchemasTest() throws Exception {
-        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "appid", "appkey", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
+        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), new KiiApp("appid", "appkey", Site.JP), new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
         builder.build();
     }
     @Test(expected = IllegalArgumentException.class)
     public void addSchemaWithNullSchemaTest() throws Exception {
-        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "appid", "appkey", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
+        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), new KiiApp("appid", "appkey", Site.JP), new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
         builder.addSchema(null);
     }
     @Test(expected = IllegalArgumentException.class)
     public void newBuilderWithNullContextTest() throws Exception {
-        ThingIFAPIBuilder.newBuilder(null, "appid", "appkey", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
+        ThingIFAPIBuilder.newBuilder(null, new KiiApp("appid", "appkey", Site.JP), new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
     }
     @Test(expected = IllegalArgumentException.class)
     public void newBuilderWithNullAppIDTest() throws Exception {
-        ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), null, "appkey", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
+        ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), new KiiApp(null, "appkey", Site.JP), new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
     }
     @Test(expected = IllegalArgumentException.class)
     public void newBuilderWithEmptyAppIDTest() throws Exception {
-        ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "", "appkey", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
+        ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), new KiiApp("", "appkey", Site.JP), new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
     }
     @Test(expected = IllegalArgumentException.class)
     public void newBuilderWithNullAppKeyTest() throws Exception {
-        ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "appid", null, Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
+        ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), new KiiApp("appid", null, Site.JP), new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
     }
     @Test(expected = IllegalArgumentException.class)
     public void newBuilderWithEmptyAppKeyTest() throws Exception {
-        ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "appid", "", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
+        ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), new KiiApp("appid", "", Site.JP), new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
     }
     @Test(expected = IllegalArgumentException.class)
     public void newBuilderWithNullSiteTest() throws Exception {
-        ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "appid", "appkey", (Site) null, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
+        ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), new KiiApp("appid", "appkey", (Site) null), new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
     }
     @Test(expected = IllegalArgumentException.class)
     public void newBuilderWithNullOwnerTest() throws Exception {
-        ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "appid", "appkey", Site.JP, null);
+        ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), new KiiApp("appid", "appkey", Site.JP), null);
     }
     @Test(expected = IllegalArgumentException.class)
     public void newBuilderWithNullBaseUrlTest() throws Exception {
-        ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "appid", "appkey", (String) null, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
+        ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), new KiiApp("appid", "appkey", (String) null), new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
     }
     @Test(expected = IllegalArgumentException.class)
     public void newBuilderWithEmptyBaseUrlTest() throws Exception {
-        ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "appid", "appkey", "", new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
+        ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), new KiiApp("appid", "appkey", ""), new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
     }
 }

@@ -1,4 +1,4 @@
-package com.kii.thingif.schema;
+package com.kii.thingiftest.schema;
 
 import com.kii.thingif.TargetState;
 

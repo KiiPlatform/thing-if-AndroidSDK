@@ -45,16 +45,10 @@ import java.util.Map;
 public class ThingIFAPI implements Parcelable {
 
     private static final String SHARED_PREFERENCES_KEY_INSTANCE = "ThingIFAPI_INSTANCE";
-    private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json");
-    private static final MediaType MEDIA_TYPE_INSTALLATION_CREATION_REQUEST = MediaType.parse("application/vnd.kii.InstallationCreationRequest+json");
-    private static final MediaType MEDIA_TYPE_ONBOARDING_WITH_THING_ID_BY_OWNER_REQUEST = MediaType.parse("application/vnd.kii.OnboardingWithThingIDByOwner+json");
-    private static final MediaType MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST = MediaType.parse("application/vnd.kii.OnboardingWithVendorThingIDByOwner+json");
 
     private static Context context;
     private final String tag;
-    private final String appID;
-    private final String appKey;
-    private final String baseUrl;
+    private final KiiApp app;
     private final Owner owner;
     private Target target;
     private final Map<Pair<String, Integer>, Schema> schemas = new HashMap<Pair<String, Integer>, Schema>();
@@ -123,9 +117,7 @@ public class ThingIFAPI implements Parcelable {
     ThingIFAPI(
             @Nullable Context context,
             @Nullable String tag,
-            @NonNull String appID,
-            @NonNull String appKey,
-            @NonNull String baseUrl,
+            @NonNull KiiApp app,
             @NonNull Owner owner,
             @Nullable Target target,
             @NonNull List<Schema> schemas,
@@ -135,9 +127,7 @@ public class ThingIFAPI implements Parcelable {
             ThingIFAPI.context = context.getApplicationContext();
         }
         this.tag = tag;
-        this.appID = appID;
-        this.appKey = appKey;
-        this.baseUrl = baseUrl;
+        this.app = app;
         this.owner = owner;
         this.target = target;
         for (Schema schema : schemas) {
@@ -157,7 +147,7 @@ public class ThingIFAPI implements Parcelable {
         if (target == null) {
             throw new IllegalArgumentException("target is null");
         }
-        ThingIFAPI api = new ThingIFAPI(context, tag, this.appID, this.appKey, this.baseUrl, this.owner, target, new ArrayList<Schema>(this.schemas.values()), this.installationID);
+        ThingIFAPI api = new ThingIFAPI(context, tag, this.app, this.owner, target, new ArrayList<Schema>(this.schemas.values()), this.installationID);
         saveInstance(api);
         return api;
     }
@@ -213,7 +203,7 @@ public class ThingIFAPI implements Parcelable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        return this.onboard(MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST, requestBody);
+        return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST, requestBody);
     }
 
     /**
@@ -252,12 +242,12 @@ public class ThingIFAPI implements Parcelable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        return this.onboard(MEDIA_TYPE_ONBOARDING_WITH_THING_ID_BY_OWNER_REQUEST, requestBody);
+        return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_THING_ID_BY_OWNER_REQUEST, requestBody);
     }
 
     private Target onboard(MediaType contentType, JSONObject requestBody) throws ThingIFException {
-        String path = MessageFormat.format("/thing-if/apps/{0}/onboardings", this.appID);
-        String url = Path.combine(this.baseUrl, path);
+        String path = MessageFormat.format("/thing-if/apps/{0}/onboardings", this.app.getAppID());
+        String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, contentType, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
@@ -329,8 +319,8 @@ public class ThingIFAPI implements Parcelable {
             throw new IllegalArgumentException("pushBackend is null");
         }
 
-        String path = MessageFormat.format("/api/apps/{0}/installations", this.appID);
-        String url = Path.combine(this.baseUrl, path);
+        String path = MessageFormat.format("/api/apps/{0}/installations", this.app.getAppID());
+        String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
         JSONObject requestBody = new JSONObject();
         try {
@@ -344,7 +334,7 @@ public class ThingIFAPI implements Parcelable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MEDIA_TYPE_INSTALLATION_CREATION_REQUEST, requestBody);
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MediaTypes.MEDIA_TYPE_INSTALLATION_CREATION_REQUEST, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
         this.installationID = responseBody.optString("installationID", null);
         saveInstance(this);
@@ -379,8 +369,8 @@ public class ThingIFAPI implements Parcelable {
         if (installationID == null) {
             throw new IllegalArgumentException("installationID is null");
         }
-        String path = MessageFormat.format("/api/apps/{0}/installations/{1}", this.appID, installationID);
-        String url = Path.combine(this.baseUrl, path);
+        String path = MessageFormat.format("/api/apps/{0}/installations/{1}", this.app.getAppID(), installationID);
+        String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.DELETE, headers);
         this.restClient.sendRequest(request);
@@ -417,12 +407,12 @@ public class ThingIFAPI implements Parcelable {
             throw new IllegalArgumentException("actions is null or empty");
         }
 
-        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/commands", this.appID, this.target.getTypedID().toString());
-        String url = Path.combine(this.baseUrl, path);
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/commands", this.app.getAppID(), this.target.getTypedID().toString());
+        String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
         Command command = new Command(schemaName, schemaVersion, this.owner.getTypedID(), actions);
         JSONObject requestBody = JsonUtils.newJson(GsonRepository.gson(schema).toJson(command));
-        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MEDIA_TYPE_JSON, requestBody);
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MediaTypes.MEDIA_TYPE_JSON, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
 
         String commandID = responseBody.optString("commandID", null);
@@ -453,8 +443,8 @@ public class ThingIFAPI implements Parcelable {
         if (TextUtils.isEmpty(commandID)) {
             throw new IllegalArgumentException("commandID is null or empty");
         }
-        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/commands/{2}", this.appID, this.target.getTypedID().toString(), commandID);
-        String url = Path.combine(this.baseUrl, path);
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/commands/{2}", this.app.getAppID(), this.target.getTypedID().toString(), commandID);
+        String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
@@ -495,8 +485,8 @@ public class ThingIFAPI implements Parcelable {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
-        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/commands", this.appID, this.target.getTypedID().toString());
-        String url = Path.combine(this.baseUrl, path);
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/commands", this.app.getAppID(), this.target.getTypedID().toString());
+        String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         if (bestEffortLimit > 0) {
@@ -558,8 +548,8 @@ public class ThingIFAPI implements Parcelable {
             throw new IllegalArgumentException("predicate is null");
         }
 
-        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers", this.appID, this.target.getTypedID().toString());
-        String url = Path.combine(this.baseUrl, path);
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers", this.app.getAppID(), this.target.getTypedID().toString());
+        String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
         JSONObject requestBody = new JSONObject();
         Schema schema = this.getSchema(schemaName, schemaVersion);
@@ -571,7 +561,7 @@ public class ThingIFAPI implements Parcelable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MEDIA_TYPE_JSON, requestBody);
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MediaTypes.MEDIA_TYPE_JSON, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
         String triggerID = responseBody.optString("triggerID", null);
         return this.getTrigger(triggerID);
@@ -599,8 +589,8 @@ public class ThingIFAPI implements Parcelable {
             throw new IllegalArgumentException("triggerID is null or empty");
         }
 
-        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}", this.appID, this.target.getTypedID().toString(), triggerID);
-        String url = Path.combine(this.baseUrl, path);
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}", this.app.getAppID(), this.target.getTypedID().toString(), triggerID);
+        String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
@@ -656,8 +646,8 @@ public class ThingIFAPI implements Parcelable {
             throw new IllegalArgumentException("predicate is null");
         }
 
-        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}", this.appID, this.target.getTypedID().toString(), triggerID);
-        String url = Path.combine(this.baseUrl, path);
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}", this.app.getAppID(), this.target.getTypedID().toString(), triggerID);
+        String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
         JSONObject requestBody = new JSONObject();
         Schema schema = this.getSchema(schemaName, schemaVersion);
@@ -669,7 +659,7 @@ public class ThingIFAPI implements Parcelable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.PATCH, headers, MEDIA_TYPE_JSON, requestBody);
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.PATCH, headers, MediaTypes.MEDIA_TYPE_JSON, requestBody);
         this.restClient.sendRequest(request);
         return this.getTrigger(triggerID);
     }
@@ -697,8 +687,8 @@ public class ThingIFAPI implements Parcelable {
         if (TextUtils.isEmpty(triggerID)) {
             throw new IllegalArgumentException("triggerID is null or empty");
         }
-        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}/{3}", this.appID, this.target.getTypedID().toString(), triggerID, (enable ? "enable" : "disable"));
-        String url = Path.combine(this.baseUrl, path);
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}/{3}", this.app.getAppID(), this.target.getTypedID().toString(), triggerID, (enable ? "enable" : "disable"));
+        String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.PUT, headers);
         this.restClient.sendRequest(request);
@@ -726,8 +716,8 @@ public class ThingIFAPI implements Parcelable {
         }
 
         Trigger trigger = this.getTrigger(triggerID);
-        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}", this.appID, target.getTypedID().toString(), triggerID);
-        String url = Path.combine(this.baseUrl, path);
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}", this.app.getAppID(), target.getTypedID().toString(), triggerID);
+        String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.DELETE, headers);
         this.restClient.sendRequest(request);
@@ -763,8 +753,8 @@ public class ThingIFAPI implements Parcelable {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
 
-        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers", this.appID, this.target.getTypedID().toString());
-        String url = Path.combine(this.baseUrl, path);
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers", this.app.getAppID(), this.target.getTypedID().toString());
+        String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         if (bestEffortLimit > 0) {
@@ -815,8 +805,8 @@ public class ThingIFAPI implements Parcelable {
             throw new IllegalArgumentException("classOfS is null");
         }
 
-        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/states", this.appID, this.target.getTypedID().toString());
-        String url = Path.combine(this.baseUrl, path);
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/states", this.app.getAppID(), this.target.getTypedID().toString());
+        String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
@@ -824,26 +814,32 @@ public class ThingIFAPI implements Parcelable {
         return ret;
     }
 
+    /** Get Kii App
+     * @return Kii Cloud Application.
+     */
+    public KiiApp getApp() {
+        return this.app;
+    }
     /**
      * Get AppID
      * @return
      */
     public String getAppID() {
-        return this.appID;
+        return this.app.getAppID();
     }
     /**
      * Get AppKey
      * @return
      */
     public String getAppKey() {
-        return this.appKey;
+        return this.app.getAppKey();
     }
     /**
      * Get base URL
      * @return
      */
     public String getBaseUrl() {
-        return this.baseUrl;
+        return this.app.getBaseUrl();
     }
     /**
      *
@@ -908,11 +904,11 @@ public class ThingIFAPI implements Parcelable {
     }
     private Map<String, String> newHeader() {
         Map<String, String> headers = new HashMap<String, String>();
-        if (!TextUtils.isEmpty(this.appID)) {
-            headers.put("X-Kii-AppID", this.appID);
+        if (!TextUtils.isEmpty(this.getAppID())) {
+            headers.put("X-Kii-AppID", this.getAppID());
         }
-        if (!TextUtils.isEmpty(this.appKey)) {
-            headers.put("X-Kii-AppKey", this.appKey);
+        if (!TextUtils.isEmpty(this.getAppKey())) {
+            headers.put("X-Kii-AppKey", this.getAppKey());
         }
         if (this.owner != null && !TextUtils.isEmpty(this.owner.getAccessToken())) {
             headers.put("Authorization", "Bearer " + this.owner.getAccessToken());
@@ -942,9 +938,7 @@ public class ThingIFAPI implements Parcelable {
     // Implementation of Parcelable
     protected ThingIFAPI(Parcel in) {
         this.tag = in.readString();
-        this.appID = in.readString();
-        this.appKey = in.readString();
-        this.baseUrl = in.readString();
+        this.app = in.readParcelable(KiiApp.class.getClassLoader());
         this.owner = in.readParcelable(Owner.class.getClassLoader());
         this.target = in.readParcelable(Target.class.getClassLoader());
         ArrayList<Schema> schemas = in.createTypedArrayList(Schema.CREATOR);
@@ -972,9 +966,7 @@ public class ThingIFAPI implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.tag);
-        dest.writeString(this.appID);
-        dest.writeString(this.appKey);
-        dest.writeString(this.baseUrl);
+        dest.writeParcelable(this.app, flags);
         dest.writeParcelable(this.owner, flags);
         dest.writeParcelable(this.target, flags);
         dest.writeTypedList(new ArrayList<Schema>(this.schemas.values()));

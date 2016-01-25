@@ -43,6 +43,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -71,6 +72,13 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         this.server.shutdown();
     }
 
+    public KiiApp getApp(String appId, String appKey) throws NoSuchFieldException, IllegalAccessException {
+        String hostName = server.getHostName();
+        KiiApp app = KiiApp.Builder.builderWithHostName(appId, appKey, hostName).
+                setPort(server.getPort()).setURLSchema("http").build();
+        return app;
+    }
+
     protected Schema createDefaultSchema() {
         SchemaBuilder sb = SchemaBuilder.newSchemaBuilder(DEMO_THING_TYPE, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, LightState.class);
         sb.addActionClass(SetColor.class, SetColorResult.class);
@@ -82,24 +90,24 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
     protected ThingIFAPIBuilder craeteThingIFAPIBuilderWithDemoSchema(String appID, String appKey) throws Exception {
         String ownerID = UUID.randomUUID().toString();
         Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
-        URL baseUrl = this.server.getUrl("/");
-        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), appID, appKey, baseUrl.toString(), owner);
+        KiiApp app = getApp(appID, appKey);
+        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), app, owner);
         builder.addSchema(this.createDefaultSchema());
         return builder;
     }
     protected ThingIFAPI craeteThingIFAPIWithDemoSchema(String appID, String appKey) throws Exception {
         String ownerID = UUID.randomUUID().toString();
         Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
-        URL baseUrl = this.server.getUrl("/");
-        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), appID, appKey, baseUrl.toString(), owner);
+        KiiApp app = getApp(appID, appKey);
+        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), app, owner);
         builder.addSchema(this.createDefaultSchema());
         return builder.build();
     }
     protected ThingIFAPI craeteThingIFAPIWithSchema(String appID, String appKey, Schema schema) throws Exception {
         String ownerID = UUID.randomUUID().toString();
         Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
-        URL baseUrl = this.server.getUrl("/");
-        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), appID, appKey, baseUrl.toString(), owner);
+        KiiApp app = getApp(appID, appKey);
+        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), app, owner);
         builder.addSchema(schema);
         return builder.build();
     }
