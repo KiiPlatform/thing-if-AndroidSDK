@@ -301,7 +301,8 @@ public class GsonRepository {
             if (json.has("installationID")) {
                 builder.setInstallationID(json.get("installationID").getAsString());
             }
-            return builder.build(tag);
+            builder.setTag(tag);
+            return builder.build();
         }
     };
     static {
