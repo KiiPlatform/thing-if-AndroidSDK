@@ -23,6 +23,7 @@ import com.kii.thingif.trigger.Condition;
 import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.SchedulePredicate;
 import com.kii.thingif.trigger.Schedule;
+import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.StatePredicate;
 import com.kii.thingif.trigger.Trigger;
 import com.kii.thingif.trigger.TriggersWhen;
@@ -590,6 +591,84 @@ public class GsonSerializationTest extends SmallTestBase {
 
         SetColorTemperatureResult setColorTemperatureResult = (SetColorTemperatureResult) command.getActionResults().get(1);
         Assert.assertFalse(setColorTemperatureResult.succeeded);
+
+        predicate = trigger.getPredicate();
+        Assert.assertTrue(predicate instanceof StatePredicate);
+        Assert.assertEquals(TriggersWhen.CONDITION_FALSE_TO_TRUE, ((StatePredicate) predicate).getTriggersWhen());
+        Assert.assertEquals(condition.getClause(), ((StatePredicate) predicate).getCondition().getClause());
+    }
+    @Test
+    public void serverCodeTriggerTest() throws Exception {
+        JsonObject expectedJson = (JsonObject) new JsonParser().parse(
+                "{" +
+                        "    \"serverCode\":" +
+                        "    {" +
+                        "        \"endpoint\":\"function_name1\"," +
+                        "        \"executorAccessToken\":\"accesstoken00000001\"," +
+                        "        \"targetAppID\":\"appid0001\"," +
+                        "        \"parameters\":{" +
+                        "          \"arg1\":\"value1\"," +
+                        "          \"arg2\":\"value2\"" +
+                        "        }" +
+                        "    }," +
+                        "    \"predicate\":{" +
+                        "        \"eventSource\":\"states\"," +
+                        "        \"triggersWhen\":\"CONDITION_FALSE_TO_TRUE\"," +
+                        "        \"condition\":{" +
+                        "            \"type\":\"and\"," +
+                        "            \"clauses\":[" +
+                        "                {\"type\":\"eq\", \"field\":\"prefecture\", \"value\":\"Tokyo\"}," +
+                        "                {\"type\":\"not\", \"clause\":{\"type\":\"eq\", \"field\":\"city\", \"value\":\"Akasaka\"}}," +
+                        "                {\"type\":\"range\", \"field\":\"temperature\", \"lowerLimit\":25, \"lowerIncluded\":true}" +
+                        "            ]" +
+                        "        }" +
+                        "    }," +
+                        "    \"disabled\":false," +
+                        "    \"title\":\"Title of Trigger\"," +
+                        "    \"description\":\"Description of Trigger\"," +
+                        "    \"metadata\":{" +
+                        "        \"sound\":\"noisy.mp3\"," +
+                        "        \"led\":\"red\"" +
+                        "    }" +
+                        "}");
+
+        // ServerCode
+        ServerCode serverCode = new ServerCode("function_name1", "accesstoken00000001", "appid0001", new JSONObject("{\"arg1\":\"value1\", \"arg2\":\"value2\"}"));
+        // StatePredicate
+        Equals eq = new Equals("prefecture", "Tokyo");
+        NotEquals neq = new NotEquals(new Equals("city", "Akasaka"));
+        Range gte = Range.greaterThanEquals("temperature", 25);
+        And and = new And(eq, neq, gte);
+        Condition condition = new Condition(and);
+        Predicate predicate = new StatePredicate(condition, TriggersWhen.CONDITION_FALSE_TO_TRUE);
+        // Trigger
+        Trigger trigger = new Trigger(predicate, serverCode);
+        trigger.setTitle("Title of Trigger");
+        trigger.setDescription("Description of Trigger");
+        JSONObject metadata = new JSONObject();
+        metadata.put("sound", "noisy.mp3");
+        metadata.put("led", "red");
+        trigger.setMetadata(metadata);
+
+        Gson gson = GsonRepository.gson();
+        JsonObject serializedJson = (JsonObject) new JsonParser().parse(gson.toJson(trigger));
+
+        Assert.assertEquals(expectedJson, serializedJson);
+
+        serializedJson.addProperty("triggerID", "Trigger-1234567");
+        trigger = gson.fromJson(serializedJson.toString(), Trigger.class);
+
+        Assert.assertEquals("Trigger-1234567", trigger.getTriggerID());
+        Assert.assertEquals("Title of Trigger", trigger.getTitle());
+        Assert.assertEquals("Description of Trigger", trigger.getDescription());
+        Assert.assertEquals("noisy.mp3", trigger.getMetadata().getString("sound"));
+        Assert.assertEquals("red", trigger.getMetadata().getString("led"));
+
+        serverCode = trigger.getServerCode();
+        Assert.assertEquals("function_name1", serverCode.getEndpoint());
+        Assert.assertEquals("accesstoken00000001", serverCode.getExecutorAccessToken());
+        Assert.assertEquals("appid0001", serverCode.getTargetAppID());
+        assertJSONObject(new JSONObject("{\"arg1\":\"value1\", \"arg2\":\"value2\"}"), serverCode.getParameters());
 
         predicate = trigger.getPredicate();
         Assert.assertTrue(predicate instanceof StatePredicate);

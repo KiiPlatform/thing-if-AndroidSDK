@@ -18,11 +18,12 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RunWith(AndroidJUnit4.class)
 public class TriggerParcelableTest extends SmallTestBase {
     @Test
-    public void test() throws Exception {
+    public void commandTriggerTest() throws Exception {
         String schemaName = "TestSchema";
         int schemaVersion = 10;
         TypedID target = new TypedID(TypedID.Types.THING, "thing1234");
@@ -59,6 +60,7 @@ public class TriggerParcelableTest extends SmallTestBase {
         parcel.setDataPosition(0);
         Trigger deserializedTrigger = Trigger.CREATOR.createFromParcel(parcel);
 
+        Assert.assertNull(deserializedTrigger.getServerCode());
         Assert.assertEquals(schemaName, deserializedTrigger.getCommand().getSchemaName());
         Assert.assertEquals(schemaVersion, deserializedTrigger.getCommand().getSchemaVersion());
         Assert.assertEquals(target, deserializedTrigger.getCommand().getTargetID());
@@ -66,6 +68,60 @@ public class TriggerParcelableTest extends SmallTestBase {
         Assert.assertEquals(2, deserializedTrigger.getCommand().getActions().size());
         Assert.assertArrayEquals(setColor.color, ((SetColor) deserializedTrigger.getCommand().getActions().get(0)).color);
         Assert.assertEquals(setColorTemperature.colorTemperature, ((SetColorTemperature) deserializedTrigger.getCommand().getActions().get(1)).colorTemperature);
+
+        Assert.assertEquals(equals, ((StatePredicate)deserializedTrigger.getPredicate()).getCondition().getClause());
+        Assert.assertEquals(TriggersWhen.CONDITION_TRUE, ((StatePredicate) deserializedTrigger.getPredicate()).getTriggersWhen());
+
+        Assert.assertEquals(triggerID, deserializedTrigger.getTriggerID());
+        Assert.assertEquals(disabled, deserializedTrigger.disabled());
+        Assert.assertEquals(disabledReason, deserializedTrigger.getDisabledReason());
+        Assert.assertEquals(title, deserializedTrigger.getTitle());
+        Assert.assertEquals(description, deserializedTrigger.getDescription());
+        assertJSONObject(metadata, deserializedTrigger.getMetadata());
+    }
+    @Test
+    public void serverCodeTriggerTest() throws Exception {
+        String schemaName = "TestSchema";
+        int schemaVersion = 10;
+        TypedID target = new TypedID(TypedID.Types.THING, "thing1234");
+        TypedID issuer = new TypedID(TypedID.Types.USER, "user1234");
+
+        String endpoint = "function_name";
+        String executorAccessToken = UUID.randomUUID().toString();
+        String targetAppID = UUID.randomUUID().toString().substring(0, 8);
+        JSONObject parameters = new JSONObject("{\"name\":\"kii\", \"age\":30, \"enabled\":true}");
+        ServerCode serverCode = new ServerCode(endpoint, executorAccessToken, targetAppID, parameters);
+
+        Equals equals = new Equals("power", true);
+        Condition condition = new Condition(equals);
+        StatePredicate predicate = new StatePredicate(condition, TriggersWhen.CONDITION_TRUE);
+
+        String triggerID = "trigger1234";
+        boolean disabled = true;
+        String disabledReason = "reasonXXXX";
+        String title = "Title of Trigger";
+        String description = "Description of Trigger";
+        JSONObject metadata = new JSONObject();
+        metadata.put("sound", "phone.mp3");
+
+        Trigger trigger = new Trigger(predicate, serverCode);
+        trigger.setTriggerID(triggerID);
+        trigger.setDisabled(disabled);
+        trigger.setDisabledReason(disabledReason);
+        trigger.setTitle(title);
+        trigger.setDescription(description);
+        trigger.setMetadata(metadata);
+
+        Parcel parcel = Parcel.obtain();
+        trigger.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+        Trigger deserializedTrigger = Trigger.CREATOR.createFromParcel(parcel);
+
+        Assert.assertNull(deserializedTrigger.getCommand());
+        Assert.assertEquals(endpoint, deserializedTrigger.getServerCode().getEndpoint());
+        Assert.assertEquals(executorAccessToken, deserializedTrigger.getServerCode().getExecutorAccessToken());
+        Assert.assertEquals(targetAppID, deserializedTrigger.getServerCode().getTargetAppID());
+        assertJSONObject(parameters, deserializedTrigger.getServerCode().getParameters());
 
         Assert.assertEquals(equals, ((StatePredicate)deserializedTrigger.getPredicate()).getCondition().getClause());
         Assert.assertEquals(TriggersWhen.CONDITION_TRUE, ((StatePredicate) deserializedTrigger.getPredicate()).getTriggersWhen());
