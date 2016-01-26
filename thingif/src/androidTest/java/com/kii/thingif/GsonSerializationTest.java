@@ -244,9 +244,13 @@ public class GsonSerializationTest extends SmallTestBase {
 
         JsonObject expectedJson = (JsonObject) new JsonParser().parse(
                 "{" +
-                        "    \"appID\":\"appid\"," +
-                        "    \"appKey\":\"appkey\"," +
-                        "    \"baseUrl\":\"https://api-jp.kii.com\"," +
+                        "    \"app\": {" +
+                        "        \"appID\":\"appid\"," +
+                        "        \"appKey\":\"appkey\"," +
+                        "        \"baseUrl\":\"https://api-jp.kii.com\"," +
+                        "        \"hostName\" : \"api-jp.kii.com\"," +
+                        "        \"siteName\" : \"JP\"" +
+                        "    }," +
                         "    \"owner\":{\"typedID\":\"user:user1234\",\"accessToken\":\"user-access-token-1234\"}," +
                         "    \"target\":{\"typedID\":\"thing:th.1234567890\",\"accessToken\":\"thing-access-token-1234\"}," +
                         "    \"tag\" : \"mytag\"," +
