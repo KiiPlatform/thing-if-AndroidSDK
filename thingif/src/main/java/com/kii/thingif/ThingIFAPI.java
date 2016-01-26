@@ -28,6 +28,7 @@ import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.Trigger;
 import com.kii.thingif.internal.utils.JsonUtils;
 import com.kii.thingif.internal.utils.Path;
+import com.kii.thingif.trigger.TriggerServerCodeResult;
 import com.kii.thingif.trigger.TriggersWhat;
 import com.squareup.okhttp.MediaType;
 
@@ -809,6 +810,63 @@ public class ThingIFAPI implements Parcelable {
     }
 
     /**
+     * Retrieves list of server code results that was executed by the specified trigger. Results will be listing with order by modified date descending (latest first)
+     * @param bestEffortLimit limit the maximum number of the results in the
+     *                        Response. It ensures numbers in
+     *                        response is equals to or less than specified number.
+     *                        But doesn't ensures number of the results
+     *                        in the response is equal to specified value.<br>
+     *                        If the specified value <= 0, Default size of the limit
+     *                        is applied by IoT Cloud.
+     * @param paginationKey If specified obtain rest of the items.
+     * @return first is list of the results and second is paginationKey returned
+     * by IoT Cloud. paginationKey is null when there is next page to be obtained.
+     * Obtained paginationKey can be used to get the rest of the items stored
+     * in the target.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     */
+    @NonNull
+    @WorkerThread
+    public Pair<List<TriggerServerCodeResult>, String> listTriggerServerCodeResults(
+            @NonNull String triggerID,
+            int bestEffortLimit,
+            @Nullable String paginationKey
+    ) throws ThingIFException {
+
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
+        }
+        if (TextUtils.isEmpty(triggerID)) {
+            throw new IllegalArgumentException("triggerID is null or empty");
+        }
+
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}/results/server-code", this.appID, this.target.getTypedID().toString(), triggerID);
+        String url = Path.combine(this.baseUrl, path);
+        Map<String, String> headers = this.newHeader();
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
+        if (bestEffortLimit > 0) {
+            request.addQueryParameter("bestEffortLimit", bestEffortLimit);
+        }
+        if (!TextUtils.isEmpty(paginationKey)) {
+            request.addQueryParameter("paginationKey", paginationKey);
+        }
+
+        JSONObject responseBody = this.restClient.sendRequest(request);
+        String nextPaginationKey = responseBody.optString("nextPaginationKey", null);
+        JSONArray resultArray = responseBody.optJSONArray("results");
+
+        List<TriggerServerCodeResult> results = new ArrayList<TriggerServerCodeResult>();
+        if (resultArray != null) {
+            for (int i = 0; i < resultArray.length(); i++) {
+                JSONObject resultJson = resultArray.optJSONObject(i);
+                results.add(this.deserialize(resultJson, TriggerServerCodeResult.class));
+            }
+        }
+        return new Pair<List<TriggerServerCodeResult>, String>(results, nextPaginationKey);
+    }
+
+    /**
      * List Triggers belongs to the specified Target.
      * @param bestEffortLimit limit the maximum number of the Triggers in the
      *                        Response. It ensures numbers in
@@ -995,6 +1053,9 @@ public class ThingIFAPI implements Parcelable {
             headers.put("Authorization", "Bearer " + this.owner.getAccessToken());
         }
         return headers;
+    }
+    private <T> T deserialize(JSONObject json, Class<T> clazz) throws ThingIFException {
+        return this.deserialize(null, json, clazz);
     }
     private <T> T deserialize(Schema schema, JSONObject json, Class<T> clazz) throws ThingIFException {
         return this.deserialize(schema, json.toString(), clazz);

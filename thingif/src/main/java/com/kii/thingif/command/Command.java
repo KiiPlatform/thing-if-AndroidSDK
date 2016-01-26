@@ -266,7 +266,6 @@ public class Command implements Parcelable {
      * @param metadata
      */
     public void setMetadata(JSONObject metadata) {
-        // TODO:Do we need to check nested JSON?
         this.metadata = metadata;
     }
 
