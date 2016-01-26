@@ -3,6 +3,7 @@ package com.kii.thingif.largetests;
 import android.support.test.InstrumentationRegistry;
 import android.test.AndroidTestCase;
 
+import com.google.gson.JsonParser;
 import com.kii.cloud.rest.client.KiiRest;
 import com.kii.cloud.rest.client.model.storage.KiiNormalUser;
 import com.kii.thingif.ThingIFAPI;
@@ -21,6 +22,10 @@ import com.kii.thingif.schema.SetColorTemperature;
 import com.kii.thingif.schema.SetColorTemperatureResult;
 import com.kii.thingif.schema.TurnPower;
 import com.kii.thingif.schema.TurnPowerResult;
+
+import junit.framework.Assert;
+
+import org.json.JSONObject;
 
 public abstract class LargeTestCaseBase extends AndroidTestCase {
 
@@ -75,5 +80,11 @@ public abstract class LargeTestCaseBase extends AndroidTestCase {
         ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), server.getAppID(), server.getAppKey(), server.getBaseUrl(), owner);
         builder.addSchema(this.createDefaultSchema());
         return builder.build();
+    }
+    protected void assertJSONObject(JSONObject expected, JSONObject actual) {
+        if (expected == null && actual == null) {
+            return;
+        }
+        Assert.assertEquals(new JsonParser().parse(expected.toString()), new JsonParser().parse(actual.toString()));
     }
 }
