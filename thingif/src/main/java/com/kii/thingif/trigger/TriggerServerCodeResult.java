@@ -4,23 +4,88 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import org.json.JSONException;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class TriggerServerCodeResult implements Parcelable {
 
-    private boolean succeeded;
-    private JSONObject returnedValue;
-    private long executedAt;
-    private String errorMessage;
+    private final boolean succeeded;
+    private String returnedValue;
+    private final long executedAt;
+    private final String errorMessage;
 
-    TriggerServerCodeResult() {
+    public TriggerServerCodeResult(boolean succeeded, String returnedValue, long executedAt, String errorMessage) {
+        this.succeeded = succeeded;
+        this.returnedValue = returnedValue;
+        this.executedAt = executedAt;
+        this.errorMessage = errorMessage;
     }
     public boolean isSucceeded() {
         return this.succeeded;
     }
-    public JSONObject getReturnedValue() {
+    public String getReturnedValue() {
         return this.returnedValue;
+    }
+    public JSONObject getReturnedValueAsJsonObject() {
+        if (TextUtils.isEmpty(this.returnedValue)) {
+            return null;
+        }
+        try {
+            return new JSONObject(this.returnedValue);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    public JSONArray getReturnedValueAsJsonArray() {
+        if (TextUtils.isEmpty(this.returnedValue)) {
+            return null;
+        }
+        try {
+            return new JSONArray(this.returnedValue);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    public Integer getReturnedValueAsInteger() {
+        if (TextUtils.isEmpty(this.returnedValue)) {
+            return null;
+        }
+        try {
+            return Integer.parseInt(this.returnedValue);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    public Long getReturnedValueAsLong() {
+        if (TextUtils.isEmpty(this.returnedValue)) {
+            return null;
+        }
+        try {
+            return Long.parseLong(this.returnedValue);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    public Boolean getReturnedValueAsBoolean() {
+        if (TextUtils.isEmpty(this.returnedValue)) {
+            return null;
+        }
+        try {
+            return Boolean.parseBoolean(this.returnedValue);
+        } catch (Exception e) {
+            return null;
+        }
+
+    }
+    public Double getReturnedValueAsDouble() {
+        if (TextUtils.isEmpty(this.returnedValue)) {
+            return null;
+        }
+        try {
+            return Double.parseDouble(this.returnedValue);
+        } catch (Exception e) {
+            return null;
+        }
     }
     public long getExecutedAt() {
         return this.executedAt;
@@ -32,14 +97,7 @@ public class TriggerServerCodeResult implements Parcelable {
     // Implementation of Parcelable
     protected TriggerServerCodeResult(Parcel in) {
         this.succeeded = (in.readByte() != 0);
-        String returnedValue = in.readString();
-        if (!TextUtils.isEmpty(returnedValue)) {
-            try {
-                this.returnedValue = new JSONObject(returnedValue);
-            } catch (JSONException ignore) {
-                // Won’t happen
-            }
-        }
+        this.returnedValue = in.readString();
         this.executedAt = in.readLong();
         this.errorMessage = in.readString();
     }
@@ -61,7 +119,7 @@ public class TriggerServerCodeResult implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeByte((byte) (this.succeeded ? 1 : 0));
-        dest.writeString(this.returnedValue == null ? null : this.returnedValue.toString());
+        dest.writeString(this.returnedValue);
         dest.writeLong(this.executedAt);
         dest.writeString(this.errorMessage);
     }

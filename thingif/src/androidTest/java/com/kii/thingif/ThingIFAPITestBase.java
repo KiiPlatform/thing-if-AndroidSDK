@@ -29,6 +29,7 @@ import com.kii.thingif.trigger.SchedulePredicate;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.StatePredicate;
 import com.kii.thingif.trigger.Trigger;
+import com.kii.thingif.trigger.TriggerServerCodeResult;
 import com.kii.thingif.trigger.clause.And;
 import com.kii.thingif.trigger.clause.Clause;
 import com.kii.thingif.trigger.clause.Equals;
@@ -185,7 +186,22 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         }
         this.server.enqueue(response);
     }
-
+    protected void addMockResponseForListTriggerServerCodeResults(int httpStatus, TriggerServerCodeResult[] results, String paginationKey) {
+        MockResponse response = new MockResponse().setResponseCode(httpStatus);
+        if (results != null) {
+            JsonObject responseBody = new JsonObject();
+            JsonArray array = new JsonArray();
+            for (TriggerServerCodeResult result : results) {
+                array.add(GsonRepository.gson().toJsonTree(result));
+            }
+            responseBody.add("results", array);
+            if (paginationKey != null) {
+                responseBody.addProperty("nextPaginationKey", paginationKey);
+            }
+            response.setBody(responseBody.toString());
+        }
+        this.server.enqueue(response);
+    }
     protected void addMockResponseForPostNewCommand(int httpStatus, String commandID) {
         MockResponse response = new MockResponse().setResponseCode(httpStatus);
         if (commandID != null) {
@@ -396,6 +412,12 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         this.assertPredicate(expected.getPredicate(), actual.getPredicate());
         this.assertCommand(schema, expected.getCommand(), actual.getCommand());
         this.assertServerCode(expected.getServerCode(), actual.getServerCode());
+    }
+    protected void assertTriggerServerCodeResult(TriggerServerCodeResult expected, TriggerServerCodeResult actual) {
+        Assert.assertEquals(expected.isSucceeded(), actual.isSucceeded());
+        Assert.assertEquals(expected.getReturnedValue(), actual.getReturnedValue());
+        Assert.assertEquals(expected.getExecutedAt(), actual.getExecutedAt());
+        Assert.assertEquals(expected.getErrorMessage(), actual.getErrorMessage());
     }
     protected void clearSharedPreferences() throws Exception {
         SharedPreferences sharedPreferences = InstrumentationRegistry.getTargetContext().getSharedPreferences("com.kii.thingif.preferences", Context.MODE_PRIVATE);
