@@ -9,8 +9,9 @@ import org.json.JSONObject;
 
 public class TriggerServerCodeResult implements Parcelable {
 
+    private static final String NULL_VALUE = "null";
     private final boolean succeeded;
-    private String returnedValue;
+    private final String returnedValue;
     private final long executedAt;
     private final String errorMessage;
 
@@ -27,64 +28,64 @@ public class TriggerServerCodeResult implements Parcelable {
         return this.returnedValue;
     }
     public JSONObject getReturnedValueAsJsonObject() {
-        if (TextUtils.isEmpty(this.returnedValue)) {
+        if (this.returnedValue == null || NULL_VALUE.equals(this.returnedValue)) {
             return null;
         }
         try {
             return new JSONObject(this.returnedValue);
         } catch (Exception e) {
-            return null;
+            throw new ClassCastException(this.returnedValue + " cannot cast to org.json.JSONObject");
         }
     }
     public JSONArray getReturnedValueAsJsonArray() {
-        if (TextUtils.isEmpty(this.returnedValue)) {
+        if (this.returnedValue == null || NULL_VALUE.equals(this.returnedValue)) {
             return null;
         }
         try {
             return new JSONArray(this.returnedValue);
         } catch (Exception e) {
-            return null;
+            throw new ClassCastException(this.returnedValue + " cannot cast to org.json.JSONArray");
         }
     }
     public Integer getReturnedValueAsInteger() {
-        if (TextUtils.isEmpty(this.returnedValue)) {
+        if (this.returnedValue == null || NULL_VALUE.equals(this.returnedValue)) {
             return null;
         }
         try {
             return Integer.parseInt(this.returnedValue);
         } catch (Exception e) {
-            return null;
+            throw new ClassCastException(this.returnedValue + " cannot cast to Integer");
         }
     }
     public Long getReturnedValueAsLong() {
-        if (TextUtils.isEmpty(this.returnedValue)) {
+        if (this.returnedValue == null || NULL_VALUE.equals(this.returnedValue)) {
             return null;
         }
         try {
             return Long.parseLong(this.returnedValue);
         } catch (Exception e) {
-            return null;
+            throw new ClassCastException(this.returnedValue + " cannot cast to Long");
         }
     }
     public Boolean getReturnedValueAsBoolean() {
-        if (TextUtils.isEmpty(this.returnedValue)) {
+        if (this.returnedValue == null || NULL_VALUE.equals(this.returnedValue)) {
             return null;
         }
         try {
             return Boolean.parseBoolean(this.returnedValue);
         } catch (Exception e) {
-            return null;
+            throw new ClassCastException(this.returnedValue + " cannot cast to Boolean");
         }
 
     }
     public Double getReturnedValueAsDouble() {
-        if (TextUtils.isEmpty(this.returnedValue)) {
+        if (this.returnedValue == null || NULL_VALUE.equals(this.returnedValue)) {
             return null;
         }
         try {
             return Double.parseDouble(this.returnedValue);
         } catch (Exception e) {
-            return null;
+            throw new ClassCastException(this.returnedValue + " cannot cast to Double");
         }
     }
     public long getExecutedAt() {
