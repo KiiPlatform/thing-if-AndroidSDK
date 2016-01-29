@@ -36,14 +36,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.2.1'
     compile 'com.kii.cloud.rest.client:kii-rest-client4j:0.5.7'
     compile 'commons-io:commons-io:2.4'
+    compile 'com.android.support:support-v4:22+'
     compile 'com.android.support.test:runner:0.3'
     compile 'com.android.support.test:rules:0.3'
-}
-
-task allTest(dependsOn: 'installDebug') {
-    doFirst {
-        exec {
-            commandLine 'sh', './testall.sh'
-        }
-    }
 }

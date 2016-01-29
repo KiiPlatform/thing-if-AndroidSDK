@@ -29,28 +29,51 @@ ext {
     versionString = null
 }
 
+def getDate() {
+    def date = new Date()
+    def formattedDate = date.format('yyyy-MM-dd HH:mm z')
+    return formattedDate
+}
 
-task generateJavadoc(type: Javadoc) {
-    title = "Kii thing-if SDK for Android"
-    description "Kii thing-if SDK for Android"
-    source = files() {
-        fileTree(dir:'src/main/java').matching {
-            exclude 'com/kii/thingif/internal/**'
-            include 'com/kii/thingif/**'
+android.libraryVariants.all { variant ->
+
+    task ("generateJavadoc", dependsOn: assemble, type:Javadoc, overwrite: true) {
+        mustRunAfter assemble
+        title = "Thing Interaction Framework (thing-if) SDK for Android"
+        description "thing-if SDK for Android API Reference"
+        source = files() {
+            fileTree(dir:'src/main/java').matching {
+                include 'com/kii/thingif/**'
+                exclude 'com/kii/thingif/internal/**'
+            }
+        }
+        def androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
+        def compiledClasses = files("${project.projectDir}/build/intermediates/classes/release/")
+        classpath = files(androidJar) + files(compiledClasses) + files(variant.javaCompile.classpath.files)
+        destinationDir = file("build/outputs/javadoc")
+
+        options.bottom = "Copyright 2015 Kii Corporation. All rights reserved. (Last updated on ${getDate()})"
+        options.locale = 'en_US'
+        failOnError false
+    }
+
+    task ("javadocArchive", type: Zip, dependsOn: [clean, generateJavadoc, setBranch, setVer], overwrite:true) {
+        mustRunAfter clean
+        from 'build/outputs/javadoc'
+        def dest = 'build/outputs/archive'
+        destinationDir = file(dest)
+        archiveName = "apidoc.zip"
+        doLast{
+            file(dest + "/apidoc.zip").renameTo(file(dest + "/apidoc-${branchString}-${versionString}.zip"))
         }
     }
 
-    ext.androidJar =
-            "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
-    ext.m2repo = "${android.sdkDirectory}/extras/android/m2repository"
-    ext.supportAnnotationjar =
-            ext.m2repo + "/com/android/support/support-annotations/22.2.0/support-annotations-22.2.0-sources.jar"
-    classpath = files(ext.androidJar) + files(ext.supportAnnotationjar)
-
-    destinationDir = file("build/outputs/javadoc")
+    task ("javadocJar", type: Jar, dependsOn: [clean, generateJavadoc], overwrite:true) {
+        mustRunAfter clean
+        classifier = 'javadoc'
+        from 'build/outputs/javadoc'
+    }
 }
-
-assemble.dependsOn generateJavadoc
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -102,25 +125,7 @@ task makeAAR(dependsOn: [clean, setBranch, setVer, assemble]) {
     }
 }
 
-task javadocArchive(type: Zip, dependsOn: [generateJavadoc, setBranch, setVer]) {
-    from 'build/outputs/javadoc'
-    destinationDir = file('build/outputs/javadoc')
-    archiveName = 'apidoc.zip'
-    doLast{
-        copy {
-            from 'build/outputs/javadoc/apidoc.zip'
-            into './'
-            rename "apidoc.zip", "apidoc-${branchString}-${versionString}.zip"
-        }
-    }
-}
-
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
     classifier = 'sources'
-}
-
-task javadocJar(type: Jar, dependsOn: generateJavadoc) {
-    classifier = 'javadoc'
-    from generateJavadoc.destinationDir
 }

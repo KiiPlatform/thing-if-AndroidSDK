@@ -170,7 +170,8 @@ public class GsonSerializationTest extends SmallTestBase {
 
     @Test
     public void iotCloudAPITest() throws Exception {
-        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "appid", "appkey", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "user-access-token-1234"));
+        KiiApp app = new KiiApp("appid", "appkey", Site.JP);
+        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), app, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "user-access-token-1234"));
         SchemaBuilder sb = SchemaBuilder.newSchemaBuilder("SmartLight", "LightDemoSchema", 1, LightState.class);
         sb.addActionClass(TurnPower.class, TurnPowerResult.class);
         sb.addActionClass(SetColor.class, SetColorResult.class);
@@ -182,9 +183,13 @@ public class GsonSerializationTest extends SmallTestBase {
 
         JsonObject expectedJson = (JsonObject) new JsonParser().parse(
                 "{" +
-                        "    \"appID\":\"appid\"," +
-                        "    \"appKey\":\"appkey\"," +
-                        "    \"baseUrl\":\"https://api-jp.kii.com\"," +
+                        "    \"app\": {" +
+                        "        \"appID\":\"appid\"," +
+                        "        \"appKey\":\"appkey\"," +
+                        "        \"baseUrl\":\"https://api-jp.kii.com\"," +
+                        "        \"hostName\" : \"api-jp.kii.com\"," +
+                        "        \"siteName\" : \"JP\"" +
+                        "    }," +
                         "    \"owner\":{\"typedID\":\"user:user1234\",\"accessToken\":\"user-access-token-1234\"}," +
                         "    \"target\":{\"typedID\":\"thing:th.1234567890\",\"accessToken\":\"thing-access-token-1234\"}," +
                         "    \"schemas\":[" +
@@ -228,21 +233,26 @@ public class GsonSerializationTest extends SmallTestBase {
 
     @Test
     public void iotCloudAPIWithTagTest() throws Exception {
-        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), "appid", "appkey", Site.JP, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "user-access-token-1234"));
+        KiiApp app = new KiiApp("appid", "appkey", Site.JP);
+        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(InstrumentationRegistry.getTargetContext(), app, new Owner(new TypedID(TypedID.Types.USER, "user1234"), "user-access-token-1234"));
         SchemaBuilder sb = SchemaBuilder.newSchemaBuilder("SmartLight", "LightDemoSchema", 1, LightState.class);
         sb.addActionClass(TurnPower.class, TurnPowerResult.class);
         sb.addActionClass(SetColor.class, SetColorResult.class);
         Schema schema = sb.build();
-        builder.addSchema(schema);
-        ThingIFAPI api = builder.build("mytag");
+        builder.addSchema(schema).setTag("mytag");
+        ThingIFAPI api = builder.build();
         Target target = new Target(new TypedID(TypedID.Types.THING, "th.1234567890"), "thing-access-token-1234");
         api.setTarget(target);
 
         JsonObject expectedJson = (JsonObject) new JsonParser().parse(
                 "{" +
-                        "    \"appID\":\"appid\"," +
-                        "    \"appKey\":\"appkey\"," +
-                        "    \"baseUrl\":\"https://api-jp.kii.com\"," +
+                        "    \"app\": {" +
+                        "        \"appID\":\"appid\"," +
+                        "        \"appKey\":\"appkey\"," +
+                        "        \"baseUrl\":\"https://api-jp.kii.com\"," +
+                        "        \"hostName\" : \"api-jp.kii.com\"," +
+                        "        \"siteName\" : \"JP\"" +
+                        "    }," +
                         "    \"owner\":{\"typedID\":\"user:user1234\",\"accessToken\":\"user-access-token-1234\"}," +
                         "    \"target\":{\"typedID\":\"thing:th.1234567890\",\"accessToken\":\"thing-access-token-1234\"}," +
                         "    \"tag\" : \"mytag\"," +

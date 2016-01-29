@@ -1,8 +1,9 @@
-package com.kii.thingif.schema;
+package com.kii.thingiftest.schema;
+
 
 import com.kii.thingif.command.ActionResult;
 
-public class SetColorTemperatureResult extends ActionResult{
+public class SetColorTemperatureResult extends ActionResult {
     public SetColorTemperatureResult() {
     }
     public SetColorTemperatureResult(boolean succeeded) {

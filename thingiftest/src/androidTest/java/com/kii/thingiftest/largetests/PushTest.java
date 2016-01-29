@@ -1,9 +1,9 @@
-package com.kii.thingif.largetests;
+package com.kii.thingiftest.largetests;
 
 import android.support.test.runner.AndroidJUnit4;
 
-import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.PushBackend;
+import com.kii.thingif.ThingIFAPI;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
