@@ -854,7 +854,7 @@ public class ThingIFAPI implements Parcelable {
 
         JSONObject responseBody = this.restClient.sendRequest(request);
         String nextPaginationKey = responseBody.optString("nextPaginationKey", null);
-        JSONArray resultArray = responseBody.optJSONArray("results");
+        JSONArray resultArray = responseBody.optJSONArray("triggerServerCodeResults");
 
         List<TriggerServerCodeResult> results = new ArrayList<TriggerServerCodeResult>();
         if (resultArray != null) {

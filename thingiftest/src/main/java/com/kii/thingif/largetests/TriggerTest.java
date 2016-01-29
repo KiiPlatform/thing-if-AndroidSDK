@@ -4,6 +4,10 @@ import android.support.test.runner.AndroidJUnit4;
 import android.text.TextUtils;
 import android.util.Pair;
 
+import com.google.gson.JsonObject;
+import com.kii.cloud.rest.client.KiiRest;
+import com.kii.cloud.rest.client.model.KiiCredentials;
+import com.kii.cloud.rest.client.model.storage.KiiThing;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.Target;
 import com.kii.thingif.TypedID;
@@ -19,6 +23,7 @@ import com.kii.thingif.trigger.EventSource;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.StatePredicate;
 import com.kii.thingif.trigger.Trigger;
+import com.kii.thingif.trigger.TriggerServerCodeResult;
 import com.kii.thingif.trigger.TriggersWhen;
 import com.kii.thingif.trigger.clause.Equals;
 import com.kii.thingif.trigger.clause.Range;
@@ -36,7 +41,7 @@ import java.util.UUID;
 public class TriggerTest extends LargeTestCaseBase {
     @Test
     public void basicStatePredicateTriggerTest() throws Exception {
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(TargetTestServer.DEV_SERVER_1);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
 
@@ -257,7 +262,7 @@ public class TriggerTest extends LargeTestCaseBase {
     }
     @Test
     public void basicServerCodeTriggerTest() throws Exception {
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(TargetTestServer.DEV_SERVER_1);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
 
@@ -438,7 +443,7 @@ public class TriggerTest extends LargeTestCaseBase {
     }
     @Test
     public void listTriggersEmptyResultTest() throws Exception {
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(TargetTestServer.DEV_SERVER_1);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
 
@@ -451,5 +456,75 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertNull(results.second);
         List<Trigger> triggers = results.first;
         Assert.assertEquals(0, triggers.size());
+    }
+    @Test
+    public void listTriggerServerCodeResultsTest() throws Exception {
+        if (!this.server.hasAdminCredential()) {
+            return;
+        }
+        // Deploy server code
+        KiiRest rest = new KiiRest(this.server.getAppID(), this.server.getAppKey(), this.server.getBaseUrl() + "/api", this.server.getBaseUrl() + "/thing-if", this.server.getBaseUrl() + ":443/logs");
+        KiiCredentials admin = rest.api().oauth().getAdminAccessToken(this.server.getClientId(), this.server.getClientSecret());
+        rest.setCredentials(admin);
+
+        StringBuilder javascript = new StringBuilder();
+        javascript.append("function server_code_for_trigger(params, context){" + "\n");
+        javascript.append("    return 100;" + "\n");
+        javascript.append("}" + "\n");
+        String versionID = rest.api().servercode().deploy(javascript.toString());
+        rest.api().servercode().setCurrentVersion(versionID);
+
+        // initialize ThingIFAPI
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema();
+        String vendorThingID = UUID.randomUUID().toString();
+        String thingPassword = "password";
+
+        // on-boarding thing
+        Target target = api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, null);
+        Assert.assertEquals(TypedID.Types.THING, target.getTypedID().getType());
+        Assert.assertNotNull(target.getAccessToken());
+
+        // create new server code trigger
+        String endpoint = "server_code_for_trigger";
+        String executorAccessToken = target.getAccessToken();
+        String targetAppID = api.getAppID();
+        JSONObject parameters = new JSONObject("{\"arg1\":\"passed_parameter\"}");
+        ServerCode serverCode = new ServerCode(endpoint, executorAccessToken, targetAppID, parameters);
+        Condition condition = new Condition(new Equals("power", true));
+        StatePredicate predicate = new StatePredicate(condition, TriggersWhen.CONDITION_TRUE);
+
+        Trigger trigger = api.postNewTrigger(serverCode, predicate);
+        Assert.assertNotNull(trigger.getTriggerID());
+        Assert.assertFalse(trigger.disabled());
+        Assert.assertNull(trigger.getDisabledReason());
+        Assert.assertNull(trigger.getTargetID());
+        Assert.assertNull(trigger.getCommand());
+
+        Thread.sleep(5000);
+
+        rest.setCredentials(new KiiCredentials(target.getAccessToken()));
+        // update thing state in order to trigger the server code
+        KiiThing targetThing = new KiiThing();
+        targetThing.setThingID(target.getTypedID().getID());
+        JsonObject thingState = new JsonObject();
+        thingState.addProperty("power", false);
+        rest.thingif().targets(targetThing).states().save(thingState);
+
+        Thread.sleep(5000);
+
+        thingState = new JsonObject();
+        thingState.addProperty("power", true);
+        rest.thingif().targets(targetThing).states().save(thingState);
+
+        Thread.sleep(5000);
+
+        Pair<List<TriggerServerCodeResult>, String> triggerServerCodeResults = api.listTriggerServerCodeResults(trigger.getTriggerID(), 0, null);
+        Assert.assertEquals(1, triggerServerCodeResults.first.size());
+        Assert.assertNull(triggerServerCodeResults.second);
+        TriggerServerCodeResult triggerServerCodeResult = triggerServerCodeResults.first.get(0);
+        Assert.assertTrue(triggerServerCodeResult.isSucceeded());
+        Assert.assertEquals(100, (int)triggerServerCodeResult.getReturnedValueAsInteger());
+        Assert.assertTrue(triggerServerCodeResult.getExecutedAt() > 0);
+        Assert.assertNull(triggerServerCodeResult.getErrorMessage());
     }
 }

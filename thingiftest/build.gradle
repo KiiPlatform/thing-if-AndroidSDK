@@ -34,7 +34,8 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(path: ':thingif', configuration: 'debug')
     compile 'com.android.support:appcompat-v7:22.2.1'
-    compile 'com.kii.cloud.rest.client:kii-rest-client4j:0.5.5'
+    compile 'com.kii.cloud.rest.client:kii-rest-client4j:0.5.7'
+    compile 'commons-io:commons-io:2.4'
     compile 'com.android.support.test:runner:0.3'
     compile 'com.android.support.test:rules:0.3'
 }
