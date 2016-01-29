@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 @RunWith(AndroidJUnit4.class)
 public class ThingIFAPI_ListTriggeredServerCodeResultsTest extends ThingIFAPITestBase {
     @Test
-    public void listTriggerServerCodeResultsTest() throws Exception {
+    public void listTriggeredServerCodeResultsTest() throws Exception {
         String triggerID = UUID.randomUUID().toString();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
@@ -38,8 +38,8 @@ public class ThingIFAPI_ListTriggeredServerCodeResultsTest extends ThingIFAPITes
         TriggeredServerCodeResult serverCodeResult6 = new TriggeredServerCodeResult(true, "[1, \"2\", 3]", System.currentTimeMillis() + 5000, null);
         TriggeredServerCodeResult serverCodeResult7 = new TriggeredServerCodeResult(false, null, System.currentTimeMillis() + 6000, "ReferenceError");
 
-        this.addMockResponseForListTriggerServerCodeResults(200, new TriggeredServerCodeResult[]{serverCodeResult1, serverCodeResult2, serverCodeResult3, serverCodeResult4}, paginationKey);
-        this.addMockResponseForListTriggerServerCodeResults(200, new TriggeredServerCodeResult[]{serverCodeResult5, serverCodeResult6, serverCodeResult7}, null);
+        this.addMockResponseForListTriggeredServerCodeResults(200, new TriggeredServerCodeResult[]{serverCodeResult1, serverCodeResult2, serverCodeResult3, serverCodeResult4}, paginationKey);
+        this.addMockResponseForListTriggeredServerCodeResults(200, new TriggeredServerCodeResult[]{serverCodeResult5, serverCodeResult6, serverCodeResult7}, null);
 
         Pair<List<TriggeredServerCodeResult>, String> result1 = api.listTriggeredServerCodeResults(triggerID, 4, null);
         Assert.assertEquals(paginationKey, result1.second);
@@ -76,7 +76,7 @@ public class ThingIFAPI_ListTriggeredServerCodeResultsTest extends ThingIFAPITes
         this.assertRequestHeader(expectedRequestHeaders, request2);
     }
     @Test
-    public void listTriggerServerCodeResultsWithBestEffortLimitZeroTest() throws Exception {
+    public void listTriggeredServerCodeResultsWithBestEffortLimitZeroTest() throws Exception {
         String triggerID = UUID.randomUUID().toString();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
@@ -87,7 +87,7 @@ public class ThingIFAPI_ListTriggeredServerCodeResultsTest extends ThingIFAPITes
 
         TriggeredServerCodeResult serverCodeResult1 = new TriggeredServerCodeResult(true, "1234", System.currentTimeMillis(), null);
 
-        this.addMockResponseForListTriggerServerCodeResults(200, new TriggeredServerCodeResult[]{serverCodeResult1}, null);
+        this.addMockResponseForListTriggeredServerCodeResults(200, new TriggeredServerCodeResult[]{serverCodeResult1}, null);
 
         Pair<List<TriggeredServerCodeResult>, String> result1 = api.listTriggeredServerCodeResults(triggerID, 0, null);
         Assert.assertNull(result1.second);
@@ -108,7 +108,7 @@ public class ThingIFAPI_ListTriggeredServerCodeResultsTest extends ThingIFAPITes
         this.assertRequestHeader(expectedRequestHeaders, request1);
     }
     @Test
-    public void listTriggerServerCodeResults404ErrorTest() throws Exception {
+    public void listTriggeredServerCodeResults404ErrorTest() throws Exception {
         String triggerID = UUID.randomUUID().toString();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
@@ -134,7 +134,7 @@ public class ThingIFAPI_ListTriggeredServerCodeResultsTest extends ThingIFAPITes
         this.assertRequestHeader(expectedRequestHeaders, request1);
     }
     @Test(expected = IllegalArgumentException.class)
-    public void listTriggerServerCodeResultsWithNullTriggerIDTest() throws Exception {
+    public void listTriggeredServerCodeResultsWithNullTriggerIDTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         Target target = new Target(thingID, accessToken);
@@ -144,7 +144,7 @@ public class ThingIFAPI_ListTriggeredServerCodeResultsTest extends ThingIFAPITes
         api.listTriggeredServerCodeResults(null, 10, null);
     }
     @Test(expected = IllegalStateException.class)
-    public void listTriggerServerCodeResultsWithNullTargetTest() throws Exception {
+    public void listTriggeredServerCodeResultsWithNullTargetTest() throws Exception {
         String triggerID = UUID.randomUUID().toString();
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.listTriggeredServerCodeResults(triggerID, 10, null);

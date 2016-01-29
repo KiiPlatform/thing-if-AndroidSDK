@@ -186,7 +186,7 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         }
         this.server.enqueue(response);
     }
-    protected void addMockResponseForListTriggerServerCodeResults(int httpStatus, TriggeredServerCodeResult[] results, String paginationKey) {
+    protected void addMockResponseForListTriggeredServerCodeResults(int httpStatus, TriggeredServerCodeResult[] results, String paginationKey) {
         MockResponse response = new MockResponse().setResponseCode(httpStatus);
         if (results != null) {
             JsonObject responseBody = new JsonObject();
@@ -194,7 +194,7 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
             for (TriggeredServerCodeResult result : results) {
                 array.add(GsonRepository.gson().toJsonTree(result));
             }
-            responseBody.add("results", array);
+            responseBody.add("triggerServerCodeResults", array);
             if (paginationKey != null) {
                 responseBody.addProperty("nextPaginationKey", paginationKey);
             }
