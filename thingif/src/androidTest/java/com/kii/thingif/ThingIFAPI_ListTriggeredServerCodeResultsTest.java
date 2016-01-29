@@ -4,7 +4,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.util.Pair;
 
 import com.kii.thingif.exception.NotFoundException;
-import com.kii.thingif.trigger.TriggerServerCodeResult;
+import com.kii.thingif.trigger.TriggeredServerCodeResult;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import org.junit.Assert;
@@ -18,7 +18,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(AndroidJUnit4.class)
-public class ThingIFAPI_ListTriggerServerCodeResultsTest extends ThingIFAPITestBase {
+public class ThingIFAPI_ListTriggeredServerCodeResultsTest extends ThingIFAPITestBase {
     @Test
     public void listTriggerServerCodeResultsTest() throws Exception {
         String triggerID = UUID.randomUUID().toString();
@@ -30,29 +30,29 @@ public class ThingIFAPI_ListTriggerServerCodeResultsTest extends ThingIFAPITestB
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
 
-        TriggerServerCodeResult serverCodeResult1 = new TriggerServerCodeResult(true, "1234", System.currentTimeMillis(), null);
-        TriggerServerCodeResult serverCodeResult2 = new TriggerServerCodeResult(true, "12.34", System.currentTimeMillis() + 1000, null);
-        TriggerServerCodeResult serverCodeResult3 = new TriggerServerCodeResult(true, "true", System.currentTimeMillis() + 2000, null);
-        TriggerServerCodeResult serverCodeResult4 = new TriggerServerCodeResult(true, "\"abcd\"", System.currentTimeMillis() + 3000, null);
-        TriggerServerCodeResult serverCodeResult5 = new TriggerServerCodeResult(true, "{\"field\":\"abcd\"}", System.currentTimeMillis() + 4000, null);
-        TriggerServerCodeResult serverCodeResult6 = new TriggerServerCodeResult(true, "[1, \"2\", 3]", System.currentTimeMillis() + 5000, null);
-        TriggerServerCodeResult serverCodeResult7 = new TriggerServerCodeResult(false, null, System.currentTimeMillis() + 6000, "ReferenceError");
+        TriggeredServerCodeResult serverCodeResult1 = new TriggeredServerCodeResult(true, "1234", System.currentTimeMillis(), null);
+        TriggeredServerCodeResult serverCodeResult2 = new TriggeredServerCodeResult(true, "12.34", System.currentTimeMillis() + 1000, null);
+        TriggeredServerCodeResult serverCodeResult3 = new TriggeredServerCodeResult(true, "true", System.currentTimeMillis() + 2000, null);
+        TriggeredServerCodeResult serverCodeResult4 = new TriggeredServerCodeResult(true, "\"abcd\"", System.currentTimeMillis() + 3000, null);
+        TriggeredServerCodeResult serverCodeResult5 = new TriggeredServerCodeResult(true, "{\"field\":\"abcd\"}", System.currentTimeMillis() + 4000, null);
+        TriggeredServerCodeResult serverCodeResult6 = new TriggeredServerCodeResult(true, "[1, \"2\", 3]", System.currentTimeMillis() + 5000, null);
+        TriggeredServerCodeResult serverCodeResult7 = new TriggeredServerCodeResult(false, null, System.currentTimeMillis() + 6000, "ReferenceError");
 
-        this.addMockResponseForListTriggerServerCodeResults(200, new TriggerServerCodeResult[]{serverCodeResult1, serverCodeResult2, serverCodeResult3, serverCodeResult4}, paginationKey);
-        this.addMockResponseForListTriggerServerCodeResults(200, new TriggerServerCodeResult[]{serverCodeResult5, serverCodeResult6, serverCodeResult7}, null);
+        this.addMockResponseForListTriggerServerCodeResults(200, new TriggeredServerCodeResult[]{serverCodeResult1, serverCodeResult2, serverCodeResult3, serverCodeResult4}, paginationKey);
+        this.addMockResponseForListTriggerServerCodeResults(200, new TriggeredServerCodeResult[]{serverCodeResult5, serverCodeResult6, serverCodeResult7}, null);
 
-        Pair<List<TriggerServerCodeResult>, String> result1 = api.listTriggerServerCodeResults(triggerID, 4, null);
+        Pair<List<TriggeredServerCodeResult>, String> result1 = api.listTriggeredServerCodeResults(triggerID, 4, null);
         Assert.assertEquals(paginationKey, result1.second);
-        List<TriggerServerCodeResult> results1 = result1.first;
+        List<TriggeredServerCodeResult> results1 = result1.first;
         Assert.assertEquals(4, results1.size());
         this.assertTriggerServerCodeResult(serverCodeResult1, results1.get(0));
         this.assertTriggerServerCodeResult(serverCodeResult2, results1.get(1));
         this.assertTriggerServerCodeResult(serverCodeResult3, results1.get(2));
         this.assertTriggerServerCodeResult(serverCodeResult4, results1.get(3));
 
-        Pair<List<TriggerServerCodeResult>, String> result2 = api.listTriggerServerCodeResults(triggerID, 4, result1.second);
+        Pair<List<TriggeredServerCodeResult>, String> result2 = api.listTriggeredServerCodeResults(triggerID, 4, result1.second);
         Assert.assertNull(result2.second);
-        List<TriggerServerCodeResult> results2 = result2.first;
+        List<TriggeredServerCodeResult> results2 = result2.first;
         Assert.assertEquals(3, results2.size());
         this.assertTriggerServerCodeResult(serverCodeResult5, results2.get(0));
         this.assertTriggerServerCodeResult(serverCodeResult6, results2.get(1));
@@ -85,13 +85,13 @@ public class ThingIFAPI_ListTriggerServerCodeResultsTest extends ThingIFAPITestB
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
 
-        TriggerServerCodeResult serverCodeResult1 = new TriggerServerCodeResult(true, "1234", System.currentTimeMillis(), null);
+        TriggeredServerCodeResult serverCodeResult1 = new TriggeredServerCodeResult(true, "1234", System.currentTimeMillis(), null);
 
-        this.addMockResponseForListTriggerServerCodeResults(200, new TriggerServerCodeResult[]{serverCodeResult1}, null);
+        this.addMockResponseForListTriggerServerCodeResults(200, new TriggeredServerCodeResult[]{serverCodeResult1}, null);
 
-        Pair<List<TriggerServerCodeResult>, String> result1 = api.listTriggerServerCodeResults(triggerID, 0, null);
+        Pair<List<TriggeredServerCodeResult>, String> result1 = api.listTriggeredServerCodeResults(triggerID, 0, null);
         Assert.assertNull(result1.second);
-        List<TriggerServerCodeResult> results1 = result1.first;
+        List<TriggeredServerCodeResult> results1 = result1.first;
         Assert.assertEquals(1, results1.size());
         this.assertTriggerServerCodeResult(serverCodeResult1, results1.get(0));
 
@@ -119,7 +119,7 @@ public class ThingIFAPI_ListTriggerServerCodeResultsTest extends ThingIFAPITestB
 
         this.addEmptyMockResponse(404);
         try {
-            api.listTriggerServerCodeResults(triggerID, 0, null);
+            api.listTriggeredServerCodeResults(triggerID, 0, null);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (NotFoundException e) {
         }
@@ -141,12 +141,12 @@ public class ThingIFAPI_ListTriggerServerCodeResultsTest extends ThingIFAPITestB
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
-        api.listTriggerServerCodeResults(null, 10, null);
+        api.listTriggeredServerCodeResults(null, 10, null);
     }
     @Test(expected = IllegalStateException.class)
     public void listTriggerServerCodeResultsWithNullTargetTest() throws Exception {
         String triggerID = UUID.randomUUID().toString();
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.listTriggerServerCodeResults(triggerID, 10, null);
+        api.listTriggeredServerCodeResults(triggerID, 10, null);
     }
 }

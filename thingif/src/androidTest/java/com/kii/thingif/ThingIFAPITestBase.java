@@ -29,7 +29,7 @@ import com.kii.thingif.trigger.SchedulePredicate;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.StatePredicate;
 import com.kii.thingif.trigger.Trigger;
-import com.kii.thingif.trigger.TriggerServerCodeResult;
+import com.kii.thingif.trigger.TriggeredServerCodeResult;
 import com.kii.thingif.trigger.clause.And;
 import com.kii.thingif.trigger.clause.Clause;
 import com.kii.thingif.trigger.clause.Equals;
@@ -186,12 +186,12 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         }
         this.server.enqueue(response);
     }
-    protected void addMockResponseForListTriggerServerCodeResults(int httpStatus, TriggerServerCodeResult[] results, String paginationKey) {
+    protected void addMockResponseForListTriggerServerCodeResults(int httpStatus, TriggeredServerCodeResult[] results, String paginationKey) {
         MockResponse response = new MockResponse().setResponseCode(httpStatus);
         if (results != null) {
             JsonObject responseBody = new JsonObject();
             JsonArray array = new JsonArray();
-            for (TriggerServerCodeResult result : results) {
+            for (TriggeredServerCodeResult result : results) {
                 array.add(GsonRepository.gson().toJsonTree(result));
             }
             responseBody.add("results", array);
@@ -413,7 +413,7 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         this.assertCommand(schema, expected.getCommand(), actual.getCommand());
         this.assertServerCode(expected.getServerCode(), actual.getServerCode());
     }
-    protected void assertTriggerServerCodeResult(TriggerServerCodeResult expected, TriggerServerCodeResult actual) {
+    protected void assertTriggerServerCodeResult(TriggeredServerCodeResult expected, TriggeredServerCodeResult actual) {
         Assert.assertEquals(expected.isSucceeded(), actual.isSucceeded());
         Assert.assertEquals(expected.getReturnedValue(), actual.getReturnedValue());
         Assert.assertEquals(expected.getExecutedAt(), actual.getExecutedAt());

@@ -28,7 +28,7 @@ import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.Trigger;
 import com.kii.thingif.internal.utils.JsonUtils;
 import com.kii.thingif.internal.utils.Path;
-import com.kii.thingif.trigger.TriggerServerCodeResult;
+import com.kii.thingif.trigger.TriggeredServerCodeResult;
 import com.kii.thingif.trigger.TriggersWhat;
 import com.squareup.okhttp.MediaType;
 
@@ -828,7 +828,7 @@ public class ThingIFAPI implements Parcelable {
      */
     @NonNull
     @WorkerThread
-    public Pair<List<TriggerServerCodeResult>, String> listTriggerServerCodeResults(
+    public Pair<List<TriggeredServerCodeResult>, String> listTriggeredServerCodeResults (
             @NonNull String triggerID,
             int bestEffortLimit,
             @Nullable String paginationKey
@@ -856,14 +856,14 @@ public class ThingIFAPI implements Parcelable {
         String nextPaginationKey = responseBody.optString("nextPaginationKey", null);
         JSONArray resultArray = responseBody.optJSONArray("triggerServerCodeResults");
 
-        List<TriggerServerCodeResult> results = new ArrayList<TriggerServerCodeResult>();
+        List<TriggeredServerCodeResult> results = new ArrayList<TriggeredServerCodeResult>();
         if (resultArray != null) {
             for (int i = 0; i < resultArray.length(); i++) {
                 JSONObject resultJson = resultArray.optJSONObject(i);
-                results.add(this.deserialize(resultJson, TriggerServerCodeResult.class));
+                results.add(this.deserialize(resultJson, TriggeredServerCodeResult.class));
             }
         }
-        return new Pair<List<TriggerServerCodeResult>, String>(results, nextPaginationKey);
+        return new Pair<List<TriggeredServerCodeResult>, String>(results, nextPaginationKey);
     }
 
     /**

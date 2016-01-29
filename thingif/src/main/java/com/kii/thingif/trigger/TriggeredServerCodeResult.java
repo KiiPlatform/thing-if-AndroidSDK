@@ -2,12 +2,11 @@ package com.kii.thingif.trigger;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.text.TextUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class TriggerServerCodeResult implements Parcelable {
+public class TriggeredServerCodeResult implements Parcelable {
 
     private static final String NULL_VALUE = "null";
     private final boolean succeeded;
@@ -15,7 +14,7 @@ public class TriggerServerCodeResult implements Parcelable {
     private final long executedAt;
     private final String errorMessage;
 
-    public TriggerServerCodeResult(boolean succeeded, String returnedValue, long executedAt, String errorMessage) {
+    public TriggeredServerCodeResult(boolean succeeded, String returnedValue, long executedAt, String errorMessage) {
         this.succeeded = succeeded;
         this.returnedValue = returnedValue;
         this.executedAt = executedAt;
@@ -96,21 +95,21 @@ public class TriggerServerCodeResult implements Parcelable {
     }
 
     // Implementation of Parcelable
-    protected TriggerServerCodeResult(Parcel in) {
+    protected TriggeredServerCodeResult(Parcel in) {
         this.succeeded = (in.readByte() != 0);
         this.returnedValue = in.readString();
         this.executedAt = in.readLong();
         this.errorMessage = in.readString();
     }
-    public static final Creator<TriggerServerCodeResult> CREATOR = new Creator<TriggerServerCodeResult>() {
+    public static final Creator<TriggeredServerCodeResult> CREATOR = new Creator<TriggeredServerCodeResult>() {
         @Override
-        public TriggerServerCodeResult createFromParcel(Parcel in) {
-            return new TriggerServerCodeResult(in);
+        public TriggeredServerCodeResult createFromParcel(Parcel in) {
+            return new TriggeredServerCodeResult(in);
         }
 
         @Override
-        public TriggerServerCodeResult[] newArray(int size) {
-            return new TriggerServerCodeResult[size];
+        public TriggeredServerCodeResult[] newArray(int size) {
+            return new TriggeredServerCodeResult[size];
         }
     };
     @Override

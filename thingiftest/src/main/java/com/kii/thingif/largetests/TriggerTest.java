@@ -23,7 +23,7 @@ import com.kii.thingif.trigger.EventSource;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.StatePredicate;
 import com.kii.thingif.trigger.Trigger;
-import com.kii.thingif.trigger.TriggerServerCodeResult;
+import com.kii.thingif.trigger.TriggeredServerCodeResult;
 import com.kii.thingif.trigger.TriggersWhen;
 import com.kii.thingif.trigger.clause.Equals;
 import com.kii.thingif.trigger.clause.Range;
@@ -518,13 +518,13 @@ public class TriggerTest extends LargeTestCaseBase {
 
         Thread.sleep(5000);
 
-        Pair<List<TriggerServerCodeResult>, String> triggerServerCodeResults = api.listTriggerServerCodeResults(trigger.getTriggerID(), 0, null);
+        Pair<List<TriggeredServerCodeResult>, String> triggerServerCodeResults = api.listTriggeredServerCodeResults(trigger.getTriggerID(), 0, null);
         Assert.assertEquals(1, triggerServerCodeResults.first.size());
         Assert.assertNull(triggerServerCodeResults.second);
-        TriggerServerCodeResult triggerServerCodeResult = triggerServerCodeResults.first.get(0);
-        Assert.assertTrue(triggerServerCodeResult.isSucceeded());
-        Assert.assertEquals(100, (int)triggerServerCodeResult.getReturnedValueAsInteger());
-        Assert.assertTrue(triggerServerCodeResult.getExecutedAt() > 0);
-        Assert.assertNull(triggerServerCodeResult.getErrorMessage());
+        TriggeredServerCodeResult triggeredServerCodeResult = triggerServerCodeResults.first.get(0);
+        Assert.assertTrue(triggeredServerCodeResult.isSucceeded());
+        Assert.assertEquals(100, (int) triggeredServerCodeResult.getReturnedValueAsInteger());
+        Assert.assertTrue(triggeredServerCodeResult.getExecutedAt() > 0);
+        Assert.assertNull(triggeredServerCodeResult.getErrorMessage());
     }
 }
