@@ -434,7 +434,7 @@ public class GsonSerializationTest extends SmallTestBase {
                         "    }," +
                         "    \"predicate\":" +
                         "    {" +
-                        "        \"eventSource\":\"schedule\"," +
+                        "        \"eventSource\":\"SCHEDULE\"," +
                         "        \"schedule\":\"1 0 * * *\"" +
                         "    }," +
                         "    \"disabled\":false" +
@@ -510,7 +510,7 @@ public class GsonSerializationTest extends SmallTestBase {
                         "        \"target\":\"thing:1234\"" +
                         "    }," +
                         "    \"predicate\":{" +
-                        "        \"eventSource\":\"states\"," +
+                        "        \"eventSource\":\"STATES\"," +
                         "        \"triggersWhen\":\"CONDITION_FALSE_TO_TRUE\"," +
                         "        \"condition\":{" +
                         "            \"type\":\"and\"," +
