@@ -10,7 +10,6 @@ import com.kii.cloud.rest.client.model.KiiCredentials;
 import com.kii.cloud.rest.client.model.storage.KiiThing;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.Target;
-import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
@@ -501,7 +500,7 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertNull(trigger.getTargetID());
         Assert.assertNull(trigger.getCommand());
 
-        Thread.sleep(5000);
+        Thread.sleep(3000);
 
         rest.setCredentials(new KiiCredentials(target.getAccessToken()));
         // update thing state in order to trigger the server code
@@ -511,13 +510,13 @@ public class TriggerTest extends LargeTestCaseBase {
         thingState.addProperty("power", false);
         rest.thingif().targets(targetThing).states().save(thingState);
 
-        Thread.sleep(5000);
+        Thread.sleep(3000);
 
         thingState = new JsonObject();
         thingState.addProperty("power", true);
         rest.thingif().targets(targetThing).states().save(thingState);
 
-        Thread.sleep(5000);
+        Thread.sleep(3000);
 
         Pair<List<TriggeredServerCodeResult>, String> triggerServerCodeResults = api.listTriggeredServerCodeResults(trigger.getTriggerID(), 0, null);
         Assert.assertEquals(1, triggerServerCodeResults.first.size());
@@ -527,5 +526,79 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertEquals(100, (int) triggeredServerCodeResult.getReturnedValueAsInteger());
         Assert.assertTrue(triggeredServerCodeResult.getExecutedAt() > 0);
         Assert.assertNull(triggeredServerCodeResult.getError());
+    }
+    @Test
+    public void listTriggerServerCodeResultsWithErrorTest() throws Exception {
+        if (!this.server.hasAdminCredential()) {
+            return;
+        }
+        // Deploy server code
+        KiiRest rest = new KiiRest(this.server.getAppID(), this.server.getAppKey(), this.server.getBaseUrl() + "/api", this.server.getBaseUrl() + "/thing-if", this.server.getBaseUrl() + ":443/logs");
+        KiiCredentials admin = rest.api().oauth().getAdminAccessToken(this.server.getClientId(), this.server.getClientSecret());
+        rest.setCredentials(admin);
+
+        StringBuilder javascript = new StringBuilder();
+        javascript.append("function server_code_for_trigger(params, context){" + "\n");
+        javascript.append("    reference.error = 100;" + "\n");
+        javascript.append("    return 100;" + "\n");
+        javascript.append("}" + "\n");
+        String versionID = rest.api().servercode().deploy(javascript.toString());
+        rest.api().servercode().setCurrentVersion(versionID);
+
+        // initialize ThingIFAPI
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema();
+        String vendorThingID = UUID.randomUUID().toString();
+        String thingPassword = "password";
+
+        // on-boarding thing
+        Target target = api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, null);
+        Assert.assertEquals(TypedID.Types.THING, target.getTypedID().getType());
+        Assert.assertNotNull(target.getAccessToken());
+
+        // create new server code trigger
+        String endpoint = "server_code_for_trigger";
+        String executorAccessToken = target.getAccessToken();
+        String targetAppID = api.getAppID();
+        JSONObject parameters = new JSONObject("{\"arg1\":\"passed_parameter\"}");
+        ServerCode serverCode = new ServerCode(endpoint, executorAccessToken, targetAppID, parameters);
+        Condition condition = new Condition(new Equals("power", true));
+        StatePredicate predicate = new StatePredicate(condition, TriggersWhen.CONDITION_TRUE);
+
+        Trigger trigger = api.postNewTrigger(serverCode, predicate);
+        Assert.assertNotNull(trigger.getTriggerID());
+        Assert.assertFalse(trigger.disabled());
+        Assert.assertNull(trigger.getDisabledReason());
+        Assert.assertNull(trigger.getTargetID());
+        Assert.assertNull(trigger.getCommand());
+
+        Thread.sleep(3000);
+
+        rest.setCredentials(new KiiCredentials(target.getAccessToken()));
+        // update thing state in order to trigger the server code
+        KiiThing targetThing = new KiiThing();
+        targetThing.setThingID(target.getTypedID().getID());
+        JsonObject thingState = new JsonObject();
+        thingState.addProperty("power", false);
+        rest.thingif().targets(targetThing).states().save(thingState);
+
+        Thread.sleep(3000);
+
+        thingState = new JsonObject();
+        thingState.addProperty("power", true);
+        rest.thingif().targets(targetThing).states().save(thingState);
+
+        Thread.sleep(3000);
+
+        Pair<List<TriggeredServerCodeResult>, String> triggerServerCodeResults = api.listTriggeredServerCodeResults(trigger.getTriggerID(), 0, null);
+        Assert.assertEquals(1, triggerServerCodeResults.first.size());
+        Assert.assertNull(triggerServerCodeResults.second);
+        TriggeredServerCodeResult triggeredServerCodeResult = triggerServerCodeResults.first.get(0);
+        Assert.assertFalse(triggeredServerCodeResult.isSucceeded());
+        Assert.assertNull(triggeredServerCodeResult.getReturnedValue());
+        Assert.assertTrue(triggeredServerCodeResult.getExecutedAt() > 0);
+        Assert.assertNotNull(triggeredServerCodeResult.getError());
+        Assert.assertEquals("Error found while executing the developer-defined code", triggeredServerCodeResult.getError().getString("errorMessage"));
+        Assert.assertEquals("RUNTIME_ERROR", triggeredServerCodeResult.getError().getJSONObject("details").getString("errorCode"));
+        Assert.assertEquals("reference is not defined", triggeredServerCodeResult.getError().getJSONObject("details").getString("message"));
     }
 }
