@@ -526,6 +526,6 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertTrue(triggeredServerCodeResult.isSucceeded());
         Assert.assertEquals(100, (int) triggeredServerCodeResult.getReturnedValueAsInteger());
         Assert.assertTrue(triggeredServerCodeResult.getExecutedAt() > 0);
-        Assert.assertNull(triggeredServerCodeResult.getErrorMessage());
+        Assert.assertNull(triggeredServerCodeResult.getError());
     }
 }

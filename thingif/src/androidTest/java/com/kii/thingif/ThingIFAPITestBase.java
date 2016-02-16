@@ -425,7 +425,7 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         Assert.assertEquals(expected.isSucceeded(), actual.isSucceeded());
         Assert.assertEquals(expected.getReturnedValue(), actual.getReturnedValue());
         Assert.assertEquals(expected.getExecutedAt(), actual.getExecutedAt());
-        Assert.assertEquals(expected.getErrorMessage(), actual.getErrorMessage());
+        assertJSONObject(expected.getError(), actual.getError());
     }
     protected void clearSharedPreferences() throws Exception {
         SharedPreferences sharedPreferences = InstrumentationRegistry.getTargetContext().getSharedPreferences("com.kii.thingif.preferences", Context.MODE_PRIVATE);

@@ -2,87 +2,114 @@ package com.kii.thingif.trigger;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class TriggeredServerCodeResult implements Parcelable {
 
-    private static final String NULL_VALUE = "null";
-    private final boolean succeeded;
-    private final String returnedValue;
-    private final long executedAt;
-    private final String errorMessage;
+    private static final byte TYPE_NULL = 0;
+    private static final byte TYPE_JSON_OBJECT = 1;
+    private static final byte TYPE_JSON_ARRAY = 2;
+    private static final byte TYPE_STRING = 3;
+    private static final byte TYPE_INTEGER = 4;
+    private static final byte TYPE_LONG = 5;
+    private static final byte TYPE_DOUBLE = 6;
+    private static final byte TYPE_BOOLEAN = 7;
 
-    public TriggeredServerCodeResult(boolean succeeded, String returnedValue, long executedAt, String errorMessage) {
+
+    private final boolean succeeded;
+    /**
+     * returnedValue is JsonObject, JsonArray, String, Number, Boolean or null
+     */
+    private Object returnedValue;
+    private final long executedAt;
+    private JSONObject error;
+
+    public TriggeredServerCodeResult(boolean succeeded, Object returnedValue, long executedAt, JSONObject error) {
         this.succeeded = succeeded;
         this.returnedValue = returnedValue;
         this.executedAt = executedAt;
-        this.errorMessage = errorMessage;
+        this.error = error;
     }
     public boolean isSucceeded() {
         return this.succeeded;
     }
-    public String getReturnedValue() {
+    public boolean hasReturnedValue() {
+        return this.returnedValue != null;
+    }
+    public Object getReturnedValue() {
         return this.returnedValue;
     }
     public JSONObject getReturnedValueAsJsonObject() {
-        if (this.returnedValue == null || NULL_VALUE.equals(this.returnedValue)) {
+        if (this.returnedValue == null) {
             return null;
         }
         try {
-            return new JSONObject(this.returnedValue);
+            return (JSONObject)this.returnedValue;
         } catch (Exception e) {
             throw new ClassCastException(this.returnedValue + " cannot cast to org.json.JSONObject");
         }
     }
     public JSONArray getReturnedValueAsJsonArray() {
-        if (this.returnedValue == null || NULL_VALUE.equals(this.returnedValue)) {
+        if (this.returnedValue == null) {
             return null;
         }
         try {
-            return new JSONArray(this.returnedValue);
+            return (JSONArray)this.returnedValue;
         } catch (Exception e) {
             throw new ClassCastException(this.returnedValue + " cannot cast to org.json.JSONArray");
         }
     }
-    public Integer getReturnedValueAsInteger() {
-        if (this.returnedValue == null || NULL_VALUE.equals(this.returnedValue)) {
+    public String getReturnedValueAsString() {
+        if (this.returnedValue == null) {
             return null;
         }
         try {
-            return Integer.parseInt(this.returnedValue);
+            return (String)this.returnedValue;
+        } catch (Exception e) {
+            throw new ClassCastException(this.returnedValue + " cannot cast to Integer");
+        }
+    }
+    public Integer getReturnedValueAsInteger() {
+        if (this.returnedValue == null) {
+            return null;
+        }
+        try {
+            return ((Number)this.returnedValue).intValue();
         } catch (Exception e) {
             throw new ClassCastException(this.returnedValue + " cannot cast to Integer");
         }
     }
     public Long getReturnedValueAsLong() {
-        if (this.returnedValue == null || NULL_VALUE.equals(this.returnedValue)) {
+        if (this.returnedValue == null) {
             return null;
         }
         try {
-            return Long.parseLong(this.returnedValue);
+            return ((Number)this.returnedValue).longValue();
         } catch (Exception e) {
             throw new ClassCastException(this.returnedValue + " cannot cast to Long");
         }
     }
     public Boolean getReturnedValueAsBoolean() {
-        if (this.returnedValue == null || NULL_VALUE.equals(this.returnedValue)) {
+        if (this.returnedValue == null) {
             return null;
         }
         try {
-            return Boolean.parseBoolean(this.returnedValue);
+            return (Boolean)this.returnedValue;
         } catch (Exception e) {
             throw new ClassCastException(this.returnedValue + " cannot cast to Boolean");
         }
 
     }
     public Double getReturnedValueAsDouble() {
-        if (this.returnedValue == null || NULL_VALUE.equals(this.returnedValue)) {
+        if (this.returnedValue == null) {
             return null;
         }
         try {
-            return Double.parseDouble(this.returnedValue);
+            return ((Number)this.returnedValue).doubleValue();
         } catch (Exception e) {
             throw new ClassCastException(this.returnedValue + " cannot cast to Double");
         }
@@ -90,16 +117,54 @@ public class TriggeredServerCodeResult implements Parcelable {
     public long getExecutedAt() {
         return this.executedAt;
     }
-    public String getErrorMessage() {
-        return this.errorMessage;
+    public JSONObject getError() {
+        return this.error;
     }
 
     // Implementation of Parcelable
     protected TriggeredServerCodeResult(Parcel in) {
         this.succeeded = (in.readByte() != 0);
-        this.returnedValue = in.readString();
+        byte returnedValueType = in.readByte();
+        switch (returnedValueType) {
+            case TYPE_NULL:
+                this.returnedValue = null;
+                break;
+            case TYPE_JSON_OBJECT:
+                try {
+                    this.returnedValue = new JSONObject(in.readString());
+                } catch (JSONException ignore) {
+                }
+                break;
+            case TYPE_JSON_ARRAY:
+                try {
+                    this.returnedValue = new JSONArray(in.readString());
+                } catch (JSONException ignore) {
+                }
+                break;
+            case TYPE_STRING:
+                this.returnedValue = in.readString();
+                break;
+            case TYPE_INTEGER:
+                this.returnedValue = in.readInt();
+                break;
+            case TYPE_LONG:
+                this.returnedValue = in.readLong();
+                break;
+            case TYPE_DOUBLE:
+                this.returnedValue = in.readDouble();
+                break;
+            case TYPE_BOOLEAN:
+                this.returnedValue = (in.readByte() != 0);
+                break;
+        }
         this.executedAt = in.readLong();
-        this.errorMessage = in.readString();
+        String errorString = in.readString();
+        if (!TextUtils.isEmpty(errorString)) {
+            try {
+                this.error = new JSONObject(errorString);
+            } catch (JSONException ignore) {
+            }
+        }
     }
     public static final Creator<TriggeredServerCodeResult> CREATOR = new Creator<TriggeredServerCodeResult>() {
         @Override
@@ -119,8 +184,35 @@ public class TriggeredServerCodeResult implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeByte((byte) (this.succeeded ? 1 : 0));
-        dest.writeString(this.returnedValue);
+        if (this.returnedValue == null) {
+            dest.writeByte(TYPE_NULL);
+        } else if (this.returnedValue instanceof JSONObject) {
+            dest.writeByte(TYPE_JSON_OBJECT);
+            dest.writeString(((JSONObject)this.returnedValue).toString());
+        } else if (this.returnedValue instanceof JSONArray) {
+            dest.writeByte(TYPE_JSON_ARRAY);
+            dest.writeString(((JSONArray)this.returnedValue).toString());
+        } else if (this.returnedValue instanceof String) {
+            dest.writeByte(TYPE_STRING);
+            dest.writeString((String)this.returnedValue);
+        } else if (this.returnedValue instanceof Integer) {
+            dest.writeByte(TYPE_INTEGER);
+            dest.writeInt((Integer)this.returnedValue);
+        } else if (this.returnedValue instanceof Long) {
+            dest.writeByte(TYPE_LONG);
+            dest.writeLong((Long) this.returnedValue);
+        } else if (this.returnedValue instanceof Double) {
+            dest.writeByte(TYPE_DOUBLE);
+            dest.writeDouble((Double) this.returnedValue);
+        } else if (this.returnedValue instanceof Boolean) {
+            dest.writeByte(TYPE_BOOLEAN);
+            dest.writeByte((byte) ((Boolean)this.returnedValue ? 1 : 0));
+        }
         dest.writeLong(this.executedAt);
-        dest.writeString(this.errorMessage);
+        if (this.error != null) {
+            dest.writeString(this.error.toString());
+        } else {
+            dest.writeString(null);
+        }
     }
 }

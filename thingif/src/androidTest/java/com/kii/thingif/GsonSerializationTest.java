@@ -26,6 +26,7 @@ import com.kii.thingif.trigger.Schedule;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.StatePredicate;
 import com.kii.thingif.trigger.Trigger;
+import com.kii.thingif.trigger.TriggeredServerCodeResult;
 import com.kii.thingif.trigger.TriggersWhen;
 import com.kii.thingif.trigger.clause.And;
 import com.kii.thingif.trigger.clause.Clause;
@@ -35,6 +36,7 @@ import com.kii.thingif.trigger.clause.Or;
 import com.kii.thingif.trigger.clause.Range;
 
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -684,5 +686,54 @@ public class GsonSerializationTest extends SmallTestBase {
         Assert.assertTrue(predicate instanceof StatePredicate);
         Assert.assertEquals(TriggersWhen.CONDITION_FALSE_TO_TRUE, ((StatePredicate) predicate).getTriggersWhen());
         Assert.assertEquals(condition.getClause(), ((StatePredicate) predicate).getCondition().getClause());
+    }
+    @Test
+    public void triggeredServerCodeResultTest() throws Exception {
+
+        String[] testData = {
+                "{\"succeeded\":true,\"executedAt\":1455531174923,\"returnedValue\":null}",
+                "{\"succeeded\":true,\"executedAt\":1455531174923,\"returnedValue\":\"\"}",
+                "{\"succeeded\":true,\"executedAt\":1455531174923,\"returnedValue\":\"abc\"}",
+                "{\"succeeded\":true,\"executedAt\":1455531174923,\"returnedValue\":1234}",
+                "{\"succeeded\":true,\"executedAt\":1455531174923,\"returnedValue\":1455531174923}",
+                "{\"succeeded\":true,\"executedAt\":1455531174923,\"returnedValue\":1234.05}",
+                "{\"succeeded\":true,\"executedAt\":1455531174923,\"returnedValue\":true}",
+                "{\"succeeded\":true,\"executedAt\":1455531174923,\"returnedValue\":{\"f1\":\"aaa\",\"f2\":false,\"f3\":1000,\"f4\":100.05,\"f5\":[1,2,3],\"f6\":{}}}",
+                "{\"succeeded\":true,\"executedAt\":1455531174923,\"returnedValue\":[123, \"abc\", true, 123.05, [], {}]}",
+                "{\"succeeded\":false,\"executedAt\":1455531174923,\"error\":{\"errorMessage\":\"Error found\",\"details\":{\"errorCode\":\"RUNTIME_ERROR\",\"message\":\"faital error\"}}}",
+        };
+        Object[][] expectedData = {
+                new Object[] {true,  1455531174923L, null, null},
+                new Object[] {true,  1455531174923L, "", null},
+                new Object[] {true,  1455531174923L, "abc", null},
+                new Object[] {true,  1455531174923L, new Integer("1234"), null},
+                new Object[] {true,  1455531174923L, new Long("1455531174923"), null},
+                new Object[] {true,  1455531174923L, new Double(1234.05), null},
+                new Object[] {true,  1455531174923L, Boolean.TRUE, null},
+                new Object[] {true,  1455531174923L, new JSONObject("{\"f1\":\"aaa\",\"f2\":false,\"f3\":1000,\"f4\":100.05,\"f5\":[1,2,3],\"f6\":{}}"), null},
+                new Object[] {true,  1455531174923L, new JSONArray("[123, \"abc\", true, 123.05, [], {}]"), null},
+                new Object[] {false, 1455531174923L, null, new JSONObject("{\"errorMessage\":\"Error found\",\"details\":{\"errorCode\":\"RUNTIME_ERROR\",\"message\":\"faital error\"}}")},
+        };
+
+        Gson gson = GsonRepository.gson();
+        for (int i = 0; i < testData.length; i++) {
+            String data = testData[i];
+            TriggeredServerCodeResult result = gson.fromJson(data, TriggeredServerCodeResult.class);
+            Object[] expected = expectedData[i];
+            Assert.assertEquals(expected[0], result.isSucceeded());
+            Assert.assertEquals(expected[1], result.getExecutedAt());
+            if (expected[2] instanceof JSONObject) {
+                assertJSONObject((JSONObject)expected[2], result.getReturnedValueAsJsonObject());
+            } else if (expected[2] instanceof JSONArray) {
+                assertJSONArray((JSONArray)expected[2], result.getReturnedValueAsJsonArray());
+            } else {
+                Assert.assertEquals(expected[2], result.getReturnedValue());
+            }
+            if (expected[3] == null) {
+                assertNull(result.getError());
+            } else if (expected[3] instanceof JSONObject) {
+                assertJSONObject((JSONObject)expected[3], result.getError());
+            }
+        }
     }
 }
