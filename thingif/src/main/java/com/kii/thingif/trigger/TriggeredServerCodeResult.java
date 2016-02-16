@@ -68,7 +68,10 @@ public class TriggeredServerCodeResult implements Parcelable {
             return null;
         }
         try {
-            return (String)this.returnedValue;
+            if (this.returnedValue instanceof String) {
+                return (String)this.returnedValue;
+            }
+            return this.returnedValue.toString();
         } catch (Exception e) {
             throw new ClassCastException(this.returnedValue + " cannot cast to Integer");
         }
