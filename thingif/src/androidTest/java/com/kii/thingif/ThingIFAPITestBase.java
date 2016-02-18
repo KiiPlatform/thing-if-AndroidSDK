@@ -425,7 +425,18 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         Assert.assertEquals(expected.isSucceeded(), actual.isSucceeded());
         Assert.assertEquals(expected.getReturnedValue(), actual.getReturnedValue());
         Assert.assertEquals(expected.getExecutedAt(), actual.getExecutedAt());
-        assertJSONObject(expected.getError(), actual.getError());
+        assertServerError(expected.getError(), actual.getError());
+    }
+    protected void assertServerError(ServerError expected, ServerError actual) {
+        if (expected == null || actual == null) {
+            if (expected == null && actual == null) {
+                return;
+            }
+            Assert.fail("expected is " + expected + " but actual is " + actual);
+        }
+        Assert.assertEquals(expected.getErrorMessage(), actual.getErrorMessage());
+        Assert.assertEquals(expected.getErrorCode(), actual.getErrorCode());
+        Assert.assertEquals(expected.getDetailMessage(), actual.getDetailMessage());
     }
     protected void clearSharedPreferences() throws Exception {
         SharedPreferences sharedPreferences = InstrumentationRegistry.getTargetContext().getSharedPreferences("com.kii.thingif.preferences", Context.MODE_PRIVATE);

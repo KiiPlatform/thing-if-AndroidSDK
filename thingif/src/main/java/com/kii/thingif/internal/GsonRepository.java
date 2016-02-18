@@ -17,6 +17,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.kii.thingif.KiiApp;
+import com.kii.thingif.ServerError;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.ThingIFAPIBuilder;
 import com.kii.thingif.Owner;
@@ -331,6 +332,40 @@ public class GsonRepository {
             return builder.build();
         }
     };
+    private static final JsonSerializer<TriggeredServerCodeResult> TRIGGERED_SERVER_CODE_RESULT_SERIALIZER = new JsonSerializer<TriggeredServerCodeResult>() {
+        @Override
+        public JsonElement serialize(TriggeredServerCodeResult src, Type typeOfSrc, JsonSerializationContext context) {
+            if (src == null) {
+                return null;
+            }
+            JsonObject json = new JsonObject();
+            json.addProperty("succeeded", src.isSucceeded());
+            json.addProperty("executedAt", src.getExecutedAt());
+            if (src.hasReturnedValue()) {
+                if (src.getReturnedValue() instanceof JSONObject) {
+                    json.add("returnedValue", new JsonParser().parse(src.getReturnedValueAsJsonObject().toString()));
+                } else if (src.getReturnedValue() instanceof JSONArray) {
+                    json.add("returnedValue", new JsonParser().parse(src.getReturnedValueAsJsonArray().toString()));
+                } else if (src.getReturnedValue() instanceof String) {
+                    json.addProperty("returnedValue", src.getReturnedValueAsString());
+                } else if (src.getReturnedValue() instanceof Boolean) {
+                    json.addProperty("returnedValue", src.getReturnedValueAsBoolean());
+                } else if (src.getReturnedValue() instanceof Long) {
+                    json.addProperty("returnedValue", src.getReturnedValueAsNumber());
+                }
+            }
+            if (src.getError() != null) {
+                JsonObject error = new JsonObject();
+                error.addProperty("errorMessage", src.getError().getErrorMessage());
+                JsonObject details = new JsonObject();
+                details.addProperty("errorCode", src.getError().getErrorCode());
+                details.addProperty("message", src.getError().getDetailMessage());
+                error.add("details", details);
+                json.add("error", error);
+            }
+            return json;
+        }
+    };
     private static final JsonDeserializer<TriggeredServerCodeResult> TRIGGERED_SERVER_CODE_RESULT_DESERIALIZER = new JsonDeserializer<TriggeredServerCodeResult>() {
         @Override
         public TriggeredServerCodeResult deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
@@ -372,10 +407,11 @@ public class GsonRepository {
                     }
                 }
             }
-            JSONObject error = null;
+            ServerError error = null;
             if (json.has("error") && !json.get("error").isJsonNull()) {
                 try {
-                    error = new JSONObject(json.get("error").getAsJsonObject().toString());
+                    JSONObject e = new JSONObject(json.get("error").getAsJsonObject().toString());
+                    error = new ServerError(e);
                 } catch (JSONException ignore) {
                 }
             }
@@ -403,6 +439,7 @@ public class GsonRepository {
                 .registerTypeAdapter(Schema.class, SCHEMA_DESERIALIZER)
                 .registerTypeAdapter(ThingIFAPI.class, IOT_CLOUD_API_SERIALIZER)
                 .registerTypeAdapter(ThingIFAPI.class, IOT_CLOUD_API_DESERIALIZER)
+                .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_SERIALIZER)
                 .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_DESERIALIZER)
                 .create();
     }
@@ -487,6 +524,7 @@ public class GsonRepository {
                     .registerTypeAdapter(Schema.class, SCHEMA_DESERIALIZER)
                     .registerTypeAdapter(ThingIFAPI.class, IOT_CLOUD_API_SERIALIZER)
                     .registerTypeAdapter(ThingIFAPI.class, IOT_CLOUD_API_DESERIALIZER)
+                    .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_SERIALIZER)
                     .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_DESERIALIZER)
                     .create();
             REPOSITORY.put(new Pair<String, Integer>(schema.getSchemaName(), schema.getSchemaVersion()), gson);

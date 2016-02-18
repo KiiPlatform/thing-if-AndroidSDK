@@ -597,8 +597,8 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertNull(triggeredServerCodeResult.getReturnedValue());
         Assert.assertTrue(triggeredServerCodeResult.getExecutedAt() > 0);
         Assert.assertNotNull(triggeredServerCodeResult.getError());
-        Assert.assertEquals("Error found while executing the developer-defined code", triggeredServerCodeResult.getError().getString("errorMessage"));
-        Assert.assertEquals("RUNTIME_ERROR", triggeredServerCodeResult.getError().getJSONObject("details").getString("errorCode"));
-        Assert.assertEquals("reference is not defined", triggeredServerCodeResult.getError().getJSONObject("details").getString("message"));
+        Assert.assertEquals("Error found while executing the developer-defined code", triggeredServerCodeResult.getError().getErrorMessage());
+        Assert.assertEquals("RUNTIME_ERROR", triggeredServerCodeResult.getError().getErrorCode());
+        Assert.assertEquals("reference is not defined", triggeredServerCodeResult.getError().getDetailMessage());
     }
 }

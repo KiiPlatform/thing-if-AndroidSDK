@@ -712,7 +712,7 @@ public class GsonSerializationTest extends SmallTestBase {
                 new Object[] {true,  1455531174923L, Boolean.TRUE, null},
                 new Object[] {true,  1455531174923L, new JSONObject("{\"f1\":\"aaa\",\"f2\":false,\"f3\":1000,\"f4\":100.05,\"f5\":[1,2,3],\"f6\":{}}"), null},
                 new Object[] {true,  1455531174923L, new JSONArray("[123, \"abc\", true, 123.05, [], {}]"), null},
-                new Object[] {false, 1455531174923L, null, new JSONObject("{\"errorMessage\":\"Error found\",\"details\":{\"errorCode\":\"RUNTIME_ERROR\",\"message\":\"faital error\"}}")},
+                new Object[] {false, 1455531174923L, null, new ServerError("Error found", "RUNTIME_ERROR", "faital error")},
         };
 
         Gson gson = GsonRepository.gson();
@@ -731,8 +731,10 @@ public class GsonSerializationTest extends SmallTestBase {
             }
             if (expected[3] == null) {
                 assertNull(result.getError());
-            } else if (expected[3] instanceof JSONObject) {
-                assertJSONObject((JSONObject)expected[3], result.getError());
+            } else if (expected[3] instanceof ServerError) {
+                Assert.assertEquals(((ServerError)expected[3]).getErrorMessage(), result.getError().getErrorMessage());
+                Assert.assertEquals(((ServerError)expected[3]).getErrorCode(), result.getError().getErrorCode());
+                Assert.assertEquals(((ServerError)expected[3]).getDetailMessage(), result.getError().getDetailMessage());
             }
         }
     }

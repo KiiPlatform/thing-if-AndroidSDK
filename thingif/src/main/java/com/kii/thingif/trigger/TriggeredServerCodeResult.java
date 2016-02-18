@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import com.kii.thingif.ServerError;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,9 +28,9 @@ public class TriggeredServerCodeResult implements Parcelable {
      */
     private Object returnedValue;
     private final long executedAt;
-    private JSONObject error;
+    private ServerError error;
 
-    public TriggeredServerCodeResult(boolean succeeded, Object returnedValue, long executedAt, JSONObject error) {
+    public TriggeredServerCodeResult(boolean succeeded, Object returnedValue, long executedAt, ServerError error) {
         this.succeeded = succeeded;
         this.returnedValue = returnedValue;
         this.executedAt = executedAt;
@@ -96,6 +98,16 @@ public class TriggeredServerCodeResult implements Parcelable {
             throw new ClassCastException(this.returnedValue + " cannot cast to Long");
         }
     }
+    public Number getReturnedValueAsNumber() {
+        if (this.returnedValue == null) {
+            return null;
+        }
+        try {
+            return (Number)this.returnedValue;
+        } catch (Exception e) {
+            throw new ClassCastException(this.returnedValue + " cannot cast to Number");
+        }
+    }
     public Boolean getReturnedValueAsBoolean() {
         if (this.returnedValue == null) {
             return null;
@@ -105,7 +117,6 @@ public class TriggeredServerCodeResult implements Parcelable {
         } catch (Exception e) {
             throw new ClassCastException(this.returnedValue + " cannot cast to Boolean");
         }
-
     }
     public Double getReturnedValueAsDouble() {
         if (this.returnedValue == null) {
@@ -120,7 +131,7 @@ public class TriggeredServerCodeResult implements Parcelable {
     public long getExecutedAt() {
         return this.executedAt;
     }
-    public JSONObject getError() {
+    public ServerError getError() {
         return this.error;
     }
 
@@ -161,13 +172,7 @@ public class TriggeredServerCodeResult implements Parcelable {
                 break;
         }
         this.executedAt = in.readLong();
-        String errorString = in.readString();
-        if (!TextUtils.isEmpty(errorString)) {
-            try {
-                this.error = new JSONObject(errorString);
-            } catch (JSONException ignore) {
-            }
-        }
+        this.error = in.readParcelable(ServerError.class.getClassLoader());
     }
     public static final Creator<TriggeredServerCodeResult> CREATOR = new Creator<TriggeredServerCodeResult>() {
         @Override
@@ -213,9 +218,9 @@ public class TriggeredServerCodeResult implements Parcelable {
         }
         dest.writeLong(this.executedAt);
         if (this.error != null) {
-            dest.writeString(this.error.toString());
+            dest.writeParcelable(this.error, flags);
         } else {
-            dest.writeString(null);
+            dest.writeParcelable(null, flags);
         }
     }
 }

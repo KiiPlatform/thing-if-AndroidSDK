@@ -3,6 +3,7 @@ package com.kii.thingif.trigger;
 import android.os.Parcel;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.kii.thingif.ServerError;
 import com.kii.thingif.SmallTestBase;
 
 import org.json.JSONArray;
@@ -170,7 +171,7 @@ public class TriggeredServerCodeResultParcelableTest extends SmallTestBase {
     public void errorTest() throws Exception {
         boolean succeeded = false;
         long executedAt = System.currentTimeMillis();
-        JSONObject error = new JSONObject("{\"errorMessage\":\"Error found\",\"details\":{\"errorCode\":\"RUNTIME_ERROR\",\"message\":\"faital error\"}}");
+        ServerError error = new ServerError("Error found", "RUNTIME_ERROR", "faital error");
 
         TriggeredServerCodeResult result = new TriggeredServerCodeResult(succeeded, null, executedAt, error);
         Parcel parcel = Parcel.obtain();
@@ -181,6 +182,8 @@ public class TriggeredServerCodeResultParcelableTest extends SmallTestBase {
         Assert.assertEquals(succeeded, deserializedResult.isSucceeded());
         Assert.assertNull(deserializedResult.getReturnedValue());
         Assert.assertEquals(executedAt, deserializedResult.getExecutedAt());
-        assertJSONObject(error, deserializedResult.getError());
+        Assert.assertEquals(error.getErrorMessage(), deserializedResult.getError().getErrorMessage());
+        Assert.assertEquals(error.getErrorCode(), deserializedResult.getError().getErrorCode());
+        Assert.assertEquals(error.getDetailMessage(), deserializedResult.getError().getDetailMessage());
     }
 }

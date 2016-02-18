@@ -37,7 +37,7 @@ public class ThingIFAPI_ListTriggeredServerCodeResultsTest extends ThingIFAPITes
         TriggeredServerCodeResult serverCodeResult4 = new TriggeredServerCodeResult(true, "\"abcd\"", System.currentTimeMillis() + 3000, null);
         TriggeredServerCodeResult serverCodeResult5 = new TriggeredServerCodeResult(true, "{\"field\":\"abcd\"}", System.currentTimeMillis() + 4000, null);
         TriggeredServerCodeResult serverCodeResult6 = new TriggeredServerCodeResult(true, "[1, \"2\", 3]", System.currentTimeMillis() + 5000, null);
-        TriggeredServerCodeResult serverCodeResult7 = new TriggeredServerCodeResult(false, null, System.currentTimeMillis() + 6000, new JSONObject("{\"errorMessage\":\"Error found\",\"details\":{\"errorCode\":\"RUNTIME_ERROR\",\"message\":\"faital error\"}}"));
+        TriggeredServerCodeResult serverCodeResult7 = new TriggeredServerCodeResult(false, null, System.currentTimeMillis() + 6000, new ServerError("Error found", "RUNTIME_ERROR", "faital error"));
 
         this.addMockResponseForListTriggeredServerCodeResults(200, new TriggeredServerCodeResult[]{serverCodeResult1, serverCodeResult2, serverCodeResult3, serverCodeResult4}, paginationKey);
         this.addMockResponseForListTriggeredServerCodeResults(200, new TriggeredServerCodeResult[]{serverCodeResult5, serverCodeResult6, serverCodeResult7}, null);
