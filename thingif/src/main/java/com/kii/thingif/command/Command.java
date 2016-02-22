@@ -8,6 +8,9 @@ import android.text.TextUtils;
 import com.google.gson.annotations.SerializedName;
 import com.kii.thingif.TypedID;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +37,9 @@ public class Command implements Parcelable {
     private Long created;
     @SerializedName("modifiedAt")
     private Long modified;
+    private String title;
+    private String description;
+    private JSONObject metadata;
 
     public Command(@NonNull String schemaName,
                    int schemaVersion,
@@ -214,6 +220,54 @@ public class Command implements Parcelable {
     void setModified(Long modified) {
         this.modified = modified;
     }
+    /**
+     *
+     * @return
+     */
+    public String getTitle() {
+        return this.title;
+    }
+    /**
+     *
+     * @param title
+     */
+    public void setTitle(String title) {
+        if (!TextUtils.isEmpty(title) && title.length() > 50) {
+            throw new IllegalArgumentException("title must be less than 51 characters.");
+        }
+        this.title = title;
+    }
+    /**
+     *
+     * @return
+     */
+    public String getDescription() {
+        return this.description;
+    }
+    /**
+     *
+     * @param description
+     */
+    public void setDescription(String description) {
+        if (!TextUtils.isEmpty(description) && description.length() > 200) {
+            throw new IllegalArgumentException("description must be less than 201 characters.");
+        }
+        this.description = description;
+    }
+    /**
+     *
+     * @return
+     */
+    public JSONObject getMetadata() {
+        return this.metadata;
+    }
+    /**
+     *
+     * @param metadata
+     */
+    public void setMetadata(JSONObject metadata) {
+        this.metadata = metadata;
+    }
 
     // Implementation of Parcelable
     protected Command(Parcel in) {
@@ -230,6 +284,16 @@ public class Command implements Parcelable {
         this.firedByTriggerID = in.readString();
         this.created = (Long)in.readValue(Command.class.getClassLoader());
         this.modified = (Long)in.readValue(Command.class.getClassLoader());
+        this.title = in.readString();
+        this.description = in.readString();
+        String metadata = in.readString();
+        if (!TextUtils.isEmpty(metadata)) {
+            try {
+                this.metadata = new JSONObject(metadata);
+            } catch (JSONException ignore) {
+                // Won’t happen
+            }
+        }
     }
     public static final Creator<Command> CREATOR = new Creator<Command>() {
         @Override
@@ -259,5 +323,8 @@ public class Command implements Parcelable {
         dest.writeString(this.firedByTriggerID);
         dest.writeValue(this.created);
         dest.writeValue(this.modified);
+        dest.writeString(this.title);
+        dest.writeString(this.description);
+        dest.writeString(this.metadata == null ? null : this.metadata.toString());
     }
 }

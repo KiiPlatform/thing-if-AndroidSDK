@@ -50,7 +50,7 @@ public class ThingIFAPI_DeleteTriggerTest extends ThingIFAPITestBase {
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
         Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
-        this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, false, null, schema);
+        this.addMockResponseForGetTriggerWithCommand(200, triggerID, expectedCommand, predicate, false, null, schema);
         this.addEmptyMockResponse(204);
 
         api.setTarget(target);
