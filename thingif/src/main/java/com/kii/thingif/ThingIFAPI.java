@@ -484,7 +484,9 @@ public class ThingIFAPI implements Parcelable {
         return this.deserialize(schema, responseBody, Command.class);
     }
     /**
-     * List Commands in the specified Target.
+     * List Commands in the specified Target.<br>
+     * If the Schema of the Command included in the response does not matches with the Schema
+     * registered this ThingIfAPI instance, It won't be included in returned value.
      * @param bestEffortLimit Maximum number of the Commands in the response.
      *                        if the value is <= 0, default limit internally
      *                        defined is applied.
@@ -500,7 +502,6 @@ public class ThingIFAPI implements Parcelable {
      * paginationKey if there is next page to be obtained.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws UnsupportedSchemaException Thrown when the returned response has a schema that cannot handle this instance.
      * @throws UnsupportedActionException Thrown when the returned response has a action that cannot handle this instance.
      */
     public Pair<List<Command>, String> listCommands (
@@ -533,7 +534,7 @@ public class ThingIFAPI implements Parcelable {
                 int schemaVersion = commandJson.optInt("schemaVersion");
                 Schema schema = this.getSchema(schemaName, schemaVersion);
                 if (schema == null) {
-                    throw new UnsupportedSchemaException(schemaName, schemaVersion);
+                    continue;
                 }
                 commands.add(this.deserialize(schema, commandJson, Command.class));
             }
@@ -880,7 +881,9 @@ public class ThingIFAPI implements Parcelable {
     }
 
     /**
-     * List Triggers belongs to the specified Target.
+     * List Triggers belongs to the specified Target.<br>
+     * If the Schema of the Trigger included in the response does not matches with the Schema
+     * registered this ThingIfAPI instance, It won't be included in returned value.
      * @param bestEffortLimit limit the maximum number of the Triggers in the
      *                        Response. It ensures numbers in
      *                        response is equals to or less than specified number.
@@ -895,7 +898,6 @@ public class ThingIFAPI implements Parcelable {
      * in the target.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws UnsupportedSchemaException Thrown when the returned response has a schema that cannot handle this instance.
      * @throws UnsupportedActionException Thrown when the returned response has a action that cannot handle this instance.
      */
     @NonNull
@@ -933,7 +935,7 @@ public class ThingIFAPI implements Parcelable {
                     int schemaVersion = commandJson.optInt("schemaVersion");
                     schema = this.getSchema(schemaName, schemaVersion);
                     if (schema == null) {
-                        throw new UnsupportedSchemaException(schemaName, schemaVersion);
+                        continue;
                     }
                 }
                 triggers.add(this.deserialize(schema, triggerJson, Trigger.class));
