@@ -1036,30 +1036,7 @@ public class ThingIFAPI implements Parcelable {
     private Schema getSchema(String schemaName, int schemaVersion) {
         return this.schemas.get(new Pair<String, Integer>(schemaName, schemaVersion));
     }
-    private Action generateAction(String schemaName, int schemaVersion, String actionName, JSONObject actionParameters) throws ThingIFException {
-        Schema schema = this.getSchema(schemaName, schemaVersion);
-        if (schema == null) {
-            throw new UnsupportedSchemaException(schemaName, schemaVersion);
-        }
-        Class<? extends Action> actionClass = schema.getActionClass(actionName);
-        if (actionClass == null) {
-            throw new UnsupportedActionException(schemaName, schemaVersion, actionName);
-        }
-        String json = actionParameters == null ? "{}" : actionParameters.toString();
-        return this.deserialize(schema, json, actionClass);
-    }
-    private ActionResult generateActionResult(String schemaName, int schemaVersion, String actionName, JSONObject actionResult) throws ThingIFException {
-        Schema schema = this.getSchema(schemaName, schemaVersion);
-        if (schema == null) {
-            throw new UnsupportedSchemaException(schemaName, schemaVersion);
-        }
-        Class<? extends ActionResult> actionResultClass = schema.getActionResultClass(actionName);
-        if (actionResultClass == null) {
-            throw new UnsupportedActionException(schemaName, schemaVersion, actionName);
-        }
-        String json = actionResult == null ? "{}" : actionResult.toString();
-        return this.deserialize(schema, json, actionResultClass);
-    }
+
     private Map<String, String> newHeader() {
         Map<String, String> headers = new HashMap<String, String>();
         if (!TextUtils.isEmpty(this.getAppID())) {
