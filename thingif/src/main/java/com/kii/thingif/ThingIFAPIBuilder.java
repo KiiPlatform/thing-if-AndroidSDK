@@ -3,10 +3,9 @@ package com.kii.thingif;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
+import com.kii.thingif.internal.utils._Log;
 import com.kii.thingif.schema.Schema;
-import com.kii.thingif.internal.utils.Log;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -87,7 +86,7 @@ public class ThingIFAPIBuilder {
             throw new IllegalArgumentException("schema is null");
         }
         this.schemas.add(schema);
-        Log.d(TAG, MessageFormat.format("Added new schema SchemaName={0}, SchemaVersion={1}", schema.getSchemaName(), schema.getSchemaVersion()));
+        _Log.d(TAG, MessageFormat.format("Added new schema SchemaName={0}, SchemaVersion={1}", schema.getSchemaName(), schema.getSchemaVersion()));
         return this;
     }
 
@@ -139,7 +138,7 @@ public class ThingIFAPIBuilder {
         if (this.schemas.size() == 0) {
             throw new IllegalStateException("Builder has no schemas");
         }
-        Log.d(TAG, MessageFormat.format("Initialize ThingIFAPI AppID={0}, AppKey={1}, BaseUrl={2}", app.getAppID(), app.getAppKey(), app.getBaseUrl()));
+        _Log.d(TAG, MessageFormat.format("Initialize ThingIFAPI AppID={0}, AppKey={1}, BaseUrl={2}", app.getAppID(), app.getAppKey(), app.getBaseUrl()));
         return new ThingIFAPI(this.context, this.tag, app, this.owner, this.target, this.schemas, this.installationID);
     }
 

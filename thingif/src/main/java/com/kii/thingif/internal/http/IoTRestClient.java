@@ -13,7 +13,7 @@ import com.kii.thingif.exception.NotFoundException;
 import com.kii.thingif.exception.ServiceUnavailableException;
 import com.kii.thingif.exception.UnauthorizedException;
 import com.kii.thingif.internal.utils.IOUtils;
-import com.kii.thingif.internal.utils.Log;
+import com.kii.thingif.internal.utils._Log;
 import com.kii.thingif.internal.utils.StringUtils;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.MediaType;
@@ -154,7 +154,7 @@ public class IoTRestClient {
         try {
             String body = response.body().string();
             this.checkHttpStatus(request, response, body);
-            Log.d(TAG, request.getCurl() + StringUtils.LINE_SEPARATOR + body);
+            _Log.d(TAG, request.getCurl() + StringUtils.LINE_SEPARATOR + body);
             if (TextUtils.isEmpty(body)) {
                 return null;
             }
@@ -197,7 +197,7 @@ public class IoTRestClient {
                 errorDetail = new JSONObject(responseBody);
             } catch (Exception ignore) {
             }
-            Log.w(TAG, request.getCurl() + "  --  " + response.code() + ":" + errorDetail);
+            _Log.w(TAG, request.getCurl() + "  --  " + response.code() + ":" + errorDetail);
             switch (response.code()) {
                 case 400:
                     throw new BadRequestException(request.getCurl(), errorDetail);
