@@ -1120,7 +1120,7 @@ public class ThingIFAPI implements Parcelable {
      */
     @NonNull
     public static String getSDKVersion() {
-        return ThingIFAPI.getSDKVersion();
+        return SDK_VERSION;
     }
 
 }
