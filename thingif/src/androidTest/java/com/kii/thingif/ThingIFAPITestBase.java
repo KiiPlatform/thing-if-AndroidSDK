@@ -51,6 +51,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public abstract class ThingIFAPITestBase extends SmallTestBase {
     protected static final String APP_ID = "smalltest";
@@ -60,6 +62,7 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
     protected static final String DEMO_THING_TYPE = "LED";
     protected static final String DEMO_SCHEMA_NAME = "SmartLightDemo";
     protected static final int DEMO_SCHEMA_VERSION = 1;
+    private static final String SDK_VERSION = "0.10.0";
 
     protected MockWebServer server;
 
@@ -302,6 +305,14 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
     protected void assertRequestBody(JsonElement expected, RecordedRequest actual) {
         Assert.assertEquals("request body", expected, new JsonParser().parse(actual.getBody().readUtf8()));
     }
+
+    /**
+     * Utilities of checking request header.
+     * Don't include X-Kii-SDK header in expected param and don't remove it from
+     * actual param.
+     * @param expected
+     * @param actual
+     */
     protected void assertRequestHeader(Map<String, String> expected, RecordedRequest actual) {
         Map<String, List<String>> actualMap = new HashMap<String, List<String>>();
         for (String headerName : actual.getHeaders().names()) {
@@ -313,6 +324,13 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         actualMap.remove("Connection");
         actualMap.remove("Accept-Encoding");
         actualMap.remove("User-Agent");
+
+        // Check X-Kii-SDK Header
+        List<String> kiiSDK = actualMap.remove("X-Kii-SDK");
+        Assert.assertEquals(1, kiiSDK.size());
+        Pattern p = Pattern.compile("sn=at;sv=" + SDK_VERSION + ";pv=\\d*");
+        Matcher m = p.matcher(kiiSDK.get(0));
+        Assert.assertTrue(m.matches());
 
         Assert.assertEquals("number of request headers", expected.size(), actualMap.size());
         for (Map.Entry<String, String> h : expected.entrySet()) {
