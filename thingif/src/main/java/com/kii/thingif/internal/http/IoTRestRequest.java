@@ -1,12 +1,15 @@
 package com.kii.thingif.internal.http;
 
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.kii.thingif.ThingIFAPI;
 import com.squareup.okhttp.MediaType;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -31,6 +34,15 @@ public class IoTRestRequest {
                           @NonNull Map<String, String> headers) {
         this(url, method, headers, null, null);
     }
+
+    private static String getSDKInfo() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("sn=at;") // at: Android Thing-IF
+                .append("sv=").append(ThingIFAPI.getSDKVersion()).append(";")
+                .append("pv=").append(Build.VERSION.SDK_INT);
+        return builder.toString();
+    }
+
     public IoTRestRequest(@NonNull String url,
                           @NonNull Method method,
                           @NonNull Map<String, String> headers,
@@ -38,7 +50,9 @@ public class IoTRestRequest {
                           @Nullable Object entity) {
         this.url = url;
         this.method = method;
-        this.headers = headers;
+        Map<String, String> modifiedHeaders = new HashMap<>(headers);
+        modifiedHeaders.put("X-Kii-SDK", getSDKInfo());
+        this.headers = modifiedHeaders;
         this.contentType = contentType;
         this.entity = entity;
     }

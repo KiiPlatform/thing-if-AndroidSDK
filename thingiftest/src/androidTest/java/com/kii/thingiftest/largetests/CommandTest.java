@@ -29,7 +29,7 @@ import java.util.UUID;
 public class CommandTest extends LargeTestCaseBase {
     @Test
     public void basicTest() throws Exception {
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(TargetTestServer.DEV_SERVER_1);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
 
@@ -127,7 +127,7 @@ public class CommandTest extends LargeTestCaseBase {
     }
     @Test
     public void listCommandsEmptyResultTest() throws Exception {
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(TargetTestServer.DEV_SERVER_1);
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
 

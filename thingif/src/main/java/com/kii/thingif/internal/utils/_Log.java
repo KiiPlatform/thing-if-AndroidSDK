@@ -3,10 +3,10 @@ package com.kii.thingif.internal.utils;
 import com.kii.thingif.BuildConfig;
 
 /**
- * Wrap the android.util.Log class
+ * Wrap the android.util._Log class
  * This class is for internal use only. Do not use it from your application.
  */
-public class Log {
+public class _Log {
     public static void v(String tag, String msg) {
         if (BuildConfig.DEBUG)
             android.util.Log.v(tag, msg);

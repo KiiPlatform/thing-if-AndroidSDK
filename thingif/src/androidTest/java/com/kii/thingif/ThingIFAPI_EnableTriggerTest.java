@@ -51,7 +51,7 @@ public class ThingIFAPI_EnableTriggerTest extends ThingIFAPITestBase {
 
         Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
         this.addEmptyMockResponse(204);
-        this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, false, null, schema);
+        this.addMockResponseForGetTriggerWithCommand(200, triggerID, expectedCommand, predicate, false, null, schema);
 
         api.setTarget(target);
         Trigger trigger = api.enableTrigger(triggerID, true);
@@ -96,7 +96,7 @@ public class ThingIFAPI_EnableTriggerTest extends ThingIFAPITestBase {
 
         Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
         this.addEmptyMockResponse(204);
-        this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, true, null, schema);
+        this.addMockResponseForGetTriggerWithCommand(200, triggerID, expectedCommand, predicate, true, null, schema);
 
         api.setTarget(target);
         Trigger trigger = api.enableTrigger(triggerID, false);

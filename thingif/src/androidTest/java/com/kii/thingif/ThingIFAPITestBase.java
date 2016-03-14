@@ -26,8 +26,10 @@ import com.kii.thingif.testschemas.TurnPower;
 import com.kii.thingif.testschemas.TurnPowerResult;
 import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.SchedulePredicate;
+import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.StatePredicate;
 import com.kii.thingif.trigger.Trigger;
+import com.kii.thingif.trigger.TriggeredServerCodeResult;
 import com.kii.thingif.trigger.clause.And;
 import com.kii.thingif.trigger.clause.Clause;
 import com.kii.thingif.trigger.clause.Equals;
@@ -49,6 +51,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public abstract class ThingIFAPITestBase extends SmallTestBase {
     protected static final String APP_ID = "smalltest";
@@ -58,6 +62,7 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
     protected static final String DEMO_THING_TYPE = "LED";
     protected static final String DEMO_SCHEMA_NAME = "SmartLightDemo";
     protected static final int DEMO_SCHEMA_VERSION = 1;
+    private static final String SDK_VERSION = "0.10.0";
 
     protected MockWebServer server;
 
@@ -130,7 +135,7 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         }
         this.server.enqueue(response);
     }
-    protected void addMockResponseForGetTrigger(int httpStatus, String triggerID, Command command, Predicate predicate, Boolean disabled, String disabledReason, Schema schema) {
+    protected void addMockResponseForGetTriggerWithCommand(int httpStatus, String triggerID, Command command, Predicate predicate, Boolean disabled, String disabledReason, Schema schema) {
         MockResponse response = new MockResponse().setResponseCode(httpStatus);
         if (httpStatus == 200) {
             JsonObject responseBody = new JsonObject();
@@ -139,6 +144,29 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
             }
             if (command != null) {
                 responseBody.add("command", GsonRepository.gson(schema).toJsonTree(command));
+            }
+            if (predicate != null) {
+                responseBody.add("predicate", GsonRepository.gson(schema).toJsonTree(predicate));
+            }
+            if (disabled != null) {
+                responseBody.addProperty("disabled", disabled);
+            }
+            if (disabledReason != null) {
+                responseBody.addProperty("disabledReason", disabledReason);
+            }
+            response.setBody(responseBody.toString());
+        }
+        this.server.enqueue(response);
+    }
+    protected void addMockResponseForGetTriggerWithServerCode(int httpStatus, String triggerID, ServerCode serverCode, Predicate predicate, Boolean disabled, String disabledReason, Schema schema) {
+        MockResponse response = new MockResponse().setResponseCode(httpStatus);
+        if (httpStatus == 200) {
+            JsonObject responseBody = new JsonObject();
+            if (triggerID != null) {
+                responseBody.addProperty("triggerID", triggerID);
+            }
+            if (serverCode != null) {
+                responseBody.add("serverCode", GsonRepository.gson(schema).toJsonTree(serverCode));
             }
             if (predicate != null) {
                 responseBody.add("predicate", GsonRepository.gson(schema).toJsonTree(predicate));
@@ -169,7 +197,22 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         }
         this.server.enqueue(response);
     }
-
+    protected void addMockResponseForListTriggeredServerCodeResults(int httpStatus, TriggeredServerCodeResult[] results, String paginationKey) {
+        MockResponse response = new MockResponse().setResponseCode(httpStatus);
+        if (results != null) {
+            JsonObject responseBody = new JsonObject();
+            JsonArray array = new JsonArray();
+            for (TriggeredServerCodeResult result : results) {
+                array.add(GsonRepository.gson().toJsonTree(result));
+            }
+            responseBody.add("triggerServerCodeResults", array);
+            if (paginationKey != null) {
+                responseBody.addProperty("nextPaginationKey", paginationKey);
+            }
+            response.setBody(responseBody.toString());
+        }
+        this.server.enqueue(response);
+    }
     protected void addMockResponseForPostNewCommand(int httpStatus, String commandID) {
         MockResponse response = new MockResponse().setResponseCode(httpStatus);
         if (commandID != null) {
@@ -262,6 +305,14 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
     protected void assertRequestBody(JsonElement expected, RecordedRequest actual) {
         Assert.assertEquals("request body", expected, new JsonParser().parse(actual.getBody().readUtf8()));
     }
+
+    /**
+     * Utilities of checking request header.
+     * Don't include X-Kii-SDK header in expected param and don't remove it from
+     * actual param.
+     * @param expected
+     * @param actual
+     */
     protected void assertRequestHeader(Map<String, String> expected, RecordedRequest actual) {
         Map<String, List<String>> actualMap = new HashMap<String, List<String>>();
         for (String headerName : actual.getHeaders().names()) {
@@ -273,6 +324,13 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         actualMap.remove("Connection");
         actualMap.remove("Accept-Encoding");
         actualMap.remove("User-Agent");
+
+        // Check X-Kii-SDK Header
+        List<String> kiiSDK = actualMap.remove("X-Kii-SDK");
+        Assert.assertEquals(1, kiiSDK.size());
+        Pattern p = Pattern.compile("sn=at;sv=" + SDK_VERSION + ";pv=\\d*");
+        Matcher m = p.matcher(kiiSDK.get(0));
+        Assert.assertTrue(m.matches());
 
         Assert.assertEquals("number of request headers", expected.size(), actualMap.size());
         for (Map.Entry<String, String> h : expected.entrySet()) {
@@ -287,6 +345,9 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         }
     }
     protected void assertCommand(Schema schema, Command expected, Command actual) {
+        if (expected == null &&  actual == null) {
+            return;
+        }
         Assert.assertEquals(expected.getCommandID(), actual.getCommandID());
         Assert.assertEquals(expected.getCommandState(), actual.getCommandState());
         Assert.assertEquals(expected.getActions().size(), actual.getActions().size());
@@ -312,6 +373,15 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         Assert.assertEquals(expected.getFiredByTriggerID(), actual.getFiredByTriggerID());
         Assert.assertEquals(expected.getCreated(), actual.getCreated());
         Assert.assertEquals(expected.getModified(), actual.getModified());
+    }
+    protected void assertServerCode(ServerCode expected, ServerCode actual) {
+        if (expected == null && actual == null) {
+            return;
+        }
+        Assert.assertEquals(expected.getEndpoint(), actual.getEndpoint());
+        Assert.assertEquals(expected.getExecutorAccessToken(), actual.getExecutorAccessToken());
+        Assert.assertEquals(expected.getTargetAppID(), actual.getTargetAppID());
+        assertJSONObject(expected.getParameters(), actual.getParameters());
     }
     protected void assertPredicate(Predicate expected, Predicate actual) {
         Assert.assertEquals(expected.getClass(), actual.getClass());
@@ -367,6 +437,24 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         Assert.assertEquals(expected.getDisabledReason(), actual.getDisabledReason());
         this.assertPredicate(expected.getPredicate(), actual.getPredicate());
         this.assertCommand(schema, expected.getCommand(), actual.getCommand());
+        this.assertServerCode(expected.getServerCode(), actual.getServerCode());
+    }
+    protected void assertTriggerServerCodeResult(TriggeredServerCodeResult expected, TriggeredServerCodeResult actual) {
+        Assert.assertEquals(expected.isSucceeded(), actual.isSucceeded());
+        Assert.assertEquals(expected.getReturnedValue(), actual.getReturnedValue());
+        Assert.assertEquals(expected.getExecutedAt(), actual.getExecutedAt());
+        assertServerError(expected.getError(), actual.getError());
+    }
+    protected void assertServerError(ServerError expected, ServerError actual) {
+        if (expected == null || actual == null) {
+            if (expected == null && actual == null) {
+                return;
+            }
+            Assert.fail("expected is " + expected + " but actual is " + actual);
+        }
+        Assert.assertEquals(expected.getErrorMessage(), actual.getErrorMessage());
+        Assert.assertEquals(expected.getErrorCode(), actual.getErrorCode());
+        Assert.assertEquals(expected.getDetailMessage(), actual.getDetailMessage());
     }
     protected void clearSharedPreferences() throws Exception {
         SharedPreferences sharedPreferences = InstrumentationRegistry.getTargetContext().getSharedPreferences("com.kii.thingif.preferences", Context.MODE_PRIVATE);

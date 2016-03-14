@@ -22,12 +22,14 @@ import com.kii.thingif.testschemas.SetColorTemperatureResult;
 import com.kii.thingif.testschemas.TurnPower;
 import com.kii.thingif.testschemas.TurnPowerResult;
 import com.kii.thingif.trigger.Condition;
+import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.StatePredicate;
 import com.kii.thingif.trigger.Trigger;
 import com.kii.thingif.trigger.TriggersWhen;
 import com.kii.thingif.trigger.clause.Equals;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -44,7 +47,7 @@ import java.util.concurrent.TimeUnit;
 @RunWith(AndroidJUnit4.class)
 public class ThingIFAPI_GetTriggerTest extends ThingIFAPITestBase {
     @Test
-    public void getTriggerTest() throws Exception {
+    public void getTriggerWithCommandTest() throws Exception {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
@@ -61,7 +64,7 @@ public class ThingIFAPI_GetTriggerTest extends ThingIFAPITestBase {
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
         Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
-        this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, true, "COMMAND_EXECUTION_REJECTED", schema);
+        this.addMockResponseForGetTriggerWithCommand(200, triggerID, expectedCommand, predicate, true, "COMMAND_EXECUTION_REJECTED", schema);
 
         api.setTarget(target);
         Trigger trigger = api.getTrigger(triggerID);
@@ -69,8 +72,48 @@ public class ThingIFAPI_GetTriggerTest extends ThingIFAPITestBase {
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(true, trigger.disabled());
         Assert.assertEquals("COMMAND_EXECUTION_REJECTED", trigger.getDisabledReason());
+        Assert.assertNull(trigger.getServerCode());
         this.assertPredicate(predicate, trigger.getPredicate());
         this.assertCommand(schema, expectedCommand, trigger.getCommand());
+        // verify the request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers/" + triggerID, request.getPath());
+        Assert.assertEquals("GET", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        this.assertRequestHeader(expectedRequestHeaders, request);
+    }
+    @Test
+    public void getTriggerWithServerCodeTest() throws Exception {
+        Schema schema = this.createDefaultSchema();
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        String triggerID = "trigger-1234";
+        Target target = new Target(thingID, accessToken);
+
+        StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
+
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+
+        String endpoint = "function_name";
+        String executorAccessToken = UUID.randomUUID().toString();
+        String targetAppID = UUID.randomUUID().toString().substring(0, 8);
+        JSONObject parameters = new JSONObject("{\"name\":\"kii\", \"age\":30, \"enabled\":true}");
+        ServerCode expectedServerCode = new ServerCode(endpoint, executorAccessToken, targetAppID, parameters);
+        this.addMockResponseForGetTriggerWithServerCode(200, triggerID, expectedServerCode, predicate, true, "COMMAND_EXECUTION_REJECTED", schema);
+
+        api.setTarget(target);
+        Trigger trigger = api.getTrigger(triggerID);
+        // verify the result
+        Assert.assertEquals(triggerID, trigger.getTriggerID());
+        Assert.assertEquals(true, trigger.disabled());
+        Assert.assertEquals("COMMAND_EXECUTION_REJECTED", trigger.getDisabledReason());
+        Assert.assertNull(trigger.getCommand());
+        this.assertPredicate(predicate, trigger.getPredicate());
+        this.assertServerCode(expectedServerCode, trigger.getServerCode());
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
         Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers/" + triggerID, request.getPath());
@@ -190,7 +233,7 @@ public class ThingIFAPI_GetTriggerTest extends ThingIFAPITestBase {
         ThingIFAPI api = this.craeteThingIFAPIWithSchema(APP_ID, APP_KEY, invalidSchema);
 
         Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
-        this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, true, "COMMAND_EXECUTION_REJECTED", schema);
+        this.addMockResponseForGetTriggerWithCommand(200, triggerID, expectedCommand, predicate, true, "COMMAND_EXECUTION_REJECTED", schema);
 
         try {
             api.setTarget(target);
@@ -233,7 +276,7 @@ public class ThingIFAPI_GetTriggerTest extends ThingIFAPITestBase {
         ThingIFAPI api = this.craeteThingIFAPIWithSchema(APP_ID, APP_KEY, invalidSchema);
 
         Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
-        this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, true, "COMMAND_EXECUTION_REJECTED", schema);
+        this.addMockResponseForGetTriggerWithCommand(200, triggerID, expectedCommand, predicate, true, "COMMAND_EXECUTION_REJECTED", schema);
 
         try {
             api.setTarget(target);
@@ -275,7 +318,7 @@ public class ThingIFAPI_GetTriggerTest extends ThingIFAPITestBase {
         ThingIFAPI api = this.craeteThingIFAPIWithSchema(APP_ID, APP_KEY, unsupportedSetColorSchema);
 
         Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
-        this.addMockResponseForGetTrigger(200, triggerID, expectedCommand, predicate, true, "COMMAND_EXECUTION_REJECTED", schema);
+        this.addMockResponseForGetTriggerWithCommand(200, triggerID, expectedCommand, predicate, true, "COMMAND_EXECUTION_REJECTED", schema);
 
         InternalUtils.gsonRepositoryClearCache();
         try {
