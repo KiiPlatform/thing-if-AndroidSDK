@@ -11,7 +11,9 @@ import org.junit.runner.RunWith;
 public class ServerCodeTest extends SmallTestBase {
     @Test
     public void constructorTest1() throws Exception {
-        new ServerCode("endpoint", "executor_access_token");
+        ServerCode serverCode = new ServerCode("endpoint", "executor_access_token");
+        assertEquals("endpoint", serverCode.getEndpoint());
+        assertEquals("executor_access_token", serverCode.getExecutorAccessToken());
     }
     @Test(expected=IllegalArgumentException.class)
     public void constructorTest2() throws Exception {
@@ -19,6 +21,8 @@ public class ServerCodeTest extends SmallTestBase {
     }
     @Test
     public void constructorTest3() throws Exception {
-        new ServerCode("endpoint", null);
+        ServerCode serverCode = new ServerCode("endpoint", null);
+        assertEquals("endpoint", serverCode.getEndpoint());
+        assertNull(serverCode.getExecutorAccessToken());
     }
 }
