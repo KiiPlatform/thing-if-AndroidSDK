@@ -1,4 +1,4 @@
-[![Circle CI](https://circleci.com/gh/KiiPlatform/thing-if-AndroidSDK/tree/master.svg?style=svg)](https://circleci.com/gh/KiiPlatform/thing-if-AndroidSDK/tree/master)
+[ ![Download](https://api.bintray.com/packages/kii/KiiAndroidSDK/thing-if-sdk/images/download.svg) ](https://bintray.com/kii/KiiAndroidSDK/thing-if-sdk/_latestVersion) [![Circle CI](https://circleci.com/gh/KiiPlatform/thing-if-AndroidSDK/tree/master.svg?style=svg)](https://circleci.com/gh/KiiPlatform/thing-if-AndroidSDK/tree/master)
 # thing-if AndroidSDK
 
 Android SDK for Kii Thing Interaction Framework.<br>
