@@ -18,7 +18,7 @@ public class ServerCode implements Parcelable {
 
     public ServerCode(
             @NonNull String endpoint,
-            @NonNull String executorAccessToken) {
+            @Nullable String executorAccessToken) {
         this(endpoint, executorAccessToken, null, null);
     }
     public ServerCode(
@@ -28,9 +28,6 @@ public class ServerCode implements Parcelable {
             @Nullable JSONObject parameters) {
         if (TextUtils.isEmpty(endpoint)) {
             throw new IllegalArgumentException("endpoint is null or empty");
-        }
-        if (TextUtils.isEmpty(executorAccessToken)) {
-            throw new IllegalArgumentException("executorAccessToken is null or empty");
         }
         this.endpoint = endpoint;
         this.executorAccessToken = executorAccessToken;
