@@ -19,8 +19,9 @@ public class TriggeredServerCodeResultParcelableTest extends SmallTestBase {
         boolean succeeded = true;
         JSONObject returnedValue = new JSONObject("{\"f1\":\"aaa\",\"f2\":false,\"f3\":1000,\"f4\":100.05,\"f5\":[1,2,3],\"f6\":{}}");
         long executedAt = System.currentTimeMillis();
+        String endpoint = "func1";
 
-        TriggeredServerCodeResult result = new TriggeredServerCodeResult(succeeded, returnedValue, executedAt, null);
+        TriggeredServerCodeResult result = new TriggeredServerCodeResult(succeeded, returnedValue, executedAt, endpoint, null);
         Parcel parcel = Parcel.obtain();
         result.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
@@ -29,6 +30,7 @@ public class TriggeredServerCodeResultParcelableTest extends SmallTestBase {
         Assert.assertEquals(succeeded, deserializedResult.isSucceeded());
         assertJSONObject(returnedValue, deserializedResult.getReturnedValueAsJsonObject());
         Assert.assertEquals(executedAt, deserializedResult.getExecutedAt());
+        Assert.assertEquals(endpoint, deserializedResult.getEndpoint());
         Assert.assertNull(deserializedResult.getError());
     }
     @Test
@@ -36,8 +38,9 @@ public class TriggeredServerCodeResultParcelableTest extends SmallTestBase {
         boolean succeeded = false;
         JSONArray returnedValue = new JSONArray("[123, \"abc\", true, 123.05, [], {}]");
         long executedAt = System.currentTimeMillis();
+        String endpoint = "func1";
 
-        TriggeredServerCodeResult result = new TriggeredServerCodeResult(succeeded, returnedValue, executedAt, null);
+        TriggeredServerCodeResult result = new TriggeredServerCodeResult(succeeded, returnedValue, executedAt, endpoint, null);
         Parcel parcel = Parcel.obtain();
         result.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
@@ -46,6 +49,7 @@ public class TriggeredServerCodeResultParcelableTest extends SmallTestBase {
         Assert.assertEquals(succeeded, deserializedResult.isSucceeded());
         assertJSONArray(returnedValue, deserializedResult.getReturnedValueAsJsonArray());
         Assert.assertEquals(executedAt, deserializedResult.getExecutedAt());
+        Assert.assertEquals(endpoint, deserializedResult.getEndpoint());
         Assert.assertNull(deserializedResult.getError());
     }
     @Test
@@ -53,8 +57,9 @@ public class TriggeredServerCodeResultParcelableTest extends SmallTestBase {
         boolean succeeded = true;
         String returnedValue = "abc";
         long executedAt = System.currentTimeMillis();
+        String endpoint = "func1";
 
-        TriggeredServerCodeResult result = new TriggeredServerCodeResult(succeeded, returnedValue, executedAt, null);
+        TriggeredServerCodeResult result = new TriggeredServerCodeResult(succeeded, returnedValue, executedAt, endpoint, null);
         Parcel parcel = Parcel.obtain();
         result.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
@@ -63,6 +68,7 @@ public class TriggeredServerCodeResultParcelableTest extends SmallTestBase {
         Assert.assertEquals(succeeded, deserializedResult.isSucceeded());
         Assert.assertEquals(returnedValue, deserializedResult.getReturnedValueAsString());
         Assert.assertEquals(executedAt, deserializedResult.getExecutedAt());
+        Assert.assertEquals(endpoint, deserializedResult.getEndpoint());
         Assert.assertNull(deserializedResult.getError());
     }
     @Test
@@ -70,8 +76,9 @@ public class TriggeredServerCodeResultParcelableTest extends SmallTestBase {
         boolean succeeded = false;
         String returnedValue = "";
         long executedAt = System.currentTimeMillis();
+        String endpoint = "func1";
 
-        TriggeredServerCodeResult result = new TriggeredServerCodeResult(succeeded, returnedValue, executedAt, null);
+        TriggeredServerCodeResult result = new TriggeredServerCodeResult(succeeded, returnedValue, executedAt, endpoint, null);
         Parcel parcel = Parcel.obtain();
         result.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
@@ -80,6 +87,7 @@ public class TriggeredServerCodeResultParcelableTest extends SmallTestBase {
         Assert.assertEquals(succeeded, deserializedResult.isSucceeded());
         Assert.assertEquals(returnedValue, deserializedResult.getReturnedValueAsString());
         Assert.assertEquals(executedAt, deserializedResult.getExecutedAt());
+        Assert.assertEquals(endpoint, deserializedResult.getEndpoint());
         Assert.assertNull(deserializedResult.getError());
     }
     @Test
@@ -87,8 +95,9 @@ public class TriggeredServerCodeResultParcelableTest extends SmallTestBase {
         boolean succeeded = true;
         Integer returnedValue = 1000;
         long executedAt = System.currentTimeMillis();
+        String endpoint = "func1";
 
-        TriggeredServerCodeResult result = new TriggeredServerCodeResult(succeeded, returnedValue, executedAt, null);
+        TriggeredServerCodeResult result = new TriggeredServerCodeResult(succeeded, returnedValue, executedAt, endpoint, null);
         Parcel parcel = Parcel.obtain();
         result.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
@@ -97,6 +106,7 @@ public class TriggeredServerCodeResultParcelableTest extends SmallTestBase {
         Assert.assertEquals(succeeded, deserializedResult.isSucceeded());
         Assert.assertEquals(returnedValue, deserializedResult.getReturnedValueAsInteger());
         Assert.assertEquals(executedAt, deserializedResult.getExecutedAt());
+        Assert.assertEquals(endpoint, deserializedResult.getEndpoint());
         Assert.assertNull(deserializedResult.getError());
     }
     @Test
@@ -104,8 +114,9 @@ public class TriggeredServerCodeResultParcelableTest extends SmallTestBase {
         boolean succeeded = false;
         Long returnedValue = (long)(Integer.MAX_VALUE * 2);
         long executedAt = System.currentTimeMillis();
+        String endpoint = "func1";
 
-        TriggeredServerCodeResult result = new TriggeredServerCodeResult(succeeded, returnedValue, executedAt, null);
+        TriggeredServerCodeResult result = new TriggeredServerCodeResult(succeeded, returnedValue, executedAt, endpoint, null);
         Parcel parcel = Parcel.obtain();
         result.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
@@ -115,14 +126,16 @@ public class TriggeredServerCodeResultParcelableTest extends SmallTestBase {
         Assert.assertEquals(returnedValue, deserializedResult.getReturnedValueAsLong());
         Assert.assertEquals(executedAt, deserializedResult.getExecutedAt());
         Assert.assertNull(deserializedResult.getError());
+        Assert.assertEquals(endpoint, deserializedResult.getEndpoint());
     }
     @Test
     public void doubleTest() throws Exception {
         boolean succeeded = true;
         Double returnedValue = 10.05;
         long executedAt = System.currentTimeMillis();
+        String endpoint = "func1";
 
-        TriggeredServerCodeResult result = new TriggeredServerCodeResult(succeeded, returnedValue, executedAt, null);
+        TriggeredServerCodeResult result = new TriggeredServerCodeResult(succeeded, returnedValue, executedAt, endpoint, null);
         Parcel parcel = Parcel.obtain();
         result.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
@@ -131,6 +144,7 @@ public class TriggeredServerCodeResultParcelableTest extends SmallTestBase {
         Assert.assertEquals(succeeded, deserializedResult.isSucceeded());
         Assert.assertEquals(returnedValue, deserializedResult.getReturnedValueAsDouble());
         Assert.assertEquals(executedAt, deserializedResult.getExecutedAt());
+        Assert.assertEquals(endpoint, deserializedResult.getEndpoint());
         Assert.assertNull(deserializedResult.getError());
     }
     @Test
@@ -138,8 +152,9 @@ public class TriggeredServerCodeResultParcelableTest extends SmallTestBase {
         boolean succeeded = false;
         Boolean returnedValue = Boolean.FALSE;
         long executedAt = System.currentTimeMillis();
+        String endpoint = "func1";
 
-        TriggeredServerCodeResult result = new TriggeredServerCodeResult(succeeded, returnedValue, executedAt, null);
+        TriggeredServerCodeResult result = new TriggeredServerCodeResult(succeeded, returnedValue, executedAt, endpoint, null);
         Parcel parcel = Parcel.obtain();
         result.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
@@ -148,6 +163,7 @@ public class TriggeredServerCodeResultParcelableTest extends SmallTestBase {
         Assert.assertEquals(succeeded, deserializedResult.isSucceeded());
         Assert.assertEquals(returnedValue, deserializedResult.getReturnedValueAsBoolean());
         Assert.assertEquals(executedAt, deserializedResult.getExecutedAt());
+        Assert.assertEquals(endpoint, deserializedResult.getEndpoint());
         Assert.assertNull(deserializedResult.getError());
     }
     @Test
@@ -155,8 +171,9 @@ public class TriggeredServerCodeResultParcelableTest extends SmallTestBase {
         boolean succeeded = true;
         Object returnedValue = null;
         long executedAt = System.currentTimeMillis();
+        String endpoint = "func1";
 
-        TriggeredServerCodeResult result = new TriggeredServerCodeResult(succeeded, returnedValue, executedAt, null);
+        TriggeredServerCodeResult result = new TriggeredServerCodeResult(succeeded, returnedValue, executedAt, endpoint, null);
         Parcel parcel = Parcel.obtain();
         result.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
@@ -165,6 +182,7 @@ public class TriggeredServerCodeResultParcelableTest extends SmallTestBase {
         Assert.assertEquals(succeeded, deserializedResult.isSucceeded());
         Assert.assertEquals(returnedValue, deserializedResult.getReturnedValue());
         Assert.assertEquals(executedAt, deserializedResult.getExecutedAt());
+        Assert.assertEquals(endpoint, deserializedResult.getEndpoint());
         Assert.assertNull(deserializedResult.getError());
     }
     @Test
@@ -172,8 +190,9 @@ public class TriggeredServerCodeResultParcelableTest extends SmallTestBase {
         boolean succeeded = false;
         long executedAt = System.currentTimeMillis();
         ServerError error = new ServerError("Error found", "RUNTIME_ERROR", "faital error");
+        String endpoint = "func1";
 
-        TriggeredServerCodeResult result = new TriggeredServerCodeResult(succeeded, null, executedAt, error);
+        TriggeredServerCodeResult result = new TriggeredServerCodeResult(succeeded, null, executedAt, endpoint, error);
         Parcel parcel = Parcel.obtain();
         result.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
@@ -184,6 +203,7 @@ public class TriggeredServerCodeResultParcelableTest extends SmallTestBase {
         Assert.assertEquals(executedAt, deserializedResult.getExecutedAt());
         Assert.assertEquals(error.getErrorMessage(), deserializedResult.getError().getErrorMessage());
         Assert.assertEquals(error.getErrorCode(), deserializedResult.getError().getErrorCode());
+        Assert.assertEquals(endpoint, deserializedResult.getEndpoint());
         Assert.assertEquals(error.getDetailMessage(), deserializedResult.getError().getDetailMessage());
     }
 }

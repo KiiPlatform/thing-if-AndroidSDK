@@ -341,6 +341,9 @@ public class GsonRepository {
             JsonObject json = new JsonObject();
             json.addProperty("succeeded", src.isSucceeded());
             json.addProperty("executedAt", src.getExecutedAt());
+            if (!TextUtils.isEmpty(src.getEndpoint())) {
+                json.addProperty("endpoint", src.getEndpoint());
+            }
             if (src.hasReturnedValue()) {
                 if (src.getReturnedValue() instanceof JSONObject) {
                     json.add("returnedValue", new JsonParser().parse(src.getReturnedValueAsJsonObject().toString()));
@@ -375,6 +378,10 @@ public class GsonRepository {
             JsonObject json = (JsonObject)jsonElement;
             boolean succeeded = json.get("succeeded").getAsBoolean();
             long executedAt = json.get("executedAt").getAsLong();
+            String endpoint = null;
+            if (json.has("endpoint")) {
+                endpoint = json.get("endpoint").getAsString();
+            }
             Object returnedValue = null;
             if (json.has("returnedValue")) {
                 if (json.get("returnedValue").isJsonObject()) {
@@ -415,7 +422,7 @@ public class GsonRepository {
                 } catch (JSONException ignore) {
                 }
             }
-            TriggeredServerCodeResult result = new TriggeredServerCodeResult(succeeded, returnedValue, executedAt, error);
+            TriggeredServerCodeResult result = new TriggeredServerCodeResult(succeeded, returnedValue, executedAt, endpoint, error);
             return result;
         }
     };

@@ -28,12 +28,14 @@ public class TriggeredServerCodeResult implements Parcelable {
      */
     private Object returnedValue;
     private final long executedAt;
+    private String endpoint;
     private ServerError error;
 
-    public TriggeredServerCodeResult(boolean succeeded, Object returnedValue, long executedAt, ServerError error) {
+    public TriggeredServerCodeResult(boolean succeeded, Object returnedValue, long executedAt, String endpoint, ServerError error) {
         this.succeeded = succeeded;
         this.returnedValue = returnedValue;
         this.executedAt = executedAt;
+        this.endpoint = endpoint;
         this.error = error;
     }
     public boolean isSucceeded() {
@@ -131,6 +133,12 @@ public class TriggeredServerCodeResult implements Parcelable {
     public long getExecutedAt() {
         return this.executedAt;
     }
+    public String getEndpoint() {
+        return this.endpoint;
+    }
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
+    }
     public ServerError getError() {
         return this.error;
     }
@@ -172,6 +180,7 @@ public class TriggeredServerCodeResult implements Parcelable {
                 break;
         }
         this.executedAt = in.readLong();
+        this.endpoint = in.readString();
         this.error = in.readParcelable(ServerError.class.getClassLoader());
     }
     public static final Creator<TriggeredServerCodeResult> CREATOR = new Creator<TriggeredServerCodeResult>() {
@@ -217,6 +226,7 @@ public class TriggeredServerCodeResult implements Parcelable {
             dest.writeByte((byte) ((Boolean)this.returnedValue ? 1 : 0));
         }
         dest.writeLong(this.executedAt);
+        dest.writeString(this.endpoint);
         if (this.error != null) {
             dest.writeParcelable(this.error, flags);
         } else {

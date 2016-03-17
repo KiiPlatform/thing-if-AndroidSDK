@@ -31,13 +31,13 @@ public class ThingIFAPI_ListTriggeredServerCodeResultsTest extends ThingIFAPITes
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
 
-        TriggeredServerCodeResult serverCodeResult1 = new TriggeredServerCodeResult(true, "1234", System.currentTimeMillis(), null);
-        TriggeredServerCodeResult serverCodeResult2 = new TriggeredServerCodeResult(true, "12.34", System.currentTimeMillis() + 1000, null);
-        TriggeredServerCodeResult serverCodeResult3 = new TriggeredServerCodeResult(true, "true", System.currentTimeMillis() + 2000, null);
-        TriggeredServerCodeResult serverCodeResult4 = new TriggeredServerCodeResult(true, "\"abcd\"", System.currentTimeMillis() + 3000, null);
-        TriggeredServerCodeResult serverCodeResult5 = new TriggeredServerCodeResult(true, "{\"field\":\"abcd\"}", System.currentTimeMillis() + 4000, null);
-        TriggeredServerCodeResult serverCodeResult6 = new TriggeredServerCodeResult(true, "[1, \"2\", 3]", System.currentTimeMillis() + 5000, null);
-        TriggeredServerCodeResult serverCodeResult7 = new TriggeredServerCodeResult(false, null, System.currentTimeMillis() + 6000, new ServerError("Error found", "RUNTIME_ERROR", "faital error"));
+        TriggeredServerCodeResult serverCodeResult1 = new TriggeredServerCodeResult(true, "1234", System.currentTimeMillis(), "func1", null);
+        TriggeredServerCodeResult serverCodeResult2 = new TriggeredServerCodeResult(true, "12.34", System.currentTimeMillis() + 1000, "func2", null);
+        TriggeredServerCodeResult serverCodeResult3 = new TriggeredServerCodeResult(true, "true", System.currentTimeMillis() + 2000, "func3", null);
+        TriggeredServerCodeResult serverCodeResult4 = new TriggeredServerCodeResult(true, "\"abcd\"", System.currentTimeMillis() + 3000, "func4", null);
+        TriggeredServerCodeResult serverCodeResult5 = new TriggeredServerCodeResult(true, "{\"field\":\"abcd\"}", System.currentTimeMillis() + 4000, "func5", null);
+        TriggeredServerCodeResult serverCodeResult6 = new TriggeredServerCodeResult(true, "[1, \"2\", 3]", System.currentTimeMillis() + 5000, "func6", null);
+        TriggeredServerCodeResult serverCodeResult7 = new TriggeredServerCodeResult(false, null, System.currentTimeMillis() + 6000, "func7", new ServerError("Error found", "RUNTIME_ERROR", "faital error"));
 
         this.addMockResponseForListTriggeredServerCodeResults(200, new TriggeredServerCodeResult[]{serverCodeResult1, serverCodeResult2, serverCodeResult3, serverCodeResult4}, paginationKey);
         this.addMockResponseForListTriggeredServerCodeResults(200, new TriggeredServerCodeResult[]{serverCodeResult5, serverCodeResult6, serverCodeResult7}, null);
@@ -86,7 +86,7 @@ public class ThingIFAPI_ListTriggeredServerCodeResultsTest extends ThingIFAPITes
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
 
-        TriggeredServerCodeResult serverCodeResult1 = new TriggeredServerCodeResult(true, "1234", System.currentTimeMillis(), null);
+        TriggeredServerCodeResult serverCodeResult1 = new TriggeredServerCodeResult(true, "1234", System.currentTimeMillis(), "func1", null);
 
         this.addMockResponseForListTriggeredServerCodeResults(200, new TriggeredServerCodeResult[]{serverCodeResult1}, null);
 

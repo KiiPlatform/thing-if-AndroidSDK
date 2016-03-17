@@ -443,6 +443,7 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         Assert.assertEquals(expected.isSucceeded(), actual.isSucceeded());
         Assert.assertEquals(expected.getReturnedValue(), actual.getReturnedValue());
         Assert.assertEquals(expected.getExecutedAt(), actual.getExecutedAt());
+        Assert.assertEquals(expected.getEndpoint(), actual.getEndpoint());
         assertServerError(expected.getError(), actual.getError());
     }
     protected void assertServerError(ServerError expected, ServerError actual) {
