@@ -525,6 +525,7 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertTrue(triggeredServerCodeResult.isSucceeded());
         Assert.assertEquals(100, (int) triggeredServerCodeResult.getReturnedValueAsInteger());
         Assert.assertTrue(triggeredServerCodeResult.getExecutedAt() > 0);
+        Assert.assertEquals(endpoint, triggeredServerCodeResult.getEndpoint());
         Assert.assertNull(triggeredServerCodeResult.getError());
     }
     @Test
@@ -596,6 +597,7 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertFalse(triggeredServerCodeResult.isSucceeded());
         Assert.assertNull(triggeredServerCodeResult.getReturnedValue());
         Assert.assertTrue(triggeredServerCodeResult.getExecutedAt() > 0);
+        Assert.assertEquals(endpoint, triggeredServerCodeResult.getEndpoint());
         Assert.assertNotNull(triggeredServerCodeResult.getError());
         Assert.assertEquals("Error found while executing the developer-defined code", triggeredServerCodeResult.getError().getErrorMessage());
         Assert.assertEquals("RUNTIME_ERROR", triggeredServerCodeResult.getError().getErrorCode());
