@@ -94,7 +94,7 @@ public class GatewayAPI4EndNode extends GatewayAPI {
 
     @WorkerThread
     @Override
-    public void notifyOnboardingCompletion(String endNodeThingID, String endNodeVenderThingID) throws ThingIFException {
+    public void notifyOnboardingCompletion(@NonNull String endNodeThingID, @NonNull String endNodeVenderThingID) throws ThingIFException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");
         }
@@ -126,7 +126,7 @@ public class GatewayAPI4EndNode extends GatewayAPI {
 
     @WorkerThread
     @Override
-    public void replaceEndNode(String endNodeThingID, String endNodeVenderThingID) throws ThingIFException {
+    public void replaceEndNode(@NonNull String endNodeThingID, @NonNull String endNodeVenderThingID) throws ThingIFException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");
         }

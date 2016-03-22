@@ -60,7 +60,7 @@ public abstract class GatewayAPI implements Parcelable {
      * @throws ThingIFException
      */
     @WorkerThread
-    public void login(String username, String password) throws ThingIFException {
+    public void login(@NonNull String username, @NonNull String password) throws ThingIFException {
         if (TextUtils.isEmpty(username)) {
             throw new IllegalArgumentException("username is null or empty");
         }
@@ -94,6 +94,7 @@ public abstract class GatewayAPI implements Parcelable {
      * See {@link #login(String, String)}
      */
     @WorkerThread
+    @NonNull
     public abstract String onboardGateway() throws ThingIFException;
 
     /**
@@ -104,6 +105,7 @@ public abstract class GatewayAPI implements Parcelable {
      * See {@link #login(String, String)}
      */
     @WorkerThread
+    @NonNull
     public abstract String getGatewayID() throws ThingIFException;
 
     /** List connected end nodes which has not been onboarded.
@@ -113,6 +115,7 @@ public abstract class GatewayAPI implements Parcelable {
      * See {@link #login(String, String)}
      */
     @WorkerThread
+    @NonNull
     public abstract List<PendingEndNode> listPendingEndNodes() throws ThingIFException;
 
     /** Notify Onboarding completion
@@ -125,7 +128,7 @@ public abstract class GatewayAPI implements Parcelable {
      * See {@link #login(String, String)}
      */
     @WorkerThread
-    public abstract void notifyOnboardingCompletion(String endNodeThingID, String endNodeVenderThingID) throws ThingIFException;
+    public abstract void notifyOnboardingCompletion(@NonNull String endNodeThingID, @NonNull String endNodeVenderThingID) throws ThingIFException;
 
     /** Restore the Gateway
      * @throws ThingIFException
@@ -145,7 +148,7 @@ public abstract class GatewayAPI implements Parcelable {
      * See {@link #login(String, String)}
      */
     @WorkerThread
-    public abstract void replaceEndNode(String endNodeThingID, String endNodeVenderThingID) throws ThingIFException;
+    public abstract void replaceEndNode(@NonNull String endNodeThingID, @NonNull String endNodeVenderThingID) throws ThingIFException;
 
     /**
      * Get vendorThingID of the Gateway.
@@ -156,6 +159,7 @@ public abstract class GatewayAPI implements Parcelable {
      * @throws IllegalStateException Thrown when user is not logged in.
      */
     @WorkerThread
+    @NonNull
     public String getGatewayInformation() throws ThingIFException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");
