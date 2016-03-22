@@ -14,6 +14,7 @@ import com.google.gson.JsonParseException;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.ActionResult;
 import com.kii.thingif.command.Command;
+import com.kii.thingif.command.CommandData;
 import com.kii.thingif.exception.ThingIFException;
 import com.kii.thingif.exception.ThingIFRestException;
 import com.kii.thingif.exception.StoredThingIFAPIInstanceNotFoundException;
@@ -444,6 +445,13 @@ public class ThingIFAPI implements Parcelable {
 
         String commandID = responseBody.optString("commandID", null);
         return this.getCommand(commandID);
+    }
+
+    @NonNull
+    @WorkerThread
+    public Command postNewCommand(@NonNull CommandData data) {
+        // TODO: implement me.
+        return null;
     }
 
     /**
