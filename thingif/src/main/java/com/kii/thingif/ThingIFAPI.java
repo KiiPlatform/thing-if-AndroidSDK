@@ -446,6 +446,13 @@ public class ThingIFAPI implements Parcelable {
         return this.getCommand(commandID);
     }
 
+    @NonNull
+    @WorkerThread
+    public Command postNewCommand(@NonNull Command command) {
+        // TODO: implement me.
+        return null;
+    }
+
     /**
      * Get specified command.
      * @param commandID ID of the command to obtain. ID is present in the
