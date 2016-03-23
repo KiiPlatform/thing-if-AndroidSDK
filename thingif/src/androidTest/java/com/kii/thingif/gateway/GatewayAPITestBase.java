@@ -1,5 +1,7 @@
 package com.kii.thingif.gateway;
 
+import android.support.test.InstrumentationRegistry;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -24,6 +26,7 @@ public class GatewayAPITestBase extends SmallTestBase {
 
     protected static final String APP_ID = "smalltest";
     protected static final String APP_KEY = "abcdefghijklmnopqrstuvwxyz123456789";
+    protected static final String ACCESS_TOKEN = "token-0000-1111-aaaa-bbbb";
     private static final String SDK_VERSION = "0.10.0";
     protected MockWebServer server;
 
@@ -37,11 +40,27 @@ public class GatewayAPITestBase extends SmallTestBase {
     public void after() throws Exception {
         this.server.shutdown();
     }
-    protected KiiApp getApp(String appId, String appKey) throws NoSuchFieldException, IllegalAccessException {
+    protected KiiApp getApp(String appId, String appKey) {
         String hostName = server.getHostName();
         KiiApp app = KiiApp.Builder.builderWithHostName(appId, appKey, hostName).
                 setPort(server.getPort()).setURLSchema("http").build();
         return app;
+    }
+    protected GatewayAPI4Gateway craeteGatewayAPI4GatewayWithLoggedIn() throws Exception {
+        KiiApp app = getApp(APP_ID, APP_KEY);
+        this.addMockResponseForLogin(200, ACCESS_TOKEN);
+        GatewayAPI4Gateway api = new GatewayAPI4Gateway(InstrumentationRegistry.getTargetContext(), app);
+        api.login("dummy", "dummy");
+        this.server.takeRequest();
+        return api;
+    }
+    protected GatewayAPI4EndNode craeteGatewayAPI4EndNodeWithLoggedIn() throws Exception {
+        KiiApp app = getApp(APP_ID, APP_KEY);
+        this.addMockResponseForLogin(200, ACCESS_TOKEN);
+        GatewayAPI4EndNode api = new GatewayAPI4EndNode(InstrumentationRegistry.getTargetContext(), app);
+        api.login("dummy", "dummy");
+        this.server.takeRequest();
+        return api;
     }
     protected void addMockResponse(int httpStatus, JsonElement body) {
         this.server.enqueue(new MockResponse().setResponseCode(httpStatus).setBody(body.toString()));
@@ -54,6 +73,15 @@ public class GatewayAPITestBase extends SmallTestBase {
         responseBody.addProperty("accessToken", accessToken);
         this.server.enqueue(new MockResponse().setResponseCode(httpStatus).setBody(responseBody.toString()));
     }
+    protected void addMockResponseForGetGatewayInformation(int httpStatus, String vendorThingID) {
+        JsonObject responseBody = new JsonObject();
+        responseBody.addProperty("vendorThingID", vendorThingID);
+        this.server.enqueue(new MockResponse().setResponseCode(httpStatus).setBody(responseBody.toString()));
+    }
+
+
+
+
     protected void assertRequestBody(String expected, RecordedRequest actual) {
         this.assertRequestBody(new JsonParser().parse(expected), actual);
     }

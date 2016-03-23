@@ -77,7 +77,7 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         this.server.shutdown();
     }
 
-    public KiiApp getApp(String appId, String appKey) throws NoSuchFieldException, IllegalAccessException {
+    public KiiApp getApp(String appId, String appKey) {
         String hostName = server.getHostName();
         KiiApp app = KiiApp.Builder.builderWithHostName(appId, appKey, hostName).
                 setPort(server.getPort()).setURLSchema("http").build();
