@@ -2,6 +2,7 @@ package com.kii.thingif.gateway;
 
 import android.support.test.InstrumentationRegistry;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -78,9 +79,30 @@ public class GatewayAPITestBase extends SmallTestBase {
         responseBody.addProperty("vendorThingID", vendorThingID);
         this.server.enqueue(new MockResponse().setResponseCode(httpStatus).setBody(responseBody.toString()));
     }
-
-
-
+    protected void addMockResponseForOnboardGateway(int httpStatus, String thingID) {
+        JsonObject responseBody = new JsonObject();
+        responseBody.addProperty("thingID", thingID);
+        this.server.enqueue(new MockResponse().setResponseCode(httpStatus).setBody(responseBody.toString()));
+    }
+    protected void addMockResponseForGetGatewayID(int httpStatus, String thingID) {
+        JsonObject responseBody = new JsonObject();
+        responseBody.addProperty("thingID", thingID);
+        this.server.enqueue(new MockResponse().setResponseCode(httpStatus).setBody(responseBody.toString()));
+    }
+    protected void addMockResponseForListPendingEndNodes(int httpStatus, PendingEndNode... nodes) {
+        JsonObject responseBody = new JsonObject();
+        JsonArray nodeArray = new JsonArray();
+        for (PendingEndNode node : nodes) {
+            JsonObject pendingNode = new JsonObject();
+            pendingNode.addProperty("vendorThingID", node.getVendorThingID());
+            if (node.getThingProperties() != null) {
+                pendingNode.add("thingProperties", new JsonParser().parse(node.getThingProperties().toString()));
+            }
+            nodeArray.add(pendingNode);
+        }
+        responseBody.add("results", nodeArray);
+        this.server.enqueue(new MockResponse().setResponseCode(httpStatus).setBody(responseBody.toString()));
+    }
 
     protected void assertRequestBody(String expected, RecordedRequest actual) {
         this.assertRequestBody(new JsonParser().parse(expected), actual);

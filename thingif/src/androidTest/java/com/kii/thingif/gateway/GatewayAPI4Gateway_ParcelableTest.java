@@ -5,8 +5,6 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.kii.thingif.KiiApp;
-import com.kii.thingif.Site;
-import com.squareup.okhttp.mockwebserver.MockResponse;
 
 import org.junit.Assert;
 import org.junit.Test;

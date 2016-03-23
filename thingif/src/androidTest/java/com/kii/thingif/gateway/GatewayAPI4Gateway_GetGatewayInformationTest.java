@@ -1,7 +1,9 @@
 package com.kii.thingif.gateway;
 
+import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.kii.thingif.KiiApp;
 import com.kii.thingif.exception.UnauthorizedException;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
@@ -34,6 +36,12 @@ public class GatewayAPI4Gateway_GetGatewayInformationTest extends GatewayAPITest
         this.assertRequestHeader(expectedRequestHeaders, request);
 
         Assert.assertEquals(vendorThingID, information);
+    }
+    @Test(expected = IllegalStateException.class)
+    public void getGatewayInformationNoLoggedInTest() throws Exception {
+        KiiApp app = getApp(APP_ID, APP_KEY);
+        GatewayAPI4Gateway api = new GatewayAPI4Gateway(InstrumentationRegistry.getTargetContext(), app);
+        api.getGatewayInformation();
     }
     @Test
     public void getGatewayInformation401ErrorTest() throws Exception {
