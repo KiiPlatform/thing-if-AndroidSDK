@@ -189,23 +189,6 @@ public abstract class GatewayAPI implements Parcelable {
         this.accessToken = in.readString();
         this.restClient = new IoTRestClient();
     }
-    public static final Creator<GatewayAPI> CREATOR = new Creator<GatewayAPI>() {
-        @Override
-        public GatewayAPI createFromParcel(Parcel in) {
-            String className = in.readString();
-            if (GatewayAPI4Gateway.class.getName().equals(className)) {
-                return new GatewayAPI4Gateway(in);
-            } else if (GatewayAPI4EndNode.class.getName().equals(className)) {
-                return new GatewayAPI4EndNode(in);
-            }
-            throw new AssertionError("detected unknown class " + className);
-        }
-
-        @Override
-        public GatewayAPI[] newArray(int size) {
-            return new GatewayAPI[size];
-        }
-    };
     @Override
     public int describeContents() {
         return 0;
@@ -213,7 +196,6 @@ public abstract class GatewayAPI implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(getClass().getName());
         dest.writeString(this.appID);
         dest.writeString(this.appKey);
         dest.writeString(this.siteName);
