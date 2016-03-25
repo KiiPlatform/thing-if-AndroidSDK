@@ -47,18 +47,18 @@ public class GatewayAPITestBase extends SmallTestBase {
                 setPort(server.getPort()).setURLSchema("http").build();
         return app;
     }
-    protected GatewayAPI4Gateway craeteGatewayAPI4GatewayWithLoggedIn() throws Exception {
+    protected GatewayAPI4GatewayImpl craeteGatewayAPI4GatewayWithLoggedIn() throws Exception {
         KiiApp app = getApp(APP_ID, APP_KEY);
         this.addMockResponseForLogin(200, ACCESS_TOKEN);
-        GatewayAPI4Gateway api = new GatewayAPI4Gateway(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAPI4GatewayImpl api = new GatewayAPI4GatewayImpl(InstrumentationRegistry.getTargetContext(), app);
         api.login("dummy", "dummy");
         this.server.takeRequest();
         return api;
     }
-    protected GatewayAPI4EndNode craeteGatewayAPI4EndNodeWithLoggedIn() throws Exception {
+    protected GatewayAPI4EndNodeImpl craeteGatewayAPI4EndNodeWithLoggedIn() throws Exception {
         KiiApp app = getApp(APP_ID, APP_KEY);
         this.addMockResponseForLogin(200, ACCESS_TOKEN);
-        GatewayAPI4EndNode api = new GatewayAPI4EndNode(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAPI4EndNodeImpl api = new GatewayAPI4EndNodeImpl(InstrumentationRegistry.getTargetContext(), app);
         api.login("dummy", "dummy");
         this.server.takeRequest();
         return api;

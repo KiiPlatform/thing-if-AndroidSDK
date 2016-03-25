@@ -54,7 +54,7 @@ public class GatewayAPI4EndNode_ReplaceEndNodeTest extends GatewayAPITestBase {
         String vendorThingID =  UUID.randomUUID().toString();
 
         KiiApp app = getApp(APP_ID, APP_KEY);
-        GatewayAPI4EndNode api = new GatewayAPI4EndNode(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAPI4EndNode api = new GatewayAPI4EndNodeImpl(InstrumentationRegistry.getTargetContext(), app);
         api.replaceEndNode(thingID, vendorThingID);
     }
     @Test(expected = IllegalArgumentException.class)

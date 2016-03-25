@@ -26,7 +26,7 @@ public class GatewayAPI4Gateway_LoginTest extends GatewayAPITestBase {
         String password = "pa$$word";
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
-        GatewayAPI4Gateway api = new GatewayAPI4Gateway(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAPI4GatewayImpl api = new GatewayAPI4GatewayImpl(InstrumentationRegistry.getTargetContext(), app);
 
         this.addMockResponseForLogin(200, accessToken);
         api.login(username, password);
@@ -53,7 +53,7 @@ public class GatewayAPI4Gateway_LoginTest extends GatewayAPITestBase {
         String password = "pa$$word";
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
-        GatewayAPI4Gateway api = new GatewayAPI4Gateway(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAPI4GatewayImpl api = new GatewayAPI4GatewayImpl(InstrumentationRegistry.getTargetContext(), app);
 
         api.login(username, password);
     }
@@ -63,7 +63,7 @@ public class GatewayAPI4Gateway_LoginTest extends GatewayAPITestBase {
         String password = "pa$$word";
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
-        GatewayAPI4Gateway api = new GatewayAPI4Gateway(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAPI4GatewayImpl api = new GatewayAPI4GatewayImpl(InstrumentationRegistry.getTargetContext(), app);
 
         api.login(username, password);
     }
@@ -73,7 +73,7 @@ public class GatewayAPI4Gateway_LoginTest extends GatewayAPITestBase {
         String password = null;
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
-        GatewayAPI4Gateway api = new GatewayAPI4Gateway(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAPI4GatewayImpl api = new GatewayAPI4GatewayImpl(InstrumentationRegistry.getTargetContext(), app);
 
         api.login(username, password);
     }
@@ -83,7 +83,7 @@ public class GatewayAPI4Gateway_LoginTest extends GatewayAPITestBase {
         String password = "";
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
-        GatewayAPI4Gateway api = new GatewayAPI4Gateway(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAPI4GatewayImpl api = new GatewayAPI4GatewayImpl(InstrumentationRegistry.getTargetContext(), app);
 
         api.login(username, password);
     }
@@ -93,7 +93,7 @@ public class GatewayAPI4Gateway_LoginTest extends GatewayAPITestBase {
         String password = "pa$$word";
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
-        GatewayAPI4Gateway api = new GatewayAPI4Gateway(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAPI4GatewayImpl api = new GatewayAPI4GatewayImpl(InstrumentationRegistry.getTargetContext(), app);
 
         this.addEmptyMockResponse(400);
         try {
@@ -124,7 +124,7 @@ public class GatewayAPI4Gateway_LoginTest extends GatewayAPITestBase {
         String password = "pa$$word";
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
-        GatewayAPI4Gateway api = new GatewayAPI4Gateway(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAPI4GatewayImpl api = new GatewayAPI4GatewayImpl(InstrumentationRegistry.getTargetContext(), app);
 
         this.addEmptyMockResponse(401);
         try {

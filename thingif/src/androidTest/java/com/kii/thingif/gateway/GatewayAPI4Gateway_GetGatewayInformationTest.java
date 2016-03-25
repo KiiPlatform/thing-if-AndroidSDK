@@ -23,7 +23,7 @@ public class GatewayAPI4Gateway_GetGatewayInformationTest extends GatewayAPITest
     public void getGatewayInformationTest() throws Exception {
         String vendorThingID = UUID.randomUUID().toString();
 
-        GatewayAPI4Gateway api = this.craeteGatewayAPI4GatewayWithLoggedIn();
+        GatewayAPI4GatewayImpl api = this.craeteGatewayAPI4GatewayWithLoggedIn();
         this.addMockResponseForGetGatewayInformation(200, vendorThingID);
         String information = api.getGatewayInformation();
 
@@ -40,14 +40,14 @@ public class GatewayAPI4Gateway_GetGatewayInformationTest extends GatewayAPITest
     @Test(expected = IllegalStateException.class)
     public void getGatewayInformationNoLoggedInTest() throws Exception {
         KiiApp app = getApp(APP_ID, APP_KEY);
-        GatewayAPI4Gateway api = new GatewayAPI4Gateway(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAPI4GatewayImpl api = new GatewayAPI4GatewayImpl(InstrumentationRegistry.getTargetContext(), app);
         api.getGatewayInformation();
     }
     @Test
     public void getGatewayInformation401ErrorTest() throws Exception {
         String vendorThingID = UUID.randomUUID().toString();
 
-        GatewayAPI4Gateway api = this.craeteGatewayAPI4GatewayWithLoggedIn();
+        GatewayAPI4GatewayImpl api = this.craeteGatewayAPI4GatewayWithLoggedIn();
         this.addEmptyMockResponse(401);
         try {
             api.getGatewayInformation();
