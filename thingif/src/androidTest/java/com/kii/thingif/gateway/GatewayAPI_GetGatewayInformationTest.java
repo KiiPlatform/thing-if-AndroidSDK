@@ -18,12 +18,12 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(AndroidJUnit4.class)
-public class GatewayAPI4EndNode_GetGatewayInformationTest extends GatewayAPITestBase {
+public class GatewayAPI_GetGatewayInformationTest extends GatewayAPITestBase {
     @Test
     public void getGatewayInformationTest() throws Exception {
         String vendorThingID = UUID.randomUUID().toString();
 
-        GatewayAPI4EndNode api = this.craeteGatewayAPI4EndNodeWithLoggedIn();
+        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
         this.addMockResponseForGetGatewayInformation(200, vendorThingID);
         String information = api.getGatewayInformation();
 
@@ -40,14 +40,14 @@ public class GatewayAPI4EndNode_GetGatewayInformationTest extends GatewayAPITest
     @Test(expected = IllegalStateException.class)
     public void getGatewayInformationNoLoggedInTest() throws Exception {
         KiiApp app = getApp(APP_ID, APP_KEY);
-        GatewayAPI4EndNode api = new GatewayAPI4EndNode(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app);
         api.getGatewayInformation();
     }
     @Test
     public void getGatewayInformation401ErrorTest() throws Exception {
         String vendorThingID = UUID.randomUUID().toString();
 
-        GatewayAPI4EndNode api = this.craeteGatewayAPI4EndNodeWithLoggedIn();
+        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
         this.addEmptyMockResponse(401);
         try {
             api.getGatewayInformation();
