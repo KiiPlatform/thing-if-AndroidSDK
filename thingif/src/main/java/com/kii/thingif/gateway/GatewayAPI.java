@@ -16,15 +16,17 @@ import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
 import com.kii.thingif.internal.utils.Path;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class GatewayAPI implements Parcelable {
+public class GatewayAPI implements Parcelable {
 
     protected static Context context;
     protected final String appID;
@@ -93,9 +95,20 @@ public abstract class GatewayAPI implements Parcelable {
      * @throws IllegalStateException Thrown when user is not logged in.
      * See {@link #login(String, String)}
      */
-    @WorkerThread
     @NonNull
-    public abstract String onboardGateway() throws ThingIFException;
+    @WorkerThread
+    public String onboardGateway() throws ThingIFException {
+        if (!isLoggedIn()) {
+            throw new IllegalStateException("Needs user login before execute this API");
+        }
+        String path = MessageFormat.format("/{0}/apps/{1}/gateway/onboarding", this.siteName, this.appID);
+        String url = Path.combine(baseUrl, path);
+        Map<String, String> headers = this.newHeader();
+
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers);
+        JSONObject responseBody = this.restClient.sendRequest(request);
+        return responseBody.optString("thingID", null);
+    }
 
     /**
      * Get Gateway ID
@@ -106,7 +119,18 @@ public abstract class GatewayAPI implements Parcelable {
      */
     @WorkerThread
     @NonNull
-    public abstract String getGatewayID() throws ThingIFException;
+    public String getGatewayID() throws ThingIFException {
+        if (!isLoggedIn()) {
+            throw new IllegalStateException("Needs user login before execute this API");
+        }
+        String path = MessageFormat.format("/{0}/apps/{1}/gateway/id", this.siteName, this.appID);
+        String url = Path.combine(this.baseUrl, path);
+        Map<String, String> headers = this.newHeader();
+
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
+        JSONObject responseBody = this.restClient.sendRequest(request);
+        return responseBody.optString("thingID", null);
+    }
 
     /** List connected end nodes which has not been onboarded.
      * @return List of end nodes connected to the gateway but waiting for onboarding.
@@ -116,7 +140,28 @@ public abstract class GatewayAPI implements Parcelable {
      */
     @WorkerThread
     @NonNull
-    public abstract List<PendingEndNode> listPendingEndNodes() throws ThingIFException;
+    public List<PendingEndNode> listPendingEndNodes() throws ThingIFException {
+        if (!isLoggedIn()) {
+            throw new IllegalStateException("Needs user login before execute this API");
+        }
+        String path = MessageFormat.format("/{0}/apps/{1}/gateway/end-nodes/pending", this.siteName, this.appID);
+        String url = Path.combine(baseUrl, path);
+        Map<String, String> headers = this.newHeader();
+
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
+        JSONObject responseBody = this.restClient.sendRequest(request);
+        List<PendingEndNode> nodes = new ArrayList<PendingEndNode>();
+        JSONArray results = responseBody.optJSONArray("results");
+        if (results != null) {
+            for (int i = 0; i < results.length(); i++) {
+                try {
+                    nodes.add(new PendingEndNode(results.getJSONObject(i)));
+                } catch (JSONException ignore) {
+                }
+            }
+        }
+        return nodes;
+    }
 
     /** Notify Onboarding completion
      * Call this api when the End Node onboarding is done.
@@ -128,7 +173,29 @@ public abstract class GatewayAPI implements Parcelable {
      * See {@link #login(String, String)}
      */
     @WorkerThread
-    public abstract void notifyOnboardingCompletion(@NonNull String endNodeThingID, @NonNull String endNodeVenderThingID) throws ThingIFException;
+    public void notifyOnboardingCompletion(@NonNull String endNodeThingID, @NonNull String endNodeVenderThingID) throws ThingIFException {
+        if (!isLoggedIn()) {
+            throw new IllegalStateException("Needs user login before execute this API");
+        }
+        if (TextUtils.isEmpty(endNodeThingID)) {
+            throw new IllegalArgumentException("thingID is null or empty");
+        }
+        if (TextUtils.isEmpty(endNodeVenderThingID)) {
+            throw new IllegalArgumentException("venderThingID is null or empty");
+        }
+        String path = MessageFormat.format("/{0}/apps/{1}/gateway/end-nodes/VENDOR_THING_ID:{2}", this.siteName, this.appID, endNodeVenderThingID);
+        String url = Path.combine(baseUrl, path);
+        Map<String, String> headers = this.newHeader();
+
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("thingID", endNodeThingID);
+        } catch (JSONException e) {
+            // Won’t happen
+        }
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.PUT, headers, MediaTypes.MEDIA_TYPE_JSON, requestBody);
+        this.restClient.sendRequest(request);
+    }
 
     /** Restore the Gateway
      * @throws ThingIFException
@@ -136,7 +203,16 @@ public abstract class GatewayAPI implements Parcelable {
      * See {@link #login(String, String)}
      */
     @WorkerThread
-    public abstract void restore() throws ThingIFException;
+    public void restore() throws ThingIFException {
+        if (!isLoggedIn()) {
+            throw new IllegalStateException("Needs user login before execute this API");
+        }
+        String path = "/gateway-app/gateway/restore";
+        String url = Path.combine(this.baseUrl, path);
+        Map<String, String> headers = this.newHeader();
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers);
+        this.restClient.sendRequest(request);
+    }
 
     /**
      * Replace end-node by new vendorThingID for end node thingID.
@@ -148,7 +224,29 @@ public abstract class GatewayAPI implements Parcelable {
      * See {@link #login(String, String)}
      */
     @WorkerThread
-    public abstract void replaceEndNode(@NonNull String endNodeThingID, @NonNull String endNodeVenderThingID) throws ThingIFException;
+    public void replaceEndNode(@NonNull String endNodeThingID, @NonNull String endNodeVenderThingID) throws ThingIFException {
+        if (!isLoggedIn()) {
+            throw new IllegalStateException("Needs user login before execute this API");
+        }
+        if (TextUtils.isEmpty(endNodeThingID)) {
+            throw new IllegalArgumentException("thingID is null or empty");
+        }
+        if (TextUtils.isEmpty(endNodeVenderThingID)) {
+            throw new IllegalArgumentException("venderThingID is null or empty");
+        }
+        String path = MessageFormat.format("/{0}/apps/{1}/gateway/end-nodes/THING_ID:{2}", this.siteName, this.appID, endNodeThingID);
+        String url = Path.combine(baseUrl, path);
+        Map<String, String> headers = this.newHeader();
+
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("vendorThingID", endNodeVenderThingID);
+        } catch (JSONException e) {
+            // Won’t happen
+        }
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.PUT, headers, MediaTypes.MEDIA_TYPE_JSON, requestBody);
+        this.restClient.sendRequest(request);
+    }
 
     /**
      * Get vendorThingID of the Gateway.
@@ -181,6 +279,18 @@ public abstract class GatewayAPI implements Parcelable {
     }
 
     // Implementation of Parcelable
+    public static final Creator<GatewayAPI> CREATOR = new Creator<GatewayAPI>() {
+        @Override
+        public GatewayAPI createFromParcel(Parcel in) {
+            return new GatewayAPI(in);
+        }
+
+        @Override
+        public GatewayAPI[] newArray(int size) {
+            return new GatewayAPI[size];
+        }
+    };
+
     protected GatewayAPI(Parcel in) {
         this.appID = in.readString();
         this.appKey = in.readString();
@@ -189,6 +299,7 @@ public abstract class GatewayAPI implements Parcelable {
         this.accessToken = in.readString();
         this.restClient = new IoTRestClient();
     }
+
     @Override
     public int describeContents() {
         return 0;
