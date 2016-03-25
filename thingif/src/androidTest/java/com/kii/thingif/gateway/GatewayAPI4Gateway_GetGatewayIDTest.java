@@ -26,7 +26,7 @@ public class GatewayAPI4Gateway_GetGatewayIDTest extends GatewayAPITestBase {
     @Test
     public void getGatewayIDTest() throws Exception {
         String thingID = "th." + UUID.randomUUID().toString();
-        GatewayAPI4Gateway api = this.craeteGatewayAPI4GatewayWithLoggedIn();
+        GatewayAPI4GatewayImpl api = this.craeteGatewayAPI4GatewayWithLoggedIn();
         this.addMockResponseForGetGatewayID(200, thingID);
         String gatewayID = api.getGatewayID();
 
@@ -43,12 +43,12 @@ public class GatewayAPI4Gateway_GetGatewayIDTest extends GatewayAPITestBase {
     @Test(expected = IllegalStateException.class)
     public void getGatewayIDNoLoggedInTest() throws Exception {
         KiiApp app = getApp(APP_ID, APP_KEY);
-        GatewayAPI4Gateway api = new GatewayAPI4Gateway(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAPI4GatewayImpl api = new GatewayAPI4GatewayImpl(InstrumentationRegistry.getTargetContext(), app);
         api.getGatewayID();
     }
     @Test
     public void getGatewayID400ErrorTest() throws Exception {
-        GatewayAPI4Gateway api = this.craeteGatewayAPI4GatewayWithLoggedIn();
+        GatewayAPI4GatewayImpl api = this.craeteGatewayAPI4GatewayWithLoggedIn();
         this.addEmptyMockResponse(400);
 
         try {
@@ -67,7 +67,7 @@ public class GatewayAPI4Gateway_GetGatewayIDTest extends GatewayAPITestBase {
     }
     @Test
     public void getGatewayID401ErrorTest() throws Exception {
-        GatewayAPI4Gateway api = this.craeteGatewayAPI4GatewayWithLoggedIn();
+        GatewayAPI4GatewayImpl api = this.craeteGatewayAPI4GatewayWithLoggedIn();
         this.addEmptyMockResponse(401);
 
         try {
@@ -86,7 +86,7 @@ public class GatewayAPI4Gateway_GetGatewayIDTest extends GatewayAPITestBase {
     }
     @Test
     public void getGatewayID404ErrorTest() throws Exception {
-        GatewayAPI4Gateway api = this.craeteGatewayAPI4GatewayWithLoggedIn();
+        GatewayAPI4GatewayImpl api = this.craeteGatewayAPI4GatewayWithLoggedIn();
         this.addEmptyMockResponse(404);
 
         try {
@@ -105,7 +105,7 @@ public class GatewayAPI4Gateway_GetGatewayIDTest extends GatewayAPITestBase {
     }
     @Test
     public void getGatewayID409ErrorTest() throws Exception {
-        GatewayAPI4Gateway api = this.craeteGatewayAPI4GatewayWithLoggedIn();
+        GatewayAPI4GatewayImpl api = this.craeteGatewayAPI4GatewayWithLoggedIn();
         this.addEmptyMockResponse(409);
 
         try {
@@ -124,7 +124,7 @@ public class GatewayAPI4Gateway_GetGatewayIDTest extends GatewayAPITestBase {
     }
     @Test
     public void getGatewayID503ErrorTest() throws Exception {
-        GatewayAPI4Gateway api = this.craeteGatewayAPI4GatewayWithLoggedIn();
+        GatewayAPI4GatewayImpl api = this.craeteGatewayAPI4GatewayWithLoggedIn();
         this.addEmptyMockResponse(503);
 
         try {

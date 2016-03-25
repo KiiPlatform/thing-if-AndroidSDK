@@ -26,7 +26,7 @@ public class GatewayAPI4Gateway_OnboardGatewayTest extends GatewayAPITestBase {
     public void onboardGatewayTest() throws Exception {
         String thingID = "th." + UUID.randomUUID().toString();
 
-        GatewayAPI4Gateway api = this.craeteGatewayAPI4GatewayWithLoggedIn();
+        GatewayAPI4GatewayImpl api = this.craeteGatewayAPI4GatewayWithLoggedIn();
         this.addMockResponseForOnboardGateway(200, thingID);
         String result = api.onboardGateway();
 
@@ -44,14 +44,14 @@ public class GatewayAPI4Gateway_OnboardGatewayTest extends GatewayAPITestBase {
     @Test(expected = IllegalStateException.class)
     public void onboardGatewayNoLoggedInTest() throws Exception {
         KiiApp app = getApp(APP_ID, APP_KEY);
-        GatewayAPI4Gateway api = new GatewayAPI4Gateway(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAPI4GatewayImpl api = new GatewayAPI4GatewayImpl(InstrumentationRegistry.getTargetContext(), app);
         api.onboardGateway();
     }
     @Test
     public void onboardGateway400ErrorTest() throws Exception {
         String thingID = "th." + UUID.randomUUID().toString();
 
-        GatewayAPI4Gateway api = this.craeteGatewayAPI4GatewayWithLoggedIn();
+        GatewayAPI4GatewayImpl api = this.craeteGatewayAPI4GatewayWithLoggedIn();
         this.addEmptyMockResponse(400);
         try {
             api.onboardGateway();
@@ -73,7 +73,7 @@ public class GatewayAPI4Gateway_OnboardGatewayTest extends GatewayAPITestBase {
     public void onboardGateway401ErrorTest() throws Exception {
         String thingID = "th." + UUID.randomUUID().toString();
 
-        GatewayAPI4Gateway api = this.craeteGatewayAPI4GatewayWithLoggedIn();
+        GatewayAPI4GatewayImpl api = this.craeteGatewayAPI4GatewayWithLoggedIn();
         this.addEmptyMockResponse(401);
         try {
             api.onboardGateway();
@@ -95,7 +95,7 @@ public class GatewayAPI4Gateway_OnboardGatewayTest extends GatewayAPITestBase {
     public void onboardGateway409ErrorTest() throws Exception {
         String thingID = "th." + UUID.randomUUID().toString();
 
-        GatewayAPI4Gateway api = this.craeteGatewayAPI4GatewayWithLoggedIn();
+        GatewayAPI4GatewayImpl api = this.craeteGatewayAPI4GatewayWithLoggedIn();
         this.addEmptyMockResponse(409);
         try {
             api.onboardGateway();
@@ -117,7 +117,7 @@ public class GatewayAPI4Gateway_OnboardGatewayTest extends GatewayAPITestBase {
     public void onboardGateway503ErrorTest() throws Exception {
         String thingID = "th." + UUID.randomUUID().toString();
 
-        GatewayAPI4Gateway api = this.craeteGatewayAPI4GatewayWithLoggedIn();
+        GatewayAPI4GatewayImpl api = this.craeteGatewayAPI4GatewayWithLoggedIn();
         this.addEmptyMockResponse(503);
         try {
             api.onboardGateway();

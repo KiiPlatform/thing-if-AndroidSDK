@@ -19,7 +19,7 @@ public class GatewayAPI4Gateway_ParcelableTest extends GatewayAPITestBase {
         String appKey = "appkey-abcd1234";
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(appID, appKey);
-        GatewayAPI4Gateway api = new GatewayAPI4Gateway(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAPI4GatewayImpl api = new GatewayAPI4GatewayImpl(InstrumentationRegistry.getTargetContext(), app);
 
         this.addMockResponseForLogin(200, accessToken);
         api.login("username", "password");
@@ -27,7 +27,7 @@ public class GatewayAPI4Gateway_ParcelableTest extends GatewayAPITestBase {
         Parcel parcel = Parcel.obtain();
         api.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
-        GatewayAPI4Gateway deserializedApi = GatewayAPI4Gateway.CREATOR.createFromParcel(parcel);
+        GatewayAPI4GatewayImpl deserializedApi = GatewayAPI4GatewayImpl.CREATOR.createFromParcel(parcel);
 
         Assert.assertEquals(app.getAppID(), deserializedApi.appID);
         Assert.assertEquals(app.getAppKey(), deserializedApi.appKey);

@@ -60,25 +60,25 @@ public class GatewayAPIBuilder {
     }
 
     /**
-     * Instantiate new GatewayAPI4Gateway instance.
-     * @return GatewayAPI4Gateway instance.
+     * Instantiate new GatewayAPI4GatewayImpl instance.
+     * @return GatewayAPI4GatewayImpl instance.
      * @throws ThingIFException
      */
     @WorkerThread
     @NonNull
-    public GatewayAPI build4Gateway() throws ThingIFException {
+    public GatewayAPI4Gateway build4Gateway() throws ThingIFException {
         String baseUrl = "http://" + this.hostname;
-        return new GatewayAPI4Gateway(this.context, this.app);
+        return new GatewayAPI4GatewayImpl(this.context, this.app);
     }
     /**
-     * Instantiate new GatewayAPI4EndNode instance.
-     * @return GatewayAPI4EndNode instance.
+     * Instantiate new GatewayAPI4EndNodeImpl instance.
+     * @return GatewayAPI4EndNodeImpl instance.
      * @throws ThingIFException
      */
     @WorkerThread
     @NonNull
-    public GatewayAPI build4EndNode() throws ThingIFException {
+    public GatewayAPI4EndNode build4EndNode() throws ThingIFException {
         String baseUrl = "http://" + this.hostname;
-        return new GatewayAPI4EndNode(this.context, this.app);
+        return new GatewayAPI4EndNodeImpl(this.context, this.app);
     }
 }
