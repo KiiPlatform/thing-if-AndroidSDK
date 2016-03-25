@@ -4,7 +4,7 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-public final class CommandData {
+public final class CommandForm {
 
     private final String schemaName;
     private final int schemaVersion;
@@ -12,7 +12,7 @@ public final class CommandData {
     private String description;
     private JSONObject metadata;
 
-    public CommandData(String schemaName, int schemaVersion, List<Action> actions) {
+    public CommandForm(String schemaName, int schemaVersion, List<Action> actions) {
         this.schemaName = schemaName;
         this.schemaVersion = schemaVersion;
         this.actions = actions;
