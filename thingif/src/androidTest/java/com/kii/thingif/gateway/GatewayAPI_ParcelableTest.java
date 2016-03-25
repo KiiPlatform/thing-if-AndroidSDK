@@ -11,15 +11,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
-public class GatewayAPI4Gateway_ParcelableTest extends GatewayAPITestBase {
-
+public class GatewayAPI_ParcelableTest extends GatewayAPITestBase {
     @Test
     public void test() throws Exception {
         String appID = "appid-abcd1234";
         String appKey = "appkey-abcd1234";
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(appID, appKey);
-        GatewayAPI4Gateway api = new GatewayAPI4Gateway(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app);
 
         this.addMockResponseForLogin(200, accessToken);
         api.login("username", "password");
@@ -27,7 +26,7 @@ public class GatewayAPI4Gateway_ParcelableTest extends GatewayAPITestBase {
         Parcel parcel = Parcel.obtain();
         api.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
-        GatewayAPI4Gateway deserializedApi = GatewayAPI4Gateway.CREATOR.createFromParcel(parcel);
+        GatewayAPI deserializedApi = GatewayAPI.CREATOR.createFromParcel(parcel);
 
         Assert.assertEquals(app.getAppID(), deserializedApi.appID);
         Assert.assertEquals(app.getAppKey(), deserializedApi.appKey);

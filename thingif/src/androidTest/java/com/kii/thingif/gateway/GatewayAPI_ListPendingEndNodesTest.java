@@ -23,10 +23,10 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(AndroidJUnit4.class)
-public class GatewayAPI4EndNode_ListPendingEndNodesTest extends GatewayAPITestBase {
+public class GatewayAPI_ListPendingEndNodesTest extends GatewayAPITestBase {
     @Test
     public void listPendingEndNodesTest() throws Exception {
-        GatewayAPI4EndNode api = this.craeteGatewayAPI4EndNodeWithLoggedIn();
+        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
 
         PendingEndNode pendingEndNode1 = new PendingEndNode(new JSONObject("{\"vendorThingID\":\"abcd-1234\"}"));
         PendingEndNode pendingEndNode2 = new PendingEndNode(new JSONObject("{\"vendorThingID\":\"efgh-5678\"}"));
@@ -53,7 +53,7 @@ public class GatewayAPI4EndNode_ListPendingEndNodesTest extends GatewayAPITestBa
     }
     @Test
     public void listPendingEndNodesEmptyTest() throws Exception {
-        GatewayAPI4EndNode api = this.craeteGatewayAPI4EndNodeWithLoggedIn();
+        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
 
         addMockResponseForListPendingEndNodes(200);
         List<PendingEndNode> nodes = api.listPendingEndNodes();
@@ -71,12 +71,12 @@ public class GatewayAPI4EndNode_ListPendingEndNodesTest extends GatewayAPITestBa
     @Test(expected = IllegalStateException.class)
     public void listPendingEndNodesNoLoggedInTest() throws Exception {
         KiiApp app = getApp(APP_ID, APP_KEY);
-        GatewayAPI4EndNode api = new GatewayAPI4EndNode(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app);
         api.listPendingEndNodes();
     }
     @Test
     public void listPendingEndNodes400ErrorTest() throws Exception {
-        GatewayAPI4EndNode api = this.craeteGatewayAPI4EndNodeWithLoggedIn();
+        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
 
         addMockResponseForListPendingEndNodes(400);
         try {
@@ -95,7 +95,7 @@ public class GatewayAPI4EndNode_ListPendingEndNodesTest extends GatewayAPITestBa
     }
     @Test
     public void listPendingEndNodes401ErrorTest() throws Exception {
-        GatewayAPI4EndNode api = this.craeteGatewayAPI4EndNodeWithLoggedIn();
+        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
 
         addMockResponseForListPendingEndNodes(401);
         try {
@@ -114,7 +114,7 @@ public class GatewayAPI4EndNode_ListPendingEndNodesTest extends GatewayAPITestBa
     }
     @Test
     public void listPendingEndNodes404ErrorTest() throws Exception {
-        GatewayAPI4EndNode api = this.craeteGatewayAPI4EndNodeWithLoggedIn();
+        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
 
         addMockResponseForListPendingEndNodes(404);
         try {
@@ -133,7 +133,7 @@ public class GatewayAPI4EndNode_ListPendingEndNodesTest extends GatewayAPITestBa
     }
     @Test
     public void listPendingEndNodes409ErrorTest() throws Exception {
-        GatewayAPI4EndNode api = this.craeteGatewayAPI4EndNodeWithLoggedIn();
+        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
 
         addMockResponseForListPendingEndNodes(409);
         try {
@@ -152,7 +152,7 @@ public class GatewayAPI4EndNode_ListPendingEndNodesTest extends GatewayAPITestBa
     }
     @Test
     public void listPendingEndNodes503ErrorTest() throws Exception {
-        GatewayAPI4EndNode api = this.craeteGatewayAPI4EndNodeWithLoggedIn();
+        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
 
         addMockResponseForListPendingEndNodes(503);
         try {

@@ -22,20 +22,19 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(AndroidJUnit4.class)
-public class GatewayAPI4EndNode_ReplaceEndNodeTest extends GatewayAPITestBase {
-
+public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBase {
     @Test
-    public void replaceEndNodeTest() throws Exception {
+    public void notifyOnboardingCompletionTest() throws Exception {
         String thingID = "th." + UUID.randomUUID().toString();
         String vendorThingID = UUID.randomUUID().toString();
 
-        GatewayAPI4EndNode api = this.craeteGatewayAPI4EndNodeWithLoggedIn();
+        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
 
         this.addEmptyMockResponse(204);
-        api.replaceEndNode(thingID, vendorThingID);
+        api.notifyOnboardingCompletion(thingID, vendorThingID);
 
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/end-nodes/THING_ID:" + thingID, request.getPath());
+        Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/end-nodes/VENDOR_THING_ID:" + vendorThingID, request.getPath());
         Assert.assertEquals("PUT", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
@@ -44,75 +43,74 @@ public class GatewayAPI4EndNode_ReplaceEndNodeTest extends GatewayAPITestBase {
         this.assertRequestHeader(expectedRequestHeaders, request);
 
         JsonObject expectedRequestBody = new JsonObject();
-        expectedRequestBody.addProperty("vendorThingID", vendorThingID);
+        expectedRequestBody.addProperty("thingID", thingID);
         this.assertRequestBody(expectedRequestBody, request);
     }
-
     @Test(expected = IllegalStateException.class)
-    public void replaceEndNodeNoLoggedInTest() throws Exception {
+    public void notifyOnboardingCompletionNoLoggedInTest() throws Exception {
         String thingID = "th." + UUID.randomUUID().toString();
         String vendorThingID =  UUID.randomUUID().toString();
 
         KiiApp app = getApp(APP_ID, APP_KEY);
-        GatewayAPI4EndNode api = new GatewayAPI4EndNode(InstrumentationRegistry.getTargetContext(), app);
-        api.replaceEndNode(thingID, vendorThingID);
+        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app);
+        api.notifyOnboardingCompletion(thingID, vendorThingID);
     }
     @Test(expected = IllegalArgumentException.class)
-    public void replaceEndNodeWithNullThingIDTest() throws Exception {
+    public void notifyOnboardingCompletionWithNullThingIDTest() throws Exception {
         String thingID = null;
         String vendorThingID =  UUID.randomUUID().toString();
 
-        GatewayAPI4EndNode api = this.craeteGatewayAPI4EndNodeWithLoggedIn();
+        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
 
         this.addEmptyMockResponse(204);
-        api.replaceEndNode(thingID, vendorThingID);
+        api.notifyOnboardingCompletion(thingID, vendorThingID);
     }
     @Test(expected = IllegalArgumentException.class)
-    public void replaceEndNodeWithEmptyThingIDTest() throws Exception {
+    public void notifyOnboardingCompletionWithEmptyThingIDTest() throws Exception {
         String thingID = "";
         String vendorThingID = UUID.randomUUID().toString();
 
-        GatewayAPI4EndNode api = this.craeteGatewayAPI4EndNodeWithLoggedIn();
+        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
 
         this.addEmptyMockResponse(204);
-        api.replaceEndNode(thingID, vendorThingID);
+        api.notifyOnboardingCompletion(thingID, vendorThingID);
     }
     @Test(expected = IllegalArgumentException.class)
-    public void replaceEndNodeWithNullVenderThingIDTest() throws Exception {
+    public void notifyOnboardingCompletionWithNullVenderThingIDTest() throws Exception {
         String thingID = "th." + UUID.randomUUID().toString();
         String vendorThingID = null;
 
-        GatewayAPI4EndNode api = this.craeteGatewayAPI4EndNodeWithLoggedIn();
+        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
 
         this.addEmptyMockResponse(204);
-        api.replaceEndNode(thingID, vendorThingID);
+        api.notifyOnboardingCompletion(thingID, vendorThingID);
     }
     @Test(expected = IllegalArgumentException.class)
-    public void replaceEndNodeWithEmptyVenderThingIDTest() throws Exception {
+    public void notifyOnboardingCompletionWithEmptyVenderThingIDTest() throws Exception {
         String thingID = "th." + UUID.randomUUID().toString();
         String vendorThingID = "";
 
-        GatewayAPI4EndNode api = this.craeteGatewayAPI4EndNodeWithLoggedIn();
+        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
 
         this.addEmptyMockResponse(204);
-        api.replaceEndNode(thingID, vendorThingID);
+        api.notifyOnboardingCompletion(thingID, vendorThingID);
     }
     @Test
-    public void replaceEndNode400ErrorTest() throws Exception {
+    public void notifyOnboardingCompletion400ErrorTest() throws Exception {
         String thingID = "th." + UUID.randomUUID().toString();
         String vendorThingID = UUID.randomUUID().toString();
 
-        GatewayAPI4EndNode api = this.craeteGatewayAPI4EndNodeWithLoggedIn();
+        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
 
         this.addEmptyMockResponse(400);
         try {
-            api.replaceEndNode(thingID, vendorThingID);
+            api.notifyOnboardingCompletion(thingID, vendorThingID);
             Assert.fail("BadRequestException should be thrown");
         } catch (BadRequestException e) {
         }
 
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/end-nodes/THING_ID:" + thingID, request.getPath());
+        Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/end-nodes/VENDOR_THING_ID:" + vendorThingID, request.getPath());
         Assert.assertEquals("PUT", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
@@ -121,25 +119,25 @@ public class GatewayAPI4EndNode_ReplaceEndNodeTest extends GatewayAPITestBase {
         this.assertRequestHeader(expectedRequestHeaders, request);
 
         JsonObject expectedRequestBody = new JsonObject();
-        expectedRequestBody.addProperty("vendorThingID", vendorThingID);
+        expectedRequestBody.addProperty("thingID", thingID);
         this.assertRequestBody(expectedRequestBody, request);
     }
     @Test
-    public void replaceEndNode401ErrorTest() throws Exception {
+    public void notifyOnboardingCompletion401ErrorTest() throws Exception {
         String thingID = "th." + UUID.randomUUID().toString();
         String vendorThingID = UUID.randomUUID().toString();
 
-        GatewayAPI4EndNode api = this.craeteGatewayAPI4EndNodeWithLoggedIn();
+        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
 
         this.addEmptyMockResponse(401);
         try {
-            api.replaceEndNode(thingID, vendorThingID);
+            api.notifyOnboardingCompletion(thingID, vendorThingID);
             Assert.fail("UnauthorizedException should be thrown");
         } catch (UnauthorizedException e) {
         }
 
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/end-nodes/THING_ID:" + thingID, request.getPath());
+        Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/end-nodes/VENDOR_THING_ID:" + vendorThingID, request.getPath());
         Assert.assertEquals("PUT", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
@@ -148,25 +146,25 @@ public class GatewayAPI4EndNode_ReplaceEndNodeTest extends GatewayAPITestBase {
         this.assertRequestHeader(expectedRequestHeaders, request);
 
         JsonObject expectedRequestBody = new JsonObject();
-        expectedRequestBody.addProperty("vendorThingID", vendorThingID);
+        expectedRequestBody.addProperty("thingID", thingID);
         this.assertRequestBody(expectedRequestBody, request);
     }
     @Test
-    public void replaceEndNode404ErrorTest() throws Exception {
+    public void notifyOnboardingCompletion404ErrorTest() throws Exception {
         String thingID = "th." + UUID.randomUUID().toString();
         String vendorThingID = UUID.randomUUID().toString();
 
-        GatewayAPI4EndNode api = this.craeteGatewayAPI4EndNodeWithLoggedIn();
+        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
 
         this.addEmptyMockResponse(404);
         try {
-            api.replaceEndNode(thingID, vendorThingID);
+            api.notifyOnboardingCompletion(thingID, vendorThingID);
             Assert.fail("NotFoundException should be thrown");
         } catch (NotFoundException e) {
         }
 
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/end-nodes/THING_ID:" + thingID, request.getPath());
+        Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/end-nodes/VENDOR_THING_ID:" + vendorThingID, request.getPath());
         Assert.assertEquals("PUT", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
@@ -175,25 +173,25 @@ public class GatewayAPI4EndNode_ReplaceEndNodeTest extends GatewayAPITestBase {
         this.assertRequestHeader(expectedRequestHeaders, request);
 
         JsonObject expectedRequestBody = new JsonObject();
-        expectedRequestBody.addProperty("vendorThingID", vendorThingID);
+        expectedRequestBody.addProperty("thingID", thingID);
         this.assertRequestBody(expectedRequestBody, request);
     }
     @Test
-    public void replaceEndNode409ErrorTest() throws Exception {
+    public void notifyOnboardingCompletion409ErrorTest() throws Exception {
         String thingID = "th." + UUID.randomUUID().toString();
         String vendorThingID = UUID.randomUUID().toString();
 
-        GatewayAPI4EndNode api = this.craeteGatewayAPI4EndNodeWithLoggedIn();
+        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
 
         this.addEmptyMockResponse(409);
         try {
-            api.replaceEndNode(thingID, vendorThingID);
+            api.notifyOnboardingCompletion(thingID, vendorThingID);
             Assert.fail("ConflictException should be thrown");
         } catch (ConflictException e) {
         }
 
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/end-nodes/THING_ID:" + thingID, request.getPath());
+        Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/end-nodes/VENDOR_THING_ID:" + vendorThingID, request.getPath());
         Assert.assertEquals("PUT", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
@@ -202,25 +200,25 @@ public class GatewayAPI4EndNode_ReplaceEndNodeTest extends GatewayAPITestBase {
         this.assertRequestHeader(expectedRequestHeaders, request);
 
         JsonObject expectedRequestBody = new JsonObject();
-        expectedRequestBody.addProperty("vendorThingID", vendorThingID);
+        expectedRequestBody.addProperty("thingID", thingID);
         this.assertRequestBody(expectedRequestBody, request);
     }
     @Test
-    public void replaceEndNode503ErrorTest() throws Exception {
+    public void notifyOnboardingCompletion503ErrorTest() throws Exception {
         String thingID = "th." + UUID.randomUUID().toString();
         String vendorThingID = UUID.randomUUID().toString();
 
-        GatewayAPI4EndNode api = this.craeteGatewayAPI4EndNodeWithLoggedIn();
+        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
 
         this.addEmptyMockResponse(503);
         try {
-            api.replaceEndNode(thingID, vendorThingID);
+            api.notifyOnboardingCompletion(thingID, vendorThingID);
             Assert.fail("ServiceUnavailableException should be thrown");
         } catch (ServiceUnavailableException e) {
         }
 
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/end-nodes/THING_ID:" + thingID, request.getPath());
+        Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/end-nodes/VENDOR_THING_ID:" + vendorThingID, request.getPath());
         Assert.assertEquals("PUT", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
@@ -229,7 +227,7 @@ public class GatewayAPI4EndNode_ReplaceEndNodeTest extends GatewayAPITestBase {
         this.assertRequestHeader(expectedRequestHeaders, request);
 
         JsonObject expectedRequestBody = new JsonObject();
-        expectedRequestBody.addProperty("vendorThingID", vendorThingID);
+        expectedRequestBody.addProperty("thingID", thingID);
         this.assertRequestBody(expectedRequestBody, request);
     }
 }
