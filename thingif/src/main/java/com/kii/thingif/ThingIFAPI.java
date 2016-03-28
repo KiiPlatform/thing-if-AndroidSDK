@@ -35,6 +35,7 @@ import com.squareup.okhttp.MediaType;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -974,6 +975,60 @@ public class ThingIFAPI implements Parcelable {
         S ret = GsonRepository.gson().fromJson(responseBody.toString(), classOfS);
         return ret;
     }
+
+    /**
+     * Get the Vendor Thing ID of specified Target.
+     *
+     * @return Vendor Thing ID
+     * @throws ThingIFException
+     */
+    @NonNull
+    @WorkerThread
+    public String getVendorThingID() throws ThingIFException {
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
+        }
+        String path = MessageFormat.format("/api/apps/{0}/things/{1}/vendor-thing-id", this.app.getAppID(), this.target.getTypedID().getID());
+        String url = Path.combine(this.app.getBaseUrl(), path);
+        Map<String, String> headers = this.newHeader();
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
+        JSONObject responseBody = this.restClient.sendRequest(request);
+        return responseBody.optString("_vendorThingID", null);
+    }
+
+    /**
+     * Update the Vendor Thing ID of specified Target.
+     *
+     * @param newVendorThingID New vendor thing id
+     * @param newPassword New password
+     * @throws ThingIFException
+     */
+    @WorkerThread
+    public void updateVendorThingID(@NonNull String newVendorThingID, @NonNull String newPassword) throws ThingIFException {
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
+        }
+        if (TextUtils.isEmpty(newPassword)) {
+            throw new IllegalArgumentException("newPassword is null or empty");
+        }
+        if (TextUtils.isEmpty(newVendorThingID)) {
+            throw new IllegalArgumentException("newVendorThingID is null or empty");
+        }
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("_vendorThingID", newVendorThingID);
+            requestBody.put("_password", newPassword);
+        } catch (JSONException e) {
+            // Won’t happen
+        }
+
+        String path = MessageFormat.format("/api/apps/{0}/things/{1}/vendor-thing-id", this.app.getAppID(), this.target.getTypedID().getID());
+        String url = Path.combine(this.app.getBaseUrl(), path);
+        Map<String, String> headers = this.newHeader();
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.PUT, headers, MediaTypes.MEDIA_TYPE_VENDOR_THING_ID_UPDATE_REQUEST, requestBody);
+        this.restClient.sendRequest(request);
+    }
+
 
     /** Get Kii App
      * @return Kii Cloud Application.
