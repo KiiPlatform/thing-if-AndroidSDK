@@ -44,11 +44,10 @@ public class GatewayAPIBuilder {
     /**
      * Instantiate new GatewayAPI instance.
      * @return GatewayAPI instance.
-     * @throws ThingIFException
      */
     @WorkerThread
     @NonNull
-    public GatewayAPI build() throws ThingIFException {
+    public GatewayAPI build() {
         return new GatewayAPI(this.context, this.app);
     }
 }
