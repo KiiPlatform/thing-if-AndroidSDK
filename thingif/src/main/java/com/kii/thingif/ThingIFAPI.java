@@ -185,6 +185,7 @@ public class ThingIFAPI implements Parcelable {
      * On board IoT Cloud with the specified vendor thing ID.
      * Specified thing will be owned by owner who is specified
      * IoT Cloud prepares communication channel to the target.
+     * If you are using a gateway, you need to use {@link #onboardEndnodeWithGatewayVendorThingID(String, String, String, String, JSONObject)} instead.
      * @param vendorThingID Thing ID given by vendor. Must be specified.
      * @param thingPassword Thing Password given by vendor. Must be specified.
      * @param thingType Type of the thing given by vendor.
@@ -240,6 +241,7 @@ public class ThingIFAPI implements Parcelable {
      * When you are sure that the on boarding process has been done,
      * this method is more convenient than
      * {@link #onboard(String, String, String, JSONObject)}.
+     * If you are using a gateway, you need to use {@link #onboardEndnodeWithGatewayThingID(String, String, String, String, JSONObject)} instead.
      * @param thingID Thing ID given by IoT Cloud. Must be specified.
      * @param thingPassword Thing password given by vendor. Must be specified.
      * @return Target instance can be used to operate target, manage resources
