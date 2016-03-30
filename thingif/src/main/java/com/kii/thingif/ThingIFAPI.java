@@ -1088,10 +1088,6 @@ public class ThingIFAPI implements Parcelable {
         return ret;
     }
 
-    // TODO
-    // TODO
-    // TODO
-    // TODO
     /**
      * Get the Vendor Thing ID of specified Target.
      *
