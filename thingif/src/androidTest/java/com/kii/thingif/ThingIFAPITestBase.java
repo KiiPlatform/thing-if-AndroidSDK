@@ -126,6 +126,25 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         }
         this.server.enqueue(response);
     }
+    protected void addMockResponseForGetVendorThingID(int httpStatus, String vendorThingID) {
+        MockResponse response = new MockResponse().setResponseCode(httpStatus);
+        if (vendorThingID != null) {
+            JsonObject responseBody = new JsonObject();
+            responseBody.addProperty("_vendorThingID", vendorThingID);
+            response.setBody(responseBody.toString());
+        }
+        this.server.enqueue(response);
+    }
+    protected void addMockResponseForOnBoardEndnode(int httpStatus, String thingID, String accessToken) {
+        MockResponse response = new MockResponse().setResponseCode(httpStatus);
+        if (thingID != null && accessToken != null) {
+            JsonObject responseBody = new JsonObject();
+            responseBody.addProperty("endNodeThingID", thingID);
+            responseBody.addProperty("accessToken", accessToken);
+            response.setBody(responseBody.toString());
+        }
+        this.server.enqueue(response);
+    }
     protected void addMockResponseForPostNewTrigger(int httpStatus, String triggerID) {
         MockResponse response = new MockResponse().setResponseCode(httpStatus);
         if (triggerID != null) {

@@ -332,7 +332,7 @@ public class ThingIFAPI implements Parcelable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        return onboardEndnodeWithGateway(MediaTypes.MEDIA_TYPE_ONBOARDING_ENDNODE_WITH_GATEWAY_THING_ID_REQUEST, requestBody);
+        return onboardEndnodeWithGateway(MediaTypes.MEDIA_TYPE_ONBOARDING_ENDNODE_WITH_GATEWAY_VENDOR_THING_ID_REQUEST, requestBody);
     }
     /**
      * Endpoints execute onboarding for the thing and merge MQTT channel to the gateway.
@@ -380,7 +380,7 @@ public class ThingIFAPI implements Parcelable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        return onboardEndnodeWithGateway(MediaTypes.MEDIA_TYPE_ONBOARDING_ENDNODE_WITH_GATEWAY_VENDOR_THING_ID_REQUEST, requestBody);
+        return onboardEndnodeWithGateway(MediaTypes.MEDIA_TYPE_ONBOARDING_ENDNODE_WITH_GATEWAY_THING_ID_REQUEST, requestBody);
     }
     private Target onboardEndnodeWithGateway(MediaType contentType, JSONObject requestBody) throws ThingIFException {
         String path = MessageFormat.format("/thing-if/apps/{0}/onboardings", this.app.getAppID());
