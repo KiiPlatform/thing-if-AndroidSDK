@@ -26,8 +26,10 @@ import com.kii.thingif.TargetState;
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.ActionResult;
-import com.kii.thingif.exception.InternalServerErrorException;
 import com.kii.thingif.exception.UnsupportedActionException;
+import com.kii.thingif.gateway.GatewayAPI;
+import com.kii.thingif.gateway.GatewayAPIBuilder;
+import com.kii.thingif.gateway.GatewayAddress;
 import com.kii.thingif.schema.Schema;
 import com.kii.thingif.schema.SchemaBuilder;
 import com.kii.thingif.trigger.Condition;
@@ -332,6 +334,46 @@ public class GsonRepository {
             return builder.build();
         }
     };
+    private static final JsonSerializer<GatewayAPI> GATEWAY_API_SERIALIZER = new JsonSerializer<GatewayAPI>() {
+        @Override
+        public JsonElement serialize(GatewayAPI src, Type typeOfSrc, JsonSerializationContext context) {
+            if (src == null) {
+                return null;
+            }
+            JsonObject json = new JsonObject();
+            json.add("app", DEFAULT_GSON.toJsonTree(src.getApp()));
+            json.add("gatewayAddress", DEFAULT_GSON.toJsonTree(src.getGatewayAddress()));
+
+            String tag = src.getTag();
+            if (!TextUtils.isEmpty(tag)) {
+                json.addProperty("tag", tag);
+            }
+            json.addProperty("accessToken", src.getAccessToken());
+            return json;
+        }
+    };
+    private static final JsonDeserializer<GatewayAPI> GATEWAY_API_DESERIALIZER = new JsonDeserializer<GatewayAPI>() {
+        @Override
+        public GatewayAPI deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            if (jsonElement == null) {
+                return null;
+            }
+            JsonObject json = (JsonObject)jsonElement;
+            KiiApp app = DEFAULT_GSON.fromJson(json.getAsJsonObject("app"), KiiApp.class);
+            GatewayAddress gatewayAddress = DEFAULT_GSON.fromJson(json.getAsJsonObject("gatewayAddress"), GatewayAddress.class);
+            String tag = null;
+            if (json.has("tag")) {
+                tag = json.get("tag").getAsString();
+            }
+
+            GatewayAPIBuilder builder = GatewayAPIBuilder._newBuilder(app, gatewayAddress);
+            if (json.has("accessToken")) {
+                builder.setAccessToken(json.get("accessToken").getAsString());
+            }
+            builder.setTag(tag);
+            return builder.build();
+        }
+    };
     private static final JsonSerializer<TriggeredServerCodeResult> TRIGGERED_SERVER_CODE_RESULT_SERIALIZER = new JsonSerializer<TriggeredServerCodeResult>() {
         @Override
         public JsonElement serialize(TriggeredServerCodeResult src, Type typeOfSrc, JsonSerializationContext context) {
@@ -446,6 +488,8 @@ public class GsonRepository {
                 .registerTypeAdapter(Schema.class, SCHEMA_DESERIALIZER)
                 .registerTypeAdapter(ThingIFAPI.class, IOT_CLOUD_API_SERIALIZER)
                 .registerTypeAdapter(ThingIFAPI.class, IOT_CLOUD_API_DESERIALIZER)
+                .registerTypeAdapter(ThingIFAPI.class, GATEWAY_API_SERIALIZER)
+                .registerTypeAdapter(ThingIFAPI.class, GATEWAY_API_DESERIALIZER)
                 .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_SERIALIZER)
                 .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_DESERIALIZER)
                 .create();
@@ -531,6 +575,8 @@ public class GsonRepository {
                     .registerTypeAdapter(Schema.class, SCHEMA_DESERIALIZER)
                     .registerTypeAdapter(ThingIFAPI.class, IOT_CLOUD_API_SERIALIZER)
                     .registerTypeAdapter(ThingIFAPI.class, IOT_CLOUD_API_DESERIALIZER)
+                    .registerTypeAdapter(ThingIFAPI.class, GATEWAY_API_SERIALIZER)
+                    .registerTypeAdapter(ThingIFAPI.class, GATEWAY_API_DESERIALIZER)
                     .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_SERIALIZER)
                     .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_DESERIALIZER)
                     .create();
