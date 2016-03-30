@@ -43,7 +43,8 @@ public class GatewayAPI_GetGatewayIDTest extends GatewayAPITestBase {
     @Test(expected = IllegalStateException.class)
     public void getGatewayIDNoLoggedInTest() throws Exception {
         KiiApp app = getApp(APP_ID, APP_KEY);
-        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAddress gatewayAddress = getGatewayAddress();
+        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
         api.getGatewayID();
     }
     @Test

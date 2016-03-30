@@ -13,12 +13,15 @@ public class GatewayAPIBuilder {
 
     private final Context context;
     private final KiiApp app;
+    private final GatewayAddress gatewayAddress;
 
     private GatewayAPIBuilder(
             @Nullable Context context,
-            @NonNull KiiApp app) {
+            @NonNull KiiApp app,
+            @NonNull GatewayAddress gatewayAddress) {
         this.context = context;
         this.app = app;
+        this.gatewayAddress = gatewayAddress;
     }
 
     /**
@@ -26,19 +29,24 @@ public class GatewayAPIBuilder {
      *
      * @param context Application context.
      * @param app Kii Cloud Application.
+     * @param gatewayAddress address information for the gateway
      * @return
      */
     @NonNull
     public static GatewayAPIBuilder newBuilder(
             @NonNull Context context,
-            @NonNull KiiApp app) {
+            @NonNull KiiApp app,
+            @NonNull GatewayAddress gatewayAddress) {
         if (context == null) {
             throw new IllegalArgumentException("context is null");
         }
         if (app == null) {
             throw new IllegalArgumentException("app is null");
         }
-        return new GatewayAPIBuilder(context, app);
+        if (gatewayAddress == null) {
+            throw new IllegalArgumentException("gatewayAddress is null");
+        }
+        return new GatewayAPIBuilder(context, app, gatewayAddress);
     }
 
     /**
@@ -48,6 +56,6 @@ public class GatewayAPIBuilder {
     @WorkerThread
     @NonNull
     public GatewayAPI build() {
-        return new GatewayAPI(this.context, this.app);
+        return new GatewayAPI(this.context, this.app, this.gatewayAddress);
     }
 }

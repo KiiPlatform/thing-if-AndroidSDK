@@ -18,8 +18,6 @@ import com.kii.thingif.exception.ThingIFRestException;
 import com.kii.thingif.exception.StoredThingIFAPIInstanceNotFoundException;
 import com.kii.thingif.exception.UnsupportedActionException;
 import com.kii.thingif.exception.UnsupportedSchemaException;
-import com.kii.thingif.gateway.GatewayAPI;
-import com.kii.thingif.gateway.GatewayAPIBuilder;
 import com.kii.thingif.internal.GsonRepository;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
@@ -59,7 +57,6 @@ public class ThingIFAPI implements Parcelable {
     private final Map<Pair<String, Integer>, Schema> schemas = new HashMap<Pair<String, Integer>, Schema>();
     private final IoTRestClient restClient;
     private String installationID;
-    private GatewayAPI gatewayAPI;
 
     /**
      * Try to load the instance of ThingIFAPI using stored serialized instance.
@@ -1139,21 +1136,6 @@ public class ThingIFAPI implements Parcelable {
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.PUT, headers, MediaTypes.MEDIA_TYPE_VENDOR_THING_ID_UPDATE_REQUEST, requestBody);
         this.restClient.sendRequest(request);
-    }
-
-    /**
-     * get GatewayAPI instance
-     *
-     * @param gatewayHost host name for gateway eg) localhost:8080
-     * @return
-     */
-    public synchronized GatewayAPI gateway(String gatewayHost) {
-        if (this.gatewayAPI == null) {
-            KiiApp gatewayApp = KiiApp.Builder.builderWithHostName(this.app.getAppID(), this.app.getAppKey(), gatewayHost).build();
-            GatewayAPIBuilder builder = GatewayAPIBuilder.newBuilder(context, gatewayApp);
-            this.gatewayAPI = builder.build();
-        }
-        return this.gatewayAPI;
     }
 
     /** Get Kii App

@@ -26,7 +26,8 @@ public class GatewayAPI_LoginTest extends GatewayAPITestBase {
         String password = "pa$$word";
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
-        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAddress gatewayAddress = getGatewayAddress();
+        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
 
         this.addMockResponseForLogin(200, accessToken);
         api.login(username, password);
@@ -45,7 +46,7 @@ public class GatewayAPI_LoginTest extends GatewayAPITestBase {
         expectedRequestBody.addProperty("password", password);
         this.assertRequestBody(expectedRequestBody, request);
 
-        Assert.assertEquals(accessToken, api.accessToken);
+        Assert.assertEquals(accessToken, api.getAccessToken());
     }
     @Test(expected = IllegalArgumentException.class)
     public void loginWithNullUsernameTest() throws Exception {
@@ -53,7 +54,8 @@ public class GatewayAPI_LoginTest extends GatewayAPITestBase {
         String password = "pa$$word";
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
-        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAddress gatewayAddress = getGatewayAddress();
+        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
 
         api.login(username, password);
     }
@@ -63,7 +65,8 @@ public class GatewayAPI_LoginTest extends GatewayAPITestBase {
         String password = "pa$$word";
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
-        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAddress gatewayAddress = getGatewayAddress();
+        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
 
         api.login(username, password);
     }
@@ -73,7 +76,8 @@ public class GatewayAPI_LoginTest extends GatewayAPITestBase {
         String password = null;
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
-        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAddress gatewayAddress = getGatewayAddress();
+        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
 
         api.login(username, password);
     }
@@ -83,7 +87,8 @@ public class GatewayAPI_LoginTest extends GatewayAPITestBase {
         String password = "";
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
-        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAddress gatewayAddress = getGatewayAddress();
+        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
 
         api.login(username, password);
     }
@@ -93,7 +98,8 @@ public class GatewayAPI_LoginTest extends GatewayAPITestBase {
         String password = "pa$$word";
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
-        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAddress gatewayAddress = getGatewayAddress();
+        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
 
         this.addEmptyMockResponse(400);
         try {
@@ -116,7 +122,7 @@ public class GatewayAPI_LoginTest extends GatewayAPITestBase {
         expectedRequestBody.addProperty("password", password);
         this.assertRequestBody(expectedRequestBody, request);
 
-        Assert.assertNull(api.accessToken);
+        Assert.assertNull(api.getAccessToken());
     }
     @Test
     public void login401ErrorTest() throws Exception {
@@ -124,7 +130,8 @@ public class GatewayAPI_LoginTest extends GatewayAPITestBase {
         String password = "pa$$word";
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
-        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAddress gatewayAddress = getGatewayAddress();
+        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
 
         this.addEmptyMockResponse(401);
         try {
@@ -147,6 +154,6 @@ public class GatewayAPI_LoginTest extends GatewayAPITestBase {
         expectedRequestBody.addProperty("password", password);
         this.assertRequestBody(expectedRequestBody, request);
 
-        Assert.assertNull(api.accessToken);
+        Assert.assertNull(api.getAccessToken());
     }
 }

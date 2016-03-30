@@ -18,7 +18,8 @@ public class GatewayAPI_ParcelableTest extends GatewayAPITestBase {
         String appKey = "appkey-abcd1234";
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(appID, appKey);
-        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAddress gatewayAddress = getGatewayAddress();
+        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
 
         this.addMockResponseForLogin(200, accessToken);
         api.login("username", "password");
@@ -28,10 +29,12 @@ public class GatewayAPI_ParcelableTest extends GatewayAPITestBase {
         parcel.setDataPosition(0);
         GatewayAPI deserializedApi = GatewayAPI.CREATOR.createFromParcel(parcel);
 
-        Assert.assertEquals(app.getAppID(), deserializedApi.appID);
-        Assert.assertEquals(app.getAppKey(), deserializedApi.appKey);
-        Assert.assertEquals(app.getSiteName(), deserializedApi.siteName);
-        Assert.assertEquals(app.getBaseUrl(), deserializedApi.baseUrl);
-        Assert.assertEquals(accessToken, deserializedApi.accessToken);
+        Assert.assertEquals(app.getAppID(), deserializedApi.getAppID());
+        Assert.assertEquals(app.getAppKey(), deserializedApi.getAppKey());
+        Assert.assertEquals(app.getSiteName(), deserializedApi.getApp().getSiteName());
+        Assert.assertEquals(app.getBaseUrl(), deserializedApi.getApp().getBaseUrl());
+        Assert.assertEquals(gatewayAddress.getBaseUrl(), deserializedApi.getGatewayAddress().getBaseUrl());
+
+        Assert.assertEquals(accessToken, deserializedApi.getAccessToken());
     }
 }

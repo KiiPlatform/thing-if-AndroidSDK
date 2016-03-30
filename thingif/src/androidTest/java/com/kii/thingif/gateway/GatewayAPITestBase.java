@@ -47,10 +47,14 @@ public class GatewayAPITestBase extends SmallTestBase {
                 setPort(server.getPort()).setURLSchema("http").build();
         return app;
     }
+    protected GatewayAddress getGatewayAddress() {
+        return new GatewayAddress("http", server.getHostName(), server.getPort());
+    }
     protected GatewayAPI craeteGatewayAPIWithLoggedIn() throws Exception {
         KiiApp app = getApp(APP_ID, APP_KEY);
+        GatewayAddress gatewayAddress = getGatewayAddress();
         this.addMockResponseForLogin(200, ACCESS_TOKEN);
-        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
         api.login("dummy", "dummy");
         this.server.takeRequest();
         return api;
