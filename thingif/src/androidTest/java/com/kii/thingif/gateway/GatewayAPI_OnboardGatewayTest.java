@@ -45,7 +45,8 @@ public class GatewayAPI_OnboardGatewayTest extends GatewayAPITestBase {
     @Test(expected = IllegalStateException.class)
     public void onboardGatewayNoLoggedInTest() throws Exception {
         KiiApp app = getApp(APP_ID, APP_KEY);
-        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app);
+        GatewayAddress gatewayAddress = getGatewayAddress();
+        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
         api.onboardGateway();
     }
     @Test
