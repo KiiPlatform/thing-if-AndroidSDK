@@ -417,9 +417,11 @@ public class ThingIFAPI implements Parcelable {
      * of the command by calling {@link #getCommand}.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
+     * @deprecated use {@link ThingIFAPI#postNewCommand(CommandForm)}.
      */
     @NonNull
     @WorkerThread
+    @Deprecated
     public Command postNewCommand(
             @NonNull String schemaName,
             int schemaVersion,
@@ -447,9 +449,23 @@ public class ThingIFAPI implements Parcelable {
         return this.getCommand(commandID);
     }
 
+    /**
+     * Post new command to IoT Cloud.
+     * Command will be delivered to specified target and result will be notified
+     * through push notification.
+     * @param form form of command. It contains name of schema, version of
+     * schema, list of actions etc.
+     * @return Created Command instance. At this time, Command is delivered to
+     * the target Asynchronously and may not finished. Actual Result will be
+     * delivered through push notification or you can check the latest status
+     * of the command by calling {@link #getCommand}.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     */
     @NonNull
     @WorkerThread
-    public Command postNewCommand(@NonNull CommandForm data) {
+    public Command postNewCommand(
+            @NonNull CommandForm form) throws ThingIFException {
         // TODO: implement me.
         return null;
     }
