@@ -1,5 +1,7 @@
 package com.kii.thingif.gateway;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.test.InstrumentationRegistry;
 
 import com.google.gson.JsonArray;
@@ -147,5 +149,11 @@ public class GatewayAPITestBase extends SmallTestBase {
             }
             Assert.assertEquals("request header(" + h.getKey() + ")", expectedHeaderValue, actualMap.get(h.getKey()).get(0));
         }
+    }
+    protected void clearSharedPreferences() throws Exception {
+        SharedPreferences sharedPreferences = InstrumentationRegistry.getTargetContext().getSharedPreferences("com.kii.thingif.preferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.commit();
     }
 }

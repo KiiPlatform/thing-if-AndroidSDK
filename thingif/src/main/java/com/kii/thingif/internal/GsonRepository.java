@@ -488,8 +488,8 @@ public class GsonRepository {
                 .registerTypeAdapter(Schema.class, SCHEMA_DESERIALIZER)
                 .registerTypeAdapter(ThingIFAPI.class, IOT_CLOUD_API_SERIALIZER)
                 .registerTypeAdapter(ThingIFAPI.class, IOT_CLOUD_API_DESERIALIZER)
-                .registerTypeAdapter(ThingIFAPI.class, GATEWAY_API_SERIALIZER)
-                .registerTypeAdapter(ThingIFAPI.class, GATEWAY_API_DESERIALIZER)
+                .registerTypeAdapter(GatewayAPI.class, GATEWAY_API_SERIALIZER)
+                .registerTypeAdapter(GatewayAPI.class, GATEWAY_API_DESERIALIZER)
                 .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_SERIALIZER)
                 .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_DESERIALIZER)
                 .create();
@@ -575,8 +575,8 @@ public class GsonRepository {
                     .registerTypeAdapter(Schema.class, SCHEMA_DESERIALIZER)
                     .registerTypeAdapter(ThingIFAPI.class, IOT_CLOUD_API_SERIALIZER)
                     .registerTypeAdapter(ThingIFAPI.class, IOT_CLOUD_API_DESERIALIZER)
-                    .registerTypeAdapter(ThingIFAPI.class, GATEWAY_API_SERIALIZER)
-                    .registerTypeAdapter(ThingIFAPI.class, GATEWAY_API_DESERIALIZER)
+                    .registerTypeAdapter(GatewayAPI.class, GATEWAY_API_SERIALIZER)
+                    .registerTypeAdapter(GatewayAPI.class, GATEWAY_API_DESERIALIZER)
                     .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_SERIALIZER)
                     .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_DESERIALIZER)
                     .create();
