@@ -417,11 +417,9 @@ public class ThingIFAPI implements Parcelable {
      * of the command by calling {@link #getCommand}.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @deprecated use {@link ThingIFAPI#postNewCommand(CommandForm)}.
      */
     @NonNull
     @WorkerThread
-    @Deprecated
     public Command postNewCommand(
             @NonNull String schemaName,
             int schemaVersion,
