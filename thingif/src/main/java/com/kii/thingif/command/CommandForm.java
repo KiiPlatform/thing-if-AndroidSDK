@@ -95,4 +95,63 @@ public final class CommandForm {
         return null;
     }
 
+    /**
+     * Getter of schema name.
+     *
+     * @return schema name
+     */
+    @NonNull
+    public String getSchemaName() {
+        return this.schemaName;
+    }
+
+    /**
+     *  Getter of schema version.
+     *
+     * @return schema version
+     */
+    public int getSchemaVersion() {
+        return this.schemaVersion;
+    }
+
+    /**
+     * Getter of actions.
+     *
+     * @return actions
+     */
+    @NonNull
+    public List<Action> getActions() {
+        return this.actions;
+    }
+
+    /**
+     * Getter of titile.
+     *
+     * @return title
+     */
+    @Nullable
+    public String getTitle() {
+        return this.title;
+    }
+
+    /**
+     * Getter of description.
+     *
+     * @return description
+     */
+    @Nullable
+    public String getDescription() {
+        return this.description;
+    }
+
+    /**
+     * Getter of meta data.
+     *
+     * @return meta data
+     */
+    @Nullable
+    public JSONObject getMetadata() {
+        return this.metadata;
+    }
+
 }
