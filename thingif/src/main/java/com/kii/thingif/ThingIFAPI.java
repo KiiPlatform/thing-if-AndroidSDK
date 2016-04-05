@@ -477,9 +477,6 @@ public class ThingIFAPI implements Parcelable {
         Map<String, String> headers = this.newHeader();
         Command command = new Command(schemaName, schemaVersion, this.owner.getTypedID(),
                 form.getActions());
-        if (form.getFiredByTriggerID() != null) {
-            command.setFiredByTriggerID(form.getFiredByTriggerID());
-        }
         if (form.getTitle() != null) {
             command.setTitle(form.getTitle());
         }

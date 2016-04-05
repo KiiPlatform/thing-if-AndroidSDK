@@ -34,7 +34,6 @@ public final class CommandForm implements Parcelable {
     private final int schemaVersion;
     private final @NonNull List<Action> actions;
 
-    private @Nullable String firedByTriggerID;
     private @Nullable String title;
     private @Nullable String description;
     private @Nullable JSONObject metadata;
@@ -63,19 +62,6 @@ public final class CommandForm implements Parcelable {
         this.schemaName = schemaName;
         this.schemaVersion = schemaVersion;
         this.actions = actions;
-    }
-
-    /**
-     * Setter of firedByTriggerID
-     *
-     * @param id ID of the trigger if command invoked by trigger.
-     * @return this instance
-     */
-    public CommandForm setFiredByTriggerID(
-            @Nullable String id)
-    {
-        this.firedByTriggerID = id;
-        return this;
     }
 
     /**
@@ -150,16 +136,6 @@ public final class CommandForm implements Parcelable {
     @NonNull
     public List<Action> getActions() {
         return this.actions;
-    }
-
-    /**
-     * Getter of firedByTriggerID.
-     *
-     * @return firedByTriggerID
-     */
-    @Nullable
-    public String getFiredByTriggerID() {
-        return this.firedByTriggerID;
     }
 
     /**
