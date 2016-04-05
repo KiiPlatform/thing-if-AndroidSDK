@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import org.json.JSONObject;
 
@@ -53,11 +54,11 @@ public final class CommandForm implements Parcelable {
             @NonNull List<Action> actions)
         throws IllegalArgumentException
     {
-        if (schemaName.length() == 0) {
-            throw new IllegalArgumentException("schemaName must not be empty.");
+        if (TextUtils.isEmpty(schemaName)) {
+            throw new IllegalArgumentException("schemaName is null or empty.");
         }
-        if (actions.size() == 0) {
-            throw new IllegalArgumentException("actions must contain at least one Action.");
+        if (actions == null || actions.size() == 0) {
+            throw new IllegalArgumentException("actions is null or empty.");
         }
         this.schemaName = schemaName;
         this.schemaVersion = schemaVersion;
@@ -76,7 +77,7 @@ public final class CommandForm implements Parcelable {
         throws IllegalArgumentException
     {
         if (title != null && title.length() > 50) {
-            throw new IllegalArgumentException("title length must be max 50.");
+            throw new IllegalArgumentException("title is more than 50 charactors.");
         }
         this.title = title;
         return this;
@@ -92,7 +93,7 @@ public final class CommandForm implements Parcelable {
      */
     public CommandForm setDescription(@Nullable String description) {
         if (description != null && description.length() > 200) {
-            throw new IllegalArgumentException("description length must be max 200.");
+            throw new IllegalArgumentException("description is more than 200 charactors.");
         }
         this.description = description;
         return this;
