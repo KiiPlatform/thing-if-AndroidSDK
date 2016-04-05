@@ -196,7 +196,7 @@ public class Command implements Parcelable {
     public String getFiredByTriggerID() {
         return this.firedByTriggerID;
     }
-    void setFiredByTriggerID(String firedByTriggerID) {
+    public void setFiredByTriggerID(String firedByTriggerID) {
         this.firedByTriggerID = firedByTriggerID;
     }
 
