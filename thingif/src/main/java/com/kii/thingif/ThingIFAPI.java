@@ -464,6 +464,9 @@ public class ThingIFAPI implements Parcelable {
     @WorkerThread
     public Command postNewCommand(
             @NonNull CommandForm form) throws ThingIFException {
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
+        }
         final String schemaName = form.getSchemaName();
         final int schemaVersion = form.getSchemaVersion();
         Schema schema = this.getSchema(schemaName, schemaVersion);
