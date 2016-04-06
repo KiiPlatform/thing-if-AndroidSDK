@@ -42,7 +42,7 @@ public final class CommandForm {
      * @param schemaName name of schema. Must not be null or empty string.
      * @param schemaVersion version of schema.
      * @param actions List of actions. Must not be null or empty.
-     * @throws IllegalArgumentException when schemaVersion is null or empty
+     * @throws IllegalArgumentException when schemaName is null or empty
      * string and/or actions is null or empty.
      */
     public CommandForm(
