@@ -60,8 +60,7 @@ public final class CommandForm {
     /**
      * Setter of title
      *
-     * @param title Length of title must be equal or less than 50. title also
-     * must not be empty string.
+     * @param title Length of title must be equal or less than 50.
      * @return this instance
      * @throws IllegalArgumentException if title is invalid.
      */
@@ -76,8 +75,9 @@ public final class CommandForm {
     /**
      * Setter of description
      *
-     * @param description
+     * @param description Length of description must be equal or less than 200.
      * @return this instance.
+     * @throws IllegalArgumentException if description is invalid.
      */
     public CommandForm setDescription(@Nullable String description) {
         // TODO: implement me.
