@@ -495,38 +495,8 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
         actions.add(new SetColor(128, 0, 255));
         actions.add(new SetColorTemperature(25));
 
+        CommandForm form = new CommandForm(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.postNewCommand(new CommandForm(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void postNewCommandWithCommandFormWithNullSchemaNameTest() throws Exception {
-        Target target = new Target(new TypedID(TypedID.Types.THING, "th.1234567890"), "thing-access-token-1234");
-        List<Action> actions = new ArrayList<Action>();
-        actions.add(new SetColor(128, 0, 255));
-        actions.add(new SetColorTemperature(25));
-
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
-        api.postNewCommand(new CommandForm(null, DEMO_SCHEMA_VERSION, actions));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void postNewCommandWithCommandFormWithNullActionsTest() throws Exception {
-        Target target = new Target(new TypedID(TypedID.Types.THING, "th.1234567890"), "thing-access-token-1234");
-
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
-        api.postNewCommand(new CommandForm(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, null));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void postNewCommandWithCommandFormWithEmptyActionsTest() throws Exception {
-        Target target = new Target(new TypedID(TypedID.Types.THING, "th.1234567890"), "thing-access-token-1234");
-        List<Action> actions = new ArrayList<Action>();
-
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
-        api.postNewCommand(new CommandForm(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions));
+        api.postNewCommand(form);
     }
 }
