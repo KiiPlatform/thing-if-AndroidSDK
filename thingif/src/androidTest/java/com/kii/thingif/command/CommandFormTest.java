@@ -11,6 +11,7 @@ import com.kii.thingif.testschemas.SetColorTemperature;
 
 import junit.framework.Assert;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,5 +65,45 @@ public class CommandFormTest extends SmallTestBase {
         List<Action> actions = new ArrayList<Action>();
 
         new CommandForm(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
+    }
+
+    @Test
+    public void setTilteWithNullTest() throws Exception {
+        List<Action> actions = new ArrayList<Action>();
+        actions.add(new SetColor(128, 0, 255));
+        actions.add(new SetColorTemperature(25));
+
+        CommandForm f = new CommandForm(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
+        f.setTitle(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void tooLongerTilteTest() throws Exception {
+        List<Action> actions = new ArrayList<Action>();
+        actions.add(new SetColor(128, 0, 255));
+        actions.add(new SetColorTemperature(25));
+
+        CommandForm f = new CommandForm(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
+        f.setTitle(RandomStringUtils.randomAlphabetic(51));
+    }
+
+    @Test
+    public void setDescriptionWithNullTest() throws Exception {
+        List<Action> actions = new ArrayList<Action>();
+        actions.add(new SetColor(128, 0, 255));
+        actions.add(new SetColorTemperature(25));
+
+        CommandForm f = new CommandForm(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
+        f.setDescription(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void tooLongerDescriptionTest() throws Exception {
+        List<Action> actions = new ArrayList<Action>();
+        actions.add(new SetColor(128, 0, 255));
+        actions.add(new SetColorTemperature(25));
+
+        CommandForm f = new CommandForm(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
+        f.setDescription(RandomStringUtils.randomAlphabetic(201));
     }
 }
