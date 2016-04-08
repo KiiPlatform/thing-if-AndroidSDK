@@ -60,7 +60,7 @@ public final class CommandForm {
     /**
      * Setter of title
      *
-     * @param title Length of title must be equal or less than 50.
+     * @param title Length of title must be equal or less than 50 characters.
      * @return this instance
      * @throws IllegalArgumentException if title is invalid.
      */
@@ -75,7 +75,8 @@ public final class CommandForm {
     /**
      * Setter of description
      *
-     * @param description Length of description must be equal or less than 200.
+     * @param description Length of description must be equal or less than
+     * 200 characters.
      * @return this instance.
      * @throws IllegalArgumentException if description is invalid.
      */
