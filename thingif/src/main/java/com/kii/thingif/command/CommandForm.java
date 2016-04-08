@@ -1,5 +1,7 @@
 package com.kii.thingif.command;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -26,7 +28,7 @@ import java.util.List;
  * <li>meta data of a schema</li>
  * </ul>
  */
-public final class CommandForm {
+public final class CommandForm implements Parcelable {
 
     private final @NonNull String schemaName;
     private final int schemaVersion;
@@ -155,4 +157,13 @@ public final class CommandForm {
         return this.metadata;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        // TODO: implement me.
+    }
 }
