@@ -6,8 +6,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -176,6 +178,39 @@ public final class CommandForm implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        // TODO: implement me.
+        dest.writeString(this.schemaName);
+        dest.writeInt(this.schemaVersion);
+        dest.writeList(this.actions);
+        dest.writeString(this.title);
+        dest.writeString(this.description);
+        dest.writeString(this.metadata == null ? null : this.metadata.toString());
+    }
+
+    public static final Parcelable.Creator<CommandForm> CREATOR
+            = new Parcelable.Creator<CommandForm>() {
+        public CommandForm createFromParcel(Parcel in) {
+            return new CommandForm(in);
+        }
+
+        public CommandForm[] newArray(int size) {
+            return new CommandForm[size];
+        }
+    };
+
+    private CommandForm(Parcel in) {
+        this.schemaName = in.readString();
+        this.schemaVersion = in.readInt();
+        this.actions = new ArrayList<Action>();
+        in.readList(this.actions, null);
+        this.title = in.readString();
+        this.description = in.readString();
+        String metadata = in.readString();
+        if (!TextUtils.isEmpty(metadata)) {
+            try {
+                this.metadata = new JSONObject(metadata);
+            } catch (JSONException ignore) {
+                // Won’t happen
+            }
+        }
     }
 }

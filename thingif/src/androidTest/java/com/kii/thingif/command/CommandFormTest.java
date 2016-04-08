@@ -1,11 +1,9 @@
 package com.kii.thingif.command;
 
+import android.os.Parcel;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.kii.thingif.SmallTestBase;
-import com.kii.thingif.Target;
-import com.kii.thingif.ThingIFAPI;
-import com.kii.thingif.TypedID;
 import com.kii.thingif.testschemas.SetColor;
 import com.kii.thingif.testschemas.SetColorTemperature;
 
@@ -105,5 +103,54 @@ public class CommandFormTest extends SmallTestBase {
 
         CommandForm f = new CommandForm(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
         f.setDescription(RandomStringUtils.randomAlphabetic(201));
+    }
+
+    @Test
+    public void percelableTest() throws Exception {
+        List<Action> actions = new ArrayList<Action>();
+        actions.add(new SetColor(128, 0, 255));
+        actions.add(new SetColorTemperature(25));
+        JSONObject metadata = new JSONObject("{ field : value }");
+
+        CommandForm src = new CommandForm(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
+        src.setTitle(DEMO_TITLE);
+        src.setDescription(DEMO_DESCRIPTION);
+        src.setMetadata(metadata);
+
+        Parcel parcel1 = Parcel.obtain();
+        src.writeToParcel(parcel1, 0);
+        parcel1.setDataPosition(0);
+        CommandForm dest1 = CommandForm.CREATOR.createFromParcel(parcel1);
+
+        Assert.assertEquals(src.getSchemaName(), dest1.getSchemaName());
+        Assert.assertEquals(src.getSchemaVersion(), dest1.getSchemaVersion());
+        Assert.assertEquals(src.getActions().size(), dest1.getActions().size());
+        Assert.assertEquals(src.getActions().get(0).getActionName(),
+                dest1.getActions().get(0).getActionName());
+        Assert.assertEquals(src.getActions().get(1).getActionName(),
+                dest1.getActions().get(1).getActionName());
+        Assert.assertEquals(src.getTitle(), dest1.getTitle());
+        Assert.assertEquals(src.getDescription(), dest1.getDescription());
+        Assert.assertEquals(src.getMetadata().toString(), dest1.getMetadata().toString());
+
+        src.setTitle(null);
+        src.setDescription(null);
+        src.setMetadata(null);
+
+        Parcel parcel2 = Parcel.obtain();
+        src.writeToParcel(parcel2, 0);
+        parcel2.setDataPosition(0);
+        CommandForm dest2 = CommandForm.CREATOR.createFromParcel(parcel2);
+
+        Assert.assertEquals(src.getSchemaName(), dest2.getSchemaName());
+        Assert.assertEquals(src.getSchemaVersion(), dest2.getSchemaVersion());
+        Assert.assertEquals(src.getActions().size(), dest2.getActions().size());
+        Assert.assertEquals(src.getActions().get(0).getActionName(),
+                dest2.getActions().get(0).getActionName());
+        Assert.assertEquals(src.getActions().get(1).getActionName(),
+                dest2.getActions().get(1).getActionName());
+        Assert.assertNull(dest2.getTitle());
+        Assert.assertNull(dest2.getDescription());
+        Assert.assertNull(dest2.getMetadata());
     }
 }
