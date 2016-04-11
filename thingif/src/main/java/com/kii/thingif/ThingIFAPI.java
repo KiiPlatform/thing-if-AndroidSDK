@@ -14,6 +14,7 @@ import com.google.gson.JsonParseException;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.ActionResult;
 import com.kii.thingif.command.Command;
+import com.kii.thingif.command.CommandForm;
 import com.kii.thingif.exception.ThingIFException;
 import com.kii.thingif.exception.ThingIFRestException;
 import com.kii.thingif.exception.StoredThingIFAPIInstanceNotFoundException;
@@ -440,6 +441,51 @@ public class ThingIFAPI implements Parcelable {
         Command command = new Command(schemaName, schemaVersion, this.owner.getTypedID(), actions);
         JSONObject requestBody = JsonUtils.newJson(GsonRepository.gson(schema).toJson(command));
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MediaTypes.MEDIA_TYPE_JSON, requestBody);
+        JSONObject responseBody = this.restClient.sendRequest(request);
+
+        String commandID = responseBody.optString("commandID", null);
+        return this.getCommand(commandID);
+    }
+
+    /**
+     * Post new command to IoT Cloud.
+     * Command will be delivered to specified target and result will be notified
+     * through push notification.
+     * @param form form of command. It contains name of schema, version of
+     * schema, list of actions etc.
+     * @return Created Command instance. At this time, Command is delivered to
+     * the target Asynchronously and may not finished. Actual Result will be
+     * delivered through push notification or you can check the latest status
+     * of the command by calling {@link #getCommand}.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     */
+    @NonNull
+    @WorkerThread
+    public Command postNewCommand(
+            @NonNull CommandForm form) throws ThingIFException {
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
+        }
+        final String schemaName = form.getSchemaName();
+        final int schemaVersion = form.getSchemaVersion();
+        Schema schema = this.getSchema(schemaName, schemaVersion);
+        if (schema == null) {
+            throw new UnsupportedSchemaException(schemaName, schemaVersion);
+        }
+
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/commands",
+                this.app.getAppID(), this.target.getTypedID().toString());
+        String url = Path.combine(this.app.getBaseUrl(), path);
+        Map<String, String> headers = this.newHeader();
+        Command command = new Command(schemaName, schemaVersion, this.owner.getTypedID(),
+                form.getActions());
+        command.setTitle(form.getTitle());
+        command.setDescription(form.getDescription());
+        command.setMetadata(form.getMetadata());
+        JSONObject requestBody = JsonUtils.newJson(GsonRepository.gson(schema).toJson(command));
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers,
+                MediaTypes.MEDIA_TYPE_JSON, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
 
         String commandID = responseBody.optString("commandID", null);
