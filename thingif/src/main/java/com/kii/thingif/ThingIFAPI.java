@@ -464,8 +464,38 @@ public class ThingIFAPI implements Parcelable {
     @WorkerThread
     public Command postNewCommand(
             @NonNull CommandForm form) throws ThingIFException {
-        // TODO: implement me.
-        return null;
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
+        }
+        final String schemaName = form.getSchemaName();
+        final int schemaVersion = form.getSchemaVersion();
+        Schema schema = this.getSchema(schemaName, schemaVersion);
+        if (schema == null) {
+            throw new UnsupportedSchemaException(schemaName, schemaVersion);
+        }
+
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/commands",
+                this.app.getAppID(), this.target.getTypedID().toString());
+        String url = Path.combine(this.app.getBaseUrl(), path);
+        Map<String, String> headers = this.newHeader();
+        Command command = new Command(schemaName, schemaVersion, this.owner.getTypedID(),
+                form.getActions());
+        if (form.getTitle() != null) {
+            command.setTitle(form.getTitle());
+        }
+        if (form.getDescription() != null) {
+            command.setDescription(form.getDescription());
+        }
+        if (form.getMetadata() != null) {
+            command.setMetadata(form.getMetadata());
+        }
+        JSONObject requestBody = JsonUtils.newJson(GsonRepository.gson(schema).toJson(command));
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers,
+                MediaTypes.MEDIA_TYPE_JSON, requestBody);
+        JSONObject responseBody = this.restClient.sendRequest(request);
+
+        String commandID = responseBody.optString("commandID", null);
+        return this.getCommand(commandID);
     }
 
     /**

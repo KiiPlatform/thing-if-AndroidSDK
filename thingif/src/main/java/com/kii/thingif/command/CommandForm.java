@@ -4,9 +4,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,7 +56,12 @@ public final class CommandForm implements Parcelable {
             @NonNull List<Action> actions)
         throws IllegalArgumentException
     {
-        // TODO: validate following fields if invalid, throw exception.
+        if (TextUtils.isEmpty(schemaName)) {
+            throw new IllegalArgumentException("schemaName is null or empty.");
+        }
+        if (actions == null || actions.size() == 0) {
+            throw new IllegalArgumentException("actions is null or empty.");
+        }
         this.schemaName = schemaName;
         this.schemaVersion = schemaVersion;
         this.actions = actions;
@@ -70,8 +78,11 @@ public final class CommandForm implements Parcelable {
             @Nullable String title)
         throws IllegalArgumentException
     {
-        // TODO: implement me.
-        return null;
+        if (title != null && title.length() > 50) {
+            throw new IllegalArgumentException("title is more than 50 charactors.");
+        }
+        this.title = title;
+        return this;
     }
 
     /**
@@ -83,8 +94,11 @@ public final class CommandForm implements Parcelable {
      * @throws IllegalArgumentException if description is invalid.
      */
     public CommandForm setDescription(@Nullable String description) {
-        // TODO: implement me.
-        return null;
+        if (description != null && description.length() > 200) {
+            throw new IllegalArgumentException("description is more than 200 charactors.");
+        }
+        this.description = description;
+        return this;
     }
 
     /**
@@ -94,8 +108,8 @@ public final class CommandForm implements Parcelable {
      * @return this instance.
      */
     public CommandForm setMetadata(@Nullable JSONObject metadata) {
-        // TODO: implement me.
-        return null;
+        this.metadata = metadata;
+        return this;
     }
 
     /**
@@ -164,6 +178,39 @@ public final class CommandForm implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        // TODO: implement me.
+        dest.writeString(this.schemaName);
+        dest.writeInt(this.schemaVersion);
+        dest.writeList(this.actions);
+        dest.writeString(this.title);
+        dest.writeString(this.description);
+        dest.writeString(this.metadata == null ? null : this.metadata.toString());
+    }
+
+    public static final Parcelable.Creator<CommandForm> CREATOR
+            = new Parcelable.Creator<CommandForm>() {
+        public CommandForm createFromParcel(Parcel in) {
+            return new CommandForm(in);
+        }
+
+        public CommandForm[] newArray(int size) {
+            return new CommandForm[size];
+        }
+    };
+
+    private CommandForm(Parcel in) {
+        this.schemaName = in.readString();
+        this.schemaVersion = in.readInt();
+        this.actions = new ArrayList<Action>();
+        in.readList(this.actions, null);
+        this.title = in.readString();
+        this.description = in.readString();
+        String metadata = in.readString();
+        if (!TextUtils.isEmpty(metadata)) {
+            try {
+                this.metadata = new JSONObject(metadata);
+            } catch (JSONException ignore) {
+                // Won’t happen
+            }
+        }
     }
 }

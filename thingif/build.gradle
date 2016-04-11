@@ -21,6 +21,7 @@ android {
     // https://code.google.com/p/android/issues/detail?id=161404
     packagingOptions {
         exclude 'LICENSE.txt'
+        exclude 'META-INF/LICENSE.txt'
     }
 }
 
@@ -86,6 +87,7 @@ dependencies {
     androidTestCompile 'com.android.support.test:rules:0.3'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2'
     androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
+    androidTestCompile 'commons-lang:commons-lang:2.6'
 }
 
 task setBranch << {
