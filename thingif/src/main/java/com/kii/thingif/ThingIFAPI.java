@@ -480,15 +480,9 @@ public class ThingIFAPI implements Parcelable {
         Map<String, String> headers = this.newHeader();
         Command command = new Command(schemaName, schemaVersion, this.owner.getTypedID(),
                 form.getActions());
-        if (form.getTitle() != null) {
-            command.setTitle(form.getTitle());
-        }
-        if (form.getDescription() != null) {
-            command.setDescription(form.getDescription());
-        }
-        if (form.getMetadata() != null) {
-            command.setMetadata(form.getMetadata());
-        }
+        command.setTitle(form.getTitle());
+        command.setDescription(form.getDescription());
+        command.setMetadata(form.getMetadata());
         JSONObject requestBody = JsonUtils.newJson(GsonRepository.gson(schema).toJson(command));
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers,
                 MediaTypes.MEDIA_TYPE_JSON, requestBody);
