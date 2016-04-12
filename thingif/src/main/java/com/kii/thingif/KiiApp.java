@@ -12,6 +12,7 @@ public class KiiApp implements Parcelable {
     private String hostName;
     private String baseUrl;
     private String siteName;
+    private Site site;
 
 
     /** Instantiate Kii App with App Location.
@@ -34,6 +35,7 @@ public class KiiApp implements Parcelable {
         }
         this.appID = appID;
         this.appKey = appKey;
+        this.site = site;
         this.hostName = site.getHostName();
         this.baseUrl = site.getBaseUrl();
         this.siteName = site.name();
@@ -62,31 +64,16 @@ public class KiiApp implements Parcelable {
         }
         this.appID = appID;
         this.appKey = appKey;
+        this.site = null;
         this.hostName = hostName;
         this.baseUrl = "https://" + hostName;
         this.siteName = "CUSTOM";
     }
 
-    /** Instantiate Kii App with Host Name and Site Name.
-     * Who host Kii Cloud in private/ dedicated location
-     * Will use this constructor to instantiate KiiApp.
-     * (Private/ Dedicated location is only available in Enterprise subscription.)
-     * If you're using public Kii Cloud, please use {@link KiiApp(String, String, Site)}
-     * siteName is used by Gateway Agent to resolve the server location stored with the siteName
-     * in the Gateway configuration.
-     * @param appID ID of the app.
-     * @param appKey Key of the app.
-     * @param hostName Host name of the app.
-     * @param siteName Site name of the app. (Corresponds to Gateway Agent configuration.)
-     */
-    KiiApp(String appID, String appKey, String hostName, String siteName) {
-        this(appID, appKey, hostName);
-        this.siteName = siteName;
-    }
-
     protected KiiApp(Parcel in) {
         appID = in.readString();
         appKey = in.readString();
+        site = (Site)in.readSerializable();
         hostName = in.readString();
         baseUrl = in.readString();
         siteName = in.readString();
@@ -112,6 +99,10 @@ public class KiiApp implements Parcelable {
         return  this.appKey;
     }
 
+    public Site getSite() {
+        return this.site;
+    }
+
     public String getHostName() {
         return this.hostName;
     }
@@ -133,6 +124,7 @@ public class KiiApp implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(appID);
         dest.writeString(appKey);
+        dest.writeSerializable(site);
         dest.writeString(hostName);
         dest.writeString(baseUrl);
         dest.writeString(siteName);
