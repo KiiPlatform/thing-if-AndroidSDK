@@ -12,7 +12,6 @@ public class KiiApp implements Parcelable {
     private String hostName;
     private String baseUrl;
     private String siteName;
-    private Site site;
 
 
     /** Instantiate Kii App with App Location.
@@ -35,7 +34,6 @@ public class KiiApp implements Parcelable {
         }
         this.appID = appID;
         this.appKey = appKey;
-        this.site = site;
         this.hostName = site.getHostName();
         this.baseUrl = site.getBaseUrl();
         this.siteName = site.name();
@@ -64,7 +62,6 @@ public class KiiApp implements Parcelable {
         }
         this.appID = appID;
         this.appKey = appKey;
-        this.site = null;
         this.hostName = hostName;
         this.baseUrl = "https://" + hostName;
         this.siteName = "CUSTOM";
@@ -73,7 +70,6 @@ public class KiiApp implements Parcelable {
     protected KiiApp(Parcel in) {
         appID = in.readString();
         appKey = in.readString();
-        site = (Site)in.readSerializable();
         hostName = in.readString();
         baseUrl = in.readString();
         siteName = in.readString();
@@ -100,7 +96,10 @@ public class KiiApp implements Parcelable {
     }
 
     public Site getSite() {
-        return this.site;
+        if ("CUSTOM".equals(this.siteName)) {
+            return null;
+        }
+        return Site.valueOf(this.siteName);
     }
 
     public String getHostName() {
@@ -124,7 +123,6 @@ public class KiiApp implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(appID);
         dest.writeString(appKey);
-        dest.writeSerializable(site);
         dest.writeString(hostName);
         dest.writeString(baseUrl);
         dest.writeString(siteName);
