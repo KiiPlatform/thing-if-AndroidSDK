@@ -259,16 +259,16 @@ public class GatewayAPI implements Parcelable {
     }
 
     /**
-     * Get vendorThingID of the Gateway.
+     * Get information of the Gateway.
      * When the end user replaces the Gateway, Gateway App/End Node App need to obtain the new Gateway’s vendorThingID.
      *
-     * @return vendorThingID of the Gateway.
+     * @return Gateway Information.
      * @throws ThingIFException
      * @throws IllegalStateException Thrown when user is not logged in.
      */
     @WorkerThread
     @NonNull
-    public String getGatewayInformation() throws ThingIFException {
+    public GatewayInformation getGatewayInformation() throws ThingIFException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");
         }
@@ -278,7 +278,7 @@ public class GatewayAPI implements Parcelable {
 
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
-        return responseBody.optString("vendorThingID", null);
+        return new GatewayInformation(responseBody.optString("vendorThingID", null));
     }
 
     /** Check If user is logged in to the Gateway.
