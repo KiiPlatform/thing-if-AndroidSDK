@@ -87,10 +87,10 @@ public class GatewayAPITestBase extends SmallTestBase {
         responseBody.addProperty("thingID", thingID);
         this.server.enqueue(new MockResponse().setResponseCode(httpStatus).setBody(responseBody.toString()));
     }
-    protected void addMockResponseForListPendingEndNodes(int httpStatus, PendingEndNode... nodes) {
+    protected void addMockResponseForListPendingEndNodes(int httpStatus, EndNode... nodes) {
         JsonObject responseBody = new JsonObject();
         JsonArray nodeArray = new JsonArray();
-        for (PendingEndNode node : nodes) {
+        for (EndNode node : nodes) {
             JsonObject pendingNode = new JsonObject();
             pendingNode.addProperty("vendorThingID", node.getVendorThingID());
             if (node.getThingProperties() != null) {

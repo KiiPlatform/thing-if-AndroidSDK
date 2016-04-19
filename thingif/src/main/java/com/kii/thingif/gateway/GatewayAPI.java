@@ -150,7 +150,7 @@ public class GatewayAPI implements Parcelable {
      */
     @WorkerThread
     @NonNull
-    public List<PendingEndNode> listPendingEndNodes() throws ThingIFException {
+    public List<EndNode> listPendingEndNodes() throws ThingIFException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");
         }
@@ -160,12 +160,12 @@ public class GatewayAPI implements Parcelable {
 
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
-        List<PendingEndNode> nodes = new ArrayList<PendingEndNode>();
+        List<EndNode> nodes = new ArrayList<EndNode>();
         JSONArray results = responseBody.optJSONArray("results");
         if (results != null) {
             for (int i = 0; i < results.length(); i++) {
                 try {
-                    nodes.add(new PendingEndNode(results.getJSONObject(i)));
+                    nodes.add(new EndNode(results.getJSONObject(i)));
                 } catch (JSONException ignore) {
                 }
             }
