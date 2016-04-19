@@ -2,6 +2,7 @@ package com.kii.thingif.gateway;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
 
 import com.google.gson.JsonArray;
@@ -49,12 +50,13 @@ public class GatewayAPITestBase extends SmallTestBase {
                 setPort(server.getPort()).setURLSchema("http").build();
         return app;
     }
-    protected GatewayAddress getGatewayAddress() {
-        return new GatewayAddress("http", server.getHostName(), server.getPort());
+    protected Uri getGatewayAddress() {
+        Uri.Builder builder = new Uri.Builder();
+        return builder.scheme("http").encodedAuthority(server.getHostName() + ":" + server.getPort()).build();
     }
     protected GatewayAPI craeteGatewayAPIWithLoggedIn() throws Exception {
         KiiApp app = getApp(APP_ID, APP_KEY);
-        GatewayAddress gatewayAddress = getGatewayAddress();
+        Uri gatewayAddress = getGatewayAddress();
         this.addMockResponseForLogin(200, ACCESS_TOKEN);
         GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
         api.login("dummy", "dummy");

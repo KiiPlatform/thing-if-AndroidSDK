@@ -1,5 +1,6 @@
 package com.kii.thingif.gateway;
 
+import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Base64;
@@ -26,7 +27,7 @@ public class GatewayAPI_LoginTest extends GatewayAPITestBase {
         String password = "pa$$word";
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
-        GatewayAddress gatewayAddress = getGatewayAddress();
+        Uri gatewayAddress = getGatewayAddress();
         GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
 
         this.addMockResponseForLogin(200, accessToken);
@@ -54,7 +55,7 @@ public class GatewayAPI_LoginTest extends GatewayAPITestBase {
         String password = "pa$$word";
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
-        GatewayAddress gatewayAddress = getGatewayAddress();
+        Uri gatewayAddress = getGatewayAddress();
         GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
 
         api.login(username, password);
@@ -65,7 +66,7 @@ public class GatewayAPI_LoginTest extends GatewayAPITestBase {
         String password = "pa$$word";
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
-        GatewayAddress gatewayAddress = getGatewayAddress();
+        Uri gatewayAddress = getGatewayAddress();
         GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
 
         api.login(username, password);
@@ -76,7 +77,7 @@ public class GatewayAPI_LoginTest extends GatewayAPITestBase {
         String password = null;
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
-        GatewayAddress gatewayAddress = getGatewayAddress();
+        Uri gatewayAddress = getGatewayAddress();
         GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
 
         api.login(username, password);
@@ -87,7 +88,7 @@ public class GatewayAPI_LoginTest extends GatewayAPITestBase {
         String password = "";
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
-        GatewayAddress gatewayAddress = getGatewayAddress();
+        Uri gatewayAddress = getGatewayAddress();
         GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
 
         api.login(username, password);
@@ -98,7 +99,7 @@ public class GatewayAPI_LoginTest extends GatewayAPITestBase {
         String password = "pa$$word";
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
-        GatewayAddress gatewayAddress = getGatewayAddress();
+        Uri gatewayAddress = getGatewayAddress();
         GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
 
         this.addEmptyMockResponse(400);
@@ -130,7 +131,7 @@ public class GatewayAPI_LoginTest extends GatewayAPITestBase {
         String password = "pa$$word";
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
-        GatewayAddress gatewayAddress = getGatewayAddress();
+        Uri gatewayAddress = getGatewayAddress();
         GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
 
         this.addEmptyMockResponse(401);

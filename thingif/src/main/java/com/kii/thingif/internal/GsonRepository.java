@@ -1,5 +1,6 @@
 package com.kii.thingif.internal;
 
+import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -29,7 +30,6 @@ import com.kii.thingif.command.ActionResult;
 import com.kii.thingif.exception.UnsupportedActionException;
 import com.kii.thingif.gateway.GatewayAPI;
 import com.kii.thingif.gateway.GatewayAPIBuilder;
-import com.kii.thingif.gateway.GatewayAddress;
 import com.kii.thingif.schema.Schema;
 import com.kii.thingif.schema.SchemaBuilder;
 import com.kii.thingif.trigger.Condition;
@@ -342,7 +342,7 @@ public class GsonRepository {
             }
             JsonObject json = new JsonObject();
             json.add("app", DEFAULT_GSON.toJsonTree(src.getApp()));
-            json.add("gatewayAddress", DEFAULT_GSON.toJsonTree(src.getGatewayAddress()));
+            json.addProperty("gatewayAddress", src.getGatewayAddress().toString());
 
             String tag = src.getTag();
             if (!TextUtils.isEmpty(tag)) {
@@ -360,7 +360,7 @@ public class GsonRepository {
             }
             JsonObject json = (JsonObject)jsonElement;
             KiiApp app = DEFAULT_GSON.fromJson(json.getAsJsonObject("app"), KiiApp.class);
-            GatewayAddress gatewayAddress = DEFAULT_GSON.fromJson(json.getAsJsonObject("gatewayAddress"), GatewayAddress.class);
+            Uri gatewayAddress = Uri.parse(json.get("gatewayAddress").getAsString());
             String tag = null;
             if (json.has("tag")) {
                 tag = json.get("tag").getAsString();
