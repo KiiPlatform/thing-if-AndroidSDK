@@ -207,7 +207,8 @@ public class GatewayAPI implements Parcelable {
         this.restClient.sendRequest(request);
     }
 
-    /** Restore the Gateway
+    /** Restore the Gateway.
+     * This API can be used only for the Gateway App.
      * @throws ThingIFException
      * @throws IllegalStateException Thrown when user is not logged in.
      * See {@link #login(String, String)}
