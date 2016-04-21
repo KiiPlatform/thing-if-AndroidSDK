@@ -85,6 +85,7 @@ public class ThingIFAPI implements Parcelable {
      * @return ThingIFAPI instance.
      * @throws StoredThingIFAPIInstanceNotFoundException when the instance has not stored yet.
      */
+    @NonNull
     public static ThingIFAPI loadFromStoredInstance(@NonNull Context context) throws StoredThingIFAPIInstanceNotFoundException {
         return loadFromStoredInstance(context, null);
     }
@@ -99,6 +100,7 @@ public class ThingIFAPI implements Parcelable {
      * @return ThingIFAPI instance.
      * @throws StoredThingIFAPIInstanceNotFoundException when the instance has not stored yet.
      */
+    @NonNull
     public static ThingIFAPI loadFromStoredInstance(@NonNull Context context, String tag) throws StoredThingIFAPIInstanceNotFoundException {
         ThingIFAPI.context = context.getApplicationContext();
         SharedPreferences preferences = getSharedPreferences();
@@ -122,7 +124,7 @@ public class ThingIFAPI implements Parcelable {
      *
      * @param tag
      */
-    public static void removeStoredInstance(String tag) {
+    public static void removeStoredInstance(@Nullable String tag) {
         SharedPreferences preferences = getSharedPreferences();
         SharedPreferences.Editor editor = preferences.edit();
         editor.remove(getSharedPreferencesKey(tag));
@@ -615,6 +617,7 @@ public class ThingIFAPI implements Parcelable {
      * @throws ThingIFRestException Thrown when server returns error response.
      * @throws UnsupportedActionException Thrown when the returned response has a action that cannot handle this instance.
      */
+    @NonNull
     public Pair<List<Command>, String> listCommands (
             int bestEffortLimit,
             @Nullable String paginationKey)
@@ -1141,6 +1144,7 @@ public class ThingIFAPI implements Parcelable {
     /** Get Kii App
      * @return Kii Cloud Application.
      */
+    @NonNull
     public KiiApp getApp() {
         return this.app;
     }
@@ -1148,6 +1152,7 @@ public class ThingIFAPI implements Parcelable {
      * Get AppID
      * @return
      */
+    @NonNull
     public String getAppID() {
         return this.app.getAppID();
     }
@@ -1155,6 +1160,7 @@ public class ThingIFAPI implements Parcelable {
      * Get AppKey
      * @return
      */
+    @NonNull
     public String getAppKey() {
         return this.app.getAppKey();
     }
@@ -1162,6 +1168,7 @@ public class ThingIFAPI implements Parcelable {
      * Get base URL
      * @return
      */
+    @NonNull
     public String getBaseUrl() {
         return this.app.getBaseUrl();
     }
@@ -1169,6 +1176,7 @@ public class ThingIFAPI implements Parcelable {
      *
      * @return
      */
+    @NonNull
     public List<Schema> getSchemas() {
         return new ArrayList<Schema>(this.schemas.values());
     }
@@ -1176,6 +1184,7 @@ public class ThingIFAPI implements Parcelable {
      * Get owner who uses the ThingIFAPI.
      * @return
      */
+    @NonNull
     public Owner getOwner() {
         return this.owner;
     }
@@ -1184,6 +1193,7 @@ public class ThingIFAPI implements Parcelable {
      * Get target thing that is operated by the ThingIFAPI.
      * @return
      */
+    @Nullable
     public Target getTarget() {
         return this.target;
     }
@@ -1195,10 +1205,12 @@ public class ThingIFAPI implements Parcelable {
      * Get a tag.
      * @return
      */
+    @Nullable
     public String getTag() {
         return this.tag;
     }
 
+    @Nullable
     private Schema getSchema(String schemaName, int schemaVersion) {
         return this.schemas.get(new Pair<String, Integer>(schemaName, schemaVersion));
     }

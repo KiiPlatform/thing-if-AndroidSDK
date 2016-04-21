@@ -9,9 +9,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class EndNode implements Parcelable {
-    private String thingID;
-    private String vendorThingID;
-    private String thingType;
+    private final String thingID;
+    private final String vendorThingID;
+    private final String thingType;
     private JSONObject thingProperties;
 
     EndNode(JSONObject json) {
@@ -24,6 +24,7 @@ public class EndNode implements Parcelable {
     public String getThingID() {
         return this.thingID;
     }
+    @Nullable
     public String getVendorThingID() {
         return this.vendorThingID;
     }

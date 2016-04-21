@@ -294,12 +294,14 @@ public class GatewayAPI implements Parcelable {
      * Get a tag.
      * @return
      */
+    @Nullable
     public String getTag() {
         return this.tag;
     }
     /** Get Kii App
      * @return Kii Cloud Application.
      */
+    @NonNull
     public KiiApp getApp() {
         return this.app;
     }
@@ -307,6 +309,7 @@ public class GatewayAPI implements Parcelable {
      * Get AppID
      * @return
      */
+    @NonNull
     public String getAppID() {
         return this.app.getAppID();
     }
@@ -314,6 +317,7 @@ public class GatewayAPI implements Parcelable {
      * Get AppKey
      * @return
      */
+    @NonNull
     public String getAppKey() {
         return this.app.getAppKey();
     }
@@ -321,6 +325,7 @@ public class GatewayAPI implements Parcelable {
     /** Get GatewayAddress
      * @return Gateway Address
      */
+    @NonNull
     public Uri getGatewayAddress() {
         return this.gatewayAddress;
     }
@@ -329,6 +334,7 @@ public class GatewayAPI implements Parcelable {
      * Get Access Token
      * @return
      */
+    @Nullable
     public String getAccessToken() {
         return this.accessToken;
     }
@@ -389,6 +395,7 @@ public class GatewayAPI implements Parcelable {
      * @return ThingIFAPI instance.
      * @throws StoredGatewayAPIInstanceNotFoundException when the instance has not stored yet.
      */
+    @NonNull
     public static GatewayAPI loadFromStoredInstance(@NonNull Context context) throws StoredGatewayAPIInstanceNotFoundException {
         return loadFromStoredInstance(context, null);
     }
@@ -403,7 +410,8 @@ public class GatewayAPI implements Parcelable {
      * @return GatewayAPI instance.
      * @throws StoredGatewayAPIInstanceNotFoundException when the instance has not stored yet.
      */
-    public static GatewayAPI loadFromStoredInstance(@NonNull Context context, String tag) throws StoredGatewayAPIInstanceNotFoundException {
+    @NonNull
+    public static GatewayAPI loadFromStoredInstance(@NonNull Context context, @Nullable String tag) throws StoredGatewayAPIInstanceNotFoundException {
         GatewayAPI.context = context.getApplicationContext();
         SharedPreferences preferences = getSharedPreferences();
         String serializedJson = preferences.getString(getSharedPreferencesKey(tag), null);
@@ -426,7 +434,7 @@ public class GatewayAPI implements Parcelable {
      *
      * @param tag
      */
-    public static void removeStoredInstance(String tag) {
+    public static void removeStoredInstance(@Nullable String tag) {
         SharedPreferences preferences = getSharedPreferences();
         SharedPreferences.Editor editor = preferences.edit();
         editor.remove(getSharedPreferencesKey(tag));
