@@ -11,6 +11,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
@@ -19,6 +20,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.kii.thingif.KiiApp;
 import com.kii.thingif.ServerError;
+import com.kii.thingif.TargetStandaloneThing;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.ThingIFAPIBuilder;
 import com.kii.thingif.Owner;
@@ -30,6 +32,8 @@ import com.kii.thingif.command.ActionResult;
 import com.kii.thingif.exception.UnsupportedActionException;
 import com.kii.thingif.gateway.GatewayAPI;
 import com.kii.thingif.gateway.GatewayAPIBuilder;
+import com.kii.thingif.gateway.TargetEndnodeThing;
+import com.kii.thingif.gateway.TargetGatewayThing;
 import com.kii.thingif.schema.Schema;
 import com.kii.thingif.schema.SchemaBuilder;
 import com.kii.thingif.trigger.Condition;
@@ -68,7 +72,6 @@ public class GsonRepository {
     private static final Map<Pair<String, Integer>, Gson> REPOSITORY = Collections.synchronizedMap(new HashMap<Pair<String, Integer>, Gson>());
     private static final Gson DEFAULT_GSON;
     private static final Gson PURE_GSON = new Gson();
-
 
     private static final JsonSerializer<JSONObject> ORG_JSON_OBJECT_SERIALIZER = new JsonSerializer<JSONObject>() {
         @Override
@@ -295,7 +298,11 @@ public class GsonRepository {
                 json.addProperty("tag", tag);
             }
             json.add("owner", DEFAULT_GSON.toJsonTree(src.getOwner()));
-            json.add("target", DEFAULT_GSON.toJsonTree(src.getTarget()));
+            if (src.getTarget() != null) {
+                json.add("target", DEFAULT_GSON.toJsonTree(src.getTarget(), src.getTarget().getClass()));
+            } else {
+                json.add("target", JsonNull.INSTANCE);
+            }
             JsonArray schemas = new JsonArray();
             for (Schema schema : src.getSchemas()) {
                 schemas.add(DEFAULT_GSON.toJsonTree(schema));
@@ -470,6 +477,119 @@ public class GsonRepository {
     };
 
 
+
+
+
+
+
+
+
+    private static final JsonSerializer<Target> TARGET_SERIALIZER = new JsonSerializer<Target>() {
+        @Override
+        public JsonElement serialize(Target src, Type typeOfSrc, JsonSerializationContext context) {
+            if (src == null) {
+                return null;
+            }
+            JsonObject json = new JsonObject();
+            json.addProperty("typedID", src.getTypedID().toString());
+            json.addProperty("class", src.getClass().getName());
+            if (!TextUtils.isEmpty(src.getAccessToken())) {
+                json.addProperty("accessToken", src.getAccessToken());
+            }
+            return json;
+        }
+    };
+    private static final JsonDeserializer<Target> TARGET_DESERIALIZER = new JsonDeserializer<Target>() {
+        @Override
+        public Target deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            if (jsonElement == null) {
+                return null;
+            }
+            JsonObject json = (JsonObject)jsonElement;
+            String accessToken = json.has("accessToken") ? json.get("accessToken").getAsString() : null;
+            String className = json.get("class").getAsString();
+            TypedID typedID = TypedID.fromString(json.get("typedID").getAsString());
+            if (TargetStandaloneThing.class.getName().equals(className)) {
+                return new TargetStandaloneThing(typedID.getID(), accessToken);
+            } else if (TargetGatewayThing.class.getName().equals(className)) {
+                return new TargetGatewayThing(typedID.getID());
+            } else if (TargetEndnodeThing.class.getName().equals(className)) {
+                return new TargetEndnodeThing(typedID.getID());
+            }
+            throw new JsonParseException("Detected unknown type " + className);
+        }
+    };
+
+
+//    private static final JsonSerializer<TargetStandaloneThing> TARGET_STANDALONE_THING_SERIALIZER = new JsonSerializer<TargetStandaloneThing>() {
+//        @Override
+//        public JsonElement serialize(TargetStandaloneThing src, Type typeOfSrc, JsonSerializationContext context) {
+//            if (src == null) {
+//                return null;
+//            }
+//            JsonObject json = new JsonObject();
+//            json.addProperty("typedID", src.getTypedID().toString());
+//            if (!TextUtils.isEmpty(src.getAccessToken())) {
+//                json.addProperty("accessToken", src.getAccessToken());
+//            }
+//            return json;
+//        }
+//    };
+//    private static final JsonDeserializer<TargetStandaloneThing> TARGET_STANDALONE_THING__DESERIALIZER = new JsonDeserializer<TargetStandaloneThing>() {
+//        @Override
+//        public TargetStandaloneThing deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+//            if (jsonElement == null) {
+//                return null;
+//            }
+//            JsonObject json = (JsonObject)jsonElement;
+//            String accessToken = json.has("accessToken") ? json.get("accessToken").getAsString() : null;
+//            return new TargetStandaloneThing(json.get("typedID").getAsString(), accessToken);
+//        }
+//    };
+//    private static final JsonSerializer<TargetGatewayThing> TARGET_GATEWAY_THING_SERIALIZER = new JsonSerializer<TargetGatewayThing>() {
+//        @Override
+//        public JsonElement serialize(TargetGatewayThing src, Type typeOfSrc, JsonSerializationContext context) {
+//            if (src == null) {
+//                return null;
+//            }
+//            JsonObject json = new JsonObject();
+//            json.addProperty("typedID", src.getTypedID().toString());
+//            return json;
+//        }
+//    };
+//    private static final JsonDeserializer<TargetGatewayThing> TARGET_GATEWAY_THING_DESERIALIZER = new JsonDeserializer<TargetGatewayThing>() {
+//        @Override
+//        public TargetGatewayThing deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+//            if (jsonElement == null) {
+//                return null;
+//            }
+//            JsonObject json = (JsonObject)jsonElement;
+//            return new TargetGatewayThing(json.get("typedID").getAsString());
+//        }
+//    };
+//    private static final JsonSerializer<TargetEndnodeThing> TARGET_ENDNODE_THING_SERIALIZER = new JsonSerializer<TargetEndnodeThing>() {
+//        @Override
+//        public JsonElement serialize(TargetEndnodeThing src, Type typeOfSrc, JsonSerializationContext context) {
+//            if (src == null) {
+//                return null;
+//            }
+//            JsonObject json = new JsonObject();
+//            json.addProperty("typedID", src.getTypedID().toString());
+//            return json;
+//        }
+//    };
+//    private static final JsonDeserializer<TargetEndnodeThing> TARGET_ENDNODE_THING_DESERIALIZER = new JsonDeserializer<TargetEndnodeThing>() {
+//        @Override
+//        public TargetEndnodeThing deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+//            if (jsonElement == null) {
+//                return null;
+//            }
+//            JsonObject json = (JsonObject)jsonElement;
+//            return new TargetEndnodeThing(json.get("typedID").getAsString());
+//        }
+//    };
+
+
     static {
         DEFAULT_GSON = new GsonBuilder()
                 .registerTypeAdapter(JSONObject.class, ORG_JSON_OBJECT_SERIALIZER)
@@ -492,6 +612,13 @@ public class GsonRepository {
                 .registerTypeAdapter(GatewayAPI.class, GATEWAY_API_DESERIALIZER)
                 .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_SERIALIZER)
                 .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_DESERIALIZER)
+                .registerTypeAdapter(Target.class, TARGET_DESERIALIZER)
+                .registerTypeAdapter(TargetStandaloneThing.class, TARGET_SERIALIZER)
+//                .registerTypeAdapter(TargetStandaloneThing.class, TARGET_DESERIALIZER)
+                .registerTypeAdapter(TargetGatewayThing.class, TARGET_SERIALIZER)
+//                .registerTypeAdapter(TargetGatewayThing.class, TARGET_DESERIALIZER)
+                .registerTypeAdapter(TargetEndnodeThing.class, TARGET_SERIALIZER)
+//                .registerTypeAdapter(TargetEndnodeThing.class, TARGET_DESERIALIZER)
                 .create();
     }
 
@@ -579,6 +706,13 @@ public class GsonRepository {
                     .registerTypeAdapter(GatewayAPI.class, GATEWAY_API_DESERIALIZER)
                     .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_SERIALIZER)
                     .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_DESERIALIZER)
+                    .registerTypeAdapter(Target.class, TARGET_DESERIALIZER)
+                    .registerTypeAdapter(TargetStandaloneThing.class, TARGET_SERIALIZER)
+//                .registerTypeAdapter(TargetStandaloneThing.class, TARGET_DESERIALIZER)
+                    .registerTypeAdapter(TargetGatewayThing.class, TARGET_SERIALIZER)
+//                .registerTypeAdapter(TargetGatewayThing.class, TARGET_DESERIALIZER)
+                    .registerTypeAdapter(TargetEndnodeThing.class, TARGET_SERIALIZER)
+//                .registerTypeAdapter(TargetEndnodeThing.class, TARGET_DESERIALIZER)
                     .create();
             REPOSITORY.put(new Pair<String, Integer>(schema.getSchemaName(), schema.getSchemaVersion()), gson);
         }
