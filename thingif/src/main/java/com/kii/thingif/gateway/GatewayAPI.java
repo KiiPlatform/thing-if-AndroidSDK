@@ -101,14 +101,14 @@ public class GatewayAPI implements Parcelable {
     }
 
     /** Let the Gateway Onboard.
-     * @return Thing ID assigned by Kii Cloud.
+     * @return TargetGatewayThing instance that has ThingID assigned by Kii Cloud.
      * @throws ThingIFException Thrown when gateway returns error response.
      * @throws IllegalStateException Thrown when user is not logged in.
      * See {@link #login(String, String)}
      */
     @NonNull
     @WorkerThread
-    public String onboardGateway() throws ThingIFException {
+    public TargetGatewayThing onboardGateway() throws ThingIFException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");
         }
@@ -118,7 +118,11 @@ public class GatewayAPI implements Parcelable {
 
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
-        return responseBody.optString("thingID", null);
+        try {
+            return new TargetGatewayThing(responseBody.getString("thingID"));
+        } catch (JSONException e) {
+            throw new ThingIFException("", e);
+        }
     }
 
     /**
