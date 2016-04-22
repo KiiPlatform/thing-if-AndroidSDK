@@ -24,7 +24,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         String newPassword = "password999";
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new TargetStandaloneThing(thingID.getID(), accessToken);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
@@ -55,7 +55,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         String newPassword = "password999";
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new TargetStandaloneThing(thingID.getID(), accessToken);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
@@ -90,7 +90,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         String newPassword = "password999";
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new TargetStandaloneThing(thingID.getID(), accessToken);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
@@ -125,7 +125,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         String newPassword = "password999";
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new TargetStandaloneThing(thingID.getID(), accessToken);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
@@ -138,7 +138,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         String newPassword = "password999";
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new TargetStandaloneThing(thingID.getID(), accessToken);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
@@ -151,7 +151,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         String newPassword = null;
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new TargetStandaloneThing(thingID.getID(), accessToken);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
@@ -164,7 +164,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         String newPassword = "";
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new TargetStandaloneThing(thingID.getID(), accessToken);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
