@@ -54,14 +54,10 @@ public class ThingIFAPI_DeleteTriggerTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(204);
 
         api.setTarget(target);
-        Trigger trigger = api.deleteTrigger(triggerID);
+        String deletedTrigerID = api.deleteTrigger(triggerID);
         // verify the result
-        Assert.assertEquals(triggerID, trigger.getTriggerID());
-        Assert.assertEquals(false, trigger.disabled());
-        Assert.assertNull(trigger.getDisabledReason());
-        Assert.assertFalse(trigger.disabled());
-        this.assertPredicate(predicate, trigger.getPredicate());
-        this.assertCommand(schema, expectedCommand, trigger.getCommand());
+        Assert.assertEquals(triggerID, deletedTrigerID);
+
         // verify the 1st request
         RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
         Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers/" + triggerID, request1.getPath());

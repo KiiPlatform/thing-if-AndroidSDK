@@ -844,13 +844,13 @@ public class ThingIFAPI implements Parcelable {
     /**
      * Delete the specified Trigger.
      * @param triggerID ID of the Trigger to be deleted.
-     * @return Deleted Trigger Instance.
+     * @return Deleted Trigger Id.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
      */
     @NonNull
     @WorkerThread
-    public Trigger deleteTrigger(
+    public String deleteTrigger(
             @NonNull String triggerID) throws
             ThingIFException {
 
@@ -861,13 +861,13 @@ public class ThingIFAPI implements Parcelable {
             throw new IllegalArgumentException("triggerID is null or empty");
         }
 
-        Trigger trigger = this.getTrigger(triggerID);
+
         String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}", this.app.getAppID(), target.getTypedID().toString(), triggerID);
         String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.DELETE, headers);
         this.restClient.sendRequest(request);
-        return trigger;
+        return triggerID;
     }
 
     /**
