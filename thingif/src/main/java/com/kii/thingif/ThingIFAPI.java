@@ -18,6 +18,8 @@ import com.kii.thingif.exception.ThingIFRestException;
 import com.kii.thingif.exception.StoredThingIFAPIInstanceNotFoundException;
 import com.kii.thingif.exception.UnsupportedActionException;
 import com.kii.thingif.exception.UnsupportedSchemaException;
+import com.kii.thingif.gateway.EndNode;
+import com.kii.thingif.gateway.Gateway;
 import com.kii.thingif.internal.GsonRepository;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
@@ -240,7 +242,7 @@ public class ThingIFAPI implements Parcelable {
      * When you are sure that the on boarding process has been done,
      * this method is more convenient than
      * {@link #onboard(String, String, String, JSONObject)}.
-     * If you are using a gateway, you need to use {@link #onboardEndnodeWithGatewayThingID(String, String, String, String, JSONObject)} instead.
+     * If you are using a gateway, you need to use {@link #onboardEndnodeWithGateway(String, String, String, JSONObject)} instead.
      * @param thingID Thing ID given by IoT Cloud. Must be specified.
      * @param thingPassword Thing password given by vendor. Must be specified.
      * @return Target instance can be used to operate target, manage resources
@@ -292,7 +294,6 @@ public class ThingIFAPI implements Parcelable {
      * Endpoints execute onboarding for the thing and merge MQTT channel to the gateway.
      * Thing act as Gateway is already registered and marked as Gateway.
      *
-     * @param gatewayVendorThingID ID of the Gateway given by vendor/(given by IoT Cloud)
      * @param endnodeVendorThingID ID of the End Node given by vendor
      * @param endnodePassword Password of the End Node
      * @param endnodeThingType The type of the End Node
@@ -302,18 +303,17 @@ public class ThingIFAPI implements Parcelable {
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
      */
-    public Target onboardEndnodeWithGatewayVendorThingID(
-            @NonNull String gatewayVendorThingID,
+    public EndNode onboardEndnodeWithGateway(
             @NonNull String endnodeVendorThingID,
             @NonNull String endnodePassword,
             @Nullable String endnodeThingType,
             @Nullable JSONObject endnodeThingProperties)
             throws ThingIFException {
-        if (this.onboarded()) {
-            throw new IllegalStateException("This instance is already onboarded.");
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding the gateway");
         }
-        if (TextUtils.isEmpty(gatewayVendorThingID)) {
-            throw new IllegalArgumentException("gatewayVendorThingID is null or empty");
+        if (!(this.target instanceof Gateway)) {
+            throw new IllegalStateException("Target must be Gateway");
         }
         if (TextUtils.isEmpty(endnodeVendorThingID)) {
             throw new IllegalArgumentException("endnodeVendorThingID is null or empty");
@@ -323,55 +323,7 @@ public class ThingIFAPI implements Parcelable {
         }
         JSONObject requestBody = new JSONObject();
         try {
-            requestBody.put("gatewayVendorThingID", gatewayVendorThingID);
-            requestBody.put("endNodeVendorThingID", endnodeVendorThingID);
-            requestBody.put("endNodePassword", endnodePassword);
-            requestBody.put("endNodeThingType", endnodeThingType);
-            if (endnodeThingProperties != null && endnodeThingProperties.length() > 0) {
-                requestBody.put("endNodeThingProperties", endnodeThingProperties);
-            }
-            requestBody.put("owner", this.owner.getTypedID().toString());
-        } catch (JSONException e) {
-            // Won’t happen
-        }
-        return onboardEndnodeWithGateway(MediaTypes.MEDIA_TYPE_ONBOARDING_ENDNODE_WITH_GATEWAY_VENDOR_THING_ID_REQUEST, requestBody);
-    }
-    /**
-     * Endpoints execute onboarding for the thing and merge MQTT channel to the gateway.
-     * Thing act as Gateway is already registered and marked as Gateway.
-     *
-     * @param gatewayThingID Thing ID of the Gateway
-     * @param endnodeVendorThingID ID of the End Node given by vendor
-     * @param endnodePassword Password of the End Node
-     * @param endnodeThingType The type of the End Node
-     * @param endnodeThingProperties End node properties
-     * @return Target instance can be used to operate target, manage resources of the target.
-     * @throws IllegalStateException Thrown when this instance is already onboarded.
-     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
-     * @throws ThingIFRestException Thrown when server returns error response.
-     */
-    public Target onboardEndnodeWithGatewayThingID(
-            @NonNull String gatewayThingID,
-            @NonNull String endnodeVendorThingID,
-            @NonNull String endnodePassword,
-            @Nullable String endnodeThingType,
-            @Nullable JSONObject endnodeThingProperties)
-            throws ThingIFException {
-        if (this.onboarded()) {
-            throw new IllegalStateException("This instance is already onboarded.");
-        }
-        if (TextUtils.isEmpty(gatewayThingID)) {
-            throw new IllegalArgumentException("gatewayThingID is null or empty");
-        }
-        if (TextUtils.isEmpty(endnodeVendorThingID)) {
-            throw new IllegalArgumentException("endnodeVendorThingID is null or empty");
-        }
-        if (TextUtils.isEmpty(endnodePassword)) {
-            throw new IllegalArgumentException("endnodePassword is null or empty");
-        }
-        JSONObject requestBody = new JSONObject();
-        try {
-            requestBody.put("gatewayThingID", gatewayThingID);
+            requestBody.put("gatewayThingID", this.target.getTypedID().getID());
             requestBody.put("endNodeVendorThingID", endnodeVendorThingID);
             requestBody.put("endNodePassword", endnodePassword);
             requestBody.put("endNodeThingType", endnodeThingType);
@@ -384,7 +336,7 @@ public class ThingIFAPI implements Parcelable {
         }
         return onboardEndnodeWithGateway(MediaTypes.MEDIA_TYPE_ONBOARDING_ENDNODE_WITH_GATEWAY_THING_ID_REQUEST, requestBody);
     }
-    private Target onboardEndnodeWithGateway(MediaType contentType, JSONObject requestBody) throws ThingIFException {
+    private EndNode onboardEndnodeWithGateway(MediaType contentType, JSONObject requestBody) throws ThingIFException {
         String path = MessageFormat.format("/thing-if/apps/{0}/onboardings", this.app.getAppID());
         String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
@@ -392,9 +344,7 @@ public class ThingIFAPI implements Parcelable {
         JSONObject responseBody = this.restClient.sendRequest(request);
         String thingID = responseBody.optString("endNodeThingID", null);
         String accessToken = responseBody.optString("accessToken", null);
-        this.target = new StandaloneThing(thingID, accessToken);
-        saveInstance(this);
-        return this.target;
+        return new EndNode(thingID, accessToken);
     }
 
     /**

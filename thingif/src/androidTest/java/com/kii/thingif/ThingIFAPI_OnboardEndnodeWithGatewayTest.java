@@ -7,6 +7,8 @@ import com.google.gson.JsonParser;
 import com.kii.thingif.exception.ForbiddenException;
 import com.kii.thingif.exception.InternalServerErrorException;
 import com.kii.thingif.exception.NotFoundException;
+import com.kii.thingif.gateway.EndNode;
+import com.kii.thingif.gateway.Gateway;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import org.json.JSONObject;
@@ -20,9 +22,9 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(AndroidJUnit4.class)
-public class ThingIFAPI_OnboardEndnodeWithGatewayThingIDTest extends ThingIFAPITestBase {
+public class ThingIFAPI_OnboardEndnodeWithGatewayTest extends ThingIFAPITestBase {
     @Test
-    public void onboardEndnodeWithGatewayThingIDTest() throws Exception {
+    public void onboardEndnodeWithGatewayTest() throws Exception {
         String gatewayThingID = UUID.randomUUID().toString();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
@@ -33,8 +35,9 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayThingIDTest extends ThingIFAPIT
         this.addMockResponseForOnBoardEndnode(200, thingID, accessToken);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        Assert.assertFalse(api.onboarded());
-        Target target = api.onboardEndnodeWithGatewayThingID(gatewayThingID, vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
+        api.setTarget(new Gateway(gatewayThingID));
+        Assert.assertTrue(api.onboarded());
+        EndNode target = api.onboardEndnodeWithGateway(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
         Assert.assertTrue(api.onboarded());
 
         // verify the result
@@ -62,7 +65,7 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayThingIDTest extends ThingIFAPIT
         this.assertRequestBody(expectedRequestBody, request);
     }
     @Test
-    public void onboardEndnodeWithGatewayThingID403ErrorTest() throws Exception {
+    public void onboardEndnodeWithGateway403ErrorTest() throws Exception {
         String gatewayThingID = UUID.randomUUID().toString();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
@@ -71,8 +74,9 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayThingIDTest extends ThingIFAPIT
         this.addEmptyMockResponse(403);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.setTarget(new Gateway(gatewayThingID));
         try {
-            api.onboardEndnodeWithGatewayThingID(gatewayThingID, vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
+            api.onboardEndnodeWithGateway(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ForbiddenException e) {
         }
@@ -98,7 +102,7 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayThingIDTest extends ThingIFAPIT
         this.assertRequestBody(expectedRequestBody, request);
     }
     @Test
-    public void onboardEndnodeWithGatewayThingID404ErrorTest() throws Exception {
+    public void onboardEndnodeWithGateway404ErrorTest() throws Exception {
         String gatewayThingID = UUID.randomUUID().toString();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
@@ -107,8 +111,9 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayThingIDTest extends ThingIFAPIT
         this.addEmptyMockResponse(404);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.setTarget(new Gateway(gatewayThingID));
         try {
-            api.onboardEndnodeWithGatewayThingID(gatewayThingID, vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
+            api.onboardEndnodeWithGateway(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (NotFoundException e) {
         }
@@ -134,7 +139,7 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayThingIDTest extends ThingIFAPIT
         this.assertRequestBody(expectedRequestBody, request);
     }
     @Test
-    public void onboardEndnodeWithGatewayThingID500ErrorTest() throws Exception {
+    public void onboardEndnodeWithGateway500ErrorTest() throws Exception {
         String gatewayThingID = UUID.randomUUID().toString();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
@@ -143,8 +148,9 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayThingIDTest extends ThingIFAPIT
         this.addEmptyMockResponse(500);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.setTarget(new Gateway(gatewayThingID));
         try {
-            api.onboardEndnodeWithGatewayThingID(gatewayThingID, vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
+            api.onboardEndnodeWithGateway(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (InternalServerErrorException e) {
         }
@@ -170,50 +176,32 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayThingIDTest extends ThingIFAPIT
         this.assertRequestBody(expectedRequestBody, request);
     }
     @Test(expected = IllegalStateException.class)
-    public void onboardTwiceTest() throws Exception {
-        String gatewayThingID = UUID.randomUUID().toString();
-        String vendorThingID = UUID.randomUUID().toString();
-        String thingPassword = "password";
-        JSONObject thingProperties = new JSONObject();
-        thingProperties.put("manufacturer", "Kii");
-        String thingID = "th.1234567890";
-        String accessToken = "thing-access-token-1234";
-        this.addMockResponseForOnBoardEndnode(200, thingID, accessToken);
-
+    public void onboardEndnodeWithGatewayWithoutOnboardingGatewayTest() throws Exception {
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        Assert.assertFalse(api.onboarded());
-        Target target = api.onboardEndnodeWithGatewayThingID(gatewayThingID, vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
-        Assert.assertTrue(api.onboarded());
-        target = api.onboardEndnodeWithGatewayThingID(gatewayThingID, vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
+        Target target = api.onboardEndnodeWithGateway("v1234567890abcde", "password", DEMO_THING_TYPE, null);
     }
     @Test(expected = IllegalArgumentException.class)
-    public void onboardEndnodeWithGatewayThingIDWithNullGatewayThingIDTest() throws Exception {
+    public void onboardEndnodeWithGatewayWithNullVendorThingIDTest() throws Exception {
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        Target target = api.onboardEndnodeWithGatewayThingID(null, "v1234567890abcde", "password", DEMO_THING_TYPE, null);
+        api.setTarget(new Gateway("gateway-thing-id"));
+        Target target = api.onboardEndnodeWithGateway(null, "password", DEMO_THING_TYPE, null);
     }
     @Test(expected = IllegalArgumentException.class)
-    public void onboardEndnodeWithGatewayThingIDWithEmptyGatewayThingIDTest() throws Exception {
+    public void onboardEndnodeWithGatewayWithEmptyVendorThingIDTest() throws Exception {
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        Target target = api.onboardEndnodeWithGatewayThingID("", "v1234567890abcde", "password", DEMO_THING_TYPE, null);
+        api.setTarget(new Gateway("gateway-thing-id"));
+        Target target = api.onboardEndnodeWithGateway("", "password", DEMO_THING_TYPE, null);
     }
     @Test(expected = IllegalArgumentException.class)
-    public void onboardEndnodeWithGatewayThingIDWithNullVendorThingIDTest() throws Exception {
+    public void onboardEndnodeWithGatewayWithNullVendorThingPasswordTest() throws Exception {
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        Target target = api.onboardEndnodeWithGatewayThingID("gateway-thing-id", null, "password", DEMO_THING_TYPE, null);
+        api.setTarget(new Gateway("gateway-thing-id"));
+        Target target = api.onboardEndnodeWithGateway("v1234567890abcde", null, DEMO_THING_TYPE, null);
     }
     @Test(expected = IllegalArgumentException.class)
-    public void onboardEndnodeWithGatewayThingIDWithEmptyVendorThingIDTest() throws Exception {
+    public void onboardEndnodeWithGatewayWithEmptyVendorThingPasswordTest() throws Exception {
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        Target target = api.onboardEndnodeWithGatewayThingID("gateway-thing-id", "", "password", DEMO_THING_TYPE, null);
-    }
-    @Test(expected = IllegalArgumentException.class)
-    public void onboardEndnodeWithGatewayThingIDWithNullVendorThingPasswordTest() throws Exception {
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        Target target = api.onboardEndnodeWithGatewayThingID("gateway-thing-id", "v1234567890abcde", null, DEMO_THING_TYPE, null);
-    }
-    @Test(expected = IllegalArgumentException.class)
-    public void onboardEndnodeWithGatewayThingIDWithEmptyVendorThingPasswordTest() throws Exception {
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        Target target = api.onboardEndnodeWithGatewayThingID("gateway-thing-id", "v1234567890abcde", "", DEMO_THING_TYPE, null);
+        api.setTarget(new Gateway("gateway-thing-id"));
+        Target target = api.onboardEndnodeWithGateway("v1234567890abcde", "", DEMO_THING_TYPE, null);
     }
 }
