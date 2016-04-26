@@ -30,7 +30,7 @@ public class GatewayAPI_OnboardGatewayTest extends GatewayAPITestBase {
 
         GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
         this.addMockResponseForOnboardGateway(200, thingID);
-        TargetGatewayThing result = api.onboardGateway();
+        Gateway result = api.onboardGateway();
 
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
         Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/onboarding", request.getPath());

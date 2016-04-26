@@ -283,7 +283,7 @@ public class ThingIFAPI implements Parcelable {
         JSONObject responseBody = this.restClient.sendRequest(request);
         String thingID = responseBody.optString("thingID", null);
         String accessToken = responseBody.optString("accessToken", null);
-        this.target = new TargetStandaloneThing(thingID, accessToken);
+        this.target = new StandaloneThing(thingID, accessToken);
         saveInstance(this);
         return this.target;
     }
@@ -392,7 +392,7 @@ public class ThingIFAPI implements Parcelable {
         JSONObject responseBody = this.restClient.sendRequest(request);
         String thingID = responseBody.optString("endNodeThingID", null);
         String accessToken = responseBody.optString("accessToken", null);
-        this.target = new TargetStandaloneThing(thingID, accessToken);
+        this.target = new StandaloneThing(thingID, accessToken);
         saveInstance(this);
         return this.target;
     }

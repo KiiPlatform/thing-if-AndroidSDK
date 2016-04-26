@@ -3,9 +3,9 @@ package com.kii.thingif;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 
-public class TargetStandaloneThing extends AbstractTargetThing {
+public class StandaloneThing extends AbstractTargetThing {
     private final String accessToken;
-    public TargetStandaloneThing(@NonNull String thingID, String accessToken) {
+    public StandaloneThing(@NonNull String thingID, String accessToken) {
         super(thingID);
         this.accessToken = accessToken;
     }
@@ -14,19 +14,19 @@ public class TargetStandaloneThing extends AbstractTargetThing {
         return this.accessToken;
     }
     // Implementation of Parcelable
-    protected TargetStandaloneThing(Parcel in) {
+    protected StandaloneThing(Parcel in) {
         super(in);
         this.accessToken = in.readString();
     }
-    public static final Creator<TargetStandaloneThing> CREATOR = new Creator<TargetStandaloneThing>() {
+    public static final Creator<StandaloneThing> CREATOR = new Creator<StandaloneThing>() {
         @Override
-        public TargetStandaloneThing createFromParcel(Parcel in) {
-            return new TargetStandaloneThing(in);
+        public StandaloneThing createFromParcel(Parcel in) {
+            return new StandaloneThing(in);
         }
 
         @Override
-        public TargetStandaloneThing[] newArray(int size) {
-            return new TargetStandaloneThing[size];
+        public StandaloneThing[] newArray(int size) {
+            return new StandaloneThing[size];
         }
     };
     @Override

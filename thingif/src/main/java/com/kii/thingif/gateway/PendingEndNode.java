@@ -8,13 +8,13 @@ import android.text.TextUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class EndNode implements Parcelable {
+public class PendingEndNode implements Parcelable {
     private final String thingID;
     private final String vendorThingID;
     private final String thingType;
     private JSONObject thingProperties;
 
-    EndNode(JSONObject json) {
+    PendingEndNode(JSONObject json) {
         this.thingID = json.optString("thingID");
         this.vendorThingID = json.optString("vendorThingID");
         this.thingType = json.optString("thingType");
@@ -37,7 +37,7 @@ public class EndNode implements Parcelable {
         return this.thingProperties;
     }
 
-    protected EndNode(Parcel in) {
+    protected PendingEndNode(Parcel in) {
         this.thingID = in.readString();
         this.vendorThingID = in.readString();
         this.thingType = in.readString();
@@ -49,15 +49,15 @@ public class EndNode implements Parcelable {
             }
         }
     }
-    public static final Creator<EndNode> CREATOR = new Creator<EndNode>() {
+    public static final Creator<PendingEndNode> CREATOR = new Creator<PendingEndNode>() {
         @Override
-        public EndNode createFromParcel(Parcel in) {
-            return new EndNode(in);
+        public PendingEndNode createFromParcel(Parcel in) {
+            return new PendingEndNode(in);
         }
 
         @Override
-        public EndNode[] newArray(int size) {
-            return new EndNode[size];
+        public PendingEndNode[] newArray(int size) {
+            return new PendingEndNode[size];
         }
     };
     @Override

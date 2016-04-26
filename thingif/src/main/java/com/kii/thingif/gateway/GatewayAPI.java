@@ -101,14 +101,14 @@ public class GatewayAPI implements Parcelable {
     }
 
     /** Let the Gateway Onboard.
-     * @return TargetGatewayThing instance that has ThingID assigned by Kii Cloud.
+     * @return Gateway instance that has ThingID assigned by Kii Cloud.
      * @throws ThingIFException Thrown when gateway returns error response.
      * @throws IllegalStateException Thrown when user is not logged in.
      * See {@link #login(String, String)}
      */
     @NonNull
     @WorkerThread
-    public TargetGatewayThing onboardGateway() throws ThingIFException {
+    public Gateway onboardGateway() throws ThingIFException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");
         }
@@ -119,7 +119,7 @@ public class GatewayAPI implements Parcelable {
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
         try {
-            return new TargetGatewayThing(responseBody.getString("thingID"));
+            return new Gateway(responseBody.getString("thingID"));
         } catch (JSONException e) {
             throw new ThingIFException("", e);
         }
@@ -155,7 +155,7 @@ public class GatewayAPI implements Parcelable {
      */
     @WorkerThread
     @NonNull
-    public List<EndNode> listPendingEndNodes() throws ThingIFException {
+    public List<PendingEndNode> listPendingEndNodes() throws ThingIFException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");
         }
@@ -165,12 +165,12 @@ public class GatewayAPI implements Parcelable {
 
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
-        List<EndNode> nodes = new ArrayList<EndNode>();
+        List<PendingEndNode> nodes = new ArrayList<PendingEndNode>();
         JSONArray results = responseBody.optJSONArray("results");
         if (results != null) {
             for (int i = 0; i < results.length(); i++) {
                 try {
-                    nodes.add(new EndNode(results.getJSONObject(i)));
+                    nodes.add(new PendingEndNode(results.getJSONObject(i)));
                 } catch (JSONException ignore) {
                 }
             }

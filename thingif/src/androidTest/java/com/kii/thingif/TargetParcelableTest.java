@@ -11,11 +11,11 @@ import org.junit.runner.RunWith;
 public class TargetParcelableTest extends SmallTestBase {
     @Test
     public void test() throws Exception {
-        Target target = new TargetStandaloneThing("thing1234", "token1234");
+        Target target = new StandaloneThing("thing1234", "token1234");
         Parcel parcel = Parcel.obtain();
         target.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
-        Target deserializedTarget = TargetStandaloneThing.CREATOR.createFromParcel(parcel);
+        Target deserializedTarget = StandaloneThing.CREATOR.createFromParcel(parcel);
         Assert.assertEquals(target.getTypedID(), deserializedTarget.getTypedID());
         Assert.assertEquals(target.getAccessToken(), deserializedTarget.getAccessToken());
     }

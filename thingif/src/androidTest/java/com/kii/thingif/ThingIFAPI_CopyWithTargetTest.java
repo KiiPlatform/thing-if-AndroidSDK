@@ -33,7 +33,7 @@ public class ThingIFAPI_CopyWithTargetTest extends ThingIFAPITestBase {
 
         TypedID thingID2 = new TypedID(TypedID.Types.THING, "th.9876543210");
         String accessToken2 = "thing-access-token-4321";
-        Target target2 = new TargetStandaloneThing(thingID2.getID(), accessToken2);
+        Target target2 = new StandaloneThing(thingID2.getID(), accessToken2);
 
         ThingIFAPI copiedApi = api.copyWithTarget(target2, "ThingB");
         Assert.assertEquals(copiedApi.getTag(), "ThingB");
@@ -93,7 +93,7 @@ public class ThingIFAPI_CopyWithTargetTest extends ThingIFAPITestBase {
 
         TypedID thingID2 = new TypedID(TypedID.Types.THING, "th.9876543210");
         String accessToken2 = "thing-access-token-4321";
-        Target target2 = new TargetStandaloneThing(thingID2.getID(), accessToken2);
+        Target target2 = new StandaloneThing(thingID2.getID(), accessToken2);
 
         ThingIFAPI copiedApi = api.copyWithTarget(target2, null);
         Assert.assertNull(copiedApi.getTag());
