@@ -1,5 +1,6 @@
 package com.kii.thingif.gateway;
 
+import android.net.Uri;
 import android.os.Parcel;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
@@ -18,7 +19,7 @@ public class GatewayAPI_ParcelableTest extends GatewayAPITestBase {
         String appKey = "appkey-abcd1234";
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(appID, appKey);
-        GatewayAddress gatewayAddress = getGatewayAddress();
+        Uri gatewayAddress = getGatewayAddress();
         GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
 
         this.addMockResponseForLogin(200, accessToken);
@@ -33,7 +34,7 @@ public class GatewayAPI_ParcelableTest extends GatewayAPITestBase {
         Assert.assertEquals(app.getAppKey(), deserializedApi.getAppKey());
         Assert.assertEquals(app.getSiteName(), deserializedApi.getApp().getSiteName());
         Assert.assertEquals(app.getBaseUrl(), deserializedApi.getApp().getBaseUrl());
-        Assert.assertEquals(gatewayAddress.getBaseUrl(), deserializedApi.getGatewayAddress().getBaseUrl());
+        Assert.assertEquals(gatewayAddress.toString(), deserializedApi.getGatewayAddress().toString());
 
         Assert.assertEquals(accessToken, deserializedApi.getAccessToken());
     }

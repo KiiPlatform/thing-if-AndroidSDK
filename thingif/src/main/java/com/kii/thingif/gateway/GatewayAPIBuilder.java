@@ -1,27 +1,25 @@
 package com.kii.thingif.gateway;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
-import android.text.TextUtils;
 
 import com.kii.thingif.KiiApp;
-import com.kii.thingif.ThingIFAPI;
-import com.kii.thingif.exception.ThingIFException;
 
 public class GatewayAPIBuilder {
 
     private final Context context;
     private String tag;
     private final KiiApp app;
-    private final GatewayAddress gatewayAddress;
+    private final Uri gatewayAddress;
     private String accessToken;
 
     private GatewayAPIBuilder(
             @Nullable Context context,
             @NonNull KiiApp app,
-            @NonNull GatewayAddress gatewayAddress) {
+            @NonNull Uri gatewayAddress) {
         this.context = context;
         this.app = app;
         this.gatewayAddress = gatewayAddress;
@@ -58,7 +56,7 @@ public class GatewayAPIBuilder {
     public static GatewayAPIBuilder newBuilder(
             @NonNull Context context,
             @NonNull KiiApp app,
-            @NonNull GatewayAddress gatewayAddress) {
+            @NonNull Uri gatewayAddress) {
         if (context == null) {
             throw new IllegalArgumentException("context is null");
         }
@@ -81,7 +79,7 @@ public class GatewayAPIBuilder {
     @NonNull
     public static GatewayAPIBuilder _newBuilder(
             @NonNull KiiApp app,
-            @NonNull GatewayAddress gatewayAddress) {
+            @NonNull Uri gatewayAddress) {
         if (app == null) {
             throw new IllegalArgumentException("app is null");
         }

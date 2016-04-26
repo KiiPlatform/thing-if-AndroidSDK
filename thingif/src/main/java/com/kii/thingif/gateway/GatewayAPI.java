@@ -2,6 +2,7 @@ package com.kii.thingif.gateway;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -35,19 +36,19 @@ public class GatewayAPI implements Parcelable {
     private static Context context;
     private final String tag;
     private final KiiApp app;
-    private final GatewayAddress gatewayAddress;
+    private final Uri gatewayAddress;
     private String accessToken;
     private final IoTRestClient restClient;
 
     GatewayAPI(@Nullable Context context,
                @NonNull KiiApp app,
-               @NonNull GatewayAddress gatewayAddress) {
+               @NonNull Uri gatewayAddress) {
         this(context, null, app, gatewayAddress);
     }
     GatewayAPI(@Nullable Context context,
                @Nullable String tag,
                @NonNull KiiApp app,
-               @NonNull GatewayAddress gatewayAddress) {
+               @NonNull Uri gatewayAddress) {
         if (context != null) {
             GatewayAPI.context = context.getApplicationContext();
         }
@@ -79,7 +80,7 @@ public class GatewayAPI implements Parcelable {
             throw new IllegalArgumentException("password is null or empty");
         }
         String path = MessageFormat.format("/{0}/token", this.app.getSiteName());
-        String url = Path.combine(this.gatewayAddress.getBaseUrl(), path);
+        String url = Path.combine(this.gatewayAddress.toString(), path);
 
         String credential = this.app.getAppID() + ":" + this.app.getAppKey();
         Map<String, String> headers = new HashMap<String, String>();
@@ -100,24 +101,28 @@ public class GatewayAPI implements Parcelable {
     }
 
     /** Let the Gateway Onboard.
-     * @return Thing ID assigned by Kii Cloud.
+     * @return TargetGatewayThing instance that has ThingID assigned by Kii Cloud.
      * @throws ThingIFException Thrown when gateway returns error response.
      * @throws IllegalStateException Thrown when user is not logged in.
      * See {@link #login(String, String)}
      */
     @NonNull
     @WorkerThread
-    public String onboardGateway() throws ThingIFException {
+    public TargetGatewayThing onboardGateway() throws ThingIFException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");
         }
         String path = MessageFormat.format("/{0}/apps/{1}/gateway/onboarding", this.app.getSiteName(), this.app.getAppID());
-        String url = Path.combine(this.gatewayAddress.getBaseUrl(), path);
+        String url = Path.combine(this.gatewayAddress.toString(), path);
         Map<String, String> headers = this.newHeader();
 
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
-        return responseBody.optString("thingID", null);
+        try {
+            return new TargetGatewayThing(responseBody.getString("thingID"));
+        } catch (JSONException e) {
+            throw new ThingIFException("", e);
+        }
     }
 
     /**
@@ -134,7 +139,7 @@ public class GatewayAPI implements Parcelable {
             throw new IllegalStateException("Needs user login before execute this API");
         }
         String path = MessageFormat.format("/{0}/apps/{1}/gateway/id", this.app.getSiteName(), this.app.getAppID());
-        String url = Path.combine(this.gatewayAddress.getBaseUrl(), path);
+        String url = Path.combine(this.gatewayAddress.toString(), path);
         Map<String, String> headers = this.newHeader();
 
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
@@ -150,22 +155,22 @@ public class GatewayAPI implements Parcelable {
      */
     @WorkerThread
     @NonNull
-    public List<PendingEndNode> listPendingEndNodes() throws ThingIFException {
+    public List<EndNode> listPendingEndNodes() throws ThingIFException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");
         }
         String path = MessageFormat.format("/{0}/apps/{1}/gateway/end-nodes/pending", this.app.getSiteName(), this.app.getAppID());
-        String url = Path.combine(this.gatewayAddress.getBaseUrl(), path);
+        String url = Path.combine(this.gatewayAddress.toString(), path);
         Map<String, String> headers = this.newHeader();
 
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
-        List<PendingEndNode> nodes = new ArrayList<PendingEndNode>();
+        List<EndNode> nodes = new ArrayList<EndNode>();
         JSONArray results = responseBody.optJSONArray("results");
         if (results != null) {
             for (int i = 0; i < results.length(); i++) {
                 try {
-                    nodes.add(new PendingEndNode(results.getJSONObject(i)));
+                    nodes.add(new EndNode(results.getJSONObject(i)));
                 } catch (JSONException ignore) {
                 }
             }
@@ -194,7 +199,7 @@ public class GatewayAPI implements Parcelable {
             throw new IllegalArgumentException("venderThingID is null or empty");
         }
         String path = MessageFormat.format("/{0}/apps/{1}/gateway/end-nodes/VENDOR_THING_ID:{2}", this.app.getSiteName(), this.app.getAppID(), endNodeVenderThingID);
-        String url = Path.combine(this.gatewayAddress.getBaseUrl(), path);
+        String url = Path.combine(this.gatewayAddress.toString(), path);
         Map<String, String> headers = this.newHeader();
 
         JSONObject requestBody = new JSONObject();
@@ -207,7 +212,8 @@ public class GatewayAPI implements Parcelable {
         this.restClient.sendRequest(request);
     }
 
-    /** Restore the Gateway
+    /** Restore the Gateway.
+     * This API can be used only for the Gateway App.
      * @throws ThingIFException
      * @throws IllegalStateException Thrown when user is not logged in.
      * See {@link #login(String, String)}
@@ -218,7 +224,7 @@ public class GatewayAPI implements Parcelable {
             throw new IllegalStateException("Needs user login before execute this API");
         }
         String path = "/gateway-app/gateway/restore";
-        String url = Path.combine(this.gatewayAddress.getBaseUrl(), path);
+        String url = Path.combine(this.gatewayAddress.toString(), path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers);
         this.restClient.sendRequest(request);
@@ -245,7 +251,7 @@ public class GatewayAPI implements Parcelable {
             throw new IllegalArgumentException("venderThingID is null or empty");
         }
         String path = MessageFormat.format("/{0}/apps/{1}/gateway/end-nodes/THING_ID:{2}", this.app.getSiteName(), this.app.getAppID(), endNodeThingID);
-        String url = Path.combine(this.gatewayAddress.getBaseUrl(), path);
+        String url = Path.combine(this.gatewayAddress.toString(), path);
         Map<String, String> headers = this.newHeader();
 
         JSONObject requestBody = new JSONObject();
@@ -259,26 +265,26 @@ public class GatewayAPI implements Parcelable {
     }
 
     /**
-     * Get vendorThingID of the Gateway.
+     * Get information of the Gateway.
      * When the end user replaces the Gateway, Gateway App/End Node App need to obtain the new Gateway’s vendorThingID.
      *
-     * @return vendorThingID of the Gateway.
+     * @return Gateway Information.
      * @throws ThingIFException
      * @throws IllegalStateException Thrown when user is not logged in.
      */
     @WorkerThread
     @NonNull
-    public String getGatewayInformation() throws ThingIFException {
+    public GatewayInformation getGatewayInformation() throws ThingIFException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");
         }
         String path = "/gateway-info";
-        String url = Path.combine(this.gatewayAddress.getBaseUrl(), path);
+        String url = Path.combine(this.gatewayAddress.toString(), path);
         Map<String, String> headers = this.newHeader();
 
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
-        return responseBody.optString("vendorThingID", null);
+        return new GatewayInformation(responseBody.optString("vendorThingID", null));
     }
 
     /** Check If user is logged in to the Gateway.
@@ -292,12 +298,14 @@ public class GatewayAPI implements Parcelable {
      * Get a tag.
      * @return
      */
+    @Nullable
     public String getTag() {
         return this.tag;
     }
     /** Get Kii App
      * @return Kii Cloud Application.
      */
+    @NonNull
     public KiiApp getApp() {
         return this.app;
     }
@@ -305,6 +313,7 @@ public class GatewayAPI implements Parcelable {
      * Get AppID
      * @return
      */
+    @NonNull
     public String getAppID() {
         return this.app.getAppID();
     }
@@ -312,6 +321,7 @@ public class GatewayAPI implements Parcelable {
      * Get AppKey
      * @return
      */
+    @NonNull
     public String getAppKey() {
         return this.app.getAppKey();
     }
@@ -319,7 +329,8 @@ public class GatewayAPI implements Parcelable {
     /** Get GatewayAddress
      * @return Gateway Address
      */
-    public GatewayAddress getGatewayAddress() {
+    @NonNull
+    public Uri getGatewayAddress() {
         return this.gatewayAddress;
     }
 
@@ -327,6 +338,7 @@ public class GatewayAPI implements Parcelable {
      * Get Access Token
      * @return
      */
+    @Nullable
     public String getAccessToken() {
         return this.accessToken;
     }
@@ -349,7 +361,7 @@ public class GatewayAPI implements Parcelable {
     protected GatewayAPI(Parcel in) {
         this.tag = in.readString();
         this.app = in.readParcelable(KiiApp.class.getClassLoader());
-        this.gatewayAddress = in.readParcelable(GatewayAddress.class.getClassLoader());
+        this.gatewayAddress = in.readParcelable(Uri.class.getClassLoader());
         this.accessToken = in.readString();
         this.restClient = new IoTRestClient();
     }
@@ -387,6 +399,7 @@ public class GatewayAPI implements Parcelable {
      * @return ThingIFAPI instance.
      * @throws StoredGatewayAPIInstanceNotFoundException when the instance has not stored yet.
      */
+    @NonNull
     public static GatewayAPI loadFromStoredInstance(@NonNull Context context) throws StoredGatewayAPIInstanceNotFoundException {
         return loadFromStoredInstance(context, null);
     }
@@ -401,7 +414,8 @@ public class GatewayAPI implements Parcelable {
      * @return GatewayAPI instance.
      * @throws StoredGatewayAPIInstanceNotFoundException when the instance has not stored yet.
      */
-    public static GatewayAPI loadFromStoredInstance(@NonNull Context context, String tag) throws StoredGatewayAPIInstanceNotFoundException {
+    @NonNull
+    public static GatewayAPI loadFromStoredInstance(@NonNull Context context, @Nullable String tag) throws StoredGatewayAPIInstanceNotFoundException {
         GatewayAPI.context = context.getApplicationContext();
         SharedPreferences preferences = getSharedPreferences();
         String serializedJson = preferences.getString(getSharedPreferencesKey(tag), null);
@@ -424,7 +438,7 @@ public class GatewayAPI implements Parcelable {
      *
      * @param tag
      */
-    public static void removeStoredInstance(String tag) {
+    public static void removeStoredInstance(@Nullable String tag) {
         SharedPreferences preferences = getSharedPreferences();
         SharedPreferences.Editor editor = preferences.edit();
         editor.remove(getSharedPreferencesKey(tag));

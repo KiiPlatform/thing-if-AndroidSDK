@@ -1,5 +1,6 @@
 package com.kii.thingif.gateway;
 
+import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -54,7 +55,7 @@ public class GatewayAPI_ReplaceEndNodeTest extends GatewayAPITestBase {
         String vendorThingID =  UUID.randomUUID().toString();
 
         KiiApp app = getApp(APP_ID, APP_KEY);
-        GatewayAddress gatewayAddress = getGatewayAddress();
+        Uri gatewayAddress = getGatewayAddress();
         GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
         api.replaceEndNode(thingID, vendorThingID);
     }

@@ -2,28 +2,45 @@ package com.kii.thingif.gateway;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class PendingEndNode implements Parcelable {
-    private String vendorThingID;
+public class EndNode implements Parcelable {
+    private final String thingID;
+    private final String vendorThingID;
+    private final String thingType;
     private JSONObject thingProperties;
 
-    PendingEndNode(JSONObject json) {
+    EndNode(JSONObject json) {
+        this.thingID = json.optString("thingID");
         this.vendorThingID = json.optString("vendorThingID");
+        this.thingType = json.optString("thingType");
         this.thingProperties = json.optJSONObject("thingProperties");
     }
+    @Nullable
+    public String getThingID() {
+        return this.thingID;
+    }
+    @Nullable
     public String getVendorThingID() {
         return this.vendorThingID;
     }
+    @Nullable
+    public String getThingType() {
+        return this.thingType;
+    }
+    @Nullable
     public JSONObject getThingProperties() {
         return this.thingProperties;
     }
 
-    protected PendingEndNode(Parcel in) {
+    protected EndNode(Parcel in) {
+        this.thingID = in.readString();
         this.vendorThingID = in.readString();
+        this.thingType = in.readString();
         String json = in.readString();
         if (!TextUtils.isEmpty(json)) {
             try {
@@ -32,15 +49,15 @@ public class PendingEndNode implements Parcelable {
             }
         }
     }
-    public static final Creator<PendingEndNode> CREATOR = new Creator<PendingEndNode>() {
+    public static final Creator<EndNode> CREATOR = new Creator<EndNode>() {
         @Override
-        public PendingEndNode createFromParcel(Parcel in) {
-            return new PendingEndNode(in);
+        public EndNode createFromParcel(Parcel in) {
+            return new EndNode(in);
         }
 
         @Override
-        public PendingEndNode[] newArray(int size) {
-            return new PendingEndNode[size];
+        public EndNode[] newArray(int size) {
+            return new EndNode[size];
         }
     };
     @Override
@@ -49,7 +66,9 @@ public class PendingEndNode implements Parcelable {
     }
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(vendorThingID);
+        dest.writeString(this.thingID);
+        dest.writeString(this.vendorThingID);
+        dest.writeString(this.thingType);
         if (this.thingProperties != null) {
             dest.writeString(this.thingProperties.toString());
         }

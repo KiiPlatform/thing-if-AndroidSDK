@@ -1,5 +1,6 @@
 package com.kii.thingif.gateway;
 
+import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -25,7 +26,7 @@ public class GatewayAPI_GetGatewayInformationTest extends GatewayAPITestBase {
 
         GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
         this.addMockResponseForGetGatewayInformation(200, vendorThingID);
-        String information = api.getGatewayInformation();
+        GatewayInformation information = api.getGatewayInformation();
 
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
         org.junit.Assert.assertEquals("/gateway-info", request.getPath());
@@ -35,12 +36,12 @@ public class GatewayAPI_GetGatewayInformationTest extends GatewayAPITestBase {
         expectedRequestHeaders.put("Authorization", "Bearer " + ACCESS_TOKEN);
         this.assertRequestHeader(expectedRequestHeaders, request);
 
-        Assert.assertEquals(vendorThingID, information);
+        Assert.assertEquals(vendorThingID, information.getVendorThingID());
     }
     @Test(expected = IllegalStateException.class)
     public void getGatewayInformationNoLoggedInTest() throws Exception {
         KiiApp app = getApp(APP_ID, APP_KEY);
-        GatewayAddress gatewayAddress = getGatewayAddress();
+        Uri gatewayAddress = getGatewayAddress();
         GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
         api.getGatewayInformation();
     }

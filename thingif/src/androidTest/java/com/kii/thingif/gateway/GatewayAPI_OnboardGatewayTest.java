@@ -1,5 +1,6 @@
 package com.kii.thingif.gateway;
 
+import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -29,7 +30,7 @@ public class GatewayAPI_OnboardGatewayTest extends GatewayAPITestBase {
 
         GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
         this.addMockResponseForOnboardGateway(200, thingID);
-        String result = api.onboardGateway();
+        TargetGatewayThing result = api.onboardGateway();
 
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
         Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/onboarding", request.getPath());
@@ -40,12 +41,12 @@ public class GatewayAPI_OnboardGatewayTest extends GatewayAPITestBase {
         this.assertRequestHeader(expectedRequestHeaders, request);
 
         Assert.assertEquals(0, request.getBodySize());
-        Assert.assertEquals(thingID, result);
+        Assert.assertEquals(thingID, result.getThingID());
     }
     @Test(expected = IllegalStateException.class)
     public void onboardGatewayNoLoggedInTest() throws Exception {
         KiiApp app = getApp(APP_ID, APP_KEY);
-        GatewayAddress gatewayAddress = getGatewayAddress();
+        Uri gatewayAddress = getGatewayAddress();
         GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
         api.onboardGateway();
     }

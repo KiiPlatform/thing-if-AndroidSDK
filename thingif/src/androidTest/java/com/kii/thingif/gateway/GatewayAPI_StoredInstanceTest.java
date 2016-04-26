@@ -1,6 +1,7 @@
 package com.kii.thingif.gateway;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -26,7 +27,7 @@ public class GatewayAPI_StoredInstanceTest extends GatewayAPITestBase {
         String password = "pa$$word";
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
-        GatewayAddress gatewayAddress = getGatewayAddress();
+        Uri gatewayAddress = getGatewayAddress();
         Context context = InstrumentationRegistry.getTargetContext();
         GatewayAPIBuilder builder = GatewayAPIBuilder.newBuilder(context, app, gatewayAddress);
         GatewayAPI api = builder.build();
@@ -39,8 +40,7 @@ public class GatewayAPI_StoredInstanceTest extends GatewayAPITestBase {
 
         assertEquals(api.getAppID(), restoredApi.getAppID());
         assertEquals(api.getAppKey(), restoredApi.getAppKey());
-        assertEquals(api.getGatewayAddress().getHostName(), restoredApi.getGatewayAddress().getHostName());
-        assertEquals(api.getGatewayAddress().getBaseUrl(), restoredApi.getGatewayAddress().getBaseUrl());
+        assertEquals(api.getGatewayAddress().toString(), restoredApi.getGatewayAddress().toString());
         assertEquals(api.getGatewayAddress().getPort(), restoredApi.getGatewayAddress().getPort());
         assertEquals(api.getGatewayAddress().getScheme(), restoredApi.getGatewayAddress().getScheme());
         Assert.assertEquals(api.getAccessToken(), restoredApi.getAccessToken());
@@ -52,7 +52,7 @@ public class GatewayAPI_StoredInstanceTest extends GatewayAPITestBase {
         String password = "pa$$word";
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
-        GatewayAddress gatewayAddress = getGatewayAddress();
+        Uri gatewayAddress = getGatewayAddress();
         Context context = InstrumentationRegistry.getTargetContext();
         GatewayAPIBuilder builder = GatewayAPIBuilder.newBuilder(context, app, gatewayAddress).setTag("GatewayA");
         GatewayAPI api = builder.build();
@@ -65,8 +65,7 @@ public class GatewayAPI_StoredInstanceTest extends GatewayAPITestBase {
 
         assertEquals(api.getAppID(), restoredApi.getAppID());
         assertEquals(api.getAppKey(), restoredApi.getAppKey());
-        assertEquals(api.getGatewayAddress().getHostName(), restoredApi.getGatewayAddress().getHostName());
-        assertEquals(api.getGatewayAddress().getBaseUrl(), restoredApi.getGatewayAddress().getBaseUrl());
+        assertEquals(api.getGatewayAddress().toString(), restoredApi.getGatewayAddress().toString());
         assertEquals(api.getGatewayAddress().getPort(), restoredApi.getGatewayAddress().getPort());
         assertEquals(api.getGatewayAddress().getScheme(), restoredApi.getGatewayAddress().getScheme());
         Assert.assertEquals(api.getAccessToken(), restoredApi.getAccessToken());
