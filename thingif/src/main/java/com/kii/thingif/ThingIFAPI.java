@@ -20,6 +20,7 @@ import com.kii.thingif.exception.UnsupportedActionException;
 import com.kii.thingif.exception.UnsupportedSchemaException;
 import com.kii.thingif.gateway.EndNode;
 import com.kii.thingif.gateway.Gateway;
+import com.kii.thingif.gateway.PendingEndNode;
 import com.kii.thingif.internal.GsonRepository;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
@@ -186,7 +187,7 @@ public class ThingIFAPI implements Parcelable {
      * On board IoT Cloud with the specified vendor thing ID.
      * Specified thing will be owned by owner who is specified
      * IoT Cloud prepares communication channel to the target.
-     * If you are using a gateway, you need to use {@link #onboardEndnodeWithGatewayVendorThingID(String, String, String, String, JSONObject)} instead.
+     * If you are using a gateway, you need to use {@link #onboardEndnodeWithGateway(PendingEndNode, String)} instead.
      * @param vendorThingID Thing ID given by vendor. Must be specified.
      * @param thingPassword Thing Password given by vendor. Must be specified.
      * @param thingType Type of the thing given by vendor.
@@ -242,7 +243,7 @@ public class ThingIFAPI implements Parcelable {
      * When you are sure that the on boarding process has been done,
      * this method is more convenient than
      * {@link #onboard(String, String, String, JSONObject)}.
-     * If you are using a gateway, you need to use {@link #onboardEndnodeWithGateway(String, String, String, JSONObject)} instead.
+     * If you are using a gateway, you need to use {@link #onboardEndnodeWithGateway(PendingEndNode, String)} instead.
      * @param thingID Thing ID given by IoT Cloud. Must be specified.
      * @param thingPassword Thing password given by vendor. Must be specified.
      * @return Target instance can be used to operate target, manage resources
@@ -294,20 +295,16 @@ public class ThingIFAPI implements Parcelable {
      * Endpoints execute onboarding for the thing and merge MQTT channel to the gateway.
      * Thing act as Gateway is already registered and marked as Gateway.
      *
-     * @param endnodeVendorThingID ID of the End Node given by vendor
+     * @param pendingEndNode Pending endnode
      * @param endnodePassword Password of the End Node
-     * @param endnodeThingType The type of the End Node
-     * @param endnodeThingProperties End node properties
      * @return Target instance can be used to operate target, manage resources of the target.
      * @throws IllegalStateException Thrown when this instance is already onboarded.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
      */
     public EndNode onboardEndnodeWithGateway(
-            @NonNull String endnodeVendorThingID,
-            @NonNull String endnodePassword,
-            @Nullable String endnodeThingType,
-            @Nullable JSONObject endnodeThingProperties)
+            @NonNull PendingEndNode pendingEndNode,
+            @NonNull String endnodePassword)
             throws ThingIFException {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding the gateway");
@@ -315,8 +312,11 @@ public class ThingIFAPI implements Parcelable {
         if (!(this.target instanceof Gateway)) {
             throw new IllegalStateException("Target must be Gateway");
         }
-        if (TextUtils.isEmpty(endnodeVendorThingID)) {
-            throw new IllegalArgumentException("endnodeVendorThingID is null or empty");
+        if (pendingEndNode == null) {
+            throw new IllegalArgumentException("pendingEndNode is null or empty");
+        }
+        if (TextUtils.isEmpty(pendingEndNode.getVendorThingID())) {
+            throw new IllegalArgumentException("vendorThingID is null or empty");
         }
         if (TextUtils.isEmpty(endnodePassword)) {
             throw new IllegalArgumentException("endnodePassword is null or empty");
@@ -324,11 +324,13 @@ public class ThingIFAPI implements Parcelable {
         JSONObject requestBody = new JSONObject();
         try {
             requestBody.put("gatewayThingID", this.target.getTypedID().getID());
-            requestBody.put("endNodeVendorThingID", endnodeVendorThingID);
+            requestBody.put("endNodeVendorThingID", pendingEndNode.getVendorThingID());
             requestBody.put("endNodePassword", endnodePassword);
-            requestBody.put("endNodeThingType", endnodeThingType);
-            if (endnodeThingProperties != null && endnodeThingProperties.length() > 0) {
-                requestBody.put("endNodeThingProperties", endnodeThingProperties);
+            if (!TextUtils.isEmpty(pendingEndNode.getThingType())) {
+                requestBody.put("endNodeThingType", pendingEndNode.getThingType());
+            }
+            if (pendingEndNode.getThingProperties() != null && pendingEndNode.getThingProperties().length() > 0) {
+                requestBody.put("endNodeThingProperties", pendingEndNode.getThingProperties());
             }
             requestBody.put("owner", this.owner.getTypedID().toString());
         } catch (JSONException e) {

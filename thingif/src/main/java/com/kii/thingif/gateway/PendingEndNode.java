@@ -2,6 +2,7 @@ package com.kii.thingif.gateway;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
@@ -9,22 +10,28 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class PendingEndNode implements Parcelable {
-    private final String thingID;
     private final String vendorThingID;
     private final String thingType;
     private JSONObject thingProperties;
 
+    public PendingEndNode(String vendorThingID) {
+        this(vendorThingID, null, null);
+    }
+    public PendingEndNode(String vendorThingID, String thingType) {
+        this(vendorThingID, thingType, null);
+    }
+    public PendingEndNode(String vendorThingID, String thingType, JSONObject thingProperties) {
+        this.vendorThingID = vendorThingID;
+        this.thingType = thingType;
+        this.thingProperties = thingProperties;
+    }
+
     PendingEndNode(JSONObject json) {
-        this.thingID = json.optString("thingID");
         this.vendorThingID = json.optString("vendorThingID");
         this.thingType = json.optString("thingType");
         this.thingProperties = json.optJSONObject("thingProperties");
     }
-    @Nullable
-    public String getThingID() {
-        return this.thingID;
-    }
-    @Nullable
+    @NonNull
     public String getVendorThingID() {
         return this.vendorThingID;
     }
@@ -38,7 +45,6 @@ public class PendingEndNode implements Parcelable {
     }
 
     protected PendingEndNode(Parcel in) {
-        this.thingID = in.readString();
         this.vendorThingID = in.readString();
         this.thingType = in.readString();
         String json = in.readString();
@@ -66,7 +72,6 @@ public class PendingEndNode implements Parcelable {
     }
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.thingID);
         dest.writeString(this.vendorThingID);
         dest.writeString(this.thingType);
         if (this.thingProperties != null) {
