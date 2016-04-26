@@ -1,13 +1,18 @@
 package com.kii.thingif;
 
 import android.app.Activity;
+import android.net.Uri;
 
 import com.kii.thingif.command.Action;
 import com.kii.thingif.exception.ThingIFException;
+import com.kii.thingif.gateway.EndNode;
 import com.kii.thingif.gateway.GatewayAPI;
 import com.kii.thingif.gateway.GatewayAPIBuilder;
 import com.kii.thingif.gateway.GatewayAddress;
+import com.kii.thingif.gateway.GatewayInformation;
 import com.kii.thingif.gateway.PendingEndNode;
+import com.kii.thingif.gateway.TargetEndnodeThing;
+import com.kii.thingif.gateway.TargetGatewayThing;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,8 +26,8 @@ public class UsageReview extends Activity {
     public void usage() {
         // Gateway APIの作成。
         KiiApp app = new KiiApp("appID", "appKey", Site.JP);
-        GatewayAddress addr = new GatewayAddress("localhost");
-        GatewayAPIBuilder b = GatewayAPIBuilder.newBuilder(this, app, addr);
+        Uri gatewayUri = Uri.parse("");
+        GatewayAPIBuilder b = GatewayAPIBuilder.newBuilder(this, app, gatewayUri);
         // Review: _newBuilder() が少し気になる。
         GatewayAPI localAPI = b.build();
 
@@ -36,11 +41,10 @@ public class UsageReview extends Activity {
             localAPI.login("username", "password");
 
             // Local Onboard Gateway
-            String gatewayThingID = localAPI.onboardGateway();
+            TargetGatewayThing gateway = localAPI.onboardGateway();
 
             // Local Get info.
-            String gatewayVID = localAPI.getGatewayInformation();
-            // Review: getGatewayInformation API would be fixed to return Object.
+            GatewayInformation info  = localAPI.getGatewayInformation();
 
             // Cloud Onboard Gateway
             JSONObject gatewayProps = new JSONObject();
@@ -50,14 +54,15 @@ public class UsageReview extends Activity {
                 throw new RuntimeException("Unexpected error", e);
             }
             // このPropertyを作成する手順(layoutPositionの設定)が難しいと思われる。
-            thingIFAPIapi.onboard(gatewayVID, "password", null, gatewayProps);
+            thingIFAPIapi.onboard(gateway.getThingID(), "password", null, gatewayProps);
 
             // Local List Pending Nodes.
-            List<PendingEndNode> nodes = localAPI.listPendingEndNodes();
-            PendingEndNode node = nodes.get(0);
+            // EndNode と TargetEndNodeThingがあるのは変な感じ。
+            List<EndNode> nodes = localAPI.listPendingEndNodes();
+            EndNode node = nodes.get(0);
 
             // Cloud Onboard EndNode
-            Target endnode = thingIFAPIapi.onboardEndnodeWithGatewayVendorThingID(gatewayVID, node.getVendorThingID(), "nodepassword", null, null);
+            Target endnode = thingIFAPIapi.onboardEndnodeWithGatewayVendorThingID(info.getVendorThingID(), node.getVendorThingID(), "nodepassword", null, null);
             // Review: Onboard済みだと、IllegalStateExceptionはちょっと使いにくい。copyWithTargetが使えない？
             // Review: GatewayでOnboard済みでもgatewayVendorThingIDが必要？
             // Review: このAPIはちょっとややこしい(vendorThingIDとthingIDを間違える。)のでEndNode class, Gateway class を引数にするなどしたい。
