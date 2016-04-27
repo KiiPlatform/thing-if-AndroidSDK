@@ -27,6 +27,7 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayTest extends ThingIFAPITestBase
     @Test
     public void onboardEndnodeWithGatewayTest() throws Exception {
         String gatewayThingID = UUID.randomUUID().toString();
+        String gatewayVendorThingID = UUID.randomUUID().toString();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
         JSONObject thingProperties = new JSONObject();
@@ -36,7 +37,7 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayTest extends ThingIFAPITestBase
         this.addMockResponseForOnBoardEndnode(200, thingID, accessToken);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(new Gateway(gatewayThingID));
+        api.setTarget(new Gateway(gatewayThingID, gatewayVendorThingID));
         Assert.assertTrue(api.onboarded());
         EndNode target = api.onboardEndnodeWithGateway(new PendingEndNode(vendorThingID, DEMO_THING_TYPE, thingProperties), thingPassword);
         Assert.assertTrue(api.onboarded());
@@ -68,6 +69,7 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayTest extends ThingIFAPITestBase
     @Test
     public void onboardEndnodeWithGateway403ErrorTest() throws Exception {
         String gatewayThingID = UUID.randomUUID().toString();
+        String gatewayVendorThingID = UUID.randomUUID().toString();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
         JSONObject thingProperties = new JSONObject();
@@ -75,7 +77,7 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayTest extends ThingIFAPITestBase
         this.addEmptyMockResponse(403);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(new Gateway(gatewayThingID));
+        api.setTarget(new Gateway(gatewayThingID, gatewayVendorThingID));
         try {
             api.onboardEndnodeWithGateway(new PendingEndNode(vendorThingID, DEMO_THING_TYPE, thingProperties), thingPassword);
             Assert.fail("ThingIFRestException should be thrown");
@@ -105,6 +107,7 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayTest extends ThingIFAPITestBase
     @Test
     public void onboardEndnodeWithGateway404ErrorTest() throws Exception {
         String gatewayThingID = UUID.randomUUID().toString();
+        String gatewayVendorThingID = UUID.randomUUID().toString();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
         JSONObject thingProperties = new JSONObject();
@@ -112,7 +115,7 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayTest extends ThingIFAPITestBase
         this.addEmptyMockResponse(404);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(new Gateway(gatewayThingID));
+        api.setTarget(new Gateway(gatewayThingID, gatewayVendorThingID));
         try {
             api.onboardEndnodeWithGateway(new PendingEndNode(vendorThingID, DEMO_THING_TYPE, thingProperties), thingPassword);
             Assert.fail("ThingIFRestException should be thrown");
@@ -142,6 +145,7 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayTest extends ThingIFAPITestBase
     @Test
     public void onboardEndnodeWithGateway500ErrorTest() throws Exception {
         String gatewayThingID = UUID.randomUUID().toString();
+        String gatewayVendorThingID = UUID.randomUUID().toString();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
         JSONObject thingProperties = new JSONObject();
@@ -149,7 +153,7 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayTest extends ThingIFAPITestBase
         this.addEmptyMockResponse(500);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(new Gateway(gatewayThingID));
+        api.setTarget(new Gateway(gatewayThingID, gatewayVendorThingID));
         try {
             api.onboardEndnodeWithGateway(new PendingEndNode(vendorThingID, DEMO_THING_TYPE, thingProperties), thingPassword);
             Assert.fail("ThingIFRestException should be thrown");
@@ -184,25 +188,25 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayTest extends ThingIFAPITestBase
     @Test(expected = IllegalArgumentException.class)
     public void onboardEndnodeWithGatewayWithNullVendorThingIDTest() throws Exception {
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(new Gateway("gateway-thing-id"));
+        api.setTarget(new Gateway("gateway-thing-id", "gateway-vendor-thing-id"));
         Target target = api.onboardEndnodeWithGateway(new PendingEndNode(null, DEMO_THING_TYPE, null), "password");
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardEndnodeWithGatewayWithEmptyVendorThingIDTest() throws Exception {
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(new Gateway("gateway-thing-id"));
+        api.setTarget(new Gateway("gateway-thing-id", "gateway-vendor-thing-id"));
         Target target = api.onboardEndnodeWithGateway(new PendingEndNode("", DEMO_THING_TYPE, null), "password");
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardEndnodeWithGatewayWithNullVendorThingPasswordTest() throws Exception {
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(new Gateway("gateway-thing-id"));
+        api.setTarget(new Gateway("gateway-thing-id", "gateway-vendor-thing-id"));
         Target target = api.onboardEndnodeWithGateway(new PendingEndNode("v1234567890abcde", DEMO_THING_TYPE, null), null);
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardEndnodeWithGatewayWithEmptyVendorThingPasswordTest() throws Exception {
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(new Gateway("gateway-thing-id"));
+        api.setTarget(new Gateway("gateway-thing-id", "gateway-vendor-thing-id"));
         Target target = api.onboardEndnodeWithGateway(new PendingEndNode("v1234567890abcde", DEMO_THING_TYPE, null), "");
     }
 }

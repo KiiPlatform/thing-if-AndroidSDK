@@ -31,9 +31,10 @@ public class ThingIFAPI_CopyWithTargetTest extends ThingIFAPITestBase {
         Assert.assertFalse(api.onboarded());
         Target target1 = api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
 
+        String vendorThingID2 = "vabcde1234567890";
         TypedID thingID2 = new TypedID(TypedID.Types.THING, "th.9876543210");
         String accessToken2 = "thing-access-token-4321";
-        Target target2 = new StandaloneThing(thingID2.getID(), accessToken2);
+        Target target2 = new StandaloneThing(thingID2.getID(), vendorThingID2, accessToken2);
 
         ThingIFAPI copiedApi = api.copyWithTarget(target2, "ThingB");
         Assert.assertEquals(copiedApi.getTag(), "ThingB");
@@ -45,6 +46,7 @@ public class ThingIFAPI_CopyWithTargetTest extends ThingIFAPITestBase {
         assertEquals(api.getOwner().getTypedID(), copiedApi.getOwner().getTypedID());
         assertEquals(api.getOwner().getAccessToken(), copiedApi.getOwner().getAccessToken());
         assertEquals(thingID2, copiedApi.getTarget().getTypedID());
+        assertEquals(vendorThingID2, ((TargetThing)copiedApi.getTarget()).getVendorThingID());
         assertEquals("thing-access-token-4321", copiedApi.getTarget().getAccessToken());
     }
     @Test
@@ -91,9 +93,10 @@ public class ThingIFAPI_CopyWithTargetTest extends ThingIFAPITestBase {
         Assert.assertFalse(api.onboarded());
         Target target1 = api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
 
+        String vendorThingID2 = "vabcde1234567890";
         TypedID thingID2 = new TypedID(TypedID.Types.THING, "th.9876543210");
         String accessToken2 = "thing-access-token-4321";
-        Target target2 = new StandaloneThing(thingID2.getID(), accessToken2);
+        Target target2 = new StandaloneThing(thingID2.getID(), vendorThingID2, accessToken2);
 
         ThingIFAPI copiedApi = api.copyWithTarget(target2, null);
         Assert.assertNull(copiedApi.getTag());
@@ -105,6 +108,7 @@ public class ThingIFAPI_CopyWithTargetTest extends ThingIFAPITestBase {
         assertEquals(api.getOwner().getTypedID(), copiedApi.getOwner().getTypedID());
         assertEquals(api.getOwner().getAccessToken(), copiedApi.getOwner().getAccessToken());
         assertEquals(thingID2, copiedApi.getTarget().getTypedID());
+        assertEquals(vendorThingID2, ((TargetThing)copiedApi.getTarget()).getVendorThingID());
         assertEquals("thing-access-token-4321", copiedApi.getTarget().getAccessToken());
     }
     @Test(expected = IllegalArgumentException.class)

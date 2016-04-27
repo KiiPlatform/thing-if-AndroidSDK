@@ -235,7 +235,7 @@ public class ThingIFAPI implements Parcelable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST, requestBody);
+        return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST, requestBody, vendorThingID);
     }
 
     /**
@@ -275,10 +275,11 @@ public class ThingIFAPI implements Parcelable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_THING_ID_BY_OWNER_REQUEST, requestBody);
+        // FIXME: Currently, Server does not return the VendorThingID when onboarding is successful.
+        return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_THING_ID_BY_OWNER_REQUEST, requestBody, null);
     }
 
-    private Target onboard(MediaType contentType, JSONObject requestBody) throws ThingIFException {
+    private Target onboard(MediaType contentType, JSONObject requestBody, String vendorThingID) throws ThingIFException {
         String path = MessageFormat.format("/thing-if/apps/{0}/onboardings", this.app.getAppID());
         String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
@@ -286,7 +287,7 @@ public class ThingIFAPI implements Parcelable {
         JSONObject responseBody = this.restClient.sendRequest(request);
         String thingID = responseBody.optString("thingID", null);
         String accessToken = responseBody.optString("accessToken", null);
-        this.target = new StandaloneThing(thingID, accessToken);
+        this.target = new StandaloneThing(thingID, vendorThingID, accessToken);
         saveInstance(this);
         return this.target;
     }
@@ -336,17 +337,14 @@ public class ThingIFAPI implements Parcelable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        return onboardEndnodeWithGateway(MediaTypes.MEDIA_TYPE_ONBOARDING_ENDNODE_WITH_GATEWAY_THING_ID_REQUEST, requestBody);
-    }
-    private EndNode onboardEndnodeWithGateway(MediaType contentType, JSONObject requestBody) throws ThingIFException {
         String path = MessageFormat.format("/thing-if/apps/{0}/onboardings", this.app.getAppID());
         String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
-        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, contentType, requestBody);
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MediaTypes.MEDIA_TYPE_ONBOARDING_ENDNODE_WITH_GATEWAY_THING_ID_REQUEST, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
         String thingID = responseBody.optString("endNodeThingID", null);
         String accessToken = responseBody.optString("accessToken", null);
-        return new EndNode(thingID, accessToken);
+        return new EndNode(thingID, pendingEndNode.getVendorThingID(), accessToken);
     }
 
     /**

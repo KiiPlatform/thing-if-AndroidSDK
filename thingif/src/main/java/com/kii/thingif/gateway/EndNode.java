@@ -8,11 +8,8 @@ import com.kii.thingif.AbstractTargetThing;
 
 public class EndNode extends AbstractTargetThing {
     private final String accessToken;
-    public EndNode(@NonNull String thingID) {
-        this(thingID, null);
-    }
-    public EndNode(@NonNull String thingID, @Nullable String accessToken) {
-        super(thingID);
+    public EndNode(@NonNull String thingID, @NonNull String vendorThingID, @Nullable String accessToken) {
+        super(thingID, vendorThingID);
         this.accessToken = accessToken;
     }
     @Override

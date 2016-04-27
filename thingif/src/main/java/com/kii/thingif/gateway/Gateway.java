@@ -6,8 +6,8 @@ import android.support.annotation.NonNull;
 import com.kii.thingif.AbstractTargetThing;
 
 public class Gateway extends AbstractTargetThing {
-    public Gateway(@NonNull String thingID) {
-        super(thingID);
+    public Gateway(@NonNull String thingID, @NonNull String vendorThingID) {
+        super(thingID, vendorThingID);
     }
     @Override
     public String getAccessToken() {

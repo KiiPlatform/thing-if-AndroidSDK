@@ -5,8 +5,8 @@ import android.support.annotation.NonNull;
 
 public class StandaloneThing extends AbstractTargetThing {
     private final String accessToken;
-    public StandaloneThing(@NonNull String thingID, String accessToken) {
-        super(thingID);
+    public StandaloneThing(@NonNull String thingID, @NonNull String vendorThingID, String accessToken) {
+        super(thingID, vendorThingID);
         this.accessToken = accessToken;
     }
     @Override

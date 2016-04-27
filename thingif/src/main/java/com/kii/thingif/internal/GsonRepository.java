@@ -21,6 +21,7 @@ import com.google.gson.JsonSerializer;
 import com.kii.thingif.KiiApp;
 import com.kii.thingif.ServerError;
 import com.kii.thingif.StandaloneThing;
+import com.kii.thingif.TargetThing;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.ThingIFAPIBuilder;
 import com.kii.thingif.Owner;
@@ -487,6 +488,9 @@ public class GsonRepository {
             if (!TextUtils.isEmpty(src.getAccessToken())) {
                 json.addProperty("accessToken", src.getAccessToken());
             }
+            if (src instanceof TargetThing) {
+                json.addProperty("vendorThingID", ((TargetThing)src).getVendorThingID());
+            }
             return json;
         }
     };
@@ -498,14 +502,15 @@ public class GsonRepository {
             }
             JsonObject json = (JsonObject)jsonElement;
             String accessToken = json.has("accessToken") ? json.get("accessToken").getAsString() : null;
+            String vendorThingID = json.has("vendorThingID") ? json.get("vendorThingID").getAsString() : null;
             String className = json.get("class").getAsString();
             TypedID typedID = TypedID.fromString(json.get("typedID").getAsString());
             if (StandaloneThing.class.getName().equals(className)) {
-                return new StandaloneThing(typedID.getID(), accessToken);
+                return new StandaloneThing(typedID.getID(), vendorThingID, accessToken);
             } else if (Gateway.class.getName().equals(className)) {
-                return new Gateway(typedID.getID());
+                return new Gateway(typedID.getID(), vendorThingID);
             } else if (EndNode.class.getName().equals(className)) {
-                return new EndNode(typedID.getID());
+                return new EndNode(typedID.getID(), vendorThingID, accessToken);
             }
             throw new JsonParseException("Detected unknown type " + className);
         }

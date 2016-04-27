@@ -24,7 +24,7 @@ public class ThingIFAPI_ListTriggeredServerCodeResultsTest extends ThingIFAPITes
         String triggerID = UUID.randomUUID().toString();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new StandaloneThing(thingID.getID(), accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
         String paginationKey = "pagination-12345-key";
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
@@ -80,7 +80,7 @@ public class ThingIFAPI_ListTriggeredServerCodeResultsTest extends ThingIFAPITes
         String triggerID = UUID.randomUUID().toString();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new StandaloneThing(thingID.getID(), accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
@@ -112,7 +112,7 @@ public class ThingIFAPI_ListTriggeredServerCodeResultsTest extends ThingIFAPITes
         String triggerID = UUID.randomUUID().toString();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new StandaloneThing(thingID.getID(), accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
@@ -137,7 +137,7 @@ public class ThingIFAPI_ListTriggeredServerCodeResultsTest extends ThingIFAPITes
     public void listTriggeredServerCodeResultsWithNullTriggerIDTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new StandaloneThing(thingID.getID(), accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
