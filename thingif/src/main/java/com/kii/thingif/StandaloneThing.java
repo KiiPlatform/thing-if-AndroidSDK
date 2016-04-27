@@ -3,7 +3,7 @@ package com.kii.thingif;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 
-public class StandaloneThing extends AbstractTargetThing {
+public class StandaloneThing extends AbstractThing {
     private final String accessToken;
     public StandaloneThing(@NonNull String thingID, @NonNull String vendorThingID, String accessToken) {
         super(thingID, vendorThingID);

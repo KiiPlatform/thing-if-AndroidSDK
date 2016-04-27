@@ -3,9 +3,9 @@ package com.kii.thingif.gateway;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 
-import com.kii.thingif.AbstractTargetThing;
+import com.kii.thingif.AbstractThing;
 
-public class Gateway extends AbstractTargetThing {
+public class Gateway extends AbstractThing {
     public Gateway(@NonNull String thingID, @NonNull String vendorThingID) {
         super(thingID, vendorThingID);
     }

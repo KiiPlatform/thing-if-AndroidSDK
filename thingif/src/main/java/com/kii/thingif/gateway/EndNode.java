@@ -4,9 +4,9 @@ import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.kii.thingif.AbstractTargetThing;
+import com.kii.thingif.AbstractThing;
 
-public class EndNode extends AbstractTargetThing {
+public class EndNode extends AbstractThing {
     private final String accessToken;
     public EndNode(@NonNull String thingID, @NonNull String vendorThingID, @Nullable String accessToken) {
         super(thingID, vendorThingID);
