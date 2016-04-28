@@ -310,7 +310,7 @@ public class ThingIFAPI implements Parcelable {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding the gateway");
         }
-        if (!(this.target instanceof Gateway)) {
+        if (this.target instanceof EndNode) {
             throw new IllegalStateException("Target must be Gateway");
         }
         if (pendingEndNode == null) {
