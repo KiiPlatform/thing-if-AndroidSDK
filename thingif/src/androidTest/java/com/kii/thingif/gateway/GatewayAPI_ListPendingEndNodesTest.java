@@ -29,12 +29,12 @@ public class GatewayAPI_ListPendingEndNodesTest extends GatewayAPITestBase {
     public void listPendingEndNodesTest() throws Exception {
         GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
 
-        EndNode endNode1 = new EndNode(new JSONObject("{\"vendorThingID\":\"abcd-1234\"}"));
-        EndNode endNode2 = new EndNode(new JSONObject("{\"vendorThingID\":\"efgh-5678\"}"));
-        EndNode endNode3 = new EndNode(new JSONObject("{\"vendorThingID\":\"ijkl-9012\", \"thingProperties\":{\"debug\":true}}"));
+        PendingEndNode pendingEndNode1 = new PendingEndNode(new JSONObject("{\"vendorThingID\":\"abcd-1234\"}"));
+        PendingEndNode pendingEndNode2 = new PendingEndNode(new JSONObject("{\"vendorThingID\":\"efgh-5678\"}"));
+        PendingEndNode pendingEndNode3 = new PendingEndNode(new JSONObject("{\"vendorThingID\":\"ijkl-9012\", \"thingProperties\":{\"debug\":true}}"));
 
-        addMockResponseForListPendingEndNodes(200, endNode1, endNode2, endNode3);
-        List<EndNode> nodes = api.listPendingEndNodes();
+        addMockResponseForListPendingEndNodes(200, pendingEndNode1, pendingEndNode2, pendingEndNode3);
+        List<PendingEndNode> nodes = api.listPendingEndNodes();
 
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
         org.junit.Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/end-nodes/pending", request.getPath());
@@ -45,19 +45,19 @@ public class GatewayAPI_ListPendingEndNodesTest extends GatewayAPITestBase {
         this.assertRequestHeader(expectedRequestHeaders, request);
 
         Assert.assertEquals(3, nodes.size());
-        Assert.assertEquals(endNode1.getVendorThingID(), nodes.get(0).getVendorThingID());
-        Assert.assertNull(endNode1.getThingProperties());
-        Assert.assertEquals(endNode2.getVendorThingID(), nodes.get(1).getVendorThingID());
-        Assert.assertNull(endNode2.getThingProperties());
-        Assert.assertEquals(endNode3.getVendorThingID(), nodes.get(2).getVendorThingID());
-        assertJSONObject(endNode3.getThingProperties(), nodes.get(2).getThingProperties());
+        Assert.assertEquals(pendingEndNode1.getVendorThingID(), nodes.get(0).getVendorThingID());
+        Assert.assertNull(pendingEndNode1.getThingProperties());
+        Assert.assertEquals(pendingEndNode2.getVendorThingID(), nodes.get(1).getVendorThingID());
+        Assert.assertNull(pendingEndNode2.getThingProperties());
+        Assert.assertEquals(pendingEndNode3.getVendorThingID(), nodes.get(2).getVendorThingID());
+        assertJSONObject(pendingEndNode3.getThingProperties(), nodes.get(2).getThingProperties());
     }
     @Test
     public void listPendingEndNodesEmptyTest() throws Exception {
         GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
 
         addMockResponseForListPendingEndNodes(200);
-        List<EndNode> nodes = api.listPendingEndNodes();
+        List<PendingEndNode> nodes = api.listPendingEndNodes();
 
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
         org.junit.Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/end-nodes/pending", request.getPath());

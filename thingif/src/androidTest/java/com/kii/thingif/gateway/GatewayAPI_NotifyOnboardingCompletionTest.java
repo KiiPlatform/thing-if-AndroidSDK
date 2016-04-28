@@ -32,7 +32,7 @@ public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBas
         GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
 
         this.addEmptyMockResponse(204);
-        api.notifyOnboardingCompletion(thingID, vendorThingID);
+        api.notifyOnboardingCompletion(new EndNode(thingID, vendorThingID, null));
 
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
         Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/end-nodes/VENDOR_THING_ID:" + vendorThingID, request.getPath());
@@ -55,7 +55,7 @@ public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBas
         KiiApp app = getApp(APP_ID, APP_KEY);
         Uri gatewayAddress = getGatewayAddress();
         GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
-        api.notifyOnboardingCompletion(thingID, vendorThingID);
+        api.notifyOnboardingCompletion(new EndNode(thingID, vendorThingID, null));
     }
     @Test(expected = IllegalArgumentException.class)
     public void notifyOnboardingCompletionWithNullThingIDTest() throws Exception {
@@ -65,7 +65,7 @@ public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBas
         GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
 
         this.addEmptyMockResponse(204);
-        api.notifyOnboardingCompletion(thingID, vendorThingID);
+        api.notifyOnboardingCompletion(new EndNode(thingID, vendorThingID, null));
     }
     @Test(expected = IllegalArgumentException.class)
     public void notifyOnboardingCompletionWithEmptyThingIDTest() throws Exception {
@@ -75,7 +75,7 @@ public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBas
         GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
 
         this.addEmptyMockResponse(204);
-        api.notifyOnboardingCompletion(thingID, vendorThingID);
+        api.notifyOnboardingCompletion(new EndNode(thingID, vendorThingID, null));
     }
     @Test(expected = IllegalArgumentException.class)
     public void notifyOnboardingCompletionWithNullVenderThingIDTest() throws Exception {
@@ -85,7 +85,7 @@ public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBas
         GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
 
         this.addEmptyMockResponse(204);
-        api.notifyOnboardingCompletion(thingID, vendorThingID);
+        api.notifyOnboardingCompletion(new EndNode(thingID, vendorThingID, null));
     }
     @Test(expected = IllegalArgumentException.class)
     public void notifyOnboardingCompletionWithEmptyVenderThingIDTest() throws Exception {
@@ -95,7 +95,7 @@ public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBas
         GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
 
         this.addEmptyMockResponse(204);
-        api.notifyOnboardingCompletion(thingID, vendorThingID);
+        api.notifyOnboardingCompletion(new EndNode(thingID, vendorThingID, null));
     }
     @Test
     public void notifyOnboardingCompletion400ErrorTest() throws Exception {
@@ -106,7 +106,7 @@ public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBas
 
         this.addEmptyMockResponse(400);
         try {
-            api.notifyOnboardingCompletion(thingID, vendorThingID);
+            api.notifyOnboardingCompletion(new EndNode(thingID, vendorThingID, null));
             Assert.fail("BadRequestException should be thrown");
         } catch (BadRequestException e) {
         }
@@ -133,7 +133,7 @@ public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBas
 
         this.addEmptyMockResponse(401);
         try {
-            api.notifyOnboardingCompletion(thingID, vendorThingID);
+            api.notifyOnboardingCompletion(new EndNode(thingID, vendorThingID, null));
             Assert.fail("UnauthorizedException should be thrown");
         } catch (UnauthorizedException e) {
         }
@@ -160,7 +160,7 @@ public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBas
 
         this.addEmptyMockResponse(404);
         try {
-            api.notifyOnboardingCompletion(thingID, vendorThingID);
+            api.notifyOnboardingCompletion(new EndNode(thingID, vendorThingID, null));
             Assert.fail("NotFoundException should be thrown");
         } catch (NotFoundException e) {
         }
@@ -187,7 +187,7 @@ public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBas
 
         this.addEmptyMockResponse(409);
         try {
-            api.notifyOnboardingCompletion(thingID, vendorThingID);
+            api.notifyOnboardingCompletion(new EndNode(thingID, vendorThingID, null));
             Assert.fail("ConflictException should be thrown");
         } catch (ConflictException e) {
         }
@@ -214,7 +214,7 @@ public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBas
 
         this.addEmptyMockResponse(503);
         try {
-            api.notifyOnboardingCompletion(thingID, vendorThingID);
+            api.notifyOnboardingCompletion(new EndNode(thingID, vendorThingID, null));
             Assert.fail("ServiceUnavailableException should be thrown");
         } catch (ServiceUnavailableException e) {
         }

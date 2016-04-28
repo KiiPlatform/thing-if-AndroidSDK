@@ -11,6 +11,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
@@ -19,6 +20,8 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.kii.thingif.KiiApp;
 import com.kii.thingif.ServerError;
+import com.kii.thingif.StandaloneThing;
+import com.kii.thingif.TargetThing;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.ThingIFAPIBuilder;
 import com.kii.thingif.Owner;
@@ -28,6 +31,8 @@ import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.ActionResult;
 import com.kii.thingif.exception.UnsupportedActionException;
+import com.kii.thingif.gateway.EndNode;
+import com.kii.thingif.gateway.Gateway;
 import com.kii.thingif.gateway.GatewayAPI;
 import com.kii.thingif.gateway.GatewayAPIBuilder;
 import com.kii.thingif.schema.Schema;
@@ -68,7 +73,6 @@ public class GsonRepository {
     private static final Map<Pair<String, Integer>, Gson> REPOSITORY = Collections.synchronizedMap(new HashMap<Pair<String, Integer>, Gson>());
     private static final Gson DEFAULT_GSON;
     private static final Gson PURE_GSON = new Gson();
-
 
     private static final JsonSerializer<JSONObject> ORG_JSON_OBJECT_SERIALIZER = new JsonSerializer<JSONObject>() {
         @Override
@@ -295,7 +299,11 @@ public class GsonRepository {
                 json.addProperty("tag", tag);
             }
             json.add("owner", DEFAULT_GSON.toJsonTree(src.getOwner()));
-            json.add("target", DEFAULT_GSON.toJsonTree(src.getTarget()));
+            if (src.getTarget() != null) {
+                json.add("target", DEFAULT_GSON.toJsonTree(src.getTarget(), src.getTarget().getClass()));
+            } else {
+                json.add("target", JsonNull.INSTANCE);
+            }
             JsonArray schemas = new JsonArray();
             for (Schema schema : src.getSchemas()) {
                 schemas.add(DEFAULT_GSON.toJsonTree(schema));
@@ -468,7 +476,45 @@ public class GsonRepository {
             return result;
         }
     };
-
+    private static final JsonSerializer<Target> TARGET_SERIALIZER = new JsonSerializer<Target>() {
+        @Override
+        public JsonElement serialize(Target src, Type typeOfSrc, JsonSerializationContext context) {
+            if (src == null) {
+                return null;
+            }
+            JsonObject json = new JsonObject();
+            json.addProperty("typedID", src.getTypedID().toString());
+            json.addProperty("class", src.getClass().getName());
+            if (!TextUtils.isEmpty(src.getAccessToken())) {
+                json.addProperty("accessToken", src.getAccessToken());
+            }
+            if (src instanceof TargetThing) {
+                json.addProperty("vendorThingID", ((TargetThing)src).getVendorThingID());
+            }
+            return json;
+        }
+    };
+    private static final JsonDeserializer<Target> TARGET_DESERIALIZER = new JsonDeserializer<Target>() {
+        @Override
+        public Target deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            if (jsonElement == null) {
+                return null;
+            }
+            JsonObject json = (JsonObject)jsonElement;
+            String accessToken = json.has("accessToken") ? json.get("accessToken").getAsString() : null;
+            String vendorThingID = json.has("vendorThingID") ? json.get("vendorThingID").getAsString() : null;
+            String className = json.get("class").getAsString();
+            TypedID typedID = TypedID.fromString(json.get("typedID").getAsString());
+            if (StandaloneThing.class.getName().equals(className)) {
+                return new StandaloneThing(typedID.getID(), vendorThingID, accessToken);
+            } else if (Gateway.class.getName().equals(className)) {
+                return new Gateway(typedID.getID(), vendorThingID);
+            } else if (EndNode.class.getName().equals(className)) {
+                return new EndNode(typedID.getID(), vendorThingID, accessToken);
+            }
+            throw new JsonParseException("Detected unknown type " + className);
+        }
+    };
 
     static {
         DEFAULT_GSON = new GsonBuilder()
@@ -492,6 +538,10 @@ public class GsonRepository {
                 .registerTypeAdapter(GatewayAPI.class, GATEWAY_API_DESERIALIZER)
                 .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_SERIALIZER)
                 .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_DESERIALIZER)
+                .registerTypeAdapter(Target.class, TARGET_DESERIALIZER)
+                .registerTypeAdapter(StandaloneThing.class, TARGET_SERIALIZER)
+                .registerTypeAdapter(Gateway.class, TARGET_SERIALIZER)
+                .registerTypeAdapter(EndNode.class, TARGET_SERIALIZER)
                 .create();
     }
 
@@ -579,6 +629,10 @@ public class GsonRepository {
                     .registerTypeAdapter(GatewayAPI.class, GATEWAY_API_DESERIALIZER)
                     .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_SERIALIZER)
                     .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_DESERIALIZER)
+                    .registerTypeAdapter(Target.class, TARGET_DESERIALIZER)
+                    .registerTypeAdapter(StandaloneThing.class, TARGET_SERIALIZER)
+                    .registerTypeAdapter(Gateway.class, TARGET_SERIALIZER)
+                    .registerTypeAdapter(EndNode.class, TARGET_SERIALIZER)
                     .create();
             REPOSITORY.put(new Pair<String, Integer>(schema.getSchemaName(), schema.getSchemaVersion()), gson);
         }

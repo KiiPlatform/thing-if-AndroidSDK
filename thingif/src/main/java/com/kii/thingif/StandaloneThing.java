@@ -1,14 +1,11 @@
-package com.kii.thingif.gateway;
+package com.kii.thingif;
 
 import android.os.Parcel;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
-import com.kii.thingif.AbstractThing;
-
-public class EndNode extends AbstractThing {
+public class StandaloneThing extends AbstractThing {
     private final String accessToken;
-    public EndNode(@NonNull String thingID, @NonNull String vendorThingID, @Nullable String accessToken) {
+    public StandaloneThing(@NonNull String thingID, @NonNull String vendorThingID, String accessToken) {
         super(thingID, vendorThingID);
         this.accessToken = accessToken;
     }
@@ -17,19 +14,19 @@ public class EndNode extends AbstractThing {
         return this.accessToken;
     }
     // Implementation of Parcelable
-    protected EndNode(Parcel in) {
+    protected StandaloneThing(Parcel in) {
         super(in);
         this.accessToken = in.readString();
     }
-    public static final Creator<EndNode> CREATOR = new Creator<EndNode>() {
+    public static final Creator<StandaloneThing> CREATOR = new Creator<StandaloneThing>() {
         @Override
-        public EndNode createFromParcel(Parcel in) {
-            return new EndNode(in);
+        public StandaloneThing createFromParcel(Parcel in) {
+            return new StandaloneThing(in);
         }
 
         @Override
-        public EndNode[] newArray(int size) {
-            return new EndNode[size];
+        public StandaloneThing[] newArray(int size) {
+            return new StandaloneThing[size];
         }
     };
     @Override
