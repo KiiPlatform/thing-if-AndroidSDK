@@ -24,7 +24,6 @@ import com.kii.thingif.internal.GsonRepository;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
 import com.kii.thingif.schema.Schema;
-import com.kii.thingif.trigger.ScheduleOncePredicate;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.Trigger;
@@ -590,16 +589,6 @@ public class ThingIFAPI implements Parcelable {
         return new Pair<List<Command>, String>(commands, nextPaginationKey);
     }
 
-    private void validatePredicate(Predicate predicate) throws IllegalArgumentException {
-        if (predicate == null) {
-            throw new IllegalArgumentException("predicate is null");
-        }
-        if (predicate instanceof ScheduleOncePredicate){
-            if (System.currentTimeMillis() > ((ScheduleOncePredicate) predicate).getScheduleAt()  ) {
-                throw new IllegalArgumentException("predicate is invalid, ScheduleOncePredicate's scheduleAt should be in the future");
-            }
-        }
-    }
     /**
      * Post new Trigger with commands to IoT Cloud.
      * @param schemaName name of the schema.
@@ -620,7 +609,6 @@ public class ThingIFAPI implements Parcelable {
             @NonNull Predicate predicate)
             throws ThingIFException {
 
-        validatePredicate(predicate);
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
@@ -630,7 +618,9 @@ public class ThingIFAPI implements Parcelable {
         if (actions == null || actions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty");
         }
-
+        if (predicate == null) {
+            throw new IllegalArgumentException("predicate is null");
+        }
         JSONObject requestBody = new JSONObject();
         Schema schema = this.getSchema(schemaName, schemaVersion);
         Command command = new Command(schemaName, schemaVersion, this.target.getTypedID(), this.owner.getTypedID(), actions);
@@ -665,7 +655,9 @@ public class ThingIFAPI implements Parcelable {
         if (serverCode == null) {
             throw new IllegalArgumentException("serverCode is null");
         }
-        validatePredicate(predicate);
+        if (predicate == null) {
+            throw new IllegalArgumentException("predicate is null");
+        }
         JSONObject requestBody = new JSONObject();
         try {
             requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson().toJson(predicate)));
@@ -765,7 +757,9 @@ public class ThingIFAPI implements Parcelable {
         if (actions == null || actions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty");
         }
-        validatePredicate(predicate);
+        if (predicate == null) {
+            throw new IllegalArgumentException("predicate is null");
+        }
 
         JSONObject requestBody = new JSONObject();
         Schema schema = this.getSchema(schemaName, schemaVersion);
@@ -794,7 +788,9 @@ public class ThingIFAPI implements Parcelable {
         if (serverCode == null) {
             throw new IllegalArgumentException("serverCode is null");
         }
-        validatePredicate(predicate);
+        if (predicate == null) {
+            throw new IllegalArgumentException("predicate is null");
+        }
         JSONObject requestBody = new JSONObject();
         try {
             requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson().toJson(predicate)));
@@ -848,13 +844,13 @@ public class ThingIFAPI implements Parcelable {
     /**
      * Delete the specified Trigger.
      * @param triggerID ID of the Trigger to be deleted.
-     * @return Deleted Trigger Id.
+     * @return Deleted Trigger Instance.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
      */
     @NonNull
     @WorkerThread
-    public String deleteTrigger(
+    public Trigger deleteTrigger(
             @NonNull String triggerID) throws
             ThingIFException {
 
@@ -865,12 +861,13 @@ public class ThingIFAPI implements Parcelable {
             throw new IllegalArgumentException("triggerID is null or empty");
         }
 
+        Trigger trigger = this.getTrigger(triggerID);
         String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}", this.app.getAppID(), target.getTypedID().toString(), triggerID);
         String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.DELETE, headers);
         this.restClient.sendRequest(request);
-        return triggerID;
+        return trigger;
     }
 
     /**
