@@ -14,7 +14,7 @@ public class ScheduleOncePredicate extends Predicate {
      * @throws IllegalArgumentException when scheduleAt is not in the future.
      */
     public ScheduleOncePredicate(long scheduleAt) {
-        //TODO: implementations
+        this.scheduleAt = scheduleAt;
     }
     public long getScheduleAt() {
         return this.scheduleAt;
@@ -27,21 +27,21 @@ public class ScheduleOncePredicate extends Predicate {
     protected ScheduleOncePredicate(Parcel in) {
         this.scheduleAt = in.readParcelable(Schedule.class.getClassLoader());
     }
-    public static final Creator<SchedulePredicate> CREATOR = new Creator<SchedulePredicate>() {
+    public static final Creator<ScheduleOncePredicate> CREATOR = new Creator<ScheduleOncePredicate>() {
         @Override
-        public SchedulePredicate createFromParcel(Parcel in) {
-            return new SchedulePredicate(in);
+        public ScheduleOncePredicate createFromParcel(Parcel in) {
+            return new ScheduleOncePredicate(in);
         }
 
         @Override
-        public SchedulePredicate[] newArray(int size) {
-            return new SchedulePredicate[size];
+        public ScheduleOncePredicate[] newArray(int size) {
+            return new ScheduleOncePredicate[size];
         }
     };
     public int describeContents() {
         return 0;
     }
     public void writeToParcel(Parcel dest, int flags) {
-        //TODO: implementations
+        dest.writeLong(this.scheduleAt);
     }
 }
