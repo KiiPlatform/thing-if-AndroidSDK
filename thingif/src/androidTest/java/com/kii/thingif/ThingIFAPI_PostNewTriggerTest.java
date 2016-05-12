@@ -14,6 +14,8 @@ import com.kii.thingif.schema.Schema;
 import com.kii.thingif.testschemas.SetColor;
 import com.kii.thingif.testschemas.SetColorTemperature;
 import com.kii.thingif.trigger.Condition;
+import com.kii.thingif.trigger.Predicate;
+import com.kii.thingif.trigger.ScheduleOncePredicate;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.StatePredicate;
 import com.kii.thingif.trigger.Trigger;
@@ -37,8 +39,8 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(AndroidJUnit4.class)
 public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
-    @Test
-    public void postNewTriggerWithCommandTest() throws Exception {
+
+     void postNewTriggerWithCommandTest(Predicate predicate) throws Exception {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
@@ -50,7 +52,6 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         SetColorTemperature setColorTemperature = new SetColorTemperature(25);
         actions.add(setColor);
         actions.add(setColorTemperature);
-        StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
@@ -96,15 +97,21 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         expectedRequestHeaders2.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
         this.assertRequestHeader(expectedRequestHeaders2, request2);
     }
+    public void postNewStateTriggerWithCommandTest() throws Exception {
+        StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
+        this.postNewTriggerWithCommandTest(predicate);
+    }
     @Test
-    public void postNewTriggerWithServerCodeTest() throws Exception {
+    public void postNewScheduledOnceTriggerWithCommandTest() throws Exception {
+        ScheduleOncePredicate predicate = new ScheduleOncePredicate(System.currentTimeMillis());
+        this.postNewTriggerWithCommandTest(predicate);
+    }
+    void postNewTriggerWithServerCodeTest(Predicate predicate) throws Exception {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String triggerID = "trigger-1234";
         Target target = new Target(thingID, accessToken);
-
-        StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
@@ -149,6 +156,16 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         expectedRequestHeaders2.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders2.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
         this.assertRequestHeader(expectedRequestHeaders2, request2);
+    }
+    @Test
+    public void postNewStateTriggerWithServerCodeTest() throws Exception {
+        StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
+        this.postNewTriggerWithServerCodeTest(predicate);
+    }
+    @Test
+    public void postNewScheduledOnceTriggerWithServerCodeTest() throws Exception {
+        ScheduleOncePredicate predicate = new ScheduleOncePredicate(System.currentTimeMillis());
+        this.postNewTriggerWithServerCodeTest(predicate);
     }
     @Test
     public void postNewTrigger403ErrorTest() throws Exception {
