@@ -77,7 +77,7 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         this.server.shutdown();
     }
 
-    public KiiApp getApp(String appId, String appKey) {
+    public KiiApp getApp(String appId, String appKey) throws NoSuchFieldException, IllegalAccessException {
         String hostName = server.getHostName();
         KiiApp app = KiiApp.Builder.builderWithHostName(appId, appKey, hostName).
                 setPort(server.getPort()).setURLSchema("http").build();
@@ -121,25 +121,6 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         if (thingID != null && accessToken != null) {
             JsonObject responseBody = new JsonObject();
             responseBody.addProperty("thingID", thingID);
-            responseBody.addProperty("accessToken", accessToken);
-            response.setBody(responseBody.toString());
-        }
-        this.server.enqueue(response);
-    }
-    protected void addMockResponseForGetVendorThingID(int httpStatus, String vendorThingID) {
-        MockResponse response = new MockResponse().setResponseCode(httpStatus);
-        if (vendorThingID != null) {
-            JsonObject responseBody = new JsonObject();
-            responseBody.addProperty("_vendorThingID", vendorThingID);
-            response.setBody(responseBody.toString());
-        }
-        this.server.enqueue(response);
-    }
-    protected void addMockResponseForOnBoardEndnode(int httpStatus, String thingID, String accessToken) {
-        MockResponse response = new MockResponse().setResponseCode(httpStatus);
-        if (thingID != null && accessToken != null) {
-            JsonObject responseBody = new JsonObject();
-            responseBody.addProperty("endNodeThingID", thingID);
             responseBody.addProperty("accessToken", accessToken);
             response.setBody(responseBody.toString());
         }

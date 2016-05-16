@@ -23,7 +23,7 @@ public class ThingIFAPI_TargetStateTest extends ThingIFAPITestBase {
     public void basicTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+        Target target = new Target(thingID, accessToken);
 
         String responseBody =
                 "{" +
@@ -62,7 +62,7 @@ public class ThingIFAPI_TargetStateTest extends ThingIFAPITestBase {
     public void getTargetStateWithNullClassTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+        Target target = new Target(thingID, accessToken);
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         api.getTargetState(null);

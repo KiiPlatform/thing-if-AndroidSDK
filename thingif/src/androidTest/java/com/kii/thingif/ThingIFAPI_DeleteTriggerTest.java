@@ -38,7 +38,7 @@ public class ThingIFAPI_DeleteTriggerTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String triggerID = "trigger-1234";
-        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+        Target target = new Target(thingID, accessToken);
 
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
@@ -76,7 +76,7 @@ public class ThingIFAPI_DeleteTriggerTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String triggerID = "trigger-1234";
-        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+        Target target = new Target(thingID, accessToken);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(403);
@@ -104,7 +104,7 @@ public class ThingIFAPI_DeleteTriggerTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String triggerID = "trigger-1234";
-        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+        Target target = new Target(thingID, accessToken);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(404);
@@ -132,7 +132,7 @@ public class ThingIFAPI_DeleteTriggerTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String triggerID = "trigger-1234";
-        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+        Target target = new Target(thingID, accessToken);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(503);
@@ -165,7 +165,7 @@ public class ThingIFAPI_DeleteTriggerTest extends ThingIFAPITestBase {
     public void deleteTriggerWithNullTriggerIDTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+        Target target = new Target(thingID, accessToken);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
@@ -175,7 +175,7 @@ public class ThingIFAPI_DeleteTriggerTest extends ThingIFAPITestBase {
     public void deleteTriggerWithEmptyTriggerIDTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+        Target target = new Target(thingID, accessToken);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
