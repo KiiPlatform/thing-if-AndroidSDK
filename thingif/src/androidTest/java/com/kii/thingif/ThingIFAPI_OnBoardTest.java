@@ -68,8 +68,6 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
         String thingPassword = "password";
         JSONObject thingProperties = new JSONObject();
         thingProperties.put("manufacturer", "Kii");
-        String thingID = "th.1234567890";
-        String accessToken = "thing-access-token-1234";
         this.addEmptyMockResponse(403);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
@@ -104,8 +102,6 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
         String thingPassword = "password";
         JSONObject thingProperties = new JSONObject();
         thingProperties.put("manufacturer", "Kii");
-        String thingID = "th.1234567890";
-        String accessToken = "thing-access-token-1234";
         this.addEmptyMockResponse(404);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
@@ -140,8 +136,6 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
         String thingPassword = "password";
         JSONObject thingProperties = new JSONObject();
         thingProperties.put("manufacturer", "Kii");
-        String thingID = "th.1234567890";
-        String accessToken = "thing-access-token-1234";
         this.addEmptyMockResponse(500);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);

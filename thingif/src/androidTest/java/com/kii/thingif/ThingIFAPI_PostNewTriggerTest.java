@@ -45,7 +45,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String triggerID = "trigger-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
@@ -111,7 +111,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String triggerID = "trigger-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
@@ -172,7 +172,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
@@ -215,7 +215,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
@@ -258,7 +258,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
@@ -312,7 +312,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
     public void postNewTriggerWithNullSchemaNameTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
@@ -329,7 +329,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
     public void postNewTriggerWithEmptySchemaNameTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
@@ -346,7 +346,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
     public void postNewTriggerWithNullActionsTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
@@ -358,7 +358,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
     public void postNewTriggerWithEmptyActionsTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         List<Action> actions = new ArrayList<Action>();
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
@@ -371,7 +371,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
     public void postNewTriggerWithNullPredicateTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
