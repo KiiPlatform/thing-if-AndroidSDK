@@ -28,8 +28,12 @@ public class PendingEndNode implements Parcelable {
 
     PendingEndNode(JSONObject json) {
         this.vendorThingID = json.optString("vendorThingID");
-        this.thingType = json.optString("thingType");
         this.thingProperties = json.optJSONObject("thingProperties");
+        if (this.thingProperties != null && this.thingProperties.has("thingType")) {
+            this.thingType = this.thingProperties.optString("thingType");
+        } else {
+            this.thingType = null;
+        }
     }
     @NonNull
     public String getVendorThingID() {

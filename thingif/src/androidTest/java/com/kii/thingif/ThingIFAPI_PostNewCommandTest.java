@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -277,11 +278,12 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
     public void postNewCommandWithCommandFormTest() throws Exception {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String vendorThingID = UUID.randomUUID().toString();
         String accessToken = "thing-access-token-1234";
         String commandID = "command-1234";
         Long created = System.currentTimeMillis();
         Long modified = System.currentTimeMillis();
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), vendorThingID, accessToken);
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
         SetColorTemperature setColorTemperature = new SetColorTemperature(25);
@@ -357,9 +359,10 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
     public void postNewCommandWithCommandForm400ErrorTest() throws Exception {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String vendorThingID = UUID.randomUUID().toString();
         String accessToken = "thing-access-token-1234";
         String commandID = "command-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), vendorThingID, accessToken);
         List<Action> actions = new ArrayList<Action>();
         actions.add(new SetColor(128, 0, 255));
 
@@ -402,9 +405,10 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
     public void postNewCommandWithCommandForm403ErrorTest() throws Exception {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String vendorThingID = UUID.randomUUID().toString();
         String accessToken = "thing-access-token-1234";
         String commandID = "command-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), vendorThingID, accessToken);
         List<Action> actions = new ArrayList<Action>();
         actions.add(new SetColor(128, 0, 255));
 
@@ -448,9 +452,10 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
     public void postNewCommandWithCommandForm503ErrorTest() throws Exception {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String vendorThingID = UUID.randomUUID().toString();
         String accessToken = "thing-access-token-1234";
         String commandID = "command-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), vendorThingID, accessToken);
         List<Action> actions = new ArrayList<Action>();
         actions.add(new SetColor(128, 0, 255));
 
