@@ -6,6 +6,7 @@ import android.net.Uri;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.exception.ThingIFException;
 import com.kii.thingif.gateway.EndNode;
+import com.kii.thingif.gateway.Gateway;
 import com.kii.thingif.gateway.GatewayAPI;
 import com.kii.thingif.gateway.GatewayAPIBuilder;
 import com.kii.thingif.gateway.GatewayAddress;
@@ -41,37 +42,27 @@ public class UsageReview extends Activity {
             localAPI.login("username", "password");
 
             // Local Onboard Gateway
-            TargetGatewayThing gateway = localAPI.onboardGateway();
+            Gateway gateway = localAPI.onboardGateway();
 
             // Local Get info.
             GatewayInformation info  = localAPI.getGatewayInformation();
 
             // Cloud Onboard Gateway
-            JSONObject gatewayProps = new JSONObject();
-            try {
-                gatewayProps.put("layoutPosition", "GATEWAY");
-            } catch (JSONException e) {
-                throw new RuntimeException("Unexpected error", e);
-            }
-            // このPropertyを作成する手順(layoutPositionの設定)が難しいと思われる。
-            thingIFAPIapi.onboard(gateway.getThingID(), "password", null, gatewayProps);
+            thingIFAPIapi.onboard(gateway.getThingID(), "password", null, null);
 
             // Local List Pending Nodes.
-            // EndNode と TargetEndNodeThingがあるのは変な感じ。
-            List<EndNode> nodes = localAPI.listPendingEndNodes();
-            EndNode node = nodes.get(0);
+            List<PendingEndNode> nodes = localAPI.listPendingEndNodes();
+            PendingEndNode node = nodes.get(0);
 
             // Cloud Onboard EndNode
-            Target endnode = thingIFAPIapi.onboardEndnodeWithGatewayVendorThingID(info.getVendorThingID(), node.getVendorThingID(), "nodepassword", null, null);
-            // Review: Onboard済みだと、IllegalStateExceptionはちょっと使いにくい。copyWithTargetが使えない？
-            // Review: GatewayでOnboard済みでもgatewayVendorThingIDが必要？
-            // Review: このAPIはちょっとややこしい(vendorThingIDとthingIDを間違える。)のでEndNode class, Gateway class を引数にするなどしたい。
+            EndNode endnode = thingIFAPIapi.onboardEndnodeWithGateway(node, "dummy password");
 
             // Local Notify EndNode onboarding completion.
-            localAPI.notifyOnboardingCompletion(endnode.getTypedID().getID(), node.getVendorThingID());
-            // Review: このAPIもちょっとややこしい。(引数の順番、IDの種類を間違える。)
+            localAPI.notifyOnboardingCompletion(endnode);
 
             // Cloud send command to End Node.
+            // Copy API instance with EndNode target.
+            ThingIFAPI endNodeAPI = thingIFAPIapi.copyWithTarget(endnode, "APIForEndNode");
             ArrayList<Action> actions = new ArrayList<>();
             actions.add(new Action() {
                 @Override
@@ -79,7 +70,7 @@ public class UsageReview extends Activity {
                     return "DUMMYACTION";
                 }
             });
-            thingIFAPIapi.postNewCommand("scheme",1, actions);
+            endNodeAPI.postNewCommand("scheme", 1, actions);
 
         } catch (ThingIFException e) {
             e.printStackTrace();
