@@ -101,14 +101,14 @@ public class GatewayAPI implements Parcelable {
     }
 
     /** Let the Gateway Onboard.
-     * @return TargetGatewayThing instance that has ThingID assigned by Kii Cloud.
+     * @return Gateway instance that has ThingID assigned by Kii Cloud.
      * @throws ThingIFException Thrown when gateway returns error response.
      * @throws IllegalStateException Thrown when user is not logged in.
      * See {@link #login(String, String)}
      */
     @NonNull
     @WorkerThread
-    public TargetGatewayThing onboardGateway() throws ThingIFException {
+    public Gateway onboardGateway() throws ThingIFException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");
         }
@@ -119,7 +119,8 @@ public class GatewayAPI implements Parcelable {
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
         try {
-            return new TargetGatewayThing(responseBody.getString("thingID"));
+            // FIXME:Gateway should return the vendorThingID
+            return new Gateway(responseBody.getString("thingID"), null);
         } catch (JSONException e) {
             throw new ThingIFException("", e);
         }
@@ -155,7 +156,7 @@ public class GatewayAPI implements Parcelable {
      */
     @WorkerThread
     @NonNull
-    public List<EndNode> listPendingEndNodes() throws ThingIFException {
+    public List<PendingEndNode> listPendingEndNodes() throws ThingIFException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");
         }
@@ -165,12 +166,12 @@ public class GatewayAPI implements Parcelable {
 
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
-        List<EndNode> nodes = new ArrayList<EndNode>();
+        List<PendingEndNode> nodes = new ArrayList<PendingEndNode>();
         JSONArray results = responseBody.optJSONArray("results");
         if (results != null) {
             for (int i = 0; i < results.length(); i++) {
                 try {
-                    nodes.add(new EndNode(results.getJSONObject(i)));
+                    nodes.add(new PendingEndNode(results.getJSONObject(i)));
                 } catch (JSONException ignore) {
                 }
             }
@@ -181,30 +182,32 @@ public class GatewayAPI implements Parcelable {
     /** Notify Onboarding completion
      * Call this api when the End Node onboarding is done.
      * After the call succeeded, End Node will be fully connected to Kii Cloud through the Gateway.
-     * @param endNodeThingID ID of the end-node assigned by Kii Cloud.
-     * @param endNodeVenderThingID ID of the end-node assigned by End Node vendor.
+     * @param endNode Onboarded EndNode
      * @throws ThingIFException
      * @throws IllegalStateException Thrown when user is not logged in.
      * See {@link #login(String, String)}
      */
     @WorkerThread
-    public void notifyOnboardingCompletion(@NonNull String endNodeThingID, @NonNull String endNodeVenderThingID) throws ThingIFException {
+    public void notifyOnboardingCompletion(@NonNull EndNode endNode) throws ThingIFException {
         if (!isLoggedIn()) {
             throw new IllegalStateException("Needs user login before execute this API");
         }
-        if (TextUtils.isEmpty(endNodeThingID)) {
+        if (endNode == null) {
+            throw new IllegalArgumentException("endNode is null");
+        }
+        if (TextUtils.isEmpty(endNode.getThingID())) {
             throw new IllegalArgumentException("thingID is null or empty");
         }
-        if (TextUtils.isEmpty(endNodeVenderThingID)) {
+        if (TextUtils.isEmpty(endNode.getVendorThingID())) {
             throw new IllegalArgumentException("venderThingID is null or empty");
         }
-        String path = MessageFormat.format("/{0}/apps/{1}/gateway/end-nodes/VENDOR_THING_ID:{2}", this.app.getSiteName(), this.app.getAppID(), endNodeVenderThingID);
+        String path = MessageFormat.format("/{0}/apps/{1}/gateway/end-nodes/VENDOR_THING_ID:{2}", this.app.getSiteName(), this.app.getAppID(), endNode.getVendorThingID());
         String url = Path.combine(this.gatewayAddress.toString(), path);
         Map<String, String> headers = this.newHeader();
 
         JSONObject requestBody = new JSONObject();
         try {
-            requestBody.put("thingID", endNodeThingID);
+            requestBody.put("thingID", endNode.getThingID());
         } catch (JSONException e) {
             // Won’t happen
         }

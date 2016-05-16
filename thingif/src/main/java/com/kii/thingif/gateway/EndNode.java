@@ -1,53 +1,25 @@
 package com.kii.thingif.gateway;
 
 import android.os.Parcel;
-import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.kii.thingif.AbstractThing;
 
-public class EndNode implements Parcelable {
-    private final String thingID;
-    private final String vendorThingID;
-    private final String thingType;
-    private JSONObject thingProperties;
-
-    EndNode(JSONObject json) {
-        this.thingID = json.optString("thingID");
-        this.vendorThingID = json.optString("vendorThingID");
-        this.thingType = json.optString("thingType");
-        this.thingProperties = json.optJSONObject("thingProperties");
+public class EndNode extends AbstractThing {
+    private final String accessToken;
+    public EndNode(@NonNull String thingID, @NonNull String vendorThingID, @Nullable String accessToken) {
+        super(thingID, vendorThingID);
+        this.accessToken = accessToken;
     }
-    @Nullable
-    public String getThingID() {
-        return this.thingID;
+    @Override
+    public String getAccessToken() {
+        return this.accessToken;
     }
-    @Nullable
-    public String getVendorThingID() {
-        return this.vendorThingID;
-    }
-    @Nullable
-    public String getThingType() {
-        return this.thingType;
-    }
-    @Nullable
-    public JSONObject getThingProperties() {
-        return this.thingProperties;
-    }
-
+    // Implementation of Parcelable
     protected EndNode(Parcel in) {
-        this.thingID = in.readString();
-        this.vendorThingID = in.readString();
-        this.thingType = in.readString();
-        String json = in.readString();
-        if (!TextUtils.isEmpty(json)) {
-            try {
-                this.thingProperties = new JSONObject(json);
-            } catch (JSONException ignore) {
-            }
-        }
+        super(in);
+        this.accessToken = in.readString();
     }
     public static final Creator<EndNode> CREATOR = new Creator<EndNode>() {
         @Override
@@ -61,16 +33,8 @@ public class EndNode implements Parcelable {
         }
     };
     @Override
-    public int describeContents() {
-        return 0;
-    }
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.thingID);
-        dest.writeString(this.vendorThingID);
-        dest.writeString(this.thingType);
-        if (this.thingProperties != null) {
-            dest.writeString(this.thingProperties.toString());
-        }
+    public void writeToParcel(Parcel parcel, int i) {
+        super.writeToParcel(parcel, i);
+        parcel.writeString(this.accessToken);
     }
 }

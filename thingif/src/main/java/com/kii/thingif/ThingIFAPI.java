@@ -13,11 +13,15 @@ import android.support.annotation.WorkerThread;
 import com.google.gson.JsonParseException;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
+import com.kii.thingif.command.CommandForm;
 import com.kii.thingif.exception.ThingIFException;
 import com.kii.thingif.exception.ThingIFRestException;
 import com.kii.thingif.exception.StoredThingIFAPIInstanceNotFoundException;
 import com.kii.thingif.exception.UnsupportedActionException;
 import com.kii.thingif.exception.UnsupportedSchemaException;
+import com.kii.thingif.gateway.EndNode;
+import com.kii.thingif.gateway.Gateway;
+import com.kii.thingif.gateway.PendingEndNode;
 import com.kii.thingif.internal.GsonRepository;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
@@ -184,7 +188,7 @@ public class ThingIFAPI implements Parcelable {
      * On board IoT Cloud with the specified vendor thing ID.
      * Specified thing will be owned by owner who is specified
      * IoT Cloud prepares communication channel to the target.
-     * If you are using a gateway, you need to use {@link #onboardEndnodeWithGatewayVendorThingID(String, String, String, String, JSONObject)} instead.
+     * If you are using a gateway, you need to use {@link #onboardEndnodeWithGateway(PendingEndNode, String)} instead.
      * @param vendorThingID Thing ID given by vendor. Must be specified.
      * @param thingPassword Thing Password given by vendor. Must be specified.
      * @param thingType Type of the thing given by vendor.
@@ -232,7 +236,7 @@ public class ThingIFAPI implements Parcelable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST, requestBody);
+        return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST, requestBody, vendorThingID);
     }
 
     /**
@@ -240,7 +244,7 @@ public class ThingIFAPI implements Parcelable {
      * When you are sure that the on boarding process has been done,
      * this method is more convenient than
      * {@link #onboard(String, String, String, JSONObject)}.
-     * If you are using a gateway, you need to use {@link #onboardEndnodeWithGatewayThingID(String, String, String, String, JSONObject)} instead.
+     * If you are using a gateway, you need to use {@link #onboardEndnodeWithGateway(PendingEndNode, String)} instead.
      * @param thingID Thing ID given by IoT Cloud. Must be specified.
      * @param thingPassword Thing password given by vendor. Must be specified.
      * @return Target instance can be used to operate target, manage resources
@@ -272,10 +276,11 @@ public class ThingIFAPI implements Parcelable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_THING_ID_BY_OWNER_REQUEST, requestBody);
+        // FIXME: Currently, Server does not return the VendorThingID when onboarding is successful.
+        return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_THING_ID_BY_OWNER_REQUEST, requestBody, null);
     }
 
-    private Target onboard(MediaType contentType, JSONObject requestBody) throws ThingIFException {
+    private Target onboard(MediaType contentType, JSONObject requestBody, String vendorThingID) throws ThingIFException {
         String path = MessageFormat.format("/thing-if/apps/{0}/onboardings", this.app.getAppID());
         String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
@@ -283,7 +288,7 @@ public class ThingIFAPI implements Parcelable {
         JSONObject responseBody = this.restClient.sendRequest(request);
         String thingID = responseBody.optString("thingID", null);
         String accessToken = responseBody.optString("accessToken", null);
-        this.target = new TargetStandaloneThing(thingID, accessToken);
+        this.target = new StandaloneThing(thingID, vendorThingID, accessToken);
         saveInstance(this);
         return this.target;
     }
@@ -292,109 +297,55 @@ public class ThingIFAPI implements Parcelable {
      * Endpoints execute onboarding for the thing and merge MQTT channel to the gateway.
      * Thing act as Gateway is already registered and marked as Gateway.
      *
-     * @param gatewayVendorThingID ID of the Gateway given by vendor/(given by IoT Cloud)
-     * @param endnodeVendorThingID ID of the End Node given by vendor
+     * @param pendingEndNode Pending endnode
      * @param endnodePassword Password of the End Node
-     * @param endnodeThingType The type of the End Node
-     * @param endnodeThingProperties End node properties
      * @return Target instance can be used to operate target, manage resources of the target.
      * @throws IllegalStateException Thrown when this instance is already onboarded.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
      */
-    public Target onboardEndnodeWithGatewayVendorThingID(
-            @NonNull String gatewayVendorThingID,
-            @NonNull String endnodeVendorThingID,
-            @NonNull String endnodePassword,
-            @Nullable String endnodeThingType,
-            @Nullable JSONObject endnodeThingProperties)
+    public EndNode onboardEndnodeWithGateway(
+            @NonNull PendingEndNode pendingEndNode,
+            @NonNull String endnodePassword)
             throws ThingIFException {
-        if (this.onboarded()) {
-            throw new IllegalStateException("This instance is already onboarded.");
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding the gateway");
         }
-        if (TextUtils.isEmpty(gatewayVendorThingID)) {
-            throw new IllegalArgumentException("gatewayVendorThingID is null or empty");
+        if (this.target instanceof EndNode) {
+            throw new IllegalStateException("Target must be Gateway");
         }
-        if (TextUtils.isEmpty(endnodeVendorThingID)) {
-            throw new IllegalArgumentException("endnodeVendorThingID is null or empty");
+        if (pendingEndNode == null) {
+            throw new IllegalArgumentException("pendingEndNode is null or empty");
+        }
+        if (TextUtils.isEmpty(pendingEndNode.getVendorThingID())) {
+            throw new IllegalArgumentException("vendorThingID is null or empty");
         }
         if (TextUtils.isEmpty(endnodePassword)) {
             throw new IllegalArgumentException("endnodePassword is null or empty");
         }
         JSONObject requestBody = new JSONObject();
         try {
-            requestBody.put("gatewayVendorThingID", gatewayVendorThingID);
-            requestBody.put("endNodeVendorThingID", endnodeVendorThingID);
+            requestBody.put("gatewayThingID", this.target.getTypedID().getID());
+            requestBody.put("endNodeVendorThingID", pendingEndNode.getVendorThingID());
             requestBody.put("endNodePassword", endnodePassword);
-            requestBody.put("endNodeThingType", endnodeThingType);
-            if (endnodeThingProperties != null && endnodeThingProperties.length() > 0) {
-                requestBody.put("endNodeThingProperties", endnodeThingProperties);
+            if (!TextUtils.isEmpty(pendingEndNode.getThingType())) {
+                requestBody.put("endNodeThingType", pendingEndNode.getThingType());
+            }
+            if (pendingEndNode.getThingProperties() != null && pendingEndNode.getThingProperties().length() > 0) {
+                requestBody.put("endNodeThingProperties", pendingEndNode.getThingProperties());
             }
             requestBody.put("owner", this.owner.getTypedID().toString());
         } catch (JSONException e) {
             // Won’t happen
         }
-        return onboardEndnodeWithGateway(MediaTypes.MEDIA_TYPE_ONBOARDING_ENDNODE_WITH_GATEWAY_VENDOR_THING_ID_REQUEST, requestBody);
-    }
-    /**
-     * Endpoints execute onboarding for the thing and merge MQTT channel to the gateway.
-     * Thing act as Gateway is already registered and marked as Gateway.
-     *
-     * @param gatewayThingID Thing ID of the Gateway
-     * @param endnodeVendorThingID ID of the End Node given by vendor
-     * @param endnodePassword Password of the End Node
-     * @param endnodeThingType The type of the End Node
-     * @param endnodeThingProperties End node properties
-     * @return Target instance can be used to operate target, manage resources of the target.
-     * @throws IllegalStateException Thrown when this instance is already onboarded.
-     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
-     * @throws ThingIFRestException Thrown when server returns error response.
-     */
-    public Target onboardEndnodeWithGatewayThingID(
-            @NonNull String gatewayThingID,
-            @NonNull String endnodeVendorThingID,
-            @NonNull String endnodePassword,
-            @Nullable String endnodeThingType,
-            @Nullable JSONObject endnodeThingProperties)
-            throws ThingIFException {
-        if (this.onboarded()) {
-            throw new IllegalStateException("This instance is already onboarded.");
-        }
-        if (TextUtils.isEmpty(gatewayThingID)) {
-            throw new IllegalArgumentException("gatewayThingID is null or empty");
-        }
-        if (TextUtils.isEmpty(endnodeVendorThingID)) {
-            throw new IllegalArgumentException("endnodeVendorThingID is null or empty");
-        }
-        if (TextUtils.isEmpty(endnodePassword)) {
-            throw new IllegalArgumentException("endnodePassword is null or empty");
-        }
-        JSONObject requestBody = new JSONObject();
-        try {
-            requestBody.put("gatewayThingID", gatewayThingID);
-            requestBody.put("endNodeVendorThingID", endnodeVendorThingID);
-            requestBody.put("endNodePassword", endnodePassword);
-            requestBody.put("endNodeThingType", endnodeThingType);
-            if (endnodeThingProperties != null && endnodeThingProperties.length() > 0) {
-                requestBody.put("endNodeThingProperties", endnodeThingProperties);
-            }
-            requestBody.put("owner", this.owner.getTypedID().toString());
-        } catch (JSONException e) {
-            // Won’t happen
-        }
-        return onboardEndnodeWithGateway(MediaTypes.MEDIA_TYPE_ONBOARDING_ENDNODE_WITH_GATEWAY_THING_ID_REQUEST, requestBody);
-    }
-    private Target onboardEndnodeWithGateway(MediaType contentType, JSONObject requestBody) throws ThingIFException {
         String path = MessageFormat.format("/thing-if/apps/{0}/onboardings", this.app.getAppID());
         String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
-        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, contentType, requestBody);
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MediaTypes.MEDIA_TYPE_ONBOARDING_ENDNODE_WITH_GATEWAY_THING_ID_REQUEST, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
         String thingID = responseBody.optString("endNodeThingID", null);
         String accessToken = responseBody.optString("accessToken", null);
-        this.target = new TargetStandaloneThing(thingID, accessToken);
-        saveInstance(this);
-        return this.target;
+        return new EndNode(thingID, pendingEndNode.getVendorThingID(), accessToken);
     }
 
     /**
@@ -552,6 +503,51 @@ public class ThingIFAPI implements Parcelable {
         Command command = new Command(schemaName, schemaVersion, this.owner.getTypedID(), actions);
         JSONObject requestBody = JsonUtils.newJson(GsonRepository.gson(schema).toJson(command));
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MediaTypes.MEDIA_TYPE_JSON, requestBody);
+        JSONObject responseBody = this.restClient.sendRequest(request);
+
+        String commandID = responseBody.optString("commandID", null);
+        return this.getCommand(commandID);
+    }
+
+    /**
+     * Post new command to IoT Cloud.
+     * Command will be delivered to specified target and result will be notified
+     * through push notification.
+     * @param form form of command. It contains name of schema, version of
+     * schema, list of actions etc.
+     * @return Created Command instance. At this time, Command is delivered to
+     * the target Asynchronously and may not finished. Actual Result will be
+     * delivered through push notification or you can check the latest status
+     * of the command by calling {@link #getCommand}.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     */
+    @NonNull
+    @WorkerThread
+    public Command postNewCommand(
+            @NonNull CommandForm form) throws ThingIFException {
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
+        }
+        final String schemaName = form.getSchemaName();
+        final int schemaVersion = form.getSchemaVersion();
+        Schema schema = this.getSchema(schemaName, schemaVersion);
+        if (schema == null) {
+            throw new UnsupportedSchemaException(schemaName, schemaVersion);
+        }
+
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/commands",
+                this.app.getAppID(), this.target.getTypedID().toString());
+        String url = Path.combine(this.app.getBaseUrl(), path);
+        Map<String, String> headers = this.newHeader();
+        Command command = new Command(schemaName, schemaVersion, this.owner.getTypedID(),
+                form.getActions());
+        command.setTitle(form.getTitle());
+        command.setDescription(form.getDescription());
+        command.setMetadata(form.getMetadata());
+        JSONObject requestBody = JsonUtils.newJson(GsonRepository.gson(schema).toJson(command));
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers,
+                MediaTypes.MEDIA_TYPE_JSON, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
 
         String commandID = responseBody.optString("commandID", null);
@@ -911,13 +907,13 @@ public class ThingIFAPI implements Parcelable {
     /**
      * Delete the specified Trigger.
      * @param triggerID ID of the Trigger to be deleted.
-     * @return Deleted Trigger Instance.
+     * @return Deleted Trigger Id.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
      */
     @NonNull
     @WorkerThread
-    public Trigger deleteTrigger(
+    public String deleteTrigger(
             @NonNull String triggerID) throws
             ThingIFException {
 
@@ -928,13 +924,13 @@ public class ThingIFAPI implements Parcelable {
             throw new IllegalArgumentException("triggerID is null or empty");
         }
 
-        Trigger trigger = this.getTrigger(triggerID);
+
         String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}", this.app.getAppID(), target.getTypedID().toString(), triggerID);
         String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.DELETE, headers);
         this.restClient.sendRequest(request);
-        return trigger;
+        return triggerID;
     }
 
     /**

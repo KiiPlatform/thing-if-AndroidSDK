@@ -20,7 +20,8 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.kii.thingif.KiiApp;
 import com.kii.thingif.ServerError;
-import com.kii.thingif.TargetStandaloneThing;
+import com.kii.thingif.StandaloneThing;
+import com.kii.thingif.TargetThing;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.ThingIFAPIBuilder;
 import com.kii.thingif.Owner;
@@ -30,10 +31,10 @@ import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.ActionResult;
 import com.kii.thingif.exception.UnsupportedActionException;
+import com.kii.thingif.gateway.EndNode;
+import com.kii.thingif.gateway.Gateway;
 import com.kii.thingif.gateway.GatewayAPI;
 import com.kii.thingif.gateway.GatewayAPIBuilder;
-import com.kii.thingif.gateway.TargetEndnodeThing;
-import com.kii.thingif.gateway.TargetGatewayThing;
 import com.kii.thingif.schema.Schema;
 import com.kii.thingif.schema.SchemaBuilder;
 import com.kii.thingif.trigger.Condition;
@@ -475,15 +476,6 @@ public class GsonRepository {
             return result;
         }
     };
-
-
-
-
-
-
-
-
-
     private static final JsonSerializer<Target> TARGET_SERIALIZER = new JsonSerializer<Target>() {
         @Override
         public JsonElement serialize(Target src, Type typeOfSrc, JsonSerializationContext context) {
@@ -496,6 +488,9 @@ public class GsonRepository {
             if (!TextUtils.isEmpty(src.getAccessToken())) {
                 json.addProperty("accessToken", src.getAccessToken());
             }
+            if (src instanceof TargetThing) {
+                json.addProperty("vendorThingID", ((TargetThing)src).getVendorThingID());
+            }
             return json;
         }
     };
@@ -507,88 +502,19 @@ public class GsonRepository {
             }
             JsonObject json = (JsonObject)jsonElement;
             String accessToken = json.has("accessToken") ? json.get("accessToken").getAsString() : null;
+            String vendorThingID = json.has("vendorThingID") ? json.get("vendorThingID").getAsString() : null;
             String className = json.get("class").getAsString();
             TypedID typedID = TypedID.fromString(json.get("typedID").getAsString());
-            if (TargetStandaloneThing.class.getName().equals(className)) {
-                return new TargetStandaloneThing(typedID.getID(), accessToken);
-            } else if (TargetGatewayThing.class.getName().equals(className)) {
-                return new TargetGatewayThing(typedID.getID());
-            } else if (TargetEndnodeThing.class.getName().equals(className)) {
-                return new TargetEndnodeThing(typedID.getID());
+            if (StandaloneThing.class.getName().equals(className)) {
+                return new StandaloneThing(typedID.getID(), vendorThingID, accessToken);
+            } else if (Gateway.class.getName().equals(className)) {
+                return new Gateway(typedID.getID(), vendorThingID);
+            } else if (EndNode.class.getName().equals(className)) {
+                return new EndNode(typedID.getID(), vendorThingID, accessToken);
             }
             throw new JsonParseException("Detected unknown type " + className);
         }
     };
-
-
-//    private static final JsonSerializer<TargetStandaloneThing> TARGET_STANDALONE_THING_SERIALIZER = new JsonSerializer<TargetStandaloneThing>() {
-//        @Override
-//        public JsonElement serialize(TargetStandaloneThing src, Type typeOfSrc, JsonSerializationContext context) {
-//            if (src == null) {
-//                return null;
-//            }
-//            JsonObject json = new JsonObject();
-//            json.addProperty("typedID", src.getTypedID().toString());
-//            if (!TextUtils.isEmpty(src.getAccessToken())) {
-//                json.addProperty("accessToken", src.getAccessToken());
-//            }
-//            return json;
-//        }
-//    };
-//    private static final JsonDeserializer<TargetStandaloneThing> TARGET_STANDALONE_THING__DESERIALIZER = new JsonDeserializer<TargetStandaloneThing>() {
-//        @Override
-//        public TargetStandaloneThing deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-//            if (jsonElement == null) {
-//                return null;
-//            }
-//            JsonObject json = (JsonObject)jsonElement;
-//            String accessToken = json.has("accessToken") ? json.get("accessToken").getAsString() : null;
-//            return new TargetStandaloneThing(json.get("typedID").getAsString(), accessToken);
-//        }
-//    };
-//    private static final JsonSerializer<TargetGatewayThing> TARGET_GATEWAY_THING_SERIALIZER = new JsonSerializer<TargetGatewayThing>() {
-//        @Override
-//        public JsonElement serialize(TargetGatewayThing src, Type typeOfSrc, JsonSerializationContext context) {
-//            if (src == null) {
-//                return null;
-//            }
-//            JsonObject json = new JsonObject();
-//            json.addProperty("typedID", src.getTypedID().toString());
-//            return json;
-//        }
-//    };
-//    private static final JsonDeserializer<TargetGatewayThing> TARGET_GATEWAY_THING_DESERIALIZER = new JsonDeserializer<TargetGatewayThing>() {
-//        @Override
-//        public TargetGatewayThing deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-//            if (jsonElement == null) {
-//                return null;
-//            }
-//            JsonObject json = (JsonObject)jsonElement;
-//            return new TargetGatewayThing(json.get("typedID").getAsString());
-//        }
-//    };
-//    private static final JsonSerializer<TargetEndnodeThing> TARGET_ENDNODE_THING_SERIALIZER = new JsonSerializer<TargetEndnodeThing>() {
-//        @Override
-//        public JsonElement serialize(TargetEndnodeThing src, Type typeOfSrc, JsonSerializationContext context) {
-//            if (src == null) {
-//                return null;
-//            }
-//            JsonObject json = new JsonObject();
-//            json.addProperty("typedID", src.getTypedID().toString());
-//            return json;
-//        }
-//    };
-//    private static final JsonDeserializer<TargetEndnodeThing> TARGET_ENDNODE_THING_DESERIALIZER = new JsonDeserializer<TargetEndnodeThing>() {
-//        @Override
-//        public TargetEndnodeThing deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-//            if (jsonElement == null) {
-//                return null;
-//            }
-//            JsonObject json = (JsonObject)jsonElement;
-//            return new TargetEndnodeThing(json.get("typedID").getAsString());
-//        }
-//    };
-
 
     static {
         DEFAULT_GSON = new GsonBuilder()
@@ -613,12 +539,9 @@ public class GsonRepository {
                 .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_SERIALIZER)
                 .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_DESERIALIZER)
                 .registerTypeAdapter(Target.class, TARGET_DESERIALIZER)
-                .registerTypeAdapter(TargetStandaloneThing.class, TARGET_SERIALIZER)
-//                .registerTypeAdapter(TargetStandaloneThing.class, TARGET_DESERIALIZER)
-                .registerTypeAdapter(TargetGatewayThing.class, TARGET_SERIALIZER)
-//                .registerTypeAdapter(TargetGatewayThing.class, TARGET_DESERIALIZER)
-                .registerTypeAdapter(TargetEndnodeThing.class, TARGET_SERIALIZER)
-//                .registerTypeAdapter(TargetEndnodeThing.class, TARGET_DESERIALIZER)
+                .registerTypeAdapter(StandaloneThing.class, TARGET_SERIALIZER)
+                .registerTypeAdapter(Gateway.class, TARGET_SERIALIZER)
+                .registerTypeAdapter(EndNode.class, TARGET_SERIALIZER)
                 .create();
     }
 
@@ -707,12 +630,9 @@ public class GsonRepository {
                     .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_SERIALIZER)
                     .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_DESERIALIZER)
                     .registerTypeAdapter(Target.class, TARGET_DESERIALIZER)
-                    .registerTypeAdapter(TargetStandaloneThing.class, TARGET_SERIALIZER)
-//                .registerTypeAdapter(TargetStandaloneThing.class, TARGET_DESERIALIZER)
-                    .registerTypeAdapter(TargetGatewayThing.class, TARGET_SERIALIZER)
-//                .registerTypeAdapter(TargetGatewayThing.class, TARGET_DESERIALIZER)
-                    .registerTypeAdapter(TargetEndnodeThing.class, TARGET_SERIALIZER)
-//                .registerTypeAdapter(TargetEndnodeThing.class, TARGET_DESERIALIZER)
+                    .registerTypeAdapter(StandaloneThing.class, TARGET_SERIALIZER)
+                    .registerTypeAdapter(Gateway.class, TARGET_SERIALIZER)
+                    .registerTypeAdapter(EndNode.class, TARGET_SERIALIZER)
                     .create();
             REPOSITORY.put(new Pair<String, Integer>(schema.getSchemaName(), schema.getSchemaVersion()), gson);
         }

@@ -180,7 +180,7 @@ public class GsonSerializationTest extends SmallTestBase {
         Schema schema = sb.build();
         builder.addSchema(schema);
         ThingIFAPI api = builder.build();
-        Target target = new TargetStandaloneThing("th.1234567890", "thing-access-token-1234");
+        Target target = new StandaloneThing("th.1234567890", "vendor-thing-id-001", "thing-access-token-1234");
         api.setTarget(target);
 
         JsonObject expectedJson = (JsonObject) new JsonParser().parse(
@@ -193,7 +193,7 @@ public class GsonSerializationTest extends SmallTestBase {
                         "        \"siteName\" : \"JP\"" +
                         "    }," +
                         "    \"owner\":{\"typedID\":\"user:user1234\",\"accessToken\":\"user-access-token-1234\"}," +
-                        "    \"target\":{\"typedID\":\"thing:th.1234567890\",\"class\":\"com.kii.thingif.TargetStandaloneThing\",\"accessToken\":\"thing-access-token-1234\"}," +
+                        "    \"target\":{\"typedID\":\"thing:th.1234567890\",\"vendorThingID\":\"vendor-thing-id-001\",\"class\":\"com.kii.thingif.StandaloneThing\",\"accessToken\":\"thing-access-token-1234\"}," +
                         "    \"schemas\":[" +
                         "        {" +
                         "            \"thingType\":\"SmartLight\"," +
@@ -221,6 +221,7 @@ public class GsonSerializationTest extends SmallTestBase {
         Assert.assertEquals(new TypedID(TypedID.Types.USER, "user1234"), deserializedApi.getOwner().getTypedID());
         Assert.assertEquals("user-access-token-1234", deserializedApi.getOwner().getAccessToken());
         Assert.assertEquals(new TypedID(TypedID.Types.THING, "th.1234567890"), deserializedApi.getTarget().getTypedID());
+        Assert.assertEquals("vendor-thing-id-001", ((TargetThing)deserializedApi.getTarget()).getVendorThingID());
         Assert.assertEquals("thing-access-token-1234", deserializedApi.getTarget().getAccessToken());
         Assert.assertEquals(1, deserializedApi.getSchemas().size());
         Assert.assertEquals("SmartLight", deserializedApi.getSchemas().get(0).getThingType());
@@ -243,7 +244,7 @@ public class GsonSerializationTest extends SmallTestBase {
         Schema schema = sb.build();
         builder.addSchema(schema).setTag("mytag");
         ThingIFAPI api = builder.build();
-        Target target = new TargetStandaloneThing("th.1234567890", "thing-access-token-1234");
+        Target target = new StandaloneThing("th.1234567890", "vendor-thing-id-001", "thing-access-token-1234");
         api.setTarget(target);
 
         JsonObject expectedJson = (JsonObject) new JsonParser().parse(
@@ -256,7 +257,7 @@ public class GsonSerializationTest extends SmallTestBase {
                         "        \"siteName\" : \"JP\"" +
                         "    }," +
                         "    \"owner\":{\"typedID\":\"user:user1234\",\"accessToken\":\"user-access-token-1234\"}," +
-                        "    \"target\":{\"typedID\":\"thing:th.1234567890\",\"class\":\"com.kii.thingif.TargetStandaloneThing\",\"accessToken\":\"thing-access-token-1234\"}," +
+                        "    \"target\":{\"typedID\":\"thing:th.1234567890\",\"vendorThingID\":\"vendor-thing-id-001\",\"class\":\"com.kii.thingif.StandaloneThing\",\"accessToken\":\"thing-access-token-1234\"}," +
                         "    \"tag\" : \"mytag\"," +
                         "    \"schemas\":[" +
                         "        {" +
@@ -286,6 +287,7 @@ public class GsonSerializationTest extends SmallTestBase {
         Assert.assertEquals(new TypedID(TypedID.Types.USER, "user1234"), deserializedApi.getOwner().getTypedID());
         Assert.assertEquals("user-access-token-1234", deserializedApi.getOwner().getAccessToken());
         Assert.assertEquals(new TypedID(TypedID.Types.THING, "th.1234567890"), deserializedApi.getTarget().getTypedID());
+        Assert.assertEquals("vendor-thing-id-001", ((TargetThing)deserializedApi.getTarget()).getVendorThingID());
         Assert.assertEquals("thing-access-token-1234", deserializedApi.getTarget().getAccessToken());
         Assert.assertEquals(1, deserializedApi.getSchemas().size());
         Assert.assertEquals("SmartLight", deserializedApi.getSchemas().get(0).getThingType());
