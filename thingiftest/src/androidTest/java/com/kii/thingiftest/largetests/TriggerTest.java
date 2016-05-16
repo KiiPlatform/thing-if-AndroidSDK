@@ -324,15 +324,7 @@ public class TriggerTest extends LargeTestCaseBase {
 
     @Test
     public void basicScheduleOncePredicateTriggerTest() throws Exception {
-        if (!this.server.hasAdminCredential()) {
-            fail("should have admin credential");
-            return;
-        }
-        // Deploy server code
-        KiiRest rest = new KiiRest(this.server.getAppID(), this.server.getAppKey(), this.server.getBaseUrl() + "/api", this.server.getBaseUrl() + "/thing-if", this.server.getBaseUrl() + ":443/logs");
-        KiiCredentials admin = rest.api().oauth().getAdminAccessToken(this.server.getClientId(), this.server.getClientSecret());
-        rest.setCredentials(admin);
-        rest.api().configuration().parameters().set("allowCreateTaskByPrincipal",true);
+
         LinkedList<Predicate> predicates = new LinkedList<Predicate>();
 
         long nextMonthMillis = System.currentTimeMillis() + 36000;
@@ -474,15 +466,7 @@ public class TriggerTest extends LargeTestCaseBase {
     }
     @Test
     public void basicScheduleOnceServerCodeTriggerTest() throws Exception {
-        if (!this.server.hasAdminCredential()) {
-            fail("should have admin credential");
-            return;
-        }
-        // Deploy server code
-        KiiRest rest = new KiiRest(this.server.getAppID(), this.server.getAppKey(), this.server.getBaseUrl() + "/api", this.server.getBaseUrl() + "/thing-if", this.server.getBaseUrl() + ":443/logs");
-        KiiCredentials admin = rest.api().oauth().getAdminAccessToken(this.server.getClientId(), this.server.getClientSecret());
-        rest.setCredentials(admin);
-        rest.api().configuration().parameters().set("allowCreateTaskByPrincipal",true);
+
         LinkedList<Predicate> predicates = new LinkedList<Predicate>();
 
         long nextMonthMillis = System.currentTimeMillis() + 36000;
