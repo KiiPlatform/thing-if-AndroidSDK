@@ -41,7 +41,7 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
         String commandID = "command-1234";
         Long created = System.currentTimeMillis();
         Long modified = System.currentTimeMillis();
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
         SetColorTemperature setColorTemperature = new SetColorTemperature(25);
@@ -111,7 +111,7 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String commandID = "command-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
         List<Action> actions = new ArrayList<Action>();
         actions.add(new SetColor(128, 0, 255));
 
@@ -154,7 +154,7 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String commandID = "command-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
         List<Action> actions = new ArrayList<Action>();
         actions.add(new SetColor(128, 0, 255));
 
@@ -198,7 +198,7 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String commandID = "command-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
         List<Action> actions = new ArrayList<Action>();
         actions.add(new SetColor(128, 0, 255));
 
@@ -246,7 +246,7 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
     }
     @Test(expected = UnsupportedSchemaException.class)
     public void postNewCommandWithNullSchemaNameTest() throws Exception {
-        Target target = new Target(new TypedID(TypedID.Types.THING, "th.1234567890"), "thing-access-token-1234");
+        Target target = new StandaloneThing("th.1234567890", "vendor-thing-id", "thing-access-token-1234");
         List<Action> actions = new ArrayList<Action>();
         actions.add(new SetColor(128, 0, 255));
         actions.add(new SetColorTemperature(25));
@@ -257,7 +257,7 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
     }
     @Test(expected = IllegalArgumentException.class)
     public void postNewCommandWithNullActionsTest() throws Exception {
-        Target target = new Target(new TypedID(TypedID.Types.THING, "th.1234567890"), "thing-access-token-1234");
+        Target target = new StandaloneThing("th.1234567890", "vendor-thing-id", "thing-access-token-1234");
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
@@ -265,7 +265,7 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
     }
     @Test(expected = IllegalArgumentException.class)
     public void postNewCommandWithEmptyActionsTest() throws Exception {
-        Target target = new Target(new TypedID(TypedID.Types.THING, "th.1234567890"), "thing-access-token-1234");
+        Target target = new StandaloneThing("th.1234567890", "vendor-thing-id", "thing-access-token-1234");
         List<Action> actions = new ArrayList<Action>();
 
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
