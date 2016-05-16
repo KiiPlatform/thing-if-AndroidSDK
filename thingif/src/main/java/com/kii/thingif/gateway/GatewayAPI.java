@@ -148,6 +148,40 @@ public class GatewayAPI implements Parcelable {
         return responseBody.optString("thingID", null);
     }
 
+    /** List connected end nodes which has been onboarded.
+     * @return List of end nodes
+     * @throws ThingIFException Thrown when gateway returns error response.
+     * @throws IllegalStateException Thrown when user is not logged in.
+     * See {@link #login(String, String)}
+     */
+    @WorkerThread
+    @NonNull
+    public List<EndNode> listOnboardedEndNodes() throws ThingIFException {
+        if (!isLoggedIn()) {
+            throw new IllegalStateException("Needs user login before execute this API");
+        }
+        String path = MessageFormat.format("/{0}/apps/{1}/gateway/end-nodes/onboarded", this.app.getSiteName(), this.app.getAppID());
+        String url = Path.combine(this.gatewayAddress.toString(), path);
+        Map<String, String> headers = this.newHeader();
+
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
+        JSONObject responseBody = this.restClient.sendRequest(request);
+
+        List<EndNode> nodes = new ArrayList<EndNode>();
+        JSONArray results = responseBody.optJSONArray("results");
+        if (results != null) {
+            for (int i = 0; i < results.length(); i++) {
+                try {
+                    String thingID = results.getJSONObject(i).getString("thingID");
+                    String vendorThingID = results.getJSONObject(i).getString("vendorThingID");
+                    nodes.add(new EndNode(thingID, vendorThingID, null));
+                } catch (JSONException ignore) {
+                }
+            }
+        }
+        return nodes;
+    }
+
     /** List connected end nodes which has not been onboarded.
      * @return List of end nodes connected to the gateway but waiting for onboarding.
      * @throws ThingIFException Thrown when gateway returns error response.
