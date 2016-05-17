@@ -36,7 +36,7 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayTest extends ThingIFAPITestBase
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoardEndnode(200, thingID, accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(new Gateway(gatewayThingID, gatewayVendorThingID));
         Assert.assertTrue(api.onboarded());
         EndNode target = api.onboardEndnodeWithGateway(new PendingEndNode(vendorThingID, DEMO_THING_TYPE, thingProperties), thingPassword);
@@ -76,7 +76,7 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayTest extends ThingIFAPITestBase
         thingProperties.put("manufacturer", "Kii");
         this.addEmptyMockResponse(403);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(new Gateway(gatewayThingID, gatewayVendorThingID));
         try {
             api.onboardEndnodeWithGateway(new PendingEndNode(vendorThingID, DEMO_THING_TYPE, thingProperties), thingPassword);
@@ -114,7 +114,7 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayTest extends ThingIFAPITestBase
         thingProperties.put("manufacturer", "Kii");
         this.addEmptyMockResponse(404);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(new Gateway(gatewayThingID, gatewayVendorThingID));
         try {
             api.onboardEndnodeWithGateway(new PendingEndNode(vendorThingID, DEMO_THING_TYPE, thingProperties), thingPassword);
@@ -152,7 +152,7 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayTest extends ThingIFAPITestBase
         thingProperties.put("manufacturer", "Kii");
         this.addEmptyMockResponse(500);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(new Gateway(gatewayThingID, gatewayVendorThingID));
         try {
             api.onboardEndnodeWithGateway(new PendingEndNode(vendorThingID, DEMO_THING_TYPE, thingProperties), thingPassword);
@@ -182,30 +182,30 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayTest extends ThingIFAPITestBase
     }
     @Test(expected = IllegalStateException.class)
     public void onboardEndnodeWithGatewayWithoutOnboardingGatewayTest() throws Exception {
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         Target target = api.onboardEndnodeWithGateway(new PendingEndNode("v1234567890abcde", DEMO_THING_TYPE), "password");
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardEndnodeWithGatewayWithNullVendorThingIDTest() throws Exception {
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(new Gateway("gateway-thing-id", "gateway-vendor-thing-id"));
         Target target = api.onboardEndnodeWithGateway(new PendingEndNode(null, DEMO_THING_TYPE, null), "password");
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardEndnodeWithGatewayWithEmptyVendorThingIDTest() throws Exception {
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(new Gateway("gateway-thing-id", "gateway-vendor-thing-id"));
         Target target = api.onboardEndnodeWithGateway(new PendingEndNode("", DEMO_THING_TYPE, null), "password");
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardEndnodeWithGatewayWithNullVendorThingPasswordTest() throws Exception {
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(new Gateway("gateway-thing-id", "gateway-vendor-thing-id"));
         Target target = api.onboardEndnodeWithGateway(new PendingEndNode("v1234567890abcde", DEMO_THING_TYPE, null), null);
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardEndnodeWithGatewayWithEmptyVendorThingPasswordTest() throws Exception {
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(new Gateway("gateway-thing-id", "gateway-vendor-thing-id"));
         Target target = api.onboardEndnodeWithGateway(new PendingEndNode("v1234567890abcde", DEMO_THING_TYPE, null), "");
     }

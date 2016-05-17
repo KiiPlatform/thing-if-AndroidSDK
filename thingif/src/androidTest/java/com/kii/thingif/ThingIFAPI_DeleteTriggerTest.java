@@ -12,7 +12,6 @@ import com.kii.thingif.testschemas.SetColor;
 import com.kii.thingif.testschemas.SetColorTemperature;
 import com.kii.thingif.trigger.Condition;
 import com.kii.thingif.trigger.StatePredicate;
-import com.kii.thingif.trigger.Trigger;
 import com.kii.thingif.trigger.TriggersWhen;
 import com.kii.thingif.trigger.clause.Equals;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
@@ -47,7 +46,7 @@ public class ThingIFAPI_DeleteTriggerTest extends ThingIFAPITestBase {
         actions.add(setColorTemperature);
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
         Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
         this.addMockResponseForGetTriggerWithCommand(200, triggerID, expectedCommand, predicate, false, null, schema);
@@ -78,7 +77,7 @@ public class ThingIFAPI_DeleteTriggerTest extends ThingIFAPITestBase {
         String triggerID = "trigger-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(403);
 
         try {
@@ -106,7 +105,7 @@ public class ThingIFAPI_DeleteTriggerTest extends ThingIFAPITestBase {
         String triggerID = "trigger-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(404);
 
         try {
@@ -134,7 +133,7 @@ public class ThingIFAPI_DeleteTriggerTest extends ThingIFAPITestBase {
         String triggerID = "trigger-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(503);
 
         try {
@@ -158,7 +157,7 @@ public class ThingIFAPI_DeleteTriggerTest extends ThingIFAPITestBase {
     public void deleteTriggerWithNullTargetTest() throws Exception {
         String triggerID = "trigger-1234";
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.deleteTrigger(triggerID);
     }
     @Test(expected = IllegalArgumentException.class)
@@ -167,7 +166,7 @@ public class ThingIFAPI_DeleteTriggerTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         api.deleteTrigger(null);
     }
@@ -177,7 +176,7 @@ public class ThingIFAPI_DeleteTriggerTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         api.deleteTrigger("");
     }
