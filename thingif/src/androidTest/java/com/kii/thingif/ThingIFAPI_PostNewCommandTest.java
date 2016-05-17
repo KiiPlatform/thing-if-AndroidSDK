@@ -281,7 +281,8 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
         String commandID = "command-1234";
         Long created = System.currentTimeMillis();
         Long modified = System.currentTimeMillis();
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id",
+                accessToken);
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
         SetColorTemperature setColorTemperature = new SetColorTemperature(25);
@@ -359,7 +360,8 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String commandID = "command-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id",
+                accessToken);
         List<Action> actions = new ArrayList<Action>();
         actions.add(new SetColor(128, 0, 255));
 
@@ -404,7 +406,8 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String commandID = "command-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id",
+                accessToken);
         List<Action> actions = new ArrayList<Action>();
         actions.add(new SetColor(128, 0, 255));
 
@@ -450,7 +453,8 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String commandID = "command-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id",
+                accessToken);
         List<Action> actions = new ArrayList<Action>();
         actions.add(new SetColor(128, 0, 255));
 
