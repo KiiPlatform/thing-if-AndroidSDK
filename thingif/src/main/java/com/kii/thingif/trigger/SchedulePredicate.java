@@ -8,7 +8,6 @@ public class SchedulePredicate extends Predicate {
 
     public SchedulePredicate(@NonNull Schedule schedule) {
         this.schedule = schedule;
-        throw new UnsupportedOperationException("SchedulePredicate is not supported");
     }
     public Schedule getSchedule() {
         return this.schedule;
