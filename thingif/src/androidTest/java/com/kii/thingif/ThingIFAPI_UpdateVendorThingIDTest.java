@@ -26,7 +26,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
 
         this.addEmptyMockResponse(204);
@@ -57,7 +57,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
 
         this.addEmptyMockResponse(400);
@@ -92,7 +92,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
 
         this.addEmptyMockResponse(409);
@@ -127,7 +127,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
 
         api.updateVendorThingID(newVendorThingID, newPassword);
@@ -140,7 +140,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
 
         api.updateVendorThingID(newVendorThingID, newPassword);
@@ -153,7 +153,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
 
         api.updateVendorThingID(newVendorThingID, newPassword);
@@ -166,7 +166,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
 
         api.updateVendorThingID(newVendorThingID, newPassword);

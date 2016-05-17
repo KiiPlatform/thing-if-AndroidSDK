@@ -27,7 +27,7 @@ public class ThingIFAPI_ListTriggeredServerCodeResultsTest extends ThingIFAPITes
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
         String paginationKey = "pagination-12345-key";
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
 
         TriggeredServerCodeResult serverCodeResult1 = new TriggeredServerCodeResult(true, "1234", System.currentTimeMillis(), "func1", null);
@@ -82,7 +82,7 @@ public class ThingIFAPI_ListTriggeredServerCodeResultsTest extends ThingIFAPITes
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
 
         TriggeredServerCodeResult serverCodeResult1 = new TriggeredServerCodeResult(true, "1234", System.currentTimeMillis(), "func1", null);
@@ -114,7 +114,7 @@ public class ThingIFAPI_ListTriggeredServerCodeResultsTest extends ThingIFAPITes
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
 
         this.addEmptyMockResponse(404);
@@ -139,14 +139,14 @@ public class ThingIFAPI_ListTriggeredServerCodeResultsTest extends ThingIFAPITes
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         api.listTriggeredServerCodeResults(null, 10, null);
     }
     @Test(expected = IllegalStateException.class)
     public void listTriggeredServerCodeResultsWithNullTargetTest() throws Exception {
         String triggerID = UUID.randomUUID().toString();
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.listTriggeredServerCodeResults(triggerID, 10, null);
     }
 }

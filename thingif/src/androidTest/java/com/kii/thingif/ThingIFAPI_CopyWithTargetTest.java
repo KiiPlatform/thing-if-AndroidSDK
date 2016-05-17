@@ -121,7 +121,7 @@ public class ThingIFAPI_CopyWithTargetTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         Assert.assertFalse(api.onboarded());
         Target target = api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
 
