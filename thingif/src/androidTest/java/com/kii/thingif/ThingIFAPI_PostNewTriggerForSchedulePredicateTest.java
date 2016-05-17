@@ -1,9 +1,14 @@
 package com.kii.thingif;
 
+import android.support.test.runner.AndroidJUnit4;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
+import com.kii.thingif.exception.ForbiddenException;
+import com.kii.thingif.exception.NotFoundException;
+import com.kii.thingif.exception.ServiceUnavailableException;
 import com.kii.thingif.internal.GsonRepository;
 import com.kii.thingif.schema.Schema;
 import com.kii.thingif.testschemas.SetColor;
@@ -11,11 +16,14 @@ import com.kii.thingif.testschemas.SetColorTemperature;
 import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.Schedule;
 import com.kii.thingif.trigger.SchedulePredicate;
+import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.Trigger;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created on 2016/05/17.
  */
+@RunWith(AndroidJUnit4.class)
 public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
     extends ThingIFAPITestBase
 {
@@ -118,5 +127,278 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
             "Authorization",
             "Bearer " + api.getOwner().getAccessToken());
         this.assertRequestHeader(expectedRequestHeaders2, request2);
+    }
+
+    @Test
+    public void postNewTriggerWithServerCodeTest() throws Exception {
+        Schema schema = this.createDefaultSchema();
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        String triggerID = "trigger-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        Predicate predicate = new SchedulePredicate(new Schedule("1 * * * *"));
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+
+        ServerCode expectedServerCode = new ServerCode("function_name", "token12345", "app0001", new JSONObject("{\"param\":\"p0001\"}"));
+        this.addMockResponseForPostNewTrigger(201, triggerID);
+        this.addMockResponseForGetTriggerWithServerCode(200, triggerID, expectedServerCode, predicate, false, null, schema);
+
+        api.setTarget(target);
+        Trigger trigger = api.postNewTrigger(expectedServerCode, predicate);
+        // verify the result
+        Assert.assertEquals(triggerID, trigger.getTriggerID());
+        Assert.assertEquals(false, trigger.disabled());
+        Assert.assertNull(trigger.getDisabledReason());
+        Assert.assertNull(trigger.getCommand());
+        this.assertPredicate(predicate, trigger.getPredicate());
+        this.assertServerCode(expectedServerCode, trigger.getServerCode());
+        // verify the 1st request
+        RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers", request1.getPath());
+        Assert.assertEquals("POST", request1.getMethod());
+
+        Map<String, String> expectedRequestHeaders1 = new HashMap<String, String>();
+        expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders1.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        expectedRequestHeaders1.put("Content-Type", "application/json");
+        this.assertRequestHeader(expectedRequestHeaders1, request1);
+
+        JsonObject expectedRequestBody = new JsonObject();
+        expectedRequestBody.add("serverCode", GsonRepository.gson(schema).toJsonTree(expectedServerCode));
+        expectedRequestBody.add("predicate", GsonRepository.gson(schema).toJsonTree(predicate));
+        expectedRequestBody.add("triggersWhat", new JsonPrimitive("SERVER_CODE"));
+        this.assertRequestBody(expectedRequestBody, request1);
+
+        // verify the 2nd request
+        RecordedRequest request2 = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers/" + triggerID, request2.getPath());
+        Assert.assertEquals("GET", request2.getMethod());
+
+        Map<String, String> expectedRequestHeaders2 = new HashMap<String, String>();
+        expectedRequestHeaders2.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders2.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders2.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        this.assertRequestHeader(expectedRequestHeaders2, request2);
+    }
+
+    @Test
+    public void postNewTrigger403ErrorTest() throws Exception {
+        Schema schema = this.createDefaultSchema();
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        List<Action> actions = new ArrayList<Action>();
+        SetColor setColor = new SetColor(128, 0, 255);
+        SetColorTemperature setColorTemperature = new SetColorTemperature(25);
+        actions.add(setColor);
+        actions.add(setColorTemperature);
+        Predicate predicate = new SchedulePredicate(new Schedule("1 * * * *"));
+
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
+        this.addEmptyMockResponse(403);
+
+        try {
+            api.setTarget(target);
+            api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
+            Assert.fail("ThingIFRestException should be thrown");
+        } catch (ForbiddenException e) {
+        }
+        // verify the request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers", request.getPath());
+        Assert.assertEquals("POST", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders1 = new HashMap<String, String>();
+        expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders1.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        expectedRequestHeaders1.put("Content-Type", "application/json");
+        this.assertRequestHeader(expectedRequestHeaders1, request);
+
+        JsonObject expectedRequestBody = new JsonObject();
+        expectedRequestBody.add("command", GsonRepository.gson(schema).toJsonTree(expectedCommand));
+        expectedRequestBody.add("predicate", GsonRepository.gson(schema).toJsonTree(predicate));
+        expectedRequestBody.add("triggersWhat", new JsonPrimitive("COMMAND"));
+        this.assertRequestBody(expectedRequestBody, request);
+    }
+
+    @Test
+    public void postNewTrigger404ErrorTest() throws Exception {
+        Schema schema = this.createDefaultSchema();
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        List<Action> actions = new ArrayList<Action>();
+        SetColor setColor = new SetColor(128, 0, 255);
+        SetColorTemperature setColorTemperature = new SetColorTemperature(25);
+        actions.add(setColor);
+        actions.add(setColorTemperature);
+        Predicate predicate = new SchedulePredicate(new Schedule("1 * * * *"));
+
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
+        this.addEmptyMockResponse(404);
+
+        try {
+            api.setTarget(target);
+            api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
+            Assert.fail("ThingIFRestException should be thrown");
+        } catch (NotFoundException e) {
+        }
+        // verify the request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers", request.getPath());
+        Assert.assertEquals("POST", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders1 = new HashMap<String, String>();
+        expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders1.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        expectedRequestHeaders1.put("Content-Type", "application/json");
+        this.assertRequestHeader(expectedRequestHeaders1, request);
+
+        JsonObject expectedRequestBody = new JsonObject();
+        expectedRequestBody.add("command", GsonRepository.gson(schema).toJsonTree(expectedCommand));
+        expectedRequestBody.add("predicate", GsonRepository.gson(schema).toJsonTree(predicate));
+        expectedRequestBody.add("triggersWhat", new JsonPrimitive("COMMAND"));
+        this.assertRequestBody(expectedRequestBody, request);
+    }
+
+    @Test
+    public void postNewTrigger503ErrorTest() throws Exception {
+        Schema schema = this.createDefaultSchema();
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        List<Action> actions = new ArrayList<Action>();
+        SetColor setColor = new SetColor(128, 0, 255);
+        SetColorTemperature setColorTemperature = new SetColorTemperature(25);
+        actions.add(setColor);
+        actions.add(setColorTemperature);
+        Predicate predicate = new SchedulePredicate(new Schedule("1 * * * *"));
+
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
+        this.addEmptyMockResponse(503);
+
+        try {
+            api.setTarget(target);
+            api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
+            Assert.fail("ThingIFRestException should be thrown");
+        } catch (ServiceUnavailableException e) {
+        }
+        // verify the request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers", request.getPath());
+        Assert.assertEquals("POST", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders1 = new HashMap<String, String>();
+        expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders1.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        expectedRequestHeaders1.put("Content-Type", "application/json");
+        this.assertRequestHeader(expectedRequestHeaders1, request);
+
+        JsonObject expectedRequestBody = new JsonObject();
+        expectedRequestBody.add("command", GsonRepository.gson(schema).toJsonTree(expectedCommand));
+        expectedRequestBody.add("predicate", GsonRepository.gson(schema).toJsonTree(predicate));
+        expectedRequestBody.add("triggersWhat", new JsonPrimitive("COMMAND"));
+        this.assertRequestBody(expectedRequestBody, request);
+    }
+    @Test(expected = IllegalStateException.class)
+    public void postNewTriggerWithNullTargetTest() throws Exception {
+        List<Action> actions = new ArrayList<Action>();
+        SetColor setColor = new SetColor(128, 0, 255);
+        SetColorTemperature setColorTemperature = new SetColorTemperature(25);
+        actions.add(setColor);
+        actions.add(setColorTemperature);
+        Predicate predicate = new SchedulePredicate(new Schedule("1 * * * *"));
+
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
+    }
+    @Test(expected = IllegalArgumentException.class)
+    public void postNewTriggerWithNullSchemaNameTest() throws Exception {
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        List<Action> actions = new ArrayList<Action>();
+        SetColor setColor = new SetColor(128, 0, 255);
+        SetColorTemperature setColorTemperature = new SetColorTemperature(25);
+        actions.add(setColor);
+        actions.add(setColorTemperature);
+        Predicate predicate = new SchedulePredicate(new Schedule("1 * * * *"));
+
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.setTarget(target);
+        api.postNewTrigger(null, DEMO_SCHEMA_VERSION, actions, predicate);
+    }
+    @Test(expected = IllegalArgumentException.class)
+    public void postNewTriggerWithEmptySchemaNameTest() throws Exception {
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        List<Action> actions = new ArrayList<Action>();
+        SetColor setColor = new SetColor(128, 0, 255);
+        SetColorTemperature setColorTemperature = new SetColorTemperature(25);
+        actions.add(setColor);
+        actions.add(setColorTemperature);
+        Predicate predicate = new SchedulePredicate(new Schedule("1 * * * *"));
+
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.setTarget(target);
+        api.postNewTrigger("", DEMO_SCHEMA_VERSION, actions, predicate);
+    }
+    @Test(expected = IllegalArgumentException.class)
+    public void postNewTriggerWithNullActionsTest() throws Exception {
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        Predicate predicate = new SchedulePredicate(new Schedule("1 * * * *"));
+
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.setTarget(target);
+        api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, null, predicate);
+    }
+    @Test(expected = IllegalArgumentException.class)
+    public void postNewTriggerWithEmptyActionsTest() throws Exception {
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        List<Action> actions = new ArrayList<Action>();
+        Predicate predicate = new SchedulePredicate(new Schedule("1 * * * *"));
+
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.setTarget(target);
+        api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
+    }
+    @Test(expected = IllegalArgumentException.class)
+    public void postNewTriggerWithNullPredicateTest() throws Exception {
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        List<Action> actions = new ArrayList<Action>();
+        SetColor setColor = new SetColor(128, 0, 255);
+        SetColorTemperature setColorTemperature = new SetColorTemperature(25);
+        actions.add(setColor);
+        actions.add(setColorTemperature);
+
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.setTarget(target);
+        api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, null);
     }
 }
