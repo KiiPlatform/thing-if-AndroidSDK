@@ -31,9 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created on 2016/05/17.
- */
 @RunWith(AndroidJUnit4.class)
 public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
     extends ThingIFAPITestBase
