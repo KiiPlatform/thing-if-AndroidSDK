@@ -414,7 +414,7 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
             SchedulePredicate esp = (SchedulePredicate)expected;
             SchedulePredicate asp = (SchedulePredicate)actual;
             Assert.assertEquals(esp.getEventSource(), asp.getEventSource());
-            Assert.assertEquals(esp.getSchedule().getCronExpression(), asp.getSchedule().getCronExpression());
+            Assert.assertEquals(esp.getSchedule(), asp.getSchedule());
         }
     }
     protected void assertClause(Clause expected, Clause actual) {

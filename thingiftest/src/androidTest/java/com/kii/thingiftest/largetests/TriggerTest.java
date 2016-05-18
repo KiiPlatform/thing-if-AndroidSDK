@@ -8,14 +8,13 @@ import com.google.gson.JsonObject;
 import com.kii.cloud.rest.client.KiiRest;
 import com.kii.cloud.rest.client.model.KiiCredentials;
 import com.kii.cloud.rest.client.model.storage.KiiThing;
-import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.Target;
+import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
 import com.kii.thingif.trigger.Condition;
 import com.kii.thingif.trigger.EventSource;
-import com.kii.thingif.trigger.Schedule;
 import com.kii.thingif.trigger.SchedulePredicate;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.StatePredicate;
@@ -623,7 +622,7 @@ public class TriggerTest extends LargeTestCaseBase {
         SetColorTemperature setColorTemperature = new SetColorTemperature(25);
         actions1.add(setColor);
         actions1.add(setColorTemperature);
-        SchedulePredicate predicate1 = new SchedulePredicate(new Schedule("1 * * * *"));
+        SchedulePredicate predicate1 = new SchedulePredicate("1 * * * *");
 
         Trigger trigger1 = api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions1, predicate1);
         Assert.assertNotNull(trigger1.getTriggerID());
@@ -651,7 +650,7 @@ public class TriggerTest extends LargeTestCaseBase {
 
         SchedulePredicate trigger1Predicate = (SchedulePredicate)trigger1.getPredicate();
         Assert.assertEquals(EventSource.SCHEDULE, trigger1Predicate.getEventSource());
-        Assert.assertEquals("1 * * * *", trigger1Predicate.getSchedule().getCronExpression());
+        Assert.assertEquals("1 * * * *", trigger1Predicate.getSchedule());
 
         // disable/enable trigger
         trigger1 = api.enableTrigger(trigger1.getTriggerID(), false);
@@ -668,7 +667,7 @@ public class TriggerTest extends LargeTestCaseBase {
         TurnPower turnPower = new TurnPower(true);
         actions2.add(setBrightness);
         actions2.add(turnPower);
-        SchedulePredicate predicate2 = new SchedulePredicate(new Schedule("* 1 * * *"));
+        SchedulePredicate predicate2 = new SchedulePredicate("* 1 * * *");
 
         Trigger trigger2 = api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions2, predicate2);
         Assert.assertNotNull(trigger2.getTriggerID());
@@ -696,7 +695,7 @@ public class TriggerTest extends LargeTestCaseBase {
 
         SchedulePredicate trigger2Predicate = (SchedulePredicate)trigger2.getPredicate();
         Assert.assertEquals(EventSource.SCHEDULE, trigger2Predicate.getEventSource());
-        Assert.assertEquals("* 1 * * *", trigger2Predicate.getSchedule().getCronExpression());
+        Assert.assertEquals("* 1 * * *", trigger2Predicate.getSchedule());
 
         // list triggers
         Pair<List<Trigger>, String> results = api.listTriggers(100, null);
@@ -737,7 +736,7 @@ public class TriggerTest extends LargeTestCaseBase {
 
         trigger1Predicate = (SchedulePredicate)trigger1.getPredicate();
         Assert.assertEquals(EventSource.SCHEDULE, trigger1Predicate.getEventSource());
-        Assert.assertEquals("1 * * * *", trigger1Predicate.getSchedule().getCronExpression());
+        Assert.assertEquals("1 * * * *", trigger1Predicate.getSchedule());
 
         // assert trigger2
         Assert.assertNotNull(trigger2.getTriggerID());
@@ -765,7 +764,7 @@ public class TriggerTest extends LargeTestCaseBase {
 
         trigger2Predicate = (SchedulePredicate)trigger2.getPredicate();
         Assert.assertEquals(EventSource.SCHEDULE, trigger2Predicate.getEventSource());
-        Assert.assertEquals("* 1 * * *", trigger2Predicate.getSchedule().getCronExpression());
+        Assert.assertEquals("* 1 * * *", trigger2Predicate.getSchedule());
 
         // delete triiger
         api.deleteTrigger(trigger1.getTriggerID());
@@ -776,7 +775,7 @@ public class TriggerTest extends LargeTestCaseBase {
         TurnPower turnPower3 = new TurnPower(false);
         actions3.add(setBrightness3);
         actions3.add(turnPower3);
-        SchedulePredicate predicate3 = new SchedulePredicate(new Schedule("* * 1 * *"));
+        SchedulePredicate predicate3 = new SchedulePredicate("* * 1 * *");
         api.patchTrigger(trigger2.getTriggerID(), DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions3, predicate3);
 
         // list triggers
@@ -812,7 +811,7 @@ public class TriggerTest extends LargeTestCaseBase {
 
         SchedulePredicate updatedTrigger2Predicate = (SchedulePredicate)updatedTriger2.getPredicate();
         Assert.assertEquals(EventSource.SCHEDULE, updatedTrigger2Predicate.getEventSource());
-        Assert.assertEquals("* * 1 * *", updatedTrigger2Predicate.getSchedule().getCronExpression());
+        Assert.assertEquals("* * 1 * *", updatedTrigger2Predicate.getSchedule());
         api.deleteTrigger(updatedTriger2.getTriggerID());
     }
 

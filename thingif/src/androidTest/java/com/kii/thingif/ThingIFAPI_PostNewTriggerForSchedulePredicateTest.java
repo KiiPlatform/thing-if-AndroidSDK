@@ -14,7 +14,6 @@ import com.kii.thingif.schema.Schema;
 import com.kii.thingif.testschemas.SetColor;
 import com.kii.thingif.testschemas.SetColorTemperature;
 import com.kii.thingif.trigger.Predicate;
-import com.kii.thingif.trigger.Schedule;
 import com.kii.thingif.trigger.SchedulePredicate;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.Trigger;
@@ -47,7 +46,7 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
         List<Action> actions = new ArrayList<Action>();
         actions.add(new SetColor(128, 0, 255));
         actions.add(new SetColorTemperature(25));
-        Predicate predicate = new SchedulePredicate(new Schedule("1 * * * *"));
+        Predicate predicate = new SchedulePredicate("1 * * * *");
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
@@ -134,7 +133,7 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
         String triggerID = "trigger-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        Predicate predicate = new SchedulePredicate(new Schedule("1 * * * *"));
+        Predicate predicate = new SchedulePredicate("1 * * * *");
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
         ServerCode expectedServerCode = new ServerCode("function_name", "token12345", "app0001", new JSONObject("{\"param\":\"p0001\"}"));
@@ -192,7 +191,7 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
         SetColorTemperature setColorTemperature = new SetColorTemperature(25);
         actions.add(setColor);
         actions.add(setColorTemperature);
-        Predicate predicate = new SchedulePredicate(new Schedule("1 * * * *"));
+        Predicate predicate = new SchedulePredicate("1 * * * *");
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
@@ -236,7 +235,7 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
         SetColorTemperature setColorTemperature = new SetColorTemperature(25);
         actions.add(setColor);
         actions.add(setColorTemperature);
-        Predicate predicate = new SchedulePredicate(new Schedule("1 * * * *"));
+        Predicate predicate = new SchedulePredicate("1 * * * *");
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
@@ -280,7 +279,7 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
         SetColorTemperature setColorTemperature = new SetColorTemperature(25);
         actions.add(setColor);
         actions.add(setColorTemperature);
-        Predicate predicate = new SchedulePredicate(new Schedule("1 * * * *"));
+        Predicate predicate = new SchedulePredicate("1 * * * *");
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
@@ -318,7 +317,7 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
         SetColorTemperature setColorTemperature = new SetColorTemperature(25);
         actions.add(setColor);
         actions.add(setColorTemperature);
-        Predicate predicate = new SchedulePredicate(new Schedule("1 * * * *"));
+        Predicate predicate = new SchedulePredicate("1 * * * *");
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
@@ -334,7 +333,7 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
         SetColorTemperature setColorTemperature = new SetColorTemperature(25);
         actions.add(setColor);
         actions.add(setColorTemperature);
-        Predicate predicate = new SchedulePredicate(new Schedule("1 * * * *"));
+        Predicate predicate = new SchedulePredicate("1 * * * *");
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
@@ -351,7 +350,7 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
         SetColorTemperature setColorTemperature = new SetColorTemperature(25);
         actions.add(setColor);
         actions.add(setColorTemperature);
-        Predicate predicate = new SchedulePredicate(new Schedule("1 * * * *"));
+        Predicate predicate = new SchedulePredicate("1 * * * *");
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
@@ -363,7 +362,7 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        Predicate predicate = new SchedulePredicate(new Schedule("1 * * * *"));
+        Predicate predicate = new SchedulePredicate("1 * * * *");
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
@@ -376,7 +375,7 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         List<Action> actions = new ArrayList<Action>();
-        Predicate predicate = new SchedulePredicate(new Schedule("1 * * * *"));
+        Predicate predicate = new SchedulePredicate("1 * * * *");
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);

@@ -40,7 +40,6 @@ import com.kii.thingif.schema.SchemaBuilder;
 import com.kii.thingif.trigger.Condition;
 import com.kii.thingif.trigger.EventSource;
 import com.kii.thingif.trigger.Predicate;
-import com.kii.thingif.trigger.Schedule;
 import com.kii.thingif.trigger.SchedulePredicate;
 import com.kii.thingif.trigger.StatePredicate;
 import com.kii.thingif.trigger.TriggeredServerCodeResult;
@@ -139,7 +138,7 @@ public class GsonRepository {
             JsonObject json = new JsonObject();
             json.addProperty("eventSource", src.getEventSource().getValue());
             if (src.getEventSource() == EventSource.SCHEDULE) {
-                json.addProperty("schedule", ((SchedulePredicate)src).getSchedule().getCronExpression());
+                json.addProperty("schedule", ((SchedulePredicate)src).getSchedule());
             } else if (src.getEventSource() == EventSource.STATES) {
                 json.add("condition", context.serialize(((StatePredicate)src).getCondition()));
                 json.addProperty("triggersWhen", ((StatePredicate)src).getTriggersWhen().name());
@@ -157,7 +156,7 @@ public class GsonRepository {
             EventSource eventSource = EventSource.fromValue(json.get("eventSource").getAsString());
             Predicate predicate = null;
             if (eventSource == EventSource.SCHEDULE) {
-                predicate = new SchedulePredicate(new Schedule(json.get("schedule").getAsString()));
+                predicate = new SchedulePredicate(json.get("schedule").getAsString());
             } else if (eventSource == EventSource.STATES) {
                 Condition condition = context.deserialize(new JsonParser().parse(json.get("condition").toString()), Condition.class);
                 TriggersWhen triggersWhen = TriggersWhen.valueOf(json.get("triggersWhen").getAsString());
