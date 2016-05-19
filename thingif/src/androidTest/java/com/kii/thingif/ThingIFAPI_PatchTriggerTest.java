@@ -39,7 +39,10 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(AndroidJUnit4.class)
 public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
-    private void _patchTriggerWithCommandTest(Predicate predicate) throws Exception {
+    @Test
+    public void patchStateTriggerWithCommandTest() throws Exception {
+        StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
+
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
@@ -96,17 +99,8 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
         expectedRequestHeaders2.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
         this.assertRequestHeader(expectedRequestHeaders2, request2);
     }
-    @Test
-    public void patchStateTriggerWithCommandTest() throws Exception {
-        StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
-        _patchTriggerWithCommandTest(predicate);
-    }
-    @Test
-    public void patchScheduledOnceTriggerWithCommandTest() throws Exception {
-        ScheduleOncePredicate predicate = new ScheduleOncePredicate(100000);
-        _patchTriggerWithCommandTest(predicate);
-    }
-    private void _patchTriggerWithServerCodeTest(Predicate predicate) throws Exception {
+
+    private void patchTriggerWithServerCodeTest(Predicate predicate) throws Exception {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
@@ -160,12 +154,12 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
     @Test
     public void patchStateTriggerWithServerCodeTest() throws Exception {
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
-        _patchTriggerWithServerCodeTest(predicate);
+        patchTriggerWithServerCodeTest(predicate);
     }
     @Test
     public void patchScheduleOnceTriggerWithServerCodeTest() throws Exception {
         ScheduleOncePredicate predicate = new ScheduleOncePredicate(1000);
-        _patchTriggerWithServerCodeTest(predicate);
+        patchTriggerWithServerCodeTest(predicate);
     }
     @Test
     public void patchTrigger403ErrorTest() throws Exception {

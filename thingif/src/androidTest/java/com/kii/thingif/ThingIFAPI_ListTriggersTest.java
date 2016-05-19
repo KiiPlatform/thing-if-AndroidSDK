@@ -16,6 +16,7 @@ import com.kii.thingif.testschemas.SetColorTemperature;
 import com.kii.thingif.testschemas.TurnPower;
 import com.kii.thingif.trigger.Condition;
 import com.kii.thingif.trigger.Predicate;
+import com.kii.thingif.trigger.ScheduleOncePredicate;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.StatePredicate;
 import com.kii.thingif.trigger.Trigger;
@@ -72,8 +73,15 @@ public class ThingIFAPI_ListTriggersTest extends ThingIFAPITestBase {
         Predicate predicate3 = new StatePredicate(condition3, TriggersWhen.CONDITION_TRUE);
         Trigger trigger3 = new Trigger(predicate3, command3);
 
+        List<Action> command4Actions = new ArrayList<Action>();
+        command4Actions.add(new SetColorTemperature(45));
+        command4Actions.add(new SetBrightness(70));
+        Command command4 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), command4Actions);
+        Predicate predicate4 = new ScheduleOncePredicate(10000);
+        Trigger trigger4 = new Trigger(predicate4,command4);
+
         this.addMockResponseForListTriggers(200, new Trigger[] {trigger1, trigger2}, paginationKey, schema);
-        this.addMockResponseForListTriggers(200, new Trigger[]{trigger3}, null, schema);
+        this.addMockResponseForListTriggers(200, new Trigger[]{trigger3,trigger4}, null, schema);
 
         // verify the result
         Pair<List<Trigger>, String> result1 = api.listTriggers(10, null);
@@ -86,8 +94,9 @@ public class ThingIFAPI_ListTriggersTest extends ThingIFAPITestBase {
         Pair<List<Trigger>, String> result2 = api.listTriggers(10, result1.second);
         Assert.assertNull(result2.second);
         List<Trigger> triggers2 = result2.first;
-        Assert.assertEquals(1, triggers2.size());
+        Assert.assertEquals(2, triggers2.size());
         this.assertTrigger(schema, trigger3, triggers2.get(0));
+        this.assertTrigger(schema, trigger4, triggers2.get(1));
 
         // verify the 1st request
         RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);

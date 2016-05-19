@@ -97,6 +97,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         expectedRequestHeaders2.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
         this.assertRequestHeader(expectedRequestHeaders2, request2);
     }
+    @Test
     public void postNewStateTriggerWithCommandTest() throws Exception {
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
         this.postNewTriggerWithCommandTest(predicate);
@@ -106,7 +107,9 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         ScheduleOncePredicate predicate = new ScheduleOncePredicate(System.currentTimeMillis());
         this.postNewTriggerWithCommandTest(predicate);
     }
-    void postNewTriggerWithServerCodeTest(Predicate predicate) throws Exception {
+    @Test
+    public void postNewStateTriggerWithServerCodeTest() throws Exception {
+        StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
@@ -157,16 +160,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         expectedRequestHeaders2.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
         this.assertRequestHeader(expectedRequestHeaders2, request2);
     }
-    @Test
-    public void postNewStateTriggerWithServerCodeTest() throws Exception {
-        StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
-        this.postNewTriggerWithServerCodeTest(predicate);
-    }
-    @Test
-    public void postNewScheduledOnceTriggerWithServerCodeTest() throws Exception {
-        ScheduleOncePredicate predicate = new ScheduleOncePredicate(System.currentTimeMillis());
-        this.postNewTriggerWithServerCodeTest(predicate);
-    }
+
     @Test
     public void postNewTrigger403ErrorTest() throws Exception {
         Schema schema = this.createDefaultSchema();
