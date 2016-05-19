@@ -41,6 +41,7 @@ import com.kii.thingif.trigger.Condition;
 import com.kii.thingif.trigger.EventSource;
 import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.Schedule;
+import com.kii.thingif.trigger.ScheduleOncePredicate;
 import com.kii.thingif.trigger.SchedulePredicate;
 import com.kii.thingif.trigger.StatePredicate;
 import com.kii.thingif.trigger.TriggeredServerCodeResult;
@@ -143,6 +144,8 @@ public class GsonRepository {
             } else if (src.getEventSource() == EventSource.STATES) {
                 json.add("condition", context.serialize(((StatePredicate)src).getCondition()));
                 json.addProperty("triggersWhen", ((StatePredicate)src).getTriggersWhen().name());
+            } else if (src.getEventSource() == EventSource.SCHEDULE_ONCE) {
+                json.addProperty("scheduleAt", ((ScheduleOncePredicate)src).getScheduleAt());
             }
             return json;
         }
@@ -162,6 +165,8 @@ public class GsonRepository {
                 Condition condition = context.deserialize(new JsonParser().parse(json.get("condition").toString()), Condition.class);
                 TriggersWhen triggersWhen = TriggersWhen.valueOf(json.get("triggersWhen").getAsString());
                 predicate = new StatePredicate(condition, triggersWhen);
+            } else if (eventSource == EventSource.SCHEDULE_ONCE) {
+                predicate = new ScheduleOncePredicate(json.get("scheduleAt").getAsLong());
             }
             return predicate;
         }

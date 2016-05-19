@@ -22,6 +22,8 @@ import com.kii.thingif.testschemas.SetColorTemperatureResult;
 import com.kii.thingif.testschemas.TurnPower;
 import com.kii.thingif.testschemas.TurnPowerResult;
 import com.kii.thingif.trigger.Condition;
+import com.kii.thingif.trigger.Predicate;
+import com.kii.thingif.trigger.ScheduleOncePredicate;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.StatePredicate;
 import com.kii.thingif.trigger.Trigger;
@@ -47,7 +49,19 @@ import java.util.concurrent.TimeUnit;
 @RunWith(AndroidJUnit4.class)
 public class ThingIFAPI_GetTriggerTest extends ThingIFAPITestBase {
     @Test
-    public void getTriggerWithCommandTest() throws Exception {
+    public void getStateTriggerWithCommandTest() throws Exception {
+        StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
+        getTriggerWithCommandTest(predicate);
+    }
+
+    @Test
+    public void getOneTimeTriggerWithCommandTest() throws Exception {
+        ScheduleOncePredicate predicate = new ScheduleOncePredicate(1000);
+        getTriggerWithCommandTest(predicate);
+    }
+
+
+    private void getTriggerWithCommandTest(Predicate predicate) throws Exception {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
@@ -59,7 +73,7 @@ public class ThingIFAPI_GetTriggerTest extends ThingIFAPITestBase {
         SetColorTemperature setColorTemperature = new SetColorTemperature(25);
         actions.add(setColor);
         actions.add(setColorTemperature);
-        StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
+
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
