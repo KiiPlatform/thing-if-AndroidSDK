@@ -12,7 +12,6 @@ import android.support.annotation.WorkerThread;
 
 import com.google.gson.JsonParseException;
 import com.kii.thingif.command.Action;
-import com.kii.thingif.command.ActionResult;
 import com.kii.thingif.command.Command;
 import com.kii.thingif.command.CommandForm;
 import com.kii.thingif.exception.ThingIFException;
@@ -20,6 +19,9 @@ import com.kii.thingif.exception.ThingIFRestException;
 import com.kii.thingif.exception.StoredThingIFAPIInstanceNotFoundException;
 import com.kii.thingif.exception.UnsupportedActionException;
 import com.kii.thingif.exception.UnsupportedSchemaException;
+import com.kii.thingif.gateway.EndNode;
+import com.kii.thingif.gateway.Gateway;
+import com.kii.thingif.gateway.PendingEndNode;
 import com.kii.thingif.internal.GsonRepository;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
@@ -87,6 +89,7 @@ public class ThingIFAPI implements Parcelable {
      * @return ThingIFAPI instance.
      * @throws StoredThingIFAPIInstanceNotFoundException when the instance has not stored yet.
      */
+    @NonNull
     public static ThingIFAPI loadFromStoredInstance(@NonNull Context context) throws StoredThingIFAPIInstanceNotFoundException {
         return loadFromStoredInstance(context, null);
     }
@@ -101,6 +104,7 @@ public class ThingIFAPI implements Parcelable {
      * @return ThingIFAPI instance.
      * @throws StoredThingIFAPIInstanceNotFoundException when the instance has not stored yet.
      */
+    @NonNull
     public static ThingIFAPI loadFromStoredInstance(@NonNull Context context, String tag) throws StoredThingIFAPIInstanceNotFoundException {
         ThingIFAPI.context = context.getApplicationContext();
         SharedPreferences preferences = getSharedPreferences();
@@ -124,7 +128,7 @@ public class ThingIFAPI implements Parcelable {
      *
      * @param tag
      */
-    public static void removeStoredInstance(String tag) {
+    public static void removeStoredInstance(@Nullable String tag) {
         SharedPreferences preferences = getSharedPreferences();
         SharedPreferences.Editor editor = preferences.edit();
         editor.remove(getSharedPreferencesKey(tag));
@@ -184,6 +188,7 @@ public class ThingIFAPI implements Parcelable {
      * On board IoT Cloud with the specified vendor thing ID.
      * Specified thing will be owned by owner who is specified
      * IoT Cloud prepares communication channel to the target.
+     * If you are using a gateway, you need to use {@link #onboardEndnodeWithGateway(PendingEndNode, String)} instead.
      * @param vendorThingID Thing ID given by vendor. Must be specified.
      * @param thingPassword Thing Password given by vendor. Must be specified.
      * @param thingType Type of the thing given by vendor.
@@ -231,7 +236,7 @@ public class ThingIFAPI implements Parcelable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST, requestBody);
+        return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST, requestBody, vendorThingID);
     }
 
     /**
@@ -239,6 +244,7 @@ public class ThingIFAPI implements Parcelable {
      * When you are sure that the on boarding process has been done,
      * this method is more convenient than
      * {@link #onboard(String, String, String, JSONObject)}.
+     * If you are using a gateway, you need to use {@link #onboardEndnodeWithGateway(PendingEndNode, String)} instead.
      * @param thingID Thing ID given by IoT Cloud. Must be specified.
      * @param thingPassword Thing password given by vendor. Must be specified.
      * @return Target instance can be used to operate target, manage resources
@@ -270,10 +276,11 @@ public class ThingIFAPI implements Parcelable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_THING_ID_BY_OWNER_REQUEST, requestBody);
+        // FIXME: Currently, Server does not return the VendorThingID when onboarding is successful.
+        return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_THING_ID_BY_OWNER_REQUEST, requestBody, null);
     }
 
-    private Target onboard(MediaType contentType, JSONObject requestBody) throws ThingIFException {
+    private Target onboard(MediaType contentType, JSONObject requestBody, String vendorThingID) throws ThingIFException {
         String path = MessageFormat.format("/thing-if/apps/{0}/onboardings", this.app.getAppID());
         String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
@@ -281,9 +288,64 @@ public class ThingIFAPI implements Parcelable {
         JSONObject responseBody = this.restClient.sendRequest(request);
         String thingID = responseBody.optString("thingID", null);
         String accessToken = responseBody.optString("accessToken", null);
-        this.target = new Target(new TypedID(TypedID.Types.THING, thingID), accessToken);
+        this.target = new StandaloneThing(thingID, vendorThingID, accessToken);
         saveInstance(this);
         return this.target;
+    }
+
+    /**
+     * Endpoints execute onboarding for the thing and merge MQTT channel to the gateway.
+     * Thing act as Gateway is already registered and marked as Gateway.
+     *
+     * @param pendingEndNode Pending endnode
+     * @param endnodePassword Password of the End Node
+     * @return Target instance can be used to operate target, manage resources of the target.
+     * @throws IllegalStateException Thrown when this instance is already onboarded.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     */
+    public EndNode onboardEndnodeWithGateway(
+            @NonNull PendingEndNode pendingEndNode,
+            @NonNull String endnodePassword)
+            throws ThingIFException {
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding the gateway");
+        }
+        if (this.target instanceof EndNode) {
+            throw new IllegalStateException("Target must be Gateway");
+        }
+        if (pendingEndNode == null) {
+            throw new IllegalArgumentException("pendingEndNode is null or empty");
+        }
+        if (TextUtils.isEmpty(pendingEndNode.getVendorThingID())) {
+            throw new IllegalArgumentException("vendorThingID is null or empty");
+        }
+        if (TextUtils.isEmpty(endnodePassword)) {
+            throw new IllegalArgumentException("endnodePassword is null or empty");
+        }
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("gatewayThingID", this.target.getTypedID().getID());
+            requestBody.put("endNodeVendorThingID", pendingEndNode.getVendorThingID());
+            requestBody.put("endNodePassword", endnodePassword);
+            if (!TextUtils.isEmpty(pendingEndNode.getThingType())) {
+                requestBody.put("endNodeThingType", pendingEndNode.getThingType());
+            }
+            if (pendingEndNode.getThingProperties() != null && pendingEndNode.getThingProperties().length() > 0) {
+                requestBody.put("endNodeThingProperties", pendingEndNode.getThingProperties());
+            }
+            requestBody.put("owner", this.owner.getTypedID().toString());
+        } catch (JSONException e) {
+            // Won’t happen
+        }
+        String path = MessageFormat.format("/thing-if/apps/{0}/onboardings", this.app.getAppID());
+        String url = Path.combine(this.app.getBaseUrl(), path);
+        Map<String, String> headers = this.newHeader();
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MediaTypes.MEDIA_TYPE_ONBOARDING_ENDNODE_WITH_GATEWAY_THING_ID_REQUEST, requestBody);
+        JSONObject responseBody = this.restClient.sendRequest(request);
+        String thingID = responseBody.optString("endNodeThingID", null);
+        String accessToken = responseBody.optString("accessToken", null);
+        return new EndNode(thingID, pendingEndNode.getVendorThingID(), accessToken);
     }
 
     /**
@@ -551,6 +613,7 @@ public class ThingIFAPI implements Parcelable {
      * @throws ThingIFRestException Thrown when server returns error response.
      * @throws UnsupportedActionException Thrown when the returned response has a action that cannot handle this instance.
      */
+    @NonNull
     public Pair<List<Command>, String> listCommands (
             int bestEffortLimit,
             @Nullable String paginationKey)
@@ -1021,9 +1084,63 @@ public class ThingIFAPI implements Parcelable {
         return ret;
     }
 
+    /**
+     * Get the Vendor Thing ID of specified Target.
+     *
+     * @return Vendor Thing ID
+     * @throws ThingIFException
+     */
+    @NonNull
+    @WorkerThread
+    public String getVendorThingID() throws ThingIFException {
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
+        }
+        String path = MessageFormat.format("/api/apps/{0}/things/{1}/vendor-thing-id", this.app.getAppID(), this.target.getTypedID().getID());
+        String url = Path.combine(this.app.getBaseUrl(), path);
+        Map<String, String> headers = this.newHeader();
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
+        JSONObject responseBody = this.restClient.sendRequest(request);
+        return responseBody.optString("_vendorThingID", null);
+    }
+
+    /**
+     * Update the Vendor Thing ID of specified Target.
+     *
+     * @param newVendorThingID New vendor thing id
+     * @param newPassword New password
+     * @throws ThingIFException
+     */
+    @WorkerThread
+    public void updateVendorThingID(@NonNull String newVendorThingID, @NonNull String newPassword) throws ThingIFException {
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
+        }
+        if (TextUtils.isEmpty(newPassword)) {
+            throw new IllegalArgumentException("newPassword is null or empty");
+        }
+        if (TextUtils.isEmpty(newVendorThingID)) {
+            throw new IllegalArgumentException("newVendorThingID is null or empty");
+        }
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("_vendorThingID", newVendorThingID);
+            requestBody.put("_password", newPassword);
+        } catch (JSONException e) {
+            // Won’t happen
+        }
+
+        String path = MessageFormat.format("/api/apps/{0}/things/{1}/vendor-thing-id", this.app.getAppID(), this.target.getTypedID().getID());
+        String url = Path.combine(this.app.getBaseUrl(), path);
+        Map<String, String> headers = this.newHeader();
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.PUT, headers, MediaTypes.MEDIA_TYPE_VENDOR_THING_ID_UPDATE_REQUEST, requestBody);
+        this.restClient.sendRequest(request);
+    }
+
     /** Get Kii App
      * @return Kii Cloud Application.
      */
+    @NonNull
     public KiiApp getApp() {
         return this.app;
     }
@@ -1031,6 +1148,7 @@ public class ThingIFAPI implements Parcelable {
      * Get AppID
      * @return
      */
+    @NonNull
     public String getAppID() {
         return this.app.getAppID();
     }
@@ -1038,6 +1156,7 @@ public class ThingIFAPI implements Parcelable {
      * Get AppKey
      * @return
      */
+    @NonNull
     public String getAppKey() {
         return this.app.getAppKey();
     }
@@ -1045,6 +1164,7 @@ public class ThingIFAPI implements Parcelable {
      * Get base URL
      * @return
      */
+    @NonNull
     public String getBaseUrl() {
         return this.app.getBaseUrl();
     }
@@ -1052,6 +1172,7 @@ public class ThingIFAPI implements Parcelable {
      *
      * @return
      */
+    @NonNull
     public List<Schema> getSchemas() {
         return new ArrayList<Schema>(this.schemas.values());
     }
@@ -1059,6 +1180,7 @@ public class ThingIFAPI implements Parcelable {
      * Get owner who uses the ThingIFAPI.
      * @return
      */
+    @NonNull
     public Owner getOwner() {
         return this.owner;
     }
@@ -1067,6 +1189,7 @@ public class ThingIFAPI implements Parcelable {
      * Get target thing that is operated by the ThingIFAPI.
      * @return
      */
+    @Nullable
     public Target getTarget() {
         return this.target;
     }
@@ -1078,10 +1201,12 @@ public class ThingIFAPI implements Parcelable {
      * Get a tag.
      * @return
      */
+    @Nullable
     public String getTag() {
         return this.tag;
     }
 
+    @Nullable
     private Schema getSchema(String schemaName, int schemaVersion) {
         return this.schemas.get(new Pair<String, Integer>(schemaName, schemaVersion));
     }

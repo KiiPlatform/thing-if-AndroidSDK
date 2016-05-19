@@ -67,23 +67,6 @@ public class KiiApp implements Parcelable {
         this.siteName = "CUSTOM";
     }
 
-    /** Instantiate Kii App with Host Name and Site Name.
-     * Who host Kii Cloud in private/ dedicated location
-     * Will use this constructor to instantiate KiiApp.
-     * (Private/ Dedicated location is only available in Enterprise subscription.)
-     * If you're using public Kii Cloud, please use {@link KiiApp(String, String, Site)}
-     * siteName is used by Gateway Agent to resolve the server location stored with the siteName
-     * in the Gateway configuration.
-     * @param appID ID of the app.
-     * @param appKey Key of the app.
-     * @param hostName Host name of the app.
-     * @param siteName Site name of the app. (Corresponds to Gateway Agent configuration.)
-     */
-    KiiApp(String appID, String appKey, String hostName, String siteName) {
-        this(appID, appKey, hostName);
-        this.siteName = siteName;
-    }
-
     protected KiiApp(Parcel in) {
         appID = in.readString();
         appKey = in.readString();
@@ -110,6 +93,13 @@ public class KiiApp implements Parcelable {
 
     public String getAppKey() {
         return  this.appKey;
+    }
+
+    public Site getSite() {
+        if ("CUSTOM".equals(this.siteName)) {
+            return null;
+        }
+        return Site.valueOf(this.siteName);
     }
 
     public String getHostName() {
