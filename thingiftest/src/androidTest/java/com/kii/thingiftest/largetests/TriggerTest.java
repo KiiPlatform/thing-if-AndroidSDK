@@ -15,8 +15,6 @@ import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
 import com.kii.thingif.trigger.Condition;
 import com.kii.thingif.trigger.EventSource;
-import com.kii.thingif.trigger.Predicate;
-import com.kii.thingif.trigger.ScheduleOncePredicate;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.StatePredicate;
 import com.kii.thingif.trigger.Trigger;
@@ -36,22 +34,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
 @RunWith(AndroidJUnit4.class)
-
 public class TriggerTest extends LargeTestCaseBase {
-    private interface PredicateChecker <T extends Predicate>{
-        void checkPredicate (T predicate);
-    }
-
-    private void _basicTriggerTest(LinkedList<Predicate> predicates, LinkedList<PredicateChecker> checkers) throws Exception{
+    @Test
+    public void basicStatePredicateTriggerTest() throws Exception {
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
-        PredicateChecker checker;
+
         // on-boarding thing
         Target target = api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, null);
         Assert.assertEquals(TypedID.Types.THING, target.getTypedID().getType());
@@ -63,7 +56,8 @@ public class TriggerTest extends LargeTestCaseBase {
         SetColorTemperature setColorTemperature = new SetColorTemperature(25);
         actions1.add(setColor);
         actions1.add(setColorTemperature);
-        Predicate predicate1 = predicates.poll();
+        Condition condition1 = new Condition(new Equals("power", true));
+        StatePredicate predicate1 = new StatePredicate(condition1, TriggersWhen.CONDITION_TRUE);
 
         Trigger trigger1 = api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions1, predicate1);
         Assert.assertNotNull(trigger1.getTriggerID());
@@ -89,7 +83,11 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertEquals(setColorTemperature.colorTemperature, ((SetColorTemperature)trigger1Command.getActions().get(1)).colorTemperature);
         Assert.assertNull(trigger1Command.getActionResults());
 
-        checkers.poll().checkPredicate(trigger1.getPredicate());
+        StatePredicate trigger1Predicate = (StatePredicate)trigger1.getPredicate();
+        Assert.assertEquals(EventSource.STATES, trigger1Predicate.getEventSource());
+        Assert.assertEquals(TriggersWhen.CONDITION_TRUE, trigger1Predicate.getTriggersWhen());
+        Assert.assertEquals("power", ((Equals)trigger1Predicate.getCondition().getClause()).getField());
+        Assert.assertEquals(Boolean.TRUE, ((Equals)trigger1Predicate.getCondition().getClause()).getValue());
 
         // disable/enable trigger
         trigger1 = api.enableTrigger(trigger1.getTriggerID(), false);
@@ -106,8 +104,8 @@ public class TriggerTest extends LargeTestCaseBase {
         TurnPower turnPower = new TurnPower(true);
         actions2.add(setBrightness);
         actions2.add(turnPower);
-
-        Predicate predicate2 = predicates.poll();
+        Condition condition2 = new Condition(new Equals("power", false));
+        StatePredicate predicate2 = new StatePredicate(condition2, TriggersWhen.CONDITION_CHANGED);
 
         Trigger trigger2 = api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions2, predicate2);
         Assert.assertNotNull(trigger2.getTriggerID());
@@ -133,7 +131,11 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertEquals(turnPower.power, ((TurnPower)trigger2Command.getActions().get(1)).power);
         Assert.assertNull(trigger2Command.getActionResults());
 
-        checkers.poll().checkPredicate(trigger2.getPredicate());
+        StatePredicate trigger2Predicate = (StatePredicate)trigger2.getPredicate();
+        Assert.assertEquals(EventSource.STATES, trigger2Predicate.getEventSource());
+        Assert.assertEquals(TriggersWhen.CONDITION_CHANGED, trigger2Predicate.getTriggersWhen());
+        Assert.assertEquals("power", ((Equals)trigger2Predicate.getCondition().getClause()).getField());
+        Assert.assertEquals(Boolean.FALSE, ((Equals)trigger2Predicate.getCondition().getClause()).getValue());
 
         // list triggers
         Pair<List<Trigger>, String> results = api.listTriggers(100, null);
@@ -172,7 +174,11 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertEquals(setColorTemperature.colorTemperature, ((SetColorTemperature)trigger1Command.getActions().get(1)).colorTemperature);
         Assert.assertNull(trigger1Command.getActionResults());
 
-        checkers.poll().checkPredicate(trigger1.getPredicate());
+        trigger1Predicate = (StatePredicate)trigger1.getPredicate();
+        Assert.assertEquals(EventSource.STATES, trigger1Predicate.getEventSource());
+        Assert.assertEquals(TriggersWhen.CONDITION_TRUE, trigger1Predicate.getTriggersWhen());
+        Assert.assertEquals("power", ((Equals)trigger1Predicate.getCondition().getClause()).getField());
+        Assert.assertEquals(Boolean.TRUE, ((Equals)trigger1Predicate.getCondition().getClause()).getValue());
 
         // assert trigger2
         Assert.assertNotNull(trigger2.getTriggerID());
@@ -198,8 +204,11 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertEquals(turnPower.power, ((TurnPower)trigger2Command.getActions().get(1)).power);
         Assert.assertNull(trigger2Command.getActionResults());
 
-        checkers.poll().checkPredicate(trigger2.getPredicate());
-
+        trigger2Predicate = (StatePredicate)trigger2.getPredicate();
+        Assert.assertEquals(EventSource.STATES, trigger2Predicate.getEventSource());
+        Assert.assertEquals(TriggersWhen.CONDITION_CHANGED, trigger2Predicate.getTriggersWhen());
+        Assert.assertEquals("power", ((Equals)trigger2Predicate.getCondition().getClause()).getField());
+        Assert.assertEquals(Boolean.FALSE, ((Equals)trigger2Predicate.getCondition().getClause()).getValue());
 
         // delete triiger
         api.deleteTrigger(trigger1.getTriggerID());
@@ -210,8 +219,8 @@ public class TriggerTest extends LargeTestCaseBase {
         TurnPower turnPower3 = new TurnPower(false);
         actions3.add(setBrightness3);
         actions3.add(turnPower3);
-
-        Predicate predicate3 = predicates.poll();
+        Condition condition3 = new Condition(Range.greaterThan("brightness", 100));
+        StatePredicate predicate3 = new StatePredicate(condition3, TriggersWhen.CONDITION_FALSE_TO_TRUE);
         api.patchTrigger(trigger2.getTriggerID(), DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions3, predicate3);
 
         // list triggers
@@ -245,296 +254,14 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertEquals(turnPower3.power, ((TurnPower)updatedTrigger2Command.getActions().get(1)).power);
         Assert.assertNull(updatedTrigger2Command.getActionResults());
 
-        checkers.poll().checkPredicate(updatedTriger2.getPredicate());
-    }
-
-    @Test
-    public void basicStatePredicateTriggerTest() throws Exception {
-        LinkedList<Predicate> predicates = new LinkedList<Predicate>();
-
-        Condition condition1 = new Condition(new Equals("power", true));
-        StatePredicate predicate1 = new StatePredicate(condition1, TriggersWhen.CONDITION_TRUE);
-        predicates.add(predicate1);
-
-        Condition condition2 = new Condition(new Equals("power", false));
-        StatePredicate predicate2 = new StatePredicate(condition2, TriggersWhen.CONDITION_CHANGED);
-        predicates.add(predicate2);
-
-        Condition condition3 = new Condition(Range.greaterThan("brightness", 100));
-        StatePredicate predicate3 = new StatePredicate(condition3, TriggersWhen.CONDITION_FALSE_TO_TRUE);
-        predicates.add(predicate3);
-
-        LinkedList<PredicateChecker> checkers = new LinkedList<>();
-        checkers.add(
-                new PredicateChecker<StatePredicate>() {
-                    @Override
-                    public void checkPredicate(StatePredicate predicate) {
-                        Assert.assertEquals(EventSource.STATES, predicate.getEventSource());
-                        Assert.assertEquals(TriggersWhen.CONDITION_TRUE, predicate.getTriggersWhen());
-                        Assert.assertEquals("power", ((Equals)predicate.getCondition().getClause()).getField());
-                        Assert.assertEquals(Boolean.TRUE, ((Equals)predicate.getCondition().getClause()).getValue());
-                    }
-                }
-        );
-
-        checkers.add(
-                new PredicateChecker<StatePredicate>() {
-                    @Override
-                    public void checkPredicate(StatePredicate predicate) {
-                        Assert.assertEquals(EventSource.STATES, predicate.getEventSource());
-                        Assert.assertEquals(TriggersWhen.CONDITION_CHANGED, predicate.getTriggersWhen());
-                        Assert.assertEquals("power", ((Equals)predicate.getCondition().getClause()).getField());
-                        Assert.assertEquals(Boolean.FALSE, ((Equals)predicate.getCondition().getClause()).getValue());
-                    }
-                }
-        );
-
-        checkers.add(new PredicateChecker<StatePredicate>() {
-            @Override
-            public void checkPredicate(StatePredicate predicate) {
-                Assert.assertEquals(EventSource.STATES, predicate.getEventSource());
-                Assert.assertEquals(TriggersWhen.CONDITION_TRUE, predicate.getTriggersWhen());
-                Assert.assertEquals("power", ((Equals)predicate.getCondition().getClause()).getField());
-                Assert.assertEquals(Boolean.TRUE, ((Equals)predicate.getCondition().getClause()).getValue());
-            }
-        });
-
-        checkers.add(new PredicateChecker<StatePredicate>() {
-            @Override
-            public void checkPredicate(StatePredicate trigger2Predicate) {
-                Assert.assertEquals(EventSource.STATES, trigger2Predicate.getEventSource());
-                Assert.assertEquals(TriggersWhen.CONDITION_CHANGED, trigger2Predicate.getTriggersWhen());
-                Assert.assertEquals("power", ((Equals)trigger2Predicate.getCondition().getClause()).getField());
-                Assert.assertEquals(Boolean.FALSE, ((Equals)trigger2Predicate.getCondition().getClause()).getValue());
-            }
-        });
-
-        checkers.add(new PredicateChecker<StatePredicate>() {
-            @Override
-            public void checkPredicate(StatePredicate predicate) {
-                Assert.assertEquals(EventSource.STATES, predicate.getEventSource());
-                Assert.assertEquals(TriggersWhen.CONDITION_FALSE_TO_TRUE, predicate.getTriggersWhen());
-                Assert.assertEquals("brightness", ((Range)predicate.getCondition().getClause()).getField());
-                Assert.assertEquals(100, (long)((Range)predicate.getCondition().getClause()).getLowerLimit());
-            }
-        });
-
-        _basicTriggerTest(predicates,checkers);
-    }
-
-    @Test
-    public void basicScheduleOncePredicateTriggerTest() throws Exception {
-
-        LinkedList<Predicate> predicates = new LinkedList<Predicate>();
-
-        long nextMonthMillis = System.currentTimeMillis() + 36000;
-        final ScheduleOncePredicate predicate1 = new ScheduleOncePredicate(nextMonthMillis);
-        predicates.add(predicate1);
-
-        final ScheduleOncePredicate predicate2 = new ScheduleOncePredicate(nextMonthMillis + (3600 * 1000));
-        predicates.add(predicate2);
-
-        final ScheduleOncePredicate predicate3 = new ScheduleOncePredicate(nextMonthMillis + (3600 * 1000 * 2));
-        predicates.add(predicate3);
-
-        LinkedList<PredicateChecker> checkers = new LinkedList<>();
-        checkers.add(
-                new PredicateChecker<ScheduleOncePredicate>() {
-                    @Override
-                    public void checkPredicate(ScheduleOncePredicate predicate) {
-
-                        Assert.assertEquals(predicate1.getScheduleAt(), predicate.getScheduleAt());
-                    }
-                }
-        );
-
-        checkers.add(
-                new PredicateChecker<ScheduleOncePredicate>() {
-                    @Override
-                    public void checkPredicate(ScheduleOncePredicate predicate) {
-
-                        Assert.assertEquals(predicate2.getScheduleAt(), predicate.getScheduleAt());
-                    }
-                }
-        );
-
-        checkers.add(
-                new PredicateChecker<ScheduleOncePredicate>() {
-                    @Override
-                    public void checkPredicate(ScheduleOncePredicate predicate) {
-
-                        Assert.assertEquals(predicate1.getScheduleAt(), predicate.getScheduleAt());
-                    }
-                }
-        );
-
-        checkers.add(
-                new PredicateChecker<ScheduleOncePredicate>() {
-                    @Override
-                    public void checkPredicate(ScheduleOncePredicate predicate) {
-
-                        Assert.assertEquals(predicate2.getScheduleAt(), predicate.getScheduleAt());
-                    }
-                }
-        );
-
-        checkers.add(
-                new PredicateChecker<ScheduleOncePredicate>() {
-                    @Override
-                    public void checkPredicate(ScheduleOncePredicate predicate) {
-
-                        Assert.assertEquals(predicate3.getScheduleAt(), predicate.getScheduleAt());
-                    }
-                }
-        );
-
-        _basicTriggerTest(predicates,checkers);
-    }
-
-    @Test
-    public void basicStateServerCodeTriggerTest() throws Exception {
-        LinkedList<Predicate> predicates = new LinkedList<Predicate>();
-
-        Condition condition1 = new Condition(new Equals("power", true));
-        StatePredicate predicate1 = new StatePredicate(condition1, TriggersWhen.CONDITION_TRUE);
-        predicates.add(predicate1);
-
-        Condition condition2 = new Condition(new Equals("power", false));
-        StatePredicate predicate2 = new StatePredicate(condition2, TriggersWhen.CONDITION_CHANGED);
-        predicates.add(predicate2);
-
-        Condition condition3 = new Condition(Range.greaterThan("brightness", 100));
-        StatePredicate predicate3 = new StatePredicate(condition3, TriggersWhen.CONDITION_FALSE_TO_TRUE);
-        predicates.add(predicate3);
-
-        LinkedList<PredicateChecker> checkers = new LinkedList<>();
-        checkers.add(
-                new PredicateChecker<StatePredicate>() {
-                    @Override
-                    public void checkPredicate(StatePredicate predicate) {
-                        Assert.assertEquals(EventSource.STATES, predicate.getEventSource());
-                        Assert.assertEquals(TriggersWhen.CONDITION_TRUE, predicate.getTriggersWhen());
-                        Assert.assertEquals("power", ((Equals)predicate.getCondition().getClause()).getField());
-                        Assert.assertEquals(Boolean.TRUE, ((Equals)predicate.getCondition().getClause()).getValue());
-                    }
-                }
-        );
-
-        checkers.add(
-                new PredicateChecker<StatePredicate>() {
-                    @Override
-                    public void checkPredicate(StatePredicate predicate) {
-                        Assert.assertEquals(EventSource.STATES, predicate.getEventSource());
-                        Assert.assertEquals(TriggersWhen.CONDITION_CHANGED, predicate.getTriggersWhen());
-                        Assert.assertEquals("power", ((Equals)predicate.getCondition().getClause()).getField());
-                        Assert.assertEquals(Boolean.FALSE, ((Equals)predicate.getCondition().getClause()).getValue());
-                    }
-                }
-        );
-
-        checkers.add(new PredicateChecker<StatePredicate>() {
-            @Override
-            public void checkPredicate(StatePredicate predicate) {
-                Assert.assertEquals(EventSource.STATES, predicate.getEventSource());
-                Assert.assertEquals(TriggersWhen.CONDITION_TRUE, predicate.getTriggersWhen());
-                Assert.assertEquals("power", ((Equals)predicate.getCondition().getClause()).getField());
-                Assert.assertEquals(Boolean.TRUE, ((Equals)predicate.getCondition().getClause()).getValue());
-            }
-        });
-
-        checkers.add(new PredicateChecker<StatePredicate>() {
-            @Override
-            public void checkPredicate(StatePredicate trigger2Predicate) {
-                Assert.assertEquals(EventSource.STATES, trigger2Predicate.getEventSource());
-                Assert.assertEquals(TriggersWhen.CONDITION_CHANGED, trigger2Predicate.getTriggersWhen());
-                Assert.assertEquals("power", ((Equals)trigger2Predicate.getCondition().getClause()).getField());
-                Assert.assertEquals(Boolean.FALSE, ((Equals)trigger2Predicate.getCondition().getClause()).getValue());
-            }
-        });
-
-        checkers.add(new PredicateChecker<StatePredicate>() {
-            @Override
-            public void checkPredicate(StatePredicate predicate) {
-                Assert.assertEquals(EventSource.STATES, predicate.getEventSource());
-                Assert.assertEquals(TriggersWhen.CONDITION_FALSE_TO_TRUE, predicate.getTriggersWhen());
-                Assert.assertEquals("brightness", ((Range)predicate.getCondition().getClause()).getField());
-                Assert.assertEquals(100, (long)((Range)predicate.getCondition().getClause()).getLowerLimit());
-            }
-        });
-
-        _basicServerCodeTriggerTest(predicates,checkers);
+        StatePredicate updatedTrigger2Predicate = (StatePredicate)updatedTriger2.getPredicate();
+        Assert.assertEquals(EventSource.STATES, updatedTrigger2Predicate.getEventSource());
+        Assert.assertEquals(TriggersWhen.CONDITION_FALSE_TO_TRUE, updatedTrigger2Predicate.getTriggersWhen());
+        Assert.assertEquals("brightness", ((Range)updatedTrigger2Predicate.getCondition().getClause()).getField());
+        Assert.assertEquals(100, (long)((Range)updatedTrigger2Predicate.getCondition().getClause()).getLowerLimit());
     }
     @Test
-    public void basicScheduleOnceServerCodeTriggerTest() throws Exception {
-
-        LinkedList<Predicate> predicates = new LinkedList<Predicate>();
-
-        long nextMonthMillis = System.currentTimeMillis() + 36000;
-        final ScheduleOncePredicate predicate1 = new ScheduleOncePredicate(nextMonthMillis);
-        predicates.add(predicate1);
-
-        final ScheduleOncePredicate predicate2 = new ScheduleOncePredicate(nextMonthMillis + (3600 * 1000));
-        predicates.add(predicate2);
-
-        final ScheduleOncePredicate predicate3 = new ScheduleOncePredicate(nextMonthMillis + (3600 * 1000 * 2));
-        predicates.add(predicate3);
-
-        LinkedList<PredicateChecker> checkers = new LinkedList<>();
-        checkers.add(
-                new PredicateChecker<ScheduleOncePredicate>() {
-                    @Override
-                    public void checkPredicate(ScheduleOncePredicate predicate) {
-
-                        Assert.assertEquals(predicate1.getScheduleAt(), predicate.getScheduleAt());
-                    }
-                }
-        );
-
-        checkers.add(
-                new PredicateChecker<ScheduleOncePredicate>() {
-                    @Override
-                    public void checkPredicate(ScheduleOncePredicate predicate) {
-
-                        Assert.assertEquals(predicate2.getScheduleAt(), predicate.getScheduleAt());
-                    }
-                }
-        );
-
-        checkers.add(
-                new PredicateChecker<ScheduleOncePredicate>() {
-                    @Override
-                    public void checkPredicate(ScheduleOncePredicate predicate) {
-
-                        Assert.assertEquals(predicate1.getScheduleAt(), predicate.getScheduleAt());
-                    }
-                }
-        );
-
-        checkers.add(
-                new PredicateChecker<ScheduleOncePredicate>() {
-                    @Override
-                    public void checkPredicate(ScheduleOncePredicate predicate) {
-
-                        Assert.assertEquals(predicate2.getScheduleAt(), predicate.getScheduleAt());
-                    }
-                }
-        );
-
-        checkers.add(
-                new PredicateChecker<ScheduleOncePredicate>() {
-                    @Override
-                    public void checkPredicate(ScheduleOncePredicate predicate) {
-
-                        Assert.assertEquals(predicate3.getScheduleAt(), predicate.getScheduleAt());
-                    }
-                }
-        );
-
-        _basicServerCodeTriggerTest(predicates,checkers);
-
-    }
-
-    private void _basicServerCodeTriggerTest(LinkedList<Predicate> predicates, LinkedList<PredicateChecker> checkers) throws Exception{
+    public void basicServerCodeTriggerTest() throws Exception {
         ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
@@ -550,8 +277,8 @@ public class TriggerTest extends LargeTestCaseBase {
         String targetAppID1 = api.getAppID();
         JSONObject parameters1 = new JSONObject("{\"doAction\":true}");
         ServerCode serverCode1 = new ServerCode(endpoint1, executorAccessToken1, targetAppID1, parameters1);
-
-        Predicate predicate1 = predicates.poll();
+        Condition condition1 = new Condition(new Equals("power", true));
+        StatePredicate predicate1 = new StatePredicate(condition1, TriggersWhen.CONDITION_TRUE);
 
         Trigger trigger1 = api.postNewTrigger(serverCode1, predicate1);
         Assert.assertNotNull(trigger1.getTriggerID());
@@ -567,8 +294,11 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertEquals(targetAppID1, trigger1ServerCode.getTargetAppID());
         assertJSONObject(parameters1, trigger1ServerCode.getParameters());
 
-        //assert trigger1Predicate
-        checkers.poll().checkPredicate(trigger1.getPredicate());
+        StatePredicate trigger1Predicate = (StatePredicate)trigger1.getPredicate();
+        Assert.assertEquals(EventSource.STATES, trigger1Predicate.getEventSource());
+        Assert.assertEquals(TriggersWhen.CONDITION_TRUE, trigger1Predicate.getTriggersWhen());
+        Assert.assertEquals("power", ((Equals)trigger1Predicate.getCondition().getClause()).getField());
+        Assert.assertEquals(Boolean.TRUE, ((Equals)trigger1Predicate.getCondition().getClause()).getValue());
 
         // create new trigger
         List<Action> actions2 = new ArrayList<Action>();
@@ -576,8 +306,8 @@ public class TriggerTest extends LargeTestCaseBase {
         TurnPower turnPower = new TurnPower(true);
         actions2.add(setBrightness);
         actions2.add(turnPower);
-
-        Predicate predicate2 = predicates.poll();
+        Condition condition2 = new Condition(new Equals("power", false));
+        StatePredicate predicate2 = new StatePredicate(condition2, TriggersWhen.CONDITION_CHANGED);
 
         Trigger trigger2 = api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions2, predicate2);
         Assert.assertNotNull(trigger2.getTriggerID());
@@ -602,7 +332,11 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertEquals(turnPower.power, ((TurnPower)trigger2Command.getActions().get(1)).power);
         Assert.assertNull(trigger2Command.getActionResults());
 
-        checkers.poll().checkPredicate(trigger2.getPredicate());
+        StatePredicate trigger2Predicate = (StatePredicate)trigger2.getPredicate();
+        Assert.assertEquals(EventSource.STATES, trigger2Predicate.getEventSource());
+        Assert.assertEquals(TriggersWhen.CONDITION_CHANGED, trigger2Predicate.getTriggersWhen());
+        Assert.assertEquals("power", ((Equals)trigger2Predicate.getCondition().getClause()).getField());
+        Assert.assertEquals(Boolean.FALSE, ((Equals)trigger2Predicate.getCondition().getClause()).getValue());
 
         // list triggers
         Pair<List<Trigger>, String> results = api.listTriggers(100, null);
@@ -632,7 +366,11 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertEquals(targetAppID1, trigger1ServerCode.getTargetAppID());
         assertJSONObject(parameters1, trigger1ServerCode.getParameters());
 
-        checkers.poll().checkPredicate(trigger1.getPredicate());
+        trigger1Predicate = (StatePredicate)trigger1.getPredicate();
+        Assert.assertEquals(EventSource.STATES, trigger1Predicate.getEventSource());
+        Assert.assertEquals(TriggersWhen.CONDITION_TRUE, trigger1Predicate.getTriggersWhen());
+        Assert.assertEquals("power", ((Equals)trigger1Predicate.getCondition().getClause()).getField());
+        Assert.assertEquals(Boolean.TRUE, ((Equals) trigger1Predicate.getCondition().getClause()).getValue());
 
         // assert trigger2
         Assert.assertNotNull(trigger2.getTriggerID());
@@ -657,7 +395,11 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertEquals(turnPower.power, ((TurnPower) trigger2Command.getActions().get(1)).power);
         Assert.assertNull(trigger2Command.getActionResults());
 
-        checkers.poll().checkPredicate(trigger2.getPredicate());
+        trigger2Predicate = (StatePredicate)trigger2.getPredicate();
+        Assert.assertEquals(EventSource.STATES, trigger2Predicate.getEventSource());
+        Assert.assertEquals(TriggersWhen.CONDITION_CHANGED, trigger2Predicate.getTriggersWhen());
+        Assert.assertEquals("power", ((Equals)trigger2Predicate.getCondition().getClause()).getField());
+        Assert.assertEquals(Boolean.FALSE, ((Equals) trigger2Predicate.getCondition().getClause()).getValue());
 
         // delete triiger
         api.deleteTrigger(trigger2.getTriggerID());
@@ -668,8 +410,8 @@ public class TriggerTest extends LargeTestCaseBase {
         String targetAppID2 = api.getAppID() + "2";
         JSONObject parameters2 = new JSONObject("{\"doAction\":false}");
         ServerCode serverCode2 = new ServerCode(endpoint2, executorAccessToken2, targetAppID2, parameters2);
-
-        Predicate predicate3 = predicates.poll();
+        Condition condition3 = new Condition(Range.greaterThan("brightness", 100));
+        StatePredicate predicate3 = new StatePredicate(condition3, TriggersWhen.CONDITION_FALSE_TO_TRUE);
         api.patchTrigger(trigger1.getTriggerID(), serverCode2, predicate3);
 
         // list triggers
@@ -693,8 +435,11 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertEquals(targetAppID2, updatedTrigger1ServerCode.getTargetAppID());
         assertJSONObject(parameters2, updatedTrigger1ServerCode.getParameters());
 
-        checkers.poll().checkPredicate(updatedTriger1.getPredicate());
-
+        StatePredicate updatedTrigger2Predicate = (StatePredicate)updatedTriger1.getPredicate();
+        Assert.assertEquals(EventSource.STATES, updatedTrigger2Predicate.getEventSource());
+        Assert.assertEquals(TriggersWhen.CONDITION_FALSE_TO_TRUE, updatedTrigger2Predicate.getTriggersWhen());
+        Assert.assertEquals("brightness", ((Range)updatedTrigger2Predicate.getCondition().getClause()).getField());
+        Assert.assertEquals(100, (long)((Range)updatedTrigger2Predicate.getCondition().getClause()).getLowerLimit());
     }
     @Test
     public void listTriggersEmptyResultTest() throws Exception {
