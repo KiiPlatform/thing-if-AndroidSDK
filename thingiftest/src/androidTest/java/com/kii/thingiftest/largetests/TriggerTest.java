@@ -13,6 +13,7 @@ import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
+import com.kii.thingif.exception.BadRequestException;
 import com.kii.thingif.trigger.Condition;
 import com.kii.thingif.trigger.EventSource;
 import com.kii.thingif.trigger.SchedulePredicate;
@@ -813,6 +814,28 @@ public class TriggerTest extends LargeTestCaseBase {
         Assert.assertEquals(EventSource.SCHEDULE, updatedTrigger2Predicate.getEventSource());
         Assert.assertEquals("* * 1 * *", updatedTrigger2Predicate.getSchedule());
         api.deleteTrigger(updatedTriger2.getTriggerID());
+    }
+
+    @Test(expected = BadRequestException.class)
+    public void basicInvalidSchedulePredicateTriggerTest() throws Exception {
+        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema();
+        String vendorThingID = UUID.randomUUID().toString();
+        String thingPassword = "password";
+
+        // on-boarding thing
+        Target target = api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, null);
+        Assert.assertEquals(TypedID.Types.THING, target.getTypedID().getType());
+        Assert.assertNotNull(target.getAccessToken());
+
+        // create new trigger
+        List<Action> actions1 = new ArrayList<Action>();
+        SetColor setColor = new SetColor(128, 0, 255);
+        SetColorTemperature setColorTemperature = new SetColorTemperature(25);
+        actions1.add(setColor);
+        actions1.add(setColorTemperature);
+        SchedulePredicate predicate1 = new SchedulePredicate("wrong format");
+
+        Trigger trigger1 = api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions1, predicate1);
     }
 
 }
