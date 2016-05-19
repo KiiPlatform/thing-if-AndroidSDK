@@ -100,7 +100,7 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         builder.addSchema(this.createDefaultSchema());
         return builder;
     }
-    protected ThingIFAPI craeteThingIFAPIWithDemoSchema(String appID, String appKey) throws Exception {
+    protected ThingIFAPI createThingIFAPIWithDemoSchema(String appID, String appKey) throws Exception {
         String ownerID = UUID.randomUUID().toString();
         Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
         KiiApp app = getApp(appID, appKey);

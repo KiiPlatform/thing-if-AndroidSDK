@@ -31,7 +31,7 @@ public class SchemaMismatchTest extends ThingIFAPITestBase {
     public void testCommandSchemaMismatch() throws Exception {
 
         // Onboard.
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema("dummyAppId", "dummyAppKey");
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema("dummyAppId", "dummyAppKey");
         this.addMockResponseForOnBoard(200, "dummyThingID", "dummyToken");
 
         api.onboard("dummyThingID", "dummyPassword");
@@ -104,7 +104,7 @@ public class SchemaMismatchTest extends ThingIFAPITestBase {
     @Test
     public void testTriggerSchemaMismatch() throws Exception {
         // Onboard.
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema("dummyAppId", "dummyAppKey");
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema("dummyAppId", "dummyAppKey");
         this.addMockResponseForOnBoard(200, "dummyThingID", "dummyToken");
 
         api.onboard("dummyThingID", "dummyPassword");

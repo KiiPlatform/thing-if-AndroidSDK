@@ -30,7 +30,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
 
         this.addMockResponseForInstallPush(201, installationID);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         Assert.assertNull(api.getInstallationID());
         String result = api.installPush(deviceToken, PushBackend.GCM);
         Assert.assertNotNull(api.getInstallationID());
@@ -60,7 +60,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
 
         this.addMockResponseForInstallPush(201, installationID);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         Assert.assertNull(api.getInstallationID());
         String result = api.installPush(deviceToken, PushBackend.GCM,true);
         Assert.assertNotNull(api.getInstallationID());
@@ -91,7 +91,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
 
         this.addMockResponseForInstallPush(201, installationID);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         Assert.assertNull(api.getInstallationID());
         String result = api.installPush(deviceToken, PushBackend.JPUSH);
         Assert.assertNotNull(api.getInstallationID());
@@ -119,7 +119,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
         String deviceToken = UUID.randomUUID().toString();
         this.addEmptyMockResponse(400);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
             api.installPush(deviceToken, PushBackend.GCM);
             Assert.fail("ThingIFRestException should be thrown");
@@ -149,7 +149,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
         String deviceToken = UUID.randomUUID().toString();
         this.addEmptyMockResponse(401);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
             api.installPush(deviceToken, PushBackend.GCM);
             Assert.fail("ThingIFRestException should be thrown");
@@ -179,7 +179,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
         String deviceToken = UUID.randomUUID().toString();
         this.addEmptyMockResponse(404);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
             api.installPush(deviceToken, PushBackend.GCM);
             Assert.fail("ThingIFRestException should be thrown");
@@ -206,7 +206,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
     @Test(expected = IllegalArgumentException.class)
     public void installPushWithNullPushBackendTest() throws Exception {
         String deviceToken = UUID.randomUUID().toString();
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.installPush(deviceToken, null);
     }
     @Test
@@ -215,7 +215,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
 
         this.addEmptyMockResponse(204);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.uninstallPush(installationID);
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -234,7 +234,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
 
         this.addEmptyMockResponse(401);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
             api.uninstallPush(installationID);
             Assert.fail("ThingIFRestException should be thrown");
@@ -257,7 +257,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
 
         this.addEmptyMockResponse(404);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
             api.uninstallPush(installationID);
             Assert.fail("ThingIFRestException should be thrown");
@@ -276,7 +276,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
     }
     @Test(expected = IllegalArgumentException.class)
     public void uninstallPushWithNullInstallationIDTest() throws Exception {
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.uninstallPush(null);
     }
 }
