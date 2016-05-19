@@ -1,7 +1,6 @@
 package com.kii.thingif.trigger;
 
 import android.os.Parcel;
-import android.support.annotation.NonNull;
 
 /** Class represents ScheduleOncePredicate
  *
@@ -25,7 +24,7 @@ public class ScheduleOncePredicate extends Predicate {
     
     // Implementation of Parcelable
     protected ScheduleOncePredicate(Parcel in) {
-        this.scheduleAt = in.readParcelable(Schedule.class.getClassLoader());
+        this.scheduleAt = in.readLong();
     }
     public static final Creator<ScheduleOncePredicate> CREATOR = new Creator<ScheduleOncePredicate>() {
         @Override
