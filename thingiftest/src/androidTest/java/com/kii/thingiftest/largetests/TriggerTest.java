@@ -41,7 +41,7 @@ import java.util.UUID;
 public class TriggerTest extends LargeTestCaseBase {
     @Test
     public void basicStatePredicateTriggerTest() throws Exception {
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema();
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
 
@@ -262,7 +262,7 @@ public class TriggerTest extends LargeTestCaseBase {
     }
     @Test
     public void basicServerCodeTriggerTest() throws Exception {
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema();
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
 
@@ -443,7 +443,7 @@ public class TriggerTest extends LargeTestCaseBase {
     }
     @Test
     public void listTriggersEmptyResultTest() throws Exception {
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema();
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
 
@@ -475,7 +475,7 @@ public class TriggerTest extends LargeTestCaseBase {
         rest.api().servercode().setCurrentVersion(versionID);
 
         // initialize ThingIFAPI
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema();
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
 
@@ -547,7 +547,7 @@ public class TriggerTest extends LargeTestCaseBase {
         rest.api().servercode().setCurrentVersion(versionID);
 
         // initialize ThingIFAPI
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema();
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
 

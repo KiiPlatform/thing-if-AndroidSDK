@@ -25,7 +25,7 @@ import java.util.UUID;
 public class OneTimeTriggerTest extends LargeTestCaseBase {
     @Test
     public void basicScheduleOncePredicateTriggerTest() throws Exception {
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema();
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
 

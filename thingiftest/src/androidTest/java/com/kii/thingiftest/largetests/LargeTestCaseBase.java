@@ -10,7 +10,6 @@ import com.kii.cloud.rest.client.KiiRest;
 import com.kii.cloud.rest.client.model.storage.KiiNormalUser;
 import com.kii.thingif.KiiApp;
 import com.kii.thingif.Owner;
-import com.kii.thingif.Site;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.ThingIFAPIBuilder;
 import com.kii.thingif.TypedID;
@@ -106,7 +105,7 @@ public abstract class LargeTestCaseBase extends AndroidTestCase {
         sb.addActionClass(TurnPower.class, TurnPowerResult.class);
         return sb.build();
     }
-    protected ThingIFAPI craeteThingIFAPIWithDemoSchema() throws Exception {
+    protected ThingIFAPI createThingIFAPIWithDemoSchema() throws Exception {
         Owner owner = this.createNewOwner();
         String hostname = server.getBaseUrl().substring("https://".length());
         KiiApp app = KiiApp.Builder.builderWithHostName(server.getAppID(), server.getAppKey(), hostname).build();
