@@ -9,7 +9,6 @@ import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
-import com.kii.thingiftest.largetests.LargeTestCaseBase;
 import com.kii.thingiftest.schema.SetBrightness;
 import com.kii.thingiftest.schema.SetColor;
 import com.kii.thingiftest.schema.SetColorTemperature;
@@ -29,7 +28,7 @@ import java.util.UUID;
 public class CommandTest extends LargeTestCaseBase {
     @Test
     public void basicTest() throws Exception {
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema();
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
 
@@ -127,7 +126,7 @@ public class CommandTest extends LargeTestCaseBase {
     }
     @Test
     public void listCommandsEmptyResultTest() throws Exception {
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema();
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
 
