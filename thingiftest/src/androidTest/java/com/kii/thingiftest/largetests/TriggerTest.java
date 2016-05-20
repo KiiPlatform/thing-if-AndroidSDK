@@ -608,7 +608,7 @@ public class TriggerTest extends LargeTestCaseBase {
 
     @Test
     public void basicSchedulePredicateTriggerTest() throws Exception {
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema();
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
 
@@ -818,7 +818,7 @@ public class TriggerTest extends LargeTestCaseBase {
 
     @Test(expected = BadRequestException.class)
     public void basicInvalidSchedulePredicateTriggerTest() throws Exception {
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema();
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
 
