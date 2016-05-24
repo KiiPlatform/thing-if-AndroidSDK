@@ -14,7 +14,6 @@ public class GatewayAPIBuilder {
     private String tag;
     private final KiiApp app;
     private final Uri gatewayAddress;
-    private String accessToken;
 
     private GatewayAPIBuilder(
             @Nullable Context context,
@@ -68,31 +67,6 @@ public class GatewayAPIBuilder {
         }
         return new GatewayAPIBuilder(context, app, gatewayAddress);
     }
-    /**
-     * Instantiate new GatewayAPIBuilder without Context.
-     * This method is for internal use only. Do not call it from your application.
-     *
-     * @param app Kii Cloud Application.
-     * @param gatewayAddress Gateway Address
-     * @return ThingIFAPIBuilder instance.
-     */
-    @NonNull
-    public static GatewayAPIBuilder _newBuilder(
-            @NonNull KiiApp app,
-            @NonNull Uri gatewayAddress) {
-        if (app == null) {
-            throw new IllegalArgumentException("app is null");
-        }
-        if (gatewayAddress == null) {
-            throw new IllegalArgumentException("gatewayAddress is null");
-        }
-        return new GatewayAPIBuilder(null, app, gatewayAddress);
-    }
-
-    public GatewayAPIBuilder setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-        return this;
-    }
 
     /**
      * Instantiate new GatewayAPI instance.
@@ -102,7 +76,6 @@ public class GatewayAPIBuilder {
     @NonNull
     public GatewayAPI build() {
         GatewayAPI api = new GatewayAPI(this.context, this.tag, this.app, this.gatewayAddress);
-        api.setAccessToken(this.accessToken);
         return api;
     }
 }

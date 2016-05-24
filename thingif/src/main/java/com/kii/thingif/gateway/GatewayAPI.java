@@ -11,6 +11,15 @@ import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 import android.util.Base64;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.kii.thingif.KiiApp;
 import com.kii.thingif.MediaTypes;
 import com.kii.thingif.exception.StoredGatewayAPIInstanceNotFoundException;
@@ -24,6 +33,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +50,58 @@ public class GatewayAPI implements Parcelable {
     private String accessToken;
     private final IoTRestClient restClient;
 
+    private static final Gson GSON;
+
+    static {
+        GSON = (new GsonBuilder()).registerTypeAdapter(GatewayAPI.class,
+                new JsonSerializer<GatewayAPI>() {
+
+                    @Override
+                    public JsonElement serialize(
+                        GatewayAPI src,
+                        Type typeOfSrc,
+                        JsonSerializationContext context)
+            {
+                if (src == null) {
+                    return null;
+                }
+                JsonObject retval = new JsonObject();
+                retval.add("app", GSON.toJsonTree(src.app));
+                retval.addProperty("gatewayAddress",
+                        src.gatewayAddress.toString());
+                if (!TextUtils.isEmpty(src.tag)) {
+                    retval.addProperty("tag", src.tag);
+                }
+                if (!TextUtils.isEmpty(src.accessToken)) {
+                    retval.addProperty("accessToken", src.accessToken);
+                }
+                return retval;
+            }
+        }).registerTypeAdapter(GatewayAPI.class,
+                new JsonDeserializer<GatewayAPI>() {
+
+                    @Override
+                    public GatewayAPI deserialize(
+                            JsonElement jsonElement,
+                            Type typeOfT,
+                            JsonDeserializationContext context)
+                        throws JsonParseException
+            {
+                JsonObject jsonObject = (JsonObject)jsonElement;
+                KiiApp app = GSON.fromJson(
+                    jsonObject.getAsJsonObject("app"), KiiApp.class);
+                Uri gatewayAddress = Uri.parse(
+                        jsonObject.get("gatewayAddress").getAsString());
+                String tag = jsonObject.has("tag") ?
+                        jsonObject.get("tag").getAsString() : null;
+                String accessToken = jsonObject.has("accessToken") ?
+                        jsonObject.get("accessToken").getAsString() : null;
+                return new GatewayAPI(null, tag, app, gatewayAddress,
+                        accessToken);
+            }
+        }).create();
+    }
+
     GatewayAPI(@Nullable Context context,
                @NonNull KiiApp app,
                @NonNull Uri gatewayAddress) {
@@ -49,12 +111,20 @@ public class GatewayAPI implements Parcelable {
                @Nullable String tag,
                @NonNull KiiApp app,
                @NonNull Uri gatewayAddress) {
+        this(context, tag, app, gatewayAddress, null);
+    }
+    GatewayAPI(@Nullable Context context,
+               @Nullable String tag,
+               @NonNull KiiApp app,
+               @NonNull Uri gatewayAddress,
+               @Nullable String accessToken) {
         if (context != null) {
             GatewayAPI.context = context.getApplicationContext();
         }
         this.app = app;
         this.tag =tag;
         this.gatewayAddress = gatewayAddress;
+        this.accessToken = accessToken;
         this.restClient = new IoTRestClient();
     }
 
@@ -345,9 +415,7 @@ public class GatewayAPI implements Parcelable {
     public String getAccessToken() {
         return this.accessToken;
     }
-    void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
+
     // Implementation of Parcelable
     public static final Creator<GatewayAPI> CREATOR = new Creator<GatewayAPI>() {
         @Override
@@ -419,11 +487,12 @@ public class GatewayAPI implements Parcelable {
      */
     @NonNull
     public static GatewayAPI loadFromStoredInstance(@NonNull Context context, @Nullable String tag) throws StoredGatewayAPIInstanceNotFoundException {
-        GatewayAPI.context = context.getApplicationContext();
         SharedPreferences preferences = getSharedPreferences();
         String serializedJson = preferences.getString(getSharedPreferencesKey(tag), null);
         if (serializedJson != null) {
-            return  GsonRepository.gson().fromJson(serializedJson, GatewayAPI.class);
+            GatewayAPI retval = GSON.fromJson(serializedJson, GatewayAPI.class);
+            GatewayAPI.context = context.getApplicationContext();
+            return retval;
         }
         throw new StoredGatewayAPIInstanceNotFoundException(tag);
     }
@@ -451,10 +520,12 @@ public class GatewayAPI implements Parcelable {
         SharedPreferences preferences = getSharedPreferences();
         if (preferences != null) {
             SharedPreferences.Editor editor = preferences.edit();
-            editor.putString(getSharedPreferencesKey(instance.tag), GsonRepository.gson().toJson(instance));
+            editor.putString(getSharedPreferencesKey(instance.tag),
+                    GSON.toJson(instance));
             editor.apply();
         }
     }
+
     private static String getSharedPreferencesKey(String tag) {
         return SHARED_PREFERENCES_KEY_INSTANCE + (tag == null ? "" : "_"  +tag);
     }
