@@ -19,22 +19,20 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.kii.thingif.KiiApp;
+import com.kii.thingif.Owner;
 import com.kii.thingif.ServerError;
 import com.kii.thingif.StandaloneThing;
+import com.kii.thingif.Target;
+import com.kii.thingif.TargetState;
 import com.kii.thingif.TargetThing;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.ThingIFAPIBuilder;
-import com.kii.thingif.Owner;
-import com.kii.thingif.Target;
-import com.kii.thingif.TargetState;
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.ActionResult;
 import com.kii.thingif.exception.UnsupportedActionException;
 import com.kii.thingif.gateway.EndNode;
 import com.kii.thingif.gateway.Gateway;
-import com.kii.thingif.gateway.GatewayAPI;
-import com.kii.thingif.gateway.GatewayAPIBuilder;
 import com.kii.thingif.schema.Schema;
 import com.kii.thingif.schema.SchemaBuilder;
 import com.kii.thingif.trigger.Condition;
@@ -47,10 +45,10 @@ import com.kii.thingif.trigger.StatePredicate;
 import com.kii.thingif.trigger.TriggeredServerCodeResult;
 import com.kii.thingif.trigger.TriggersWhen;
 import com.kii.thingif.trigger.clause.And;
+import com.kii.thingif.trigger.clause.Clause;
 import com.kii.thingif.trigger.clause.Equals;
 import com.kii.thingif.trigger.clause.NotEquals;
 import com.kii.thingif.trigger.clause.Or;
-import com.kii.thingif.trigger.clause.Clause;
 import com.kii.thingif.trigger.clause.Range;
 
 import org.json.JSONArray;
@@ -481,6 +479,26 @@ public class GsonRepository {
         }
     };
 
+    private static final JsonSerializer<Uri> URI_SERIALIZER = new JsonSerializer<Uri>() {
+        @Override
+        public JsonElement serialize(Uri src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonObject json = new JsonObject();
+            json.addProperty("uri", src.toString());
+            return json;
+        }
+    };
+
+    private static final JsonDeserializer<Uri> URI_DESERIALIZER = new JsonDeserializer<Uri>() {
+        @Override
+        public Uri deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            JsonObject json = (JsonObject)jsonElement;
+            if (json.has("uri")) {
+                return Uri.parse(json.get("uri").getAsString());
+            }
+            return null;
+        }
+    };
+
     static {
         DEFAULT_GSON = new GsonBuilder()
                 .registerTypeAdapter(JSONObject.class, ORG_JSON_OBJECT_SERIALIZER)
@@ -505,6 +523,8 @@ public class GsonRepository {
                 .registerTypeAdapter(StandaloneThing.class, TARGET_SERIALIZER)
                 .registerTypeAdapter(Gateway.class, TARGET_SERIALIZER)
                 .registerTypeAdapter(EndNode.class, TARGET_SERIALIZER)
+                .registerTypeAdapter(Uri.class, URI_SERIALIZER)
+                .registerTypeAdapter(Uri.class, URI_DESERIALIZER)
                 .create();
     }
 
@@ -594,6 +614,8 @@ public class GsonRepository {
                     .registerTypeAdapter(StandaloneThing.class, TARGET_SERIALIZER)
                     .registerTypeAdapter(Gateway.class, TARGET_SERIALIZER)
                     .registerTypeAdapter(EndNode.class, TARGET_SERIALIZER)
+                    .registerTypeAdapter(Uri.class, URI_SERIALIZER)
+                    .registerTypeAdapter(Uri.class, URI_DESERIALIZER)
                     .create();
             REPOSITORY.put(new Pair<String, Integer>(schema.getSchemaName(), schema.getSchemaVersion()), gson);
         }
