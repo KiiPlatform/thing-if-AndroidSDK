@@ -49,20 +49,12 @@ public class GatewayAPI implements Parcelable {
                @Nullable String tag,
                @NonNull KiiApp app,
                @NonNull Uri gatewayAddress) {
-        this(context, tag, app, gatewayAddress, null);
-    }
-    GatewayAPI(@Nullable Context context,
-               @Nullable String tag,
-               @NonNull KiiApp app,
-               @NonNull Uri gatewayAddress,
-               @Nullable String accessToken) {
         if (context != null) {
             GatewayAPI.context = context.getApplicationContext();
         }
         this.app = app;
         this.tag =tag;
         this.gatewayAddress = gatewayAddress;
-        this.accessToken = accessToken;
         this.restClient = new IoTRestClient();
     }
 
@@ -425,12 +417,11 @@ public class GatewayAPI implements Parcelable {
      */
     @NonNull
     public static GatewayAPI loadFromStoredInstance(@NonNull Context context, @Nullable String tag) throws StoredGatewayAPIInstanceNotFoundException {
+        GatewayAPI.context = context.getApplicationContext();
         SharedPreferences preferences = getSharedPreferences();
         String serializedJson = preferences.getString(getSharedPreferencesKey(tag), null);
         if (serializedJson != null) {
-            GatewayAPI retval = GsonRepository.gson().fromJson(serializedJson, GatewayAPI.class);
-            GatewayAPI.context = context.getApplicationContext();
-            return retval;
+            return  GsonRepository.gson().fromJson(serializedJson, GatewayAPI.class);
         }
         throw new StoredGatewayAPIInstanceNotFoundException(tag);
     }
@@ -462,7 +453,6 @@ public class GatewayAPI implements Parcelable {
             editor.apply();
         }
     }
-
     private static String getSharedPreferencesKey(String tag) {
         return SHARED_PREFERENCES_KEY_INSTANCE + (tag == null ? "" : "_"  +tag);
     }
