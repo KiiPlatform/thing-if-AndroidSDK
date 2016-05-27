@@ -345,9 +345,7 @@ public class GatewayAPI implements Parcelable {
     public String getAccessToken() {
         return this.accessToken;
     }
-    void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
+
     // Implementation of Parcelable
     public static final Creator<GatewayAPI> CREATOR = new Creator<GatewayAPI>() {
         @Override
