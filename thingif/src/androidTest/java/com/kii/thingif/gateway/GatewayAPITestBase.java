@@ -31,7 +31,7 @@ public class GatewayAPITestBase extends SmallTestBase {
     protected static final String APP_ID = "smalltest";
     protected static final String APP_KEY = "abcdefghijklmnopqrstuvwxyz123456789";
     protected static final String ACCESS_TOKEN = "token-0000-1111-aaaa-bbbb";
-    private static final String SDK_VERSION = "0.10.0";
+    private static final String SDK_VERSION = "0.11.0";
     protected MockWebServer server;
 
     @Before

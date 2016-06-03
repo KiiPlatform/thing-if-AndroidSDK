@@ -51,7 +51,7 @@ import java.util.Map;
 public class ThingIFAPI implements Parcelable {
 
     private static final String SHARED_PREFERENCES_KEY_INSTANCE = "ThingIFAPI_INSTANCE";
-    private static final String SDK_VERSION = "0.10.0";
+    private static final String SDK_VERSION = "0.11.0";
 
     private static Context context;
     private final String tag;
