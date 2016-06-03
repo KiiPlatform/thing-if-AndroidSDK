@@ -22,6 +22,8 @@ import com.kii.thingif.testschemas.SetColorTemperatureResult;
 import com.kii.thingif.testschemas.TurnPower;
 import com.kii.thingif.testschemas.TurnPowerResult;
 import com.kii.thingif.trigger.Condition;
+import com.kii.thingif.trigger.Predicate;
+import com.kii.thingif.trigger.ScheduleOncePredicate;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.StatePredicate;
 import com.kii.thingif.trigger.Trigger;
@@ -47,21 +49,33 @@ import java.util.concurrent.TimeUnit;
 @RunWith(AndroidJUnit4.class)
 public class ThingIFAPI_GetTriggerTest extends ThingIFAPITestBase {
     @Test
-    public void getTriggerWithCommandTest() throws Exception {
+    public void getStateTriggerWithCommandTest() throws Exception {
+        StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
+        getTriggerWithCommandTest(predicate);
+    }
+
+    @Test
+    public void getOneTimeTriggerWithCommandTest() throws Exception {
+        ScheduleOncePredicate predicate = new ScheduleOncePredicate(1000);
+        getTriggerWithCommandTest(predicate);
+    }
+
+
+    private void getTriggerWithCommandTest(Predicate predicate) throws Exception {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String triggerID = "trigger-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
         SetColorTemperature setColorTemperature = new SetColorTemperature(25);
         actions.add(setColor);
         actions.add(setColorTemperature);
-        StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
         Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
         this.addMockResponseForGetTriggerWithCommand(200, triggerID, expectedCommand, predicate, true, "COMMAND_EXECUTION_REJECTED", schema);
@@ -92,11 +106,11 @@ public class ThingIFAPI_GetTriggerTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String triggerID = "trigger-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
         String endpoint = "function_name";
         String executorAccessToken = UUID.randomUUID().toString();
@@ -131,9 +145,9 @@ public class ThingIFAPI_GetTriggerTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String triggerID = "trigger-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(403);
 
         try {
@@ -159,9 +173,9 @@ public class ThingIFAPI_GetTriggerTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String triggerID = "trigger-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(404);
 
         try {
@@ -187,9 +201,9 @@ public class ThingIFAPI_GetTriggerTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String triggerID = "trigger-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(503);
 
         try {
@@ -221,7 +235,7 @@ public class ThingIFAPI_GetTriggerTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String triggerID = "trigger-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
@@ -264,7 +278,7 @@ public class ThingIFAPI_GetTriggerTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String triggerID = "trigger-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
@@ -306,7 +320,7 @@ public class ThingIFAPI_GetTriggerTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String triggerID = "trigger-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
@@ -342,7 +356,7 @@ public class ThingIFAPI_GetTriggerTest extends ThingIFAPITestBase {
     public void getTriggerWithNullTargetTest() throws Exception {
         String triggerID = "trigger-1234";
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.getTrigger(triggerID);
     }
     @Test(expected = IllegalArgumentException.class)
@@ -350,9 +364,9 @@ public class ThingIFAPI_GetTriggerTest extends ThingIFAPITestBase {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         api.getTrigger(null);
     }
@@ -361,9 +375,9 @@ public class ThingIFAPI_GetTriggerTest extends ThingIFAPITestBase {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         api.getTrigger("");
     }

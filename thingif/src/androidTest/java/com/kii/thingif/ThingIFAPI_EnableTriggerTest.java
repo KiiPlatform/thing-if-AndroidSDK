@@ -38,7 +38,7 @@ public class ThingIFAPI_EnableTriggerTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String triggerID = "trigger-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
@@ -47,7 +47,7 @@ public class ThingIFAPI_EnableTriggerTest extends ThingIFAPITestBase {
         actions.add(setColorTemperature);
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
         Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
         this.addEmptyMockResponse(204);
@@ -83,7 +83,7 @@ public class ThingIFAPI_EnableTriggerTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String triggerID = "trigger-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
@@ -92,7 +92,7 @@ public class ThingIFAPI_EnableTriggerTest extends ThingIFAPITestBase {
         actions.add(setColorTemperature);
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
         Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
         this.addEmptyMockResponse(204);
@@ -127,8 +127,8 @@ public class ThingIFAPI_EnableTriggerTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String triggerID = "trigger-1234";
-        Target target = new Target(thingID, accessToken);
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(403);
         try {
             api.setTarget(target);
@@ -146,8 +146,8 @@ public class ThingIFAPI_EnableTriggerTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String triggerID = "trigger-1234";
-        Target target = new Target(thingID, accessToken);
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(404);
         try {
             api.setTarget(target);
@@ -165,8 +165,8 @@ public class ThingIFAPI_EnableTriggerTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String triggerID = "trigger-1234";
-        Target target = new Target(thingID, accessToken);
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(503);
         try {
             api.setTarget(target);
@@ -182,15 +182,15 @@ public class ThingIFAPI_EnableTriggerTest extends ThingIFAPITestBase {
     @Test(expected = IllegalStateException.class)
     public void enableTriggerWithNullTargetTest() throws Exception {
         String triggerID = "trigger-1234";
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.enableTrigger(triggerID, false);
     }
     @Test(expected = IllegalArgumentException.class)
     public void enableTriggerWithNullTriggerIDTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         api.enableTrigger(null, false);
     }
@@ -198,8 +198,8 @@ public class ThingIFAPI_EnableTriggerTest extends ThingIFAPITestBase {
     public void enableTriggerWithEmptyTriggerIDTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         api.enableTrigger("", false);
     }

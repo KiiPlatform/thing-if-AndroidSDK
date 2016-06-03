@@ -4,7 +4,8 @@ import android.text.TextUtils;
 
 public enum EventSource {
     STATES("STATES"),
-    SCHEDULE("SCHEDULE");
+    SCHEDULE("SCHEDULE"),
+    SCHEDULE_ONCE("SCHEDULE_ONCE");
     private final String value;
     private EventSource(String value) {
         this.value = value;

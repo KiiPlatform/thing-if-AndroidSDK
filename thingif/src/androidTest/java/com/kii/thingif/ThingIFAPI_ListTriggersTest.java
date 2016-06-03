@@ -16,6 +16,7 @@ import com.kii.thingif.testschemas.SetColorTemperature;
 import com.kii.thingif.testschemas.TurnPower;
 import com.kii.thingif.trigger.Condition;
 import com.kii.thingif.trigger.Predicate;
+import com.kii.thingif.trigger.ScheduleOncePredicate;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.StatePredicate;
 import com.kii.thingif.trigger.Trigger;
@@ -44,10 +45,10 @@ public class ThingIFAPI_ListTriggersTest extends ThingIFAPITestBase {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
         String paginationKey = "pagination-12345-key";
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
 
         List<Action> command1Actions = new ArrayList<Action>();
@@ -72,8 +73,15 @@ public class ThingIFAPI_ListTriggersTest extends ThingIFAPITestBase {
         Predicate predicate3 = new StatePredicate(condition3, TriggersWhen.CONDITION_TRUE);
         Trigger trigger3 = new Trigger(predicate3, command3);
 
+        List<Action> command4Actions = new ArrayList<Action>();
+        command4Actions.add(new SetColorTemperature(45));
+        command4Actions.add(new SetBrightness(70));
+        Command command4 = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), command4Actions);
+        Predicate predicate4 = new ScheduleOncePredicate(10000);
+        Trigger trigger4 = new Trigger(predicate4,command4);
+
         this.addMockResponseForListTriggers(200, new Trigger[] {trigger1, trigger2}, paginationKey, schema);
-        this.addMockResponseForListTriggers(200, new Trigger[]{trigger3}, null, schema);
+        this.addMockResponseForListTriggers(200, new Trigger[]{trigger3,trigger4}, null, schema);
 
         // verify the result
         Pair<List<Trigger>, String> result1 = api.listTriggers(10, null);
@@ -86,8 +94,9 @@ public class ThingIFAPI_ListTriggersTest extends ThingIFAPITestBase {
         Pair<List<Trigger>, String> result2 = api.listTriggers(10, result1.second);
         Assert.assertNull(result2.second);
         List<Trigger> triggers2 = result2.first;
-        Assert.assertEquals(1, triggers2.size());
+        Assert.assertEquals(2, triggers2.size());
         this.assertTrigger(schema, trigger3, triggers2.get(0));
+        this.assertTrigger(schema, trigger4, triggers2.get(1));
 
         // verify the 1st request
         RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -111,10 +120,10 @@ public class ThingIFAPI_ListTriggersTest extends ThingIFAPITestBase {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
         String paginationKey = "pagination-12345-key";
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
 
         ServerCode serverCode1 = new ServerCode("function_1", "token0001", "app00001", new JSONObject("{\"param\":\"p0001\"}"));
@@ -171,10 +180,10 @@ public class ThingIFAPI_ListTriggersTest extends ThingIFAPITestBase {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
         String paginationKey = "pagination-12345-key";
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
 
         List<Action> command1Actions = new ArrayList<Action>();
@@ -238,9 +247,9 @@ public class ThingIFAPI_ListTriggersTest extends ThingIFAPITestBase {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(400);
         try {
             api.setTarget(target);
@@ -264,9 +273,9 @@ public class ThingIFAPI_ListTriggersTest extends ThingIFAPITestBase {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(403);
         try {
             api.setTarget(target);
@@ -290,9 +299,9 @@ public class ThingIFAPI_ListTriggersTest extends ThingIFAPITestBase {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(404);
         try {
             api.setTarget(target);
@@ -316,9 +325,9 @@ public class ThingIFAPI_ListTriggersTest extends ThingIFAPITestBase {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(503);
         try {
             api.setTarget(target);
@@ -339,7 +348,7 @@ public class ThingIFAPI_ListTriggersTest extends ThingIFAPITestBase {
     }
     @Test(expected = IllegalStateException.class)
     public void listTriggersWithNullTargetTest() throws Exception {
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.listTriggers(10, null);
     }
 }

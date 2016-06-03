@@ -48,7 +48,7 @@ public class ThingIFAPI_GetCommandTest extends ThingIFAPITestBase {
         String commandID = "command-1234";
         Long created = System.currentTimeMillis();
         Long modified = System.currentTimeMillis();
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
         SetColorTemperature setColorTemperature = new SetColorTemperature(25);
@@ -61,7 +61,7 @@ public class ThingIFAPI_GetCommandTest extends ThingIFAPITestBase {
         actionResults.add(setColorTemperatureResult);
         CommandState state = CommandState.DELIVERED;
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addMockResponseForGetCommand(200, commandID, api.getOwner().getTypedID(), thingID, actions, actionResults, state, created, modified, schema);
 
         api.setTarget(target);
@@ -105,9 +105,9 @@ public class ThingIFAPI_GetCommandTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String commandID = "command-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(403);
 
         try {
@@ -133,9 +133,9 @@ public class ThingIFAPI_GetCommandTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String commandID = "command-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(404);
 
         try {
@@ -161,9 +161,9 @@ public class ThingIFAPI_GetCommandTest extends ThingIFAPITestBase {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         String commandID = "command-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(503);
 
         try {
@@ -198,7 +198,7 @@ public class ThingIFAPI_GetCommandTest extends ThingIFAPITestBase {
         String commandID = "command-1234";
         Long created = System.currentTimeMillis();
         Long modified = System.currentTimeMillis();
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
         SetColorTemperature setColorTemperature = new SetColorTemperature(25);
@@ -246,7 +246,7 @@ public class ThingIFAPI_GetCommandTest extends ThingIFAPITestBase {
         String commandID = "command-1234";
         Long created = System.currentTimeMillis();
         Long modified = System.currentTimeMillis();
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
         SetColorTemperature setColorTemperature = new SetColorTemperature(25);
@@ -293,7 +293,7 @@ public class ThingIFAPI_GetCommandTest extends ThingIFAPITestBase {
         String commandID = "command-1234";
         Long created = System.currentTimeMillis();
         Long modified = System.currentTimeMillis();
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
         actions.add(setColor);
@@ -327,16 +327,16 @@ public class ThingIFAPI_GetCommandTest extends ThingIFAPITestBase {
     public void getCommandWithNullTargetTest() throws Exception {
         String commandID = "command-1234";
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.getCommand(commandID);
     }
     @Test(expected = IllegalArgumentException.class)
     public void getCommandWithNullCommandIDTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         api.getCommand(null);
     }
@@ -344,9 +344,9 @@ public class ThingIFAPI_GetCommandTest extends ThingIFAPITestBase {
     public void getCommandWithEmptyCommandIDTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        Target target = new Target(thingID, accessToken);
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.craeteThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(target);
         api.getCommand("");
     }

@@ -1,5 +1,6 @@
 package com.kii.thingif.internal;
 
+import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -10,6 +11,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
@@ -17,32 +19,36 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.kii.thingif.KiiApp;
-import com.kii.thingif.ServerError;
-import com.kii.thingif.ThingIFAPI;
-import com.kii.thingif.ThingIFAPIBuilder;
 import com.kii.thingif.Owner;
+import com.kii.thingif.ServerError;
+import com.kii.thingif.StandaloneThing;
 import com.kii.thingif.Target;
 import com.kii.thingif.TargetState;
+import com.kii.thingif.TargetThing;
+import com.kii.thingif.ThingIFAPI;
+import com.kii.thingif.ThingIFAPIBuilder;
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.ActionResult;
-import com.kii.thingif.exception.InternalServerErrorException;
 import com.kii.thingif.exception.UnsupportedActionException;
+import com.kii.thingif.gateway.EndNode;
+import com.kii.thingif.gateway.Gateway;
 import com.kii.thingif.schema.Schema;
 import com.kii.thingif.schema.SchemaBuilder;
 import com.kii.thingif.trigger.Condition;
 import com.kii.thingif.trigger.EventSource;
 import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.Schedule;
+import com.kii.thingif.trigger.ScheduleOncePredicate;
 import com.kii.thingif.trigger.SchedulePredicate;
 import com.kii.thingif.trigger.StatePredicate;
 import com.kii.thingif.trigger.TriggeredServerCodeResult;
 import com.kii.thingif.trigger.TriggersWhen;
 import com.kii.thingif.trigger.clause.And;
+import com.kii.thingif.trigger.clause.Clause;
 import com.kii.thingif.trigger.clause.Equals;
 import com.kii.thingif.trigger.clause.NotEquals;
 import com.kii.thingif.trigger.clause.Or;
-import com.kii.thingif.trigger.clause.Clause;
 import com.kii.thingif.trigger.clause.Range;
 
 import org.json.JSONArray;
@@ -66,7 +72,6 @@ public class GsonRepository {
     private static final Map<Pair<String, Integer>, Gson> REPOSITORY = Collections.synchronizedMap(new HashMap<Pair<String, Integer>, Gson>());
     private static final Gson DEFAULT_GSON;
     private static final Gson PURE_GSON = new Gson();
-
 
     private static final JsonSerializer<JSONObject> ORG_JSON_OBJECT_SERIALIZER = new JsonSerializer<JSONObject>() {
         @Override
@@ -137,6 +142,8 @@ public class GsonRepository {
             } else if (src.getEventSource() == EventSource.STATES) {
                 json.add("condition", context.serialize(((StatePredicate)src).getCondition()));
                 json.addProperty("triggersWhen", ((StatePredicate)src).getTriggersWhen().name());
+            } else if (src.getEventSource() == EventSource.SCHEDULE_ONCE) {
+                json.addProperty("scheduleAt", ((ScheduleOncePredicate)src).getScheduleAt());
             }
             return json;
         }
@@ -156,6 +163,8 @@ public class GsonRepository {
                 Condition condition = context.deserialize(new JsonParser().parse(json.get("condition").toString()), Condition.class);
                 TriggersWhen triggersWhen = TriggersWhen.valueOf(json.get("triggersWhen").getAsString());
                 predicate = new StatePredicate(condition, triggersWhen);
+            } else if (eventSource == EventSource.SCHEDULE_ONCE) {
+                predicate = new ScheduleOncePredicate(json.get("scheduleAt").getAsLong());
             }
             return predicate;
         }
@@ -293,7 +302,11 @@ public class GsonRepository {
                 json.addProperty("tag", tag);
             }
             json.add("owner", DEFAULT_GSON.toJsonTree(src.getOwner()));
-            json.add("target", DEFAULT_GSON.toJsonTree(src.getTarget()));
+            if (src.getTarget() != null) {
+                json.add("target", DEFAULT_GSON.toJsonTree(src.getTarget(), src.getTarget().getClass()));
+            } else {
+                json.add("target", JsonNull.INSTANCE);
+            }
             JsonArray schemas = new JsonArray();
             for (Schema schema : src.getSchemas()) {
                 schemas.add(DEFAULT_GSON.toJsonTree(schema));
@@ -341,6 +354,9 @@ public class GsonRepository {
             JsonObject json = new JsonObject();
             json.addProperty("succeeded", src.isSucceeded());
             json.addProperty("executedAt", src.getExecutedAt());
+            if (!TextUtils.isEmpty(src.getEndpoint())) {
+                json.addProperty("endpoint", src.getEndpoint());
+            }
             if (src.hasReturnedValue()) {
                 if (src.getReturnedValue() instanceof JSONObject) {
                     json.add("returnedValue", new JsonParser().parse(src.getReturnedValueAsJsonObject().toString()));
@@ -375,6 +391,10 @@ public class GsonRepository {
             JsonObject json = (JsonObject)jsonElement;
             boolean succeeded = json.get("succeeded").getAsBoolean();
             long executedAt = json.get("executedAt").getAsLong();
+            String endpoint = null;
+            if (json.has("endpoint")) {
+                endpoint = json.get("endpoint").getAsString();
+            }
             Object returnedValue = null;
             if (json.has("returnedValue")) {
                 if (json.get("returnedValue").isJsonObject()) {
@@ -415,11 +435,69 @@ public class GsonRepository {
                 } catch (JSONException ignore) {
                 }
             }
-            TriggeredServerCodeResult result = new TriggeredServerCodeResult(succeeded, returnedValue, executedAt, error);
+            TriggeredServerCodeResult result = new TriggeredServerCodeResult(succeeded, returnedValue, executedAt, endpoint, error);
             return result;
         }
     };
+    private static final JsonSerializer<Target> TARGET_SERIALIZER = new JsonSerializer<Target>() {
+        @Override
+        public JsonElement serialize(Target src, Type typeOfSrc, JsonSerializationContext context) {
+            if (src == null) {
+                return null;
+            }
+            JsonObject json = new JsonObject();
+            json.addProperty("typedID", src.getTypedID().toString());
+            json.addProperty("class", src.getClass().getName());
+            if (!TextUtils.isEmpty(src.getAccessToken())) {
+                json.addProperty("accessToken", src.getAccessToken());
+            }
+            if (src instanceof TargetThing) {
+                json.addProperty("vendorThingID", ((TargetThing)src).getVendorThingID());
+            }
+            return json;
+        }
+    };
+    private static final JsonDeserializer<Target> TARGET_DESERIALIZER = new JsonDeserializer<Target>() {
+        @Override
+        public Target deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            if (jsonElement == null) {
+                return null;
+            }
+            JsonObject json = (JsonObject)jsonElement;
+            String accessToken = json.has("accessToken") ? json.get("accessToken").getAsString() : null;
+            String vendorThingID = json.has("vendorThingID") ? json.get("vendorThingID").getAsString() : null;
+            String className = json.get("class").getAsString();
+            TypedID typedID = TypedID.fromString(json.get("typedID").getAsString());
+            if (StandaloneThing.class.getName().equals(className)) {
+                return new StandaloneThing(typedID.getID(), vendorThingID, accessToken);
+            } else if (Gateway.class.getName().equals(className)) {
+                return new Gateway(typedID.getID(), vendorThingID);
+            } else if (EndNode.class.getName().equals(className)) {
+                return new EndNode(typedID.getID(), vendorThingID, accessToken);
+            }
+            throw new JsonParseException("Detected unknown type " + className);
+        }
+    };
 
+    private static final JsonSerializer<Uri> URI_SERIALIZER = new JsonSerializer<Uri>() {
+        @Override
+        public JsonElement serialize(Uri src, Type typeOfSrc, JsonSerializationContext context) {
+            JsonObject json = new JsonObject();
+            json.addProperty("uri", src.toString());
+            return json;
+        }
+    };
+
+    private static final JsonDeserializer<Uri> URI_DESERIALIZER = new JsonDeserializer<Uri>() {
+        @Override
+        public Uri deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            JsonObject json = (JsonObject)jsonElement;
+            if (json.has("uri")) {
+                return Uri.parse(json.get("uri").getAsString());
+            }
+            return null;
+        }
+    };
 
     static {
         DEFAULT_GSON = new GsonBuilder()
@@ -441,6 +519,12 @@ public class GsonRepository {
                 .registerTypeAdapter(ThingIFAPI.class, IOT_CLOUD_API_DESERIALIZER)
                 .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_SERIALIZER)
                 .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_DESERIALIZER)
+                .registerTypeAdapter(Target.class, TARGET_DESERIALIZER)
+                .registerTypeAdapter(StandaloneThing.class, TARGET_SERIALIZER)
+                .registerTypeAdapter(Gateway.class, TARGET_SERIALIZER)
+                .registerTypeAdapter(EndNode.class, TARGET_SERIALIZER)
+                .registerTypeAdapter(Uri.class, URI_SERIALIZER)
+                .registerTypeAdapter(Uri.class, URI_DESERIALIZER)
                 .create();
     }
 
@@ -526,6 +610,12 @@ public class GsonRepository {
                     .registerTypeAdapter(ThingIFAPI.class, IOT_CLOUD_API_DESERIALIZER)
                     .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_SERIALIZER)
                     .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_DESERIALIZER)
+                    .registerTypeAdapter(Target.class, TARGET_DESERIALIZER)
+                    .registerTypeAdapter(StandaloneThing.class, TARGET_SERIALIZER)
+                    .registerTypeAdapter(Gateway.class, TARGET_SERIALIZER)
+                    .registerTypeAdapter(EndNode.class, TARGET_SERIALIZER)
+                    .registerTypeAdapter(Uri.class, URI_SERIALIZER)
+                    .registerTypeAdapter(Uri.class, URI_DESERIALIZER)
                     .create();
             REPOSITORY.put(new Pair<String, Integer>(schema.getSchemaName(), schema.getSchemaVersion()), gson);
         }
