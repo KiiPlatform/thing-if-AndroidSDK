@@ -62,7 +62,7 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
     protected static final String DEMO_THING_TYPE = "LED";
     protected static final String DEMO_SCHEMA_NAME = "SmartLightDemo";
     protected static final int DEMO_SCHEMA_VERSION = 1;
-    private static final String SDK_VERSION = "0.10.0";
+    private static final String SDK_VERSION = "0.11.0";
 
     protected MockWebServer server;
 
