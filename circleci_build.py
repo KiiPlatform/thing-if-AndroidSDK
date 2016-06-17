@@ -40,7 +40,7 @@ class CircleCI(object):
         jsonBody = json.dumps(bodyDict)
 
         conn = httplib.HTTPSConnection(self.host)
-        path = '/api/v1/project/KiiPlatform/ThingIF-AndroidSDK/tree/{0}?circle-token={1}'.format(self.branch, self.circleciAPIToken)
+        path = '/api/v1/project/KiiPlatform/thing-if-AndroidSDK/tree/{0}?circle-token={1}'.format(self.branch, self.circleciAPIToken)
 
         headers = {'content-type': 'application/json'}
         conn.request('POST', path, jsonBody, headers)

@@ -4,7 +4,8 @@ public enum Site {
     US("api.kii.com"),
     JP("api-jp.kii.com"),
     CN3("api-cn3.kii.com"),
-    SG("api-sg.kii.com");
+    SG("api-sg.kii.com"),
+    EU("api-eu.kii.com");
 
     private final String hostName;
     private final String baseUrl;
