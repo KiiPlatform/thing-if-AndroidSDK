@@ -4,13 +4,12 @@ import android.os.Parcel;
 import android.support.annotation.NonNull;
 
 public class SchedulePredicate extends Predicate {
-    private Schedule schedule;
+    private String schedule;
 
-    public SchedulePredicate(@NonNull Schedule schedule) {
+    public SchedulePredicate(@NonNull String schedule) {
         this.schedule = schedule;
-        throw new UnsupportedOperationException("SchedulePredicate is not supported");
     }
-    public Schedule getSchedule() {
+    public String getSchedule() {
         return this.schedule;
     }
     public EventSource getEventSource() {
@@ -20,7 +19,7 @@ public class SchedulePredicate extends Predicate {
 
     // Implementation of Parcelable
     protected SchedulePredicate(Parcel in) {
-        this.schedule = in.readParcelable(Schedule.class.getClassLoader());
+        this.schedule = in.readString();
     }
     public static final Creator<SchedulePredicate> CREATOR = new Creator<SchedulePredicate>() {
         @Override
@@ -37,6 +36,6 @@ public class SchedulePredicate extends Predicate {
         return 0;
     }
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(this.schedule, flags);
+        dest.writeString(this.schedule);
     }
 }

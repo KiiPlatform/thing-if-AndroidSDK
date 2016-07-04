@@ -1,11 +1,14 @@
 machine:
   environment:
     ADB_INSTALL_TIMEOUT: 5
+  java:
+    version: oraclejdk8
 
 dependencies:
   pre:
     - echo y | android update sdk --no-ui --filter platform
-    - echo y | android update sdk --no-ui --all --filter build-tools-22.0.1
+    - echo y | android update sdk --no-ui --all --filter android-24
+    - echo y | android update sdk --no-ui --all --filter build-tools-24.0.0
     - echo no | android create avd --force --name my-android-17 --target android-17 --sdcard 128M
     - >
       cat ~/.android/avd/my-android-17.avd/config.ini |

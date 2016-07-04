@@ -22,7 +22,6 @@ import com.kii.thingif.testschemas.TurnPowerResult;
 import com.kii.thingif.trigger.Condition;
 import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.SchedulePredicate;
-import com.kii.thingif.trigger.Schedule;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.StatePredicate;
 import com.kii.thingif.trigger.Trigger;
@@ -428,9 +427,7 @@ public class GsonSerializationTest extends SmallTestBase {
         Assert.assertEquals("red", command.getMetadata().getString("led"));
     }
 
-    // SchedulePredicate is not implemented yet.
     @Test
-    @Ignore
     public void scheduleTriggerTest() throws Exception {
         // Define the schema
         SchemaBuilder sb = SchemaBuilder.newSchemaBuilder("ThingType", "SchemaName1", 10, LightState.class);
@@ -471,7 +468,7 @@ public class GsonSerializationTest extends SmallTestBase {
         command.addActionResult(new SetColorResult(true));
         command.addActionResult(new SetColorTemperatureResult(false));
         // SchedulePredicate
-        Predicate predicate = new SchedulePredicate(new Schedule("1 0 * * *"));
+        Predicate predicate = new SchedulePredicate("1 0 * * *");
         // Trigger
         Trigger trigger = new Trigger(predicate, command);
 
@@ -504,7 +501,7 @@ public class GsonSerializationTest extends SmallTestBase {
 
         predicate = trigger.getPredicate();
         Assert.assertTrue(predicate instanceof SchedulePredicate);
-        Assert.assertEquals("1 0 * * *", ((SchedulePredicate) predicate).getSchedule().getCronExpression());
+        Assert.assertEquals("1 0 * * *", ((SchedulePredicate) predicate).getSchedule());
     }
 
     @Test

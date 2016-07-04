@@ -62,7 +62,7 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
     protected static final String DEMO_THING_TYPE = "LED";
     protected static final String DEMO_SCHEMA_NAME = "SmartLightDemo";
     protected static final int DEMO_SCHEMA_VERSION = 1;
-    private static final String SDK_VERSION = "0.11.0";
+    private static final String SDK_VERSION = "0.12.0";
 
     protected MockWebServer server;
 
@@ -414,7 +414,7 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
             SchedulePredicate esp = (SchedulePredicate)expected;
             SchedulePredicate asp = (SchedulePredicate)actual;
             Assert.assertEquals(esp.getEventSource(), asp.getEventSource());
-            Assert.assertEquals(esp.getSchedule().getCronExpression(), asp.getSchedule().getCronExpression());
+            Assert.assertEquals(esp.getSchedule(), asp.getSchedule());
         }
     }
     protected void assertClause(Clause expected, Clause actual) {
