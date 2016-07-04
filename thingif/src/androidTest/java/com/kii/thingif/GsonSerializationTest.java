@@ -427,9 +427,7 @@ public class GsonSerializationTest extends SmallTestBase {
         Assert.assertEquals("red", command.getMetadata().getString("led"));
     }
 
-    // SchedulePredicate is not implemented yet.
     @Test
-    @Ignore
     public void scheduleTriggerTest() throws Exception {
         // Define the schema
         SchemaBuilder sb = SchemaBuilder.newSchemaBuilder("ThingType", "SchemaName1", 10, LightState.class);
