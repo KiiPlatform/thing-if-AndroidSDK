@@ -249,13 +249,13 @@ public class ThingIFAPI implements Parcelable {
      * @param thingType Type of the thing given by vendor.
      *                  If the thing is already registered, this value would be
      *                  ignored by IoT Cloud.
+     * @param dataGroupingInterval 1_MINUTE | 15_MINUTES | 30_MINUTES | 1_HOUR | 12_HOURS.
+     * Will be used to create the bucket to store the state history when the thing is not using traits.
      * @param thingProperties Properties of thing.
      *                        If the thing is already registered, this value
      *                        would be ignored by IoT Cloud.<br>
      *                        Refer to the <a href="http://docs.kii.com/rest/#thing_management-register_a_thin">register_a_thing</a>
      *                        About the format of this Document.
-     * @param dataGroupingInterval 1_MINUTE | 15_MINUTES | 30_MINUTES | 1_HOUR | 12_HOURS.
-     * Will be used to create the bucket to store the state history when the thing is not using traits.
      * @return Target instance can be used to operate target, manage resources
      * of the target.
      * @throws IllegalStateException Thrown when this instance is already onboarded.
@@ -268,11 +268,11 @@ public class ThingIFAPI implements Parcelable {
             @NonNull String vendorThingID,
             @NonNull String thingPassword,
             @Nullable String thingType,
-            @Nullable JSONObject thingProperties,
-            @Nullable DataGroupingInterval dataGroupingInterval)
+            @Nullable DataGroupingInterval dataGroupingInterval,
+            @Nullable JSONObject thingProperties)
             throws ThingIFException {
         // TODO: implement me.
-        return NULL;
+        return null;
     }
 
     /**
@@ -340,7 +340,7 @@ public class ThingIFAPI implements Parcelable {
             @Nullable DataGroupingInterval dataGroupingInterval)
             throws ThingIFException {
         // TODO: implement me.
-        return NULL;
+        return null;
     }
 
     private Target onboard(MediaType contentType, JSONObject requestBody, String vendorThingID) throws ThingIFException {
