@@ -246,16 +246,7 @@ public class ThingIFAPI implements Parcelable {
      * If you are using a gateway, you need to use {@link #onboardEndnodeWithGateway(PendingEndNode, String)} instead.
      * @param vendorThingID Thing ID given by vendor. Must be specified.
      * @param thingPassword Thing Password given by vendor. Must be specified.
-     * @param thingType Type of the thing given by vendor.
-     *                  If the thing is already registered, this value would be
-     *                  ignored by IoT Cloud.
-     * @param dataGroupingInterval 1_MINUTE | 15_MINUTES | 30_MINUTES | 1_HOUR | 12_HOURS.
-     * Will be used to create the bucket to store the state history when the thing is not using traits.
-     * @param thingProperties Properties of thing.
-     *                        If the thing is already registered, this value
-     *                        would be ignored by IoT Cloud.<br>
-     *                        Refer to the <a href="http://docs.kii.com/rest/#thing_management-register_a_thin">register_a_thing</a>
-     *                        About the format of this Document.
+     * @param options optional parameters inside.
      * @return Target instance can be used to operate target, manage resources
      * of the target.
      * @throws IllegalStateException Thrown when this instance is already onboarded.
@@ -267,9 +258,7 @@ public class ThingIFAPI implements Parcelable {
     public Target onboard(
             @NonNull String vendorThingID,
             @NonNull String thingPassword,
-            @Nullable String thingType,
-            @Nullable DataGroupingInterval dataGroupingInterval,
-            @Nullable JSONObject thingProperties)
+            @NonNull OnboardWithVendorThingIDOptions options)
             throws ThingIFException {
         // TODO: implement me.
         return null;
@@ -324,8 +313,7 @@ public class ThingIFAPI implements Parcelable {
      * If you are using a gateway, you need to use {@link #onboardEndnodeWithGateway(PendingEndNode, String)} instead.
      * @param thingID Thing ID given by IoT Cloud. Must be specified.
      * @param thingPassword Thing password given by vendor. Must be specified.
-     * @param dataGroupingInterval 1_MINUTE | 15_MINUTES | 30_MINUTES | 1_HOUR | 12_HOURS.
-     * Will be used to create the bucket to store the state history when the thing is not using traits.
+     * @param options optional parameters inside.
      * @return Target instance can be used to operate target, manage resources
      * of the target.
      * @throws IllegalStateException Thrown when this instance is already onboarded.
@@ -337,7 +325,7 @@ public class ThingIFAPI implements Parcelable {
     public Target onboard(
             @NonNull String thingID,
             @NonNull String thingPassword,
-            @Nullable DataGroupingInterval dataGroupingInterval)
+            @NonNull OnboardWithThingIDOptions options)
             throws ThingIFException {
         // TODO: implement me.
         return null;
