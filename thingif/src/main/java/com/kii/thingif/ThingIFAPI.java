@@ -258,7 +258,7 @@ public class ThingIFAPI implements Parcelable {
     public Target onboard(
             @NonNull String vendorThingID,
             @NonNull String thingPassword,
-            @NonNull OnboardWithVendorThingIDOptions options)
+            @Nullable OnboardWithVendorThingIDOptions options)
             throws ThingIFException {
         // TODO: implement me.
         return null;
@@ -309,7 +309,7 @@ public class ThingIFAPI implements Parcelable {
      * On board IoT Cloud with the specified thing ID.
      * When you are sure that the on boarding process has been done,
      * this method is more convenient than
-     * {@link #onboard(String, String, String, JSONObject)}.
+     * {@link #onboard(String, String, OnboardWithVendorThingIDOptions)}.
      * If you are using a gateway, you need to use {@link #onboardEndnodeWithGateway(PendingEndNode, String)} instead.
      * @param thingID Thing ID given by IoT Cloud. Must be specified.
      * @param thingPassword Thing password given by vendor. Must be specified.
@@ -325,7 +325,7 @@ public class ThingIFAPI implements Parcelable {
     public Target onboard(
             @NonNull String thingID,
             @NonNull String thingPassword,
-            @NonNull OnboardWithThingIDOptions options)
+            @Nullable OnboardWithThingIDOptions options)
             throws ThingIFException {
         // TODO: implement me.
         return null;

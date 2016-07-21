@@ -11,7 +11,7 @@ public class OnboardWithVendorThingIDOptions {
     private DataGroupingInterval dataGroupingInterval;
 
     /**
-     * Optional parameters of ThingIFAPI.onboard with VendorThingID
+     * Optional parameters of [@link ThingIFAPI#onboard(String, String, OnboardWithVendorThingIDOptions)}.
      * @param thingType Type of the thing given by vendor.
      * If the thing is already registered, this value would be
      * ignored by IoT Cloud.
@@ -28,7 +28,7 @@ public class OnboardWithVendorThingIDOptions {
             @Nullable String thingType,
             @Nullable JSONObject thingProperties,
             @Nullable LayoutPosition position,
-            @Nullable  DataGroupingInterval interval) {
+            @Nullable DataGroupingInterval interval) {
         this.layoutPosition = position;
         this.dataGroupingInterval = interval;
     }

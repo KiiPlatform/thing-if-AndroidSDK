@@ -7,14 +7,14 @@ public class OnboardWithThingIDOptions {
     private DataGroupingInterval dataGroupingInterval;
 
     /**
-     * Optional parameters of ThingIFAPI.onboard with ThingID.
+     * Optional parameters of [@link ThingIFAPI#onboard(String, String, OnboardWithThingIDOptions)}.
      * @param position GATEWAY | STANDALONE | ENDNODE.
      * @param interval 1_MINUTE | 15_MINUTES | 30_MINUTES | 1_HOUR | 12_HOURS.
      * Will be used to create the bucket to store the state history when the thing is not using traits.
      */
     public OnboardWithThingIDOptions(
             @Nullable LayoutPosition position,
-            @Nullable  DataGroupingInterval interval) {
+            @Nullable DataGroupingInterval interval) {
         this.layoutPosition = position;
         this.dataGroupingInterval = interval;
     }
