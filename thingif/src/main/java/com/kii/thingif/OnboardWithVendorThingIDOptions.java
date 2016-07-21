@@ -5,10 +5,10 @@ import android.support.annotation.Nullable;
 import org.json.JSONObject;
 
 public class OnboardWithVendorThingIDOptions {
-    private String thingType;
-    private JSONObject thingProperties;
-    private LayoutPosition layoutPosition;
-    private DataGroupingInterval dataGroupingInterval;
+    private final String thingType;
+    private final JSONObject thingProperties;
+    private final LayoutPosition layoutPosition;
+    private final DataGroupingInterval dataGroupingInterval;
 
     /**
      * Optional parameters of {@link ThingIFAPI#onboard(String, String, OnboardWithVendorThingIDOptions)}.
@@ -29,6 +29,8 @@ public class OnboardWithVendorThingIDOptions {
             @Nullable JSONObject thingProperties,
             @Nullable LayoutPosition position,
             @Nullable DataGroupingInterval interval) {
+        this.thingType = thingType;
+        this.thingProperties = thingProperties;
         this.layoutPosition = position;
         this.dataGroupingInterval = interval;
     }

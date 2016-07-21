@@ -3,8 +3,8 @@ package com.kii.thingif;
 import android.support.annotation.Nullable;
 
 public class OnboardWithThingIDOptions {
-    private LayoutPosition layoutPosition;
-    private DataGroupingInterval dataGroupingInterval;
+    private final LayoutPosition layoutPosition;
+    private final DataGroupingInterval dataGroupingInterval;
 
     /**
      * Optional parameters of {@link ThingIFAPI#onboard(String, String, OnboardWithThingIDOptions)}.
