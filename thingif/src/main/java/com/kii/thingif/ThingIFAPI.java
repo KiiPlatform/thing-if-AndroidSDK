@@ -260,8 +260,42 @@ public class ThingIFAPI implements Parcelable {
             @NonNull String thingPassword,
             @Nullable OnboardWithVendorThingIDOptions options)
             throws ThingIFException {
-        // TODO: implement me.
-        return null;
+        if (this.onboarded()) {
+            throw new IllegalStateException("This instance is already onboarded.");
+        }
+        if (TextUtils.isEmpty(vendorThingID)) {
+            throw new IllegalArgumentException("vendorThingID is null or empty");
+        }
+        if (TextUtils.isEmpty(thingPassword)) {
+            throw new IllegalArgumentException("thingPassword is null or empty");
+        }
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("vendorThingID", vendorThingID);
+            requestBody.put("thingPassword", thingPassword);
+            if (options != null) {
+                String thingType = options.getThingType();
+                JSONObject thingProperties = options.getThingProperties();
+                LayoutPosition position = options.getLayoutPosition();
+                DataGroupingInterval interval = options.getDataGroupingInterval();
+                if (thingType != null) {
+                    requestBody.put("thingType", thingType);
+                }
+                if (thingProperties != null && thingProperties.length() > 0) {
+                    requestBody.put("thingProperties", thingProperties);
+                }
+                if (position != null) {
+                    requestBody.put("layoutPosition", position.name());
+                }
+                if (interval != null) {
+                    requestBody.put("dataGroupingInterval", interval.getInterval());
+                }
+            }
+            requestBody.put("owner", this.owner.getTypedID().toString());
+        } catch (JSONException e) {
+            // Won’t happen
+        }
+        return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST, requestBody, vendorThingID);
     }
 
     /**
@@ -327,8 +361,35 @@ public class ThingIFAPI implements Parcelable {
             @NonNull String thingPassword,
             @Nullable OnboardWithThingIDOptions options)
             throws ThingIFException {
-        // TODO: implement me.
-        return null;
+        if (this.onboarded()) {
+            throw new IllegalStateException("This instance is already onboarded.");
+        }
+        if (TextUtils.isEmpty(thingID)) {
+            throw new IllegalArgumentException("thingID is null or empty");
+        }
+        if (TextUtils.isEmpty(thingPassword)) {
+            throw new IllegalArgumentException("thingPassword is null or empty");
+        }
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("thingID", thingID);
+            requestBody.put("thingPassword", thingPassword);
+            requestBody.put("owner", this.owner.getTypedID().toString());
+            if (options != null) {
+                LayoutPosition position = options.getLayoutPosition();
+                DataGroupingInterval interval = options.getDataGroupingInterval();
+                if (position != null) {
+                    requestBody.put("layoutPosition", position.name());
+                }
+                if (interval != null) {
+                    requestBody.put("dataGroupingInterval", interval.getInterval());
+                }
+            }
+        } catch (JSONException e) {
+            // Won’t happen
+        }
+        // FIXME: Currently, Server does not return the VendorThingID when onboarding is successful.
+        return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_THING_ID_BY_OWNER_REQUEST, requestBody, null);
     }
 
     private Target onboard(MediaType contentType, JSONObject requestBody, String vendorThingID) throws ThingIFException {
