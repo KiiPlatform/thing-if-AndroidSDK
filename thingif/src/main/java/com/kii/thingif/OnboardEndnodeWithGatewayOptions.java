@@ -9,7 +9,7 @@ public class OnboardEndnodeWithGatewayOptions {
 
     /**
      * Optional parameters of {@link ThingIFAPI#onboardEndnodeWithGateway(PendingEndNode, String, OnboardEndnodeWithGatewayOptions)}.
-     * @param interval 1_MINUTE | 15_MINUTES | 30_MINUTES | 1_HOUR | 12_HOURS.
+     * @param interval INTERVAL_1_MINUTE | INTERVAL_15_MINUTES | INTERVAL_30_MINUTES | INTERVAL_1_HOUR | INTERVAL_12_HOURS.
      * Will be used to create the bucket to store the state history when the thing is not using traits.
      */
     public OnboardEndnodeWithGatewayOptions(
