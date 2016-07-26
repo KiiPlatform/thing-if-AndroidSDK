@@ -400,6 +400,27 @@ public class ThingIFAPI implements Parcelable {
     }
 
     /**
+     * Endpoints execute onboarding for the thing and merge MQTT channel to the gateway.
+     * Thing act as Gateway is already registered and marked as Gateway.
+     *
+     * @param pendingEndNode Pending endnode
+     * @param endnodePassword Password of the End Node
+     * @param options optional parameters inside.
+     * @return Target instance can be used to operate target, manage resources of the target.
+     * @throws IllegalStateException Thrown when this instance is already onboarded.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     */
+    public EndNode onboardEndnodeWithGateway(
+            @NonNull PendingEndNode pendingEndNode,
+            @NonNull String endnodePassword,
+            @Nullable OnboardEndnodeWithGatewayOptions options)
+            throws ThingIFException {
+        // TODO: implement me.
+        return null;
+    }
+
+    /**
      * Checks whether on boarding is done.
      * @return true if done, otherwise false.
      */
