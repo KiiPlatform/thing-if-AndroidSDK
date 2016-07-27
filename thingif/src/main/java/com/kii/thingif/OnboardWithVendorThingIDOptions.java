@@ -14,7 +14,7 @@ public class OnboardWithVendorThingIDOptions {
     private final LayoutPosition layoutPosition;
     private final DataGroupingInterval dataGroupingInterval;
 
-    OnboardWithVendorThingIDOptions(
+    private OnboardWithVendorThingIDOptions(
             @Nullable String thingType,
             @Nullable JSONObject thingProperties,
             @Nullable LayoutPosition position,

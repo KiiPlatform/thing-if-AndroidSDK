@@ -11,7 +11,7 @@ import com.kii.thingif.gateway.PendingEndNode;
 public class OnboardEndnodeWithGatewayOptions {
     private final DataGroupingInterval dataGroupingInterval;
 
-    OnboardEndnodeWithGatewayOptions(
+    private OnboardEndnodeWithGatewayOptions(
             @Nullable DataGroupingInterval interval) {
         this.dataGroupingInterval = interval;
     }

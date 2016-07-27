@@ -10,7 +10,7 @@ public class OnboardWithThingIDOptions {
     private final LayoutPosition layoutPosition;
     private final DataGroupingInterval dataGroupingInterval;
 
-    OnboardWithThingIDOptions(
+    private OnboardWithThingIDOptions(
             @Nullable LayoutPosition position,
             @Nullable DataGroupingInterval interval) {
         this.layoutPosition = position;
