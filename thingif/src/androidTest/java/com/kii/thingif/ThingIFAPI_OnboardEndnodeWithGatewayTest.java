@@ -209,4 +209,201 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayTest extends ThingIFAPITestBase
         api.setTarget(new Gateway("gateway-thing-id", "gateway-vendor-thing-id"));
         Target target = api.onboardEndnodeWithGateway(new PendingEndNode("v1234567890abcde", DEMO_THING_TYPE, null), "");
     }
+    @Test
+    public void onboardEndnodeWithGatewayOptionsTest() throws Exception {
+        String gatewayThingID = UUID.randomUUID().toString();
+        String gatewayVendorThingID = UUID.randomUUID().toString();
+        String vendorThingID = UUID.randomUUID().toString();
+        String thingPassword = "password";
+        JSONObject thingProperties = new JSONObject();
+        thingProperties.put("manufacturer", "Kii");
+        String thingID = "th.1234567890";
+        String accessToken = "thing-access-token-1234";
+        OnboardEndnodeWithGatewayOptions options = new OnboardEndnodeWithGatewayOptions(
+                DataGroupingInterval.INTERVAL_1_MINUTE);
+        this.addMockResponseForOnBoardEndnode(200, thingID, accessToken);
+
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.setTarget(new Gateway(gatewayThingID, gatewayVendorThingID));
+        Assert.assertTrue(api.onboarded());
+        EndNode target = api.onboardEndnodeWithGateway(new PendingEndNode(vendorThingID, DEMO_THING_TYPE, thingProperties), thingPassword, options);
+        Assert.assertTrue(api.onboarded());
+
+        // verify the result
+        Assert.assertEquals(new TypedID(TypedID.Types.THING, thingID), target.getTypedID());
+        Assert.assertEquals(accessToken, target.getAccessToken());
+        // verify the request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/onboardings", request.getPath());
+        Assert.assertEquals("POST", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        expectedRequestHeaders.put("Content-Type", "application/vnd.kii.OnboardingEndNodeWithGatewayThingID+json");
+        this.assertRequestHeader(expectedRequestHeaders, request);
+
+        JsonObject expectedRequestBody = new JsonObject();
+        expectedRequestBody.addProperty("owner", api.getOwner().getTypedID().toString());
+        expectedRequestBody.addProperty("gatewayThingID", gatewayThingID);
+        expectedRequestBody.addProperty("endNodeVendorThingID", vendorThingID);
+        expectedRequestBody.addProperty("endNodePassword", thingPassword);
+        expectedRequestBody.addProperty("endNodeThingType", DEMO_THING_TYPE);
+        expectedRequestBody.add("endNodeThingProperties", new JsonParser().parse(thingProperties.toString()));
+        expectedRequestBody.addProperty("dataGroupingInterval", "1_MINUTE");
+        this.assertRequestBody(expectedRequestBody, request);
+    }
+    @Test
+    public void onboardEndnodeWithGatewayOptions403ErrorTest() throws Exception {
+        String gatewayThingID = UUID.randomUUID().toString();
+        String gatewayVendorThingID = UUID.randomUUID().toString();
+        String vendorThingID = UUID.randomUUID().toString();
+        String thingPassword = "password";
+        JSONObject thingProperties = new JSONObject();
+        thingProperties.put("manufacturer", "Kii");
+        OnboardEndnodeWithGatewayOptions options = new OnboardEndnodeWithGatewayOptions(
+                DataGroupingInterval.INTERVAL_30_MINUTES);
+        this.addEmptyMockResponse(403);
+
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.setTarget(new Gateway(gatewayThingID, gatewayVendorThingID));
+        try {
+            api.onboardEndnodeWithGateway(new PendingEndNode(vendorThingID, DEMO_THING_TYPE, thingProperties), thingPassword, options);
+            Assert.fail("ThingIFRestException should be thrown");
+        } catch (ForbiddenException e) {
+        }
+        // verify the request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/onboardings", request.getPath());
+        Assert.assertEquals("POST", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        expectedRequestHeaders.put("Content-Type", "application/vnd.kii.OnboardingEndNodeWithGatewayThingID+json");
+        this.assertRequestHeader(expectedRequestHeaders, request);
+
+        JsonObject expectedRequestBody = new JsonObject();
+        expectedRequestBody.addProperty("owner", api.getOwner().getTypedID().toString());
+        expectedRequestBody.addProperty("gatewayThingID", gatewayThingID);
+        expectedRequestBody.addProperty("endNodeVendorThingID", vendorThingID);
+        expectedRequestBody.addProperty("endNodePassword", thingPassword);
+        expectedRequestBody.addProperty("endNodeThingType", DEMO_THING_TYPE);
+        expectedRequestBody.add("endNodeThingProperties", new JsonParser().parse(thingProperties.toString()));
+        expectedRequestBody.addProperty("dataGroupingInterval", "30_MINUTES");
+        this.assertRequestBody(expectedRequestBody, request);
+    }
+    @Test
+    public void onboardEndnodeWithGatewayOptions404ErrorTest() throws Exception {
+        String gatewayThingID = UUID.randomUUID().toString();
+        String gatewayVendorThingID = UUID.randomUUID().toString();
+        String vendorThingID = UUID.randomUUID().toString();
+        String thingPassword = "password";
+        JSONObject thingProperties = new JSONObject();
+        thingProperties.put("manufacturer", "Kii");
+        OnboardEndnodeWithGatewayOptions options = new OnboardEndnodeWithGatewayOptions(
+                DataGroupingInterval.INTERVAL_1_HOUR);
+        this.addEmptyMockResponse(404);
+
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.setTarget(new Gateway(gatewayThingID, gatewayVendorThingID));
+        try {
+            api.onboardEndnodeWithGateway(new PendingEndNode(vendorThingID, DEMO_THING_TYPE, thingProperties), thingPassword, options);
+            Assert.fail("ThingIFRestException should be thrown");
+        } catch (NotFoundException e) {
+        }
+        // verify the request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/onboardings", request.getPath());
+        Assert.assertEquals("POST", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        expectedRequestHeaders.put("Content-Type", "application/vnd.kii.OnboardingEndNodeWithGatewayThingID+json");
+        this.assertRequestHeader(expectedRequestHeaders, request);
+
+        JsonObject expectedRequestBody = new JsonObject();
+        expectedRequestBody.addProperty("owner", api.getOwner().getTypedID().toString());
+        expectedRequestBody.addProperty("gatewayThingID", gatewayThingID);
+        expectedRequestBody.addProperty("endNodeVendorThingID", vendorThingID);
+        expectedRequestBody.addProperty("endNodePassword", thingPassword);
+        expectedRequestBody.addProperty("endNodeThingType", DEMO_THING_TYPE);
+        expectedRequestBody.add("endNodeThingProperties", new JsonParser().parse(thingProperties.toString()));
+        expectedRequestBody.addProperty("dataGroupingInterval", "1_HOUR");
+        this.assertRequestBody(expectedRequestBody, request);
+    }
+    @Test
+    public void onboardEndnodeWithGatewayOptions500ErrorTest() throws Exception {
+        String gatewayThingID = UUID.randomUUID().toString();
+        String gatewayVendorThingID = UUID.randomUUID().toString();
+        String vendorThingID = UUID.randomUUID().toString();
+        String thingPassword = "password";
+        JSONObject thingProperties = new JSONObject();
+        thingProperties.put("manufacturer", "Kii");
+        OnboardEndnodeWithGatewayOptions options = new OnboardEndnodeWithGatewayOptions(
+                DataGroupingInterval.INTERVAL_12_HOURS);
+        this.addEmptyMockResponse(500);
+
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.setTarget(new Gateway(gatewayThingID, gatewayVendorThingID));
+        try {
+            api.onboardEndnodeWithGateway(new PendingEndNode(vendorThingID, DEMO_THING_TYPE, thingProperties), thingPassword, options);
+            Assert.fail("ThingIFRestException should be thrown");
+        } catch (InternalServerErrorException e) {
+        }
+        // verify the request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/onboardings", request.getPath());
+        Assert.assertEquals("POST", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        expectedRequestHeaders.put("Content-Type", "application/vnd.kii.OnboardingEndNodeWithGatewayThingID+json");
+        this.assertRequestHeader(expectedRequestHeaders, request);
+
+        JsonObject expectedRequestBody = new JsonObject();
+        expectedRequestBody.addProperty("owner", api.getOwner().getTypedID().toString());
+        expectedRequestBody.addProperty("gatewayThingID", gatewayThingID);
+        expectedRequestBody.addProperty("endNodeVendorThingID", vendorThingID);
+        expectedRequestBody.addProperty("endNodePassword", thingPassword);
+        expectedRequestBody.addProperty("endNodeThingType", DEMO_THING_TYPE);
+        expectedRequestBody.add("endNodeThingProperties", new JsonParser().parse(thingProperties.toString()));
+        expectedRequestBody.addProperty("dataGroupingInterval", "12_HOURS");
+        this.assertRequestBody(expectedRequestBody, request);
+    }
+    @Test(expected = IllegalStateException.class)
+    public void onboardEndnodeWithGatewayOptionsWithoutOnboardingGatewayTest() throws Exception {
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        Target target = api.onboardEndnodeWithGateway(new PendingEndNode("v1234567890abcde", DEMO_THING_TYPE), "password", null);
+    }
+    @Test(expected = IllegalArgumentException.class)
+    public void onboardEndnodeWithGatewayOptionsWithNullVendorThingIDTest() throws Exception {
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.setTarget(new Gateway("gateway-thing-id", "gateway-vendor-thing-id"));
+        Target target = api.onboardEndnodeWithGateway(new PendingEndNode(null, DEMO_THING_TYPE, null), "password", null);
+    }
+    @Test(expected = IllegalArgumentException.class)
+    public void onboardEndnodeWithGatewayOptionsWithEmptyVendorThingIDTest() throws Exception {
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.setTarget(new Gateway("gateway-thing-id", "gateway-vendor-thing-id"));
+        Target target = api.onboardEndnodeWithGateway(new PendingEndNode("", DEMO_THING_TYPE, null), "password", null);
+    }
+    @Test(expected = IllegalArgumentException.class)
+    public void onboardEndnodeWithGatewayOptionsWithNullVendorThingPasswordTest() throws Exception {
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.setTarget(new Gateway("gateway-thing-id", "gateway-vendor-thing-id"));
+        Target target = api.onboardEndnodeWithGateway(new PendingEndNode("v1234567890abcde", DEMO_THING_TYPE, null), null, null);
+    }
+    @Test(expected = IllegalArgumentException.class)
+    public void onboardEndnodeWithGatewayOptionsWithEmptyVendorThingPasswordTest() throws Exception {
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.setTarget(new Gateway("gateway-thing-id", "gateway-vendor-thing-id"));
+        Target target = api.onboardEndnodeWithGateway(new PendingEndNode("v1234567890abcde", DEMO_THING_TYPE, null), "", null);
+    }
 }

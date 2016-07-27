@@ -477,8 +477,50 @@ public class ThingIFAPI implements Parcelable {
             @NonNull String endnodePassword,
             @Nullable OnboardEndnodeWithGatewayOptions options)
             throws ThingIFException {
-        // TODO: implement me.
-        return null;
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding the gateway");
+        }
+        if (this.target instanceof EndNode) {
+            throw new IllegalStateException("Target must be Gateway");
+        }
+        if (pendingEndNode == null) {
+            throw new IllegalArgumentException("pendingEndNode is null or empty");
+        }
+        if (TextUtils.isEmpty(pendingEndNode.getVendorThingID())) {
+            throw new IllegalArgumentException("vendorThingID is null or empty");
+        }
+        if (TextUtils.isEmpty(endnodePassword)) {
+            throw new IllegalArgumentException("endnodePassword is null or empty");
+        }
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("gatewayThingID", this.target.getTypedID().getID());
+            requestBody.put("endNodeVendorThingID", pendingEndNode.getVendorThingID());
+            requestBody.put("endNodePassword", endnodePassword);
+            if (!TextUtils.isEmpty(pendingEndNode.getThingType())) {
+                requestBody.put("endNodeThingType", pendingEndNode.getThingType());
+            }
+            if (pendingEndNode.getThingProperties() != null && pendingEndNode.getThingProperties().length() > 0) {
+                requestBody.put("endNodeThingProperties", pendingEndNode.getThingProperties());
+            }
+            if (options != null) {
+                DataGroupingInterval interval = options.getDataGroupingInterval();
+                if (interval != null) {
+                    requestBody.put("dataGroupingInterval", interval.getInterval());
+                }
+            }
+            requestBody.put("owner", this.owner.getTypedID().toString());
+        } catch (JSONException e) {
+            // Won’t happen
+        }
+        String path = MessageFormat.format("/thing-if/apps/{0}/onboardings", this.app.getAppID());
+        String url = Path.combine(this.app.getBaseUrl(), path);
+        Map<String, String> headers = this.newHeader();
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MediaTypes.MEDIA_TYPE_ONBOARDING_ENDNODE_WITH_GATEWAY_THING_ID_REQUEST, requestBody);
+        JSONObject responseBody = this.restClient.sendRequest(request);
+        String thingID = responseBody.optString("endNodeThingID", null);
+        String accessToken = responseBody.optString("accessToken", null);
+        return new EndNode(thingID, pendingEndNode.getVendorThingID(), accessToken);
     }
 
     /**
