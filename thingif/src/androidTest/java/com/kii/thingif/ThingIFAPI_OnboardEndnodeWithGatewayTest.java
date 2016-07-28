@@ -219,14 +219,16 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayTest extends ThingIFAPITestBase
         thingProperties.put("manufacturer", "Kii");
         String thingID = "th.1234567890";
         String accessToken = "thing-access-token-1234";
-        OnboardEndnodeWithGatewayOptions options = new OnboardEndnodeWithGatewayOptions(
-                DataGroupingInterval.INTERVAL_1_MINUTE);
+        OnboardEndnodeWithGatewayOptions.Builder options = new OnboardEndnodeWithGatewayOptions.Builder();
+        options.setDataGroupingInterval(DataGroupingInterval.INTERVAL_1_MINUTE);
         this.addMockResponseForOnBoardEndnode(200, thingID, accessToken);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(new Gateway(gatewayThingID, gatewayVendorThingID));
         Assert.assertTrue(api.onboarded());
-        EndNode target = api.onboardEndnodeWithGateway(new PendingEndNode(vendorThingID, DEMO_THING_TYPE, thingProperties), thingPassword, options);
+        EndNode target = api.onboardEndnodeWithGateway(
+                new PendingEndNode(vendorThingID, DEMO_THING_TYPE, thingProperties),
+                thingPassword, options.build());
         Assert.assertTrue(api.onboarded());
 
         // verify the result
@@ -262,14 +264,16 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayTest extends ThingIFAPITestBase
         String thingPassword = "password";
         JSONObject thingProperties = new JSONObject();
         thingProperties.put("manufacturer", "Kii");
-        OnboardEndnodeWithGatewayOptions options = new OnboardEndnodeWithGatewayOptions(
-                DataGroupingInterval.INTERVAL_30_MINUTES);
+        OnboardEndnodeWithGatewayOptions.Builder options = new OnboardEndnodeWithGatewayOptions.Builder();
+        options.setDataGroupingInterval(DataGroupingInterval.INTERVAL_30_MINUTES);
         this.addEmptyMockResponse(403);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(new Gateway(gatewayThingID, gatewayVendorThingID));
         try {
-            api.onboardEndnodeWithGateway(new PendingEndNode(vendorThingID, DEMO_THING_TYPE, thingProperties), thingPassword, options);
+            api.onboardEndnodeWithGateway(
+                    new PendingEndNode(vendorThingID, DEMO_THING_TYPE, thingProperties),
+                    thingPassword, options.build());
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ForbiddenException e) {
         }
@@ -303,14 +307,16 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayTest extends ThingIFAPITestBase
         String thingPassword = "password";
         JSONObject thingProperties = new JSONObject();
         thingProperties.put("manufacturer", "Kii");
-        OnboardEndnodeWithGatewayOptions options = new OnboardEndnodeWithGatewayOptions(
-                DataGroupingInterval.INTERVAL_1_HOUR);
+        OnboardEndnodeWithGatewayOptions.Builder options = new OnboardEndnodeWithGatewayOptions.Builder();
+        options.setDataGroupingInterval(DataGroupingInterval.INTERVAL_1_HOUR);
         this.addEmptyMockResponse(404);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(new Gateway(gatewayThingID, gatewayVendorThingID));
         try {
-            api.onboardEndnodeWithGateway(new PendingEndNode(vendorThingID, DEMO_THING_TYPE, thingProperties), thingPassword, options);
+            api.onboardEndnodeWithGateway(
+                    new PendingEndNode(vendorThingID, DEMO_THING_TYPE, thingProperties),
+                    thingPassword, options.build());
             Assert.fail("ThingIFRestException should be thrown");
         } catch (NotFoundException e) {
         }
@@ -344,14 +350,16 @@ public class ThingIFAPI_OnboardEndnodeWithGatewayTest extends ThingIFAPITestBase
         String thingPassword = "password";
         JSONObject thingProperties = new JSONObject();
         thingProperties.put("manufacturer", "Kii");
-        OnboardEndnodeWithGatewayOptions options = new OnboardEndnodeWithGatewayOptions(
-                DataGroupingInterval.INTERVAL_12_HOURS);
+        OnboardEndnodeWithGatewayOptions.Builder options = new OnboardEndnodeWithGatewayOptions.Builder();
+        options.setDataGroupingInterval(DataGroupingInterval.INTERVAL_12_HOURS);
         this.addEmptyMockResponse(500);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         api.setTarget(new Gateway(gatewayThingID, gatewayVendorThingID));
         try {
-            api.onboardEndnodeWithGateway(new PendingEndNode(vendorThingID, DEMO_THING_TYPE, thingProperties), thingPassword, options);
+            api.onboardEndnodeWithGateway(
+                    new PendingEndNode(vendorThingID, DEMO_THING_TYPE, thingProperties),
+                    thingPassword, options.build());
             Assert.fail("ThingIFRestException should be thrown");
         } catch (InternalServerErrorException e) {
         }

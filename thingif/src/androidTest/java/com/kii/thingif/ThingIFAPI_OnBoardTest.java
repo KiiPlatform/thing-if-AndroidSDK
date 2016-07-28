@@ -304,14 +304,16 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
         thingProperties.put("manufacturer", "Kii");
         String thingID = "th.1234567890";
         String accessToken = "thing-access-token-1234";
-        OnboardWithVendorThingIDOptions options = new OnboardWithVendorThingIDOptions(
-                DEMO_THING_TYPE, thingProperties, LayoutPosition.STANDALONE,
-                DataGroupingInterval.INTERVAL_1_MINUTE);
+        OnboardWithVendorThingIDOptions.Builder options = new OnboardWithVendorThingIDOptions.Builder();
+        options.setThingType(DEMO_THING_TYPE)
+                .setThingProperties(thingProperties)
+                .setLayoutPosition(LayoutPosition.STANDALONE)
+                .setDataGroupingInterval(DataGroupingInterval.INTERVAL_1_MINUTE);
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         Assert.assertFalse(api.onboarded());
-        Target target = api.onboard(vendorThingID, thingPassword, options);
+        Target target = api.onboard(vendorThingID, thingPassword, options.build());
         Assert.assertTrue(api.onboarded());
 
         // verify the result
@@ -345,14 +347,16 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
         String thingPassword = "password";
         JSONObject thingProperties = new JSONObject();
         thingProperties.put("manufacturer", "Kii");
-        OnboardWithVendorThingIDOptions options = new OnboardWithVendorThingIDOptions(
-                DEMO_THING_TYPE, thingProperties, LayoutPosition.GATEWAY,
-                DataGroupingInterval.INTERVAL_15_MINUTES);
+        OnboardWithVendorThingIDOptions.Builder options = new OnboardWithVendorThingIDOptions.Builder();
+        options.setThingType(DEMO_THING_TYPE)
+                .setThingProperties(thingProperties)
+                .setLayoutPosition(LayoutPosition.GATEWAY)
+                .setDataGroupingInterval(DataGroupingInterval.INTERVAL_15_MINUTES);
         this.addEmptyMockResponse(403);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
-            api.onboard(vendorThingID, thingPassword, options);
+            api.onboard(vendorThingID, thingPassword, options.build());
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ForbiddenException e) {
         }
@@ -384,14 +388,16 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
         String thingPassword = "password";
         JSONObject thingProperties = new JSONObject();
         thingProperties.put("manufacturer", "Kii");
-        OnboardWithVendorThingIDOptions options = new OnboardWithVendorThingIDOptions(
-                DEMO_THING_TYPE, thingProperties, LayoutPosition.ENDNODE,
-                DataGroupingInterval.INTERVAL_30_MINUTES);
+        OnboardWithVendorThingIDOptions.Builder options = new OnboardWithVendorThingIDOptions.Builder();
+        options.setThingType(DEMO_THING_TYPE)
+                .setThingProperties(thingProperties)
+                .setLayoutPosition(LayoutPosition.ENDNODE)
+                .setDataGroupingInterval(DataGroupingInterval.INTERVAL_30_MINUTES);
         this.addEmptyMockResponse(404);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
-            api.onboard(vendorThingID, thingPassword, options);
+            api.onboard(vendorThingID, thingPassword, options.build());
             Assert.fail("ThingIFRestException should be thrown");
         } catch (NotFoundException e) {
         }
@@ -423,14 +429,16 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
         String thingPassword = "password";
         JSONObject thingProperties = new JSONObject();
         thingProperties.put("manufacturer", "Kii");
-        OnboardWithVendorThingIDOptions options = new OnboardWithVendorThingIDOptions(
-                DEMO_THING_TYPE, thingProperties, LayoutPosition.STANDALONE,
-                DataGroupingInterval.INTERVAL_1_HOUR);
+        OnboardWithVendorThingIDOptions.Builder options = new OnboardWithVendorThingIDOptions.Builder();
+        options.setThingType(DEMO_THING_TYPE)
+                .setThingProperties(thingProperties)
+                .setLayoutPosition(LayoutPosition.STANDALONE)
+                .setDataGroupingInterval(DataGroupingInterval.INTERVAL_1_HOUR);
         this.addEmptyMockResponse(500);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         try {
-            api.onboard(vendorThingID, thingPassword, options);
+            api.onboard(vendorThingID, thingPassword, options.build());
             Assert.fail("ThingIFRestException should be thrown");
         } catch (InternalServerErrorException e) {
         }
@@ -464,15 +472,16 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
         thingProperties.put("manufacturer", "Kii");
         String thingID = "th.1234567890";
         String accessToken = "thing-access-token-1234";
-        OnboardWithVendorThingIDOptions options =
-                new OnboardWithVendorThingIDOptions(DEMO_THING_TYPE, thingProperties, null, null);
+        OnboardWithVendorThingIDOptions.Builder options = new OnboardWithVendorThingIDOptions.Builder();
+        options.setThingType(DEMO_THING_TYPE)
+                .setThingProperties(thingProperties);
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         Assert.assertFalse(api.onboarded());
-        Target target = api.onboard(vendorThingID, thingPassword, options);
+        Target target = api.onboard(vendorThingID, thingPassword, options.build());
         Assert.assertTrue(api.onboarded());
-        target = api.onboard(vendorThingID, thingPassword, options);
+        target = api.onboard(vendorThingID, thingPassword, options.build());
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithVendorThingIDAndOptionsWithNullVendorThingIDTest() throws Exception {
@@ -499,13 +508,14 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
         String thingID = "th.1234567890";
         String thingPassword = "password";
         String accessToken = "thing-access-token-1234";
-        OnboardWithThingIDOptions options = new OnboardWithThingIDOptions(
-                LayoutPosition.STANDALONE, DataGroupingInterval.INTERVAL_12_HOURS);
+        OnboardWithThingIDOptions.Builder options = new OnboardWithThingIDOptions.Builder();
+        options.setLayoutPosition(LayoutPosition.STANDALONE)
+                .setDataGroupingInterval(DataGroupingInterval.INTERVAL_12_HOURS);
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         Assert.assertFalse(api.onboarded());
-        Target target = api.onboard(thingID, thingPassword, options);
+        Target target = api.onboard(thingID, thingPassword, options.build());
         Assert.assertTrue(api.onboarded());
 
         // verify the result
