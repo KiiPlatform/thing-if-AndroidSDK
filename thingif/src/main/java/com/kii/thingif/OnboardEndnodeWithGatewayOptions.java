@@ -21,7 +21,7 @@ public class OnboardEndnodeWithGatewayOptions {
         return this.dataGroupingInterval;
     }
 
-    public class Builder {
+    public static class Builder {
         private DataGroupingInterval dataGroupingInterval;
 
         /**

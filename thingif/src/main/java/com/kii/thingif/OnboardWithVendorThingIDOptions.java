@@ -41,7 +41,7 @@ public class OnboardWithVendorThingIDOptions {
         return this.dataGroupingInterval;
     }
 
-    public class Builder {
+    public static class Builder {
         private String thingType;
         private JSONObject thingProperties;
         private LayoutPosition layoutPosition;

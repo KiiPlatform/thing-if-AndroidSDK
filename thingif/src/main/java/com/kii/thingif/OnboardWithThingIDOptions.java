@@ -27,7 +27,7 @@ public class OnboardWithThingIDOptions {
         return this.dataGroupingInterval;
     }
 
-    public class Builder {
+    public static class Builder {
         private LayoutPosition layoutPosition;
         private DataGroupingInterval dataGroupingInterval;
 
