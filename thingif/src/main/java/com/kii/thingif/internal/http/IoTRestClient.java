@@ -76,7 +76,6 @@ public class IoTRestClient {
                 break;
             case PUT:
                 builder.put(this.createRequestBody(request.getContentType(), request.getEntity()));
-                httpClient.setRetryOnConnectionFailure(false);
                 break;
             case PATCH:
                 builder.patch(this.createRequestBody(request.getContentType(), request.getEntity()));
