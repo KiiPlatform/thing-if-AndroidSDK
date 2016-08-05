@@ -10,16 +10,19 @@ import org.json.JSONObject;
  */
 public class OnboardWithVendorThingIDOptions {
     private final String thingType;
+    private final String firmwareVersion;
     private final JSONObject thingProperties;
     private final LayoutPosition layoutPosition;
     private final DataGroupingInterval dataGroupingInterval;
 
     private OnboardWithVendorThingIDOptions(
             @Nullable String thingType,
+            @Nullable String firmwareVersion,
             @Nullable JSONObject thingProperties,
             @Nullable LayoutPosition position,
             @Nullable DataGroupingInterval interval) {
         this.thingType = thingType;
+        this.firmwareVersion = firmwareVersion;
         this.thingProperties = thingProperties;
         this.layoutPosition = position;
         this.dataGroupingInterval = interval;
@@ -27,6 +30,9 @@ public class OnboardWithVendorThingIDOptions {
 
     @Nullable
     public String getThingType() { return this.thingType; }
+
+    @Nullable
+    public String getFirmwareVersion() { return this.firmwareVersion; }
 
     @Nullable
     public JSONObject getThingProperties() { return this.thingProperties; }
@@ -43,6 +49,7 @@ public class OnboardWithVendorThingIDOptions {
 
     public static class Builder {
         private String thingType;
+        private String firmwareVersion;
         private JSONObject thingProperties;
         private LayoutPosition layoutPosition;
         private DataGroupingInterval dataGroupingInterval;
@@ -56,6 +63,17 @@ public class OnboardWithVendorThingIDOptions {
         @NonNull
         public Builder setThingType(@Nullable String thingType) {
             this.thingType = thingType;
+            return this;
+        }
+
+        /**
+         * set firmware version.
+         * @param firmwareVersion Firmware version of the thing.
+         * @return this.
+         */
+        @NonNull
+        public Builder setFirmwareVersion(@Nullable String firmwareVersion) {
+            this.firmwareVersion = firmwareVersion;
             return this;
         }
 
@@ -103,6 +121,13 @@ public class OnboardWithVendorThingIDOptions {
         public String getThingType() { return this.thingType; }
 
         /**
+         * get firmware version.
+         * @return firmware version.
+         */
+        @Nullable
+        public String getFirmwareVersion() { return this.firmwareVersion; }
+
+        /**
          * get thing properties.
          * @return thing properties.
          */
@@ -131,7 +156,8 @@ public class OnboardWithVendorThingIDOptions {
          */
         @NonNull
         public OnboardWithVendorThingIDOptions build() {
-            return new OnboardWithVendorThingIDOptions(this.thingType, this.thingProperties,
+            return new OnboardWithVendorThingIDOptions(this.thingType,
+                    this.firmwareVersion, this.thingProperties,
                     this.layoutPosition, this.dataGroupingInterval);
         }
     }
