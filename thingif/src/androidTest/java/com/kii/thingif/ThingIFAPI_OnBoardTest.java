@@ -306,6 +306,7 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         OnboardWithVendorThingIDOptions.Builder options = new OnboardWithVendorThingIDOptions.Builder();
         options.setThingType(DEMO_THING_TYPE)
+                .setFirmwareVersion("dummyVersion")
                 .setThingProperties(thingProperties)
                 .setLayoutPosition(LayoutPosition.STANDALONE)
                 .setDataGroupingInterval(DataGroupingInterval.INTERVAL_1_MINUTE);
@@ -336,6 +337,7 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
         expectedRequestBody.addProperty("vendorThingID", vendorThingID);
         expectedRequestBody.addProperty("thingPassword", thingPassword);
         expectedRequestBody.addProperty("thingType", DEMO_THING_TYPE);
+        expectedRequestBody.addProperty("firmwareVersion", "dummyVersion");
         expectedRequestBody.add("thingProperties", new JsonParser().parse(thingProperties.toString()));
         expectedRequestBody.addProperty("layoutPosition", "STANDALONE");
         expectedRequestBody.addProperty("dataGroupingInterval", "1_MINUTE");

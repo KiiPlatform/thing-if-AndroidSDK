@@ -213,8 +213,8 @@ public class ThingIFAPI implements Parcelable {
             @Nullable String thingType,
             @Nullable JSONObject thingProperties)
             throws ThingIFException {
-        return onboardWithVendorThingID(vendorThingID, thingPassword, thingType, thingProperties,
-                null, null);
+        return onboardWithVendorThingID(vendorThingID, thingPassword, thingType, null,
+                thingProperties, null, null);
     }
 
     /**
@@ -239,25 +239,28 @@ public class ThingIFAPI implements Parcelable {
             @Nullable OnboardWithVendorThingIDOptions options)
             throws ThingIFException {
         String thingType = null;
+        String firmwareVersion = null;
         JSONObject thingProperties = null;
         LayoutPosition position = null;
         DataGroupingInterval interval = null;
 
         if (options != null) {
             thingType = options.getThingType();
+            firmwareVersion = options.getFirmwareVersion();
             thingProperties = options.getThingProperties();
             position = options.getLayoutPosition();
             interval = options.getDataGroupingInterval();
         }
 
-        return onboardWithVendorThingID(vendorThingID, thingPassword, thingType, thingProperties,
-                position, interval);
+        return onboardWithVendorThingID(vendorThingID, thingPassword, thingType, firmwareVersion,
+                thingProperties, position, interval);
     }
 
     private Target onboardWithVendorThingID(
             String vendorThingID,
             String thingPassword,
             String thingType,
+            String firmwareVersion,
             JSONObject thingProperties,
             LayoutPosition layoutPosition,
             DataGroupingInterval dataGroupingInterval)
@@ -277,6 +280,9 @@ public class ThingIFAPI implements Parcelable {
             requestBody.put("thingPassword", thingPassword);
             if (thingType != null) {
                 requestBody.put("thingType", thingType);
+            }
+            if (firmwareVersion != null) {
+                requestBody.put("firmwareVersion", firmwareVersion);
             }
             if (thingProperties != null && thingProperties.length() > 0) {
                 requestBody.put("thingProperties", thingProperties);
