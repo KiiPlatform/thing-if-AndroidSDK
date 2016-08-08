@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.Layout;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.support.annotation.NonNull;
@@ -213,8 +214,9 @@ public class ThingIFAPI implements Parcelable {
             @Nullable String thingType,
             @Nullable JSONObject thingProperties)
             throws ThingIFException {
-        return onboardWithVendorThingID(vendorThingID, thingPassword, thingType, null,
-                thingProperties, null, null);
+        OnboardWithVendorThingIDOptions.Builder builder = new OnboardWithVendorThingIDOptions.Builder();
+        builder.setThingType(thingType).setThingProperties(thingProperties);
+        return onboardWithVendorThingID(vendorThingID, thingPassword, builder.build());
     }
 
     /**
@@ -238,32 +240,13 @@ public class ThingIFAPI implements Parcelable {
             @NonNull String thingPassword,
             @Nullable OnboardWithVendorThingIDOptions options)
             throws ThingIFException {
-        String thingType = null;
-        String firmwareVersion = null;
-        JSONObject thingProperties = null;
-        LayoutPosition position = null;
-        DataGroupingInterval interval = null;
-
-        if (options != null) {
-            thingType = options.getThingType();
-            firmwareVersion = options.getFirmwareVersion();
-            thingProperties = options.getThingProperties();
-            position = options.getLayoutPosition();
-            interval = options.getDataGroupingInterval();
-        }
-
-        return onboardWithVendorThingID(vendorThingID, thingPassword, thingType, firmwareVersion,
-                thingProperties, position, interval);
+        return onboardWithVendorThingID(vendorThingID, thingPassword, options);
     }
 
     private Target onboardWithVendorThingID(
             String vendorThingID,
             String thingPassword,
-            String thingType,
-            String firmwareVersion,
-            JSONObject thingProperties,
-            LayoutPosition layoutPosition,
-            DataGroupingInterval dataGroupingInterval)
+            OnboardWithVendorThingIDOptions options)
             throws ThingIFException {
         if (this.onboarded()) {
             throw new IllegalStateException("This instance is already onboarded.");
@@ -278,20 +261,27 @@ public class ThingIFAPI implements Parcelable {
         try {
             requestBody.put("vendorThingID", vendorThingID);
             requestBody.put("thingPassword", thingPassword);
-            if (thingType != null) {
-                requestBody.put("thingType", thingType);
-            }
-            if (firmwareVersion != null) {
-                requestBody.put("firmwareVersion", firmwareVersion);
-            }
-            if (thingProperties != null && thingProperties.length() > 0) {
-                requestBody.put("thingProperties", thingProperties);
-            }
-            if (layoutPosition != null) {
-                requestBody.put("layoutPosition", layoutPosition.name());
-            }
-            if (dataGroupingInterval != null) {
-                requestBody.put("dataGroupingInterval", dataGroupingInterval.getInterval());
+            if (options != null) {
+                String thingType = options.getThingType();
+                String firmwareVersion = options.getFirmwareVersion();
+                JSONObject thingProperties = options.getThingProperties();
+                LayoutPosition layoutPosition = options.getLayoutPosition();
+                DataGroupingInterval dataGroupingInterval = options.getDataGroupingInterval();
+                if (thingType != null) {
+                    requestBody.put("thingType", thingType);
+                }
+                if (firmwareVersion != null) {
+                    requestBody.put("firmwareVersion", firmwareVersion);
+                }
+                if (thingProperties != null && thingProperties.length() > 0) {
+                    requestBody.put("thingProperties", thingProperties);
+                }
+                if (layoutPosition != null) {
+                    requestBody.put("layoutPosition", layoutPosition.name());
+                }
+                if (dataGroupingInterval != null) {
+                    requestBody.put("dataGroupingInterval", dataGroupingInterval.getInterval());
+                }
             }
             requestBody.put("owner", this.owner.getTypedID().toString());
         } catch (JSONException e) {
@@ -320,7 +310,7 @@ public class ThingIFAPI implements Parcelable {
             @NonNull String thingID,
             @NonNull String thingPassword) throws
             ThingIFException {
-        return onboardWithThingID(thingID, thingPassword, null, null);
+        return onboardWithThingID(thingID, thingPassword, null);
     }
 
     /**
@@ -345,22 +335,13 @@ public class ThingIFAPI implements Parcelable {
             @NonNull String thingPassword,
             @Nullable OnboardWithThingIDOptions options)
             throws ThingIFException {
-        LayoutPosition position = null;
-        DataGroupingInterval interval = null;
-
-        if (options != null) {
-            position = options.getLayoutPosition();
-            interval = options.getDataGroupingInterval();
-        }
-
-        return onboardWithThingID(thingID, thingPassword, position, interval);
+        return onboardWithThingID(thingID, thingPassword, options);
     }
 
     private Target onboardWithThingID(
             String thingID,
             String thingPassword,
-            LayoutPosition layoutPosition,
-            DataGroupingInterval dataGroupingInterval)
+            OnboardWithThingIDOptions options)
             throws ThingIFException {
         if (this.onboarded()) {
             throw new IllegalStateException("This instance is already onboarded.");
@@ -376,11 +357,15 @@ public class ThingIFAPI implements Parcelable {
             requestBody.put("thingID", thingID);
             requestBody.put("thingPassword", thingPassword);
             requestBody.put("owner", this.owner.getTypedID().toString());
-            if (layoutPosition != null) {
-                requestBody.put("layoutPosition", layoutPosition.name());
-            }
-            if (dataGroupingInterval != null) {
-                requestBody.put("dataGroupingInterval", dataGroupingInterval.getInterval());
+            if (options != null) {
+                LayoutPosition layoutPosition = options.getLayoutPosition();
+                DataGroupingInterval dataGroupingInterval = options.getDataGroupingInterval();
+                if (layoutPosition != null) {
+                    requestBody.put("layoutPosition", layoutPosition.name());
+                }
+                if (dataGroupingInterval != null) {
+                    requestBody.put("dataGroupingInterval", dataGroupingInterval.getInterval());
+                }
             }
         } catch (JSONException e) {
             // Won’t happen
@@ -437,19 +422,13 @@ public class ThingIFAPI implements Parcelable {
             @NonNull String endnodePassword,
             @Nullable OnboardEndnodeWithGatewayOptions options)
             throws ThingIFException {
-        DataGroupingInterval interval = null;
-
-        if (options != null) {
-            interval = options.getDataGroupingInterval();
-        }
-
-        return onboardEndNodeWithGateway(pendingEndNode, endnodePassword, interval);
+        return onboardEndNodeWithGateway(pendingEndNode, endnodePassword, options);
     }
 
     private EndNode onboardEndNodeWithGateway(
             PendingEndNode pendingEndNode,
             String endnodePassword,
-            DataGroupingInterval dataGroupingInterval)
+            @Nullable OnboardEndnodeWithGatewayOptions options)
             throws ThingIFException {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding the gateway");
@@ -477,8 +456,11 @@ public class ThingIFAPI implements Parcelable {
             if (pendingEndNode.getThingProperties() != null && pendingEndNode.getThingProperties().length() > 0) {
                 requestBody.put("endNodeThingProperties", pendingEndNode.getThingProperties());
             }
-            if (dataGroupingInterval != null) {
-                requestBody.put("dataGroupingInterval", dataGroupingInterval.getInterval());
+            if (options != null) {
+                DataGroupingInterval dataGroupingInterval = options.getDataGroupingInterval();
+                if (dataGroupingInterval != null) {
+                    requestBody.put("dataGroupingInterval", dataGroupingInterval.getInterval());
+                }
             }
             requestBody.put("owner", this.owner.getTypedID().toString());
         } catch (JSONException e) {
