@@ -258,6 +258,7 @@ public class ThingIFAPI implements Parcelable {
             throw new IllegalArgumentException("thingPassword is null or empty");
         }
         JSONObject requestBody = new JSONObject();
+        LayoutPosition layoutPosition = null;
         try {
             requestBody.put("vendorThingID", vendorThingID);
             requestBody.put("thingPassword", thingPassword);
@@ -265,7 +266,7 @@ public class ThingIFAPI implements Parcelable {
                 String thingType = options.getThingType();
                 String firmwareVersion = options.getFirmwareVersion();
                 JSONObject thingProperties = options.getThingProperties();
-                LayoutPosition layoutPosition = options.getLayoutPosition();
+                layoutPosition = options.getLayoutPosition();
                 DataGroupingInterval dataGroupingInterval = options.getDataGroupingInterval();
                 if (thingType != null) {
                     requestBody.put("thingType", thingType);
@@ -287,7 +288,7 @@ public class ThingIFAPI implements Parcelable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST, requestBody, vendorThingID);
+        return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST, requestBody, vendorThingID, layoutPosition);
     }
 
     /**
@@ -353,12 +354,13 @@ public class ThingIFAPI implements Parcelable {
             throw new IllegalArgumentException("thingPassword is null or empty");
         }
         JSONObject requestBody = new JSONObject();
+        LayoutPosition layoutPosition = null;
         try {
             requestBody.put("thingID", thingID);
             requestBody.put("thingPassword", thingPassword);
             requestBody.put("owner", this.owner.getTypedID().toString());
             if (options != null) {
-                LayoutPosition layoutPosition = options.getLayoutPosition();
+                layoutPosition = options.getLayoutPosition();
                 DataGroupingInterval dataGroupingInterval = options.getDataGroupingInterval();
                 if (layoutPosition != null) {
                     requestBody.put("layoutPosition", layoutPosition.name());
@@ -371,10 +373,10 @@ public class ThingIFAPI implements Parcelable {
             // Won’t happen
         }
         // FIXME: Currently, Server does not return the VendorThingID when onboarding is successful.
-        return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_THING_ID_BY_OWNER_REQUEST, requestBody, null);
+        return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_THING_ID_BY_OWNER_REQUEST, requestBody, null, layoutPosition);
     }
 
-    private Target onboard(MediaType contentType, JSONObject requestBody, String vendorThingID) throws ThingIFException {
+    private Target onboard(MediaType contentType, JSONObject requestBody, String vendorThingID, LayoutPosition layoutPosition) throws ThingIFException {
         String path = MessageFormat.format("/thing-if/apps/{0}/onboardings", this.app.getAppID());
         String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
@@ -382,7 +384,14 @@ public class ThingIFAPI implements Parcelable {
         JSONObject responseBody = this.restClient.sendRequest(request);
         String thingID = responseBody.optString("thingID", null);
         String accessToken = responseBody.optString("accessToken", null);
-        this.target = new StandaloneThing(thingID, vendorThingID, accessToken);
+        if (layoutPosition == LayoutPosition.GATEWAY) {
+            this.target = new Gateway(thingID, vendorThingID);
+        } else if (layoutPosition == LayoutPosition.ENDNODE) {
+            this.target = new EndNode(thingID, vendorThingID, accessToken);
+        } else {
+            this.target = new StandaloneThing(thingID, vendorThingID,
+                    accessToken);
+        }
         saveInstance(this);
         return this.target;
     }
@@ -433,7 +442,7 @@ public class ThingIFAPI implements Parcelable {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding the gateway");
         }
-        if (this.target instanceof EndNode) {
+        if (this.target instanceof Gateway) {
             throw new IllegalStateException("Target must be Gateway");
         }
         if (pendingEndNode == null) {
