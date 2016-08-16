@@ -35,7 +35,8 @@ public class OnboardTest extends LargeTestCaseBase {
             vendorThingID, thingPassword,
             (new OnboardWithVendorThingIDOptions.Builder()).setThingType(
                 DEMO_THING_TYPE).setLayoutPosition(
-                    LayoutPosition.STANDALONE).build());
+                    LayoutPosition.STANDALONE).setDataGroupingInterval(
+                        DataGroupingInterval.INTERVAL_12_HOURS).build());
         Assert.assertNotNull(onboardVendorThingIDTarget);
         Assert.assertNotNull(onboardVendorThingIDTarget.getTypedID());
         Assert.assertEquals(TypedID.Types.THING,
@@ -49,7 +50,8 @@ public class OnboardTest extends LargeTestCaseBase {
         Target onboardThingIDTarget = onboardThingIDApi.onboard(
             onboardVendorThingIDTarget.getTypedID().getID(), thingPassword,
             (new OnboardWithThingIDOptions.Builder()).setLayoutPosition(
-                LayoutPosition.STANDALONE).build());
+                LayoutPosition.STANDALONE).setDataGroupingInterval(
+                    DataGroupingInterval.INTERVAL_12_HOURS).build());
         Assert.assertNotNull(onboardThingIDTarget);
         Assert.assertNotNull(onboardThingIDTarget.getTypedID());
         Assert.assertEquals(TypedID.Types.THING,
