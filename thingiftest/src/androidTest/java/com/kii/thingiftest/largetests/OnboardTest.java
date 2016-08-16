@@ -33,10 +33,11 @@ public class OnboardTest extends LargeTestCaseBase {
         // on-boarding thing
         Target onboardVendorThingIDTarget = onboardVendorThingIDApi.onboard(
             vendorThingID, thingPassword,
-            (new OnboardWithVendorThingIDOptions.Builder()).setThingType(
-                DEMO_THING_TYPE).setLayoutPosition(
-                    LayoutPosition.STANDALONE).setDataGroupingInterval(
-                        DataGroupingInterval.INTERVAL_12_HOURS).build());
+            (new OnboardWithVendorThingIDOptions.Builder())
+                .setThingType(DEMO_THING_TYPE)
+                .setLayoutPosition(LayoutPosition.STANDALONE)
+                .setDataGroupingInterval(DataGroupingInterval.INTERVAL_12_HOURS)
+                .build());
         Assert.assertNotNull(onboardVendorThingIDTarget);
         Assert.assertNotNull(onboardVendorThingIDTarget.getTypedID());
         Assert.assertEquals(TypedID.Types.THING,
@@ -49,9 +50,10 @@ public class OnboardTest extends LargeTestCaseBase {
         // on-boarding thing
         Target onboardThingIDTarget = onboardThingIDApi.onboard(
             onboardVendorThingIDTarget.getTypedID().getID(), thingPassword,
-            (new OnboardWithThingIDOptions.Builder()).setLayoutPosition(
-                LayoutPosition.STANDALONE).setDataGroupingInterval(
-                    DataGroupingInterval.INTERVAL_12_HOURS).build());
+            (new OnboardWithThingIDOptions.Builder())
+                .setLayoutPosition(LayoutPosition.STANDALONE)
+                .setDataGroupingInterval(DataGroupingInterval.INTERVAL_12_HOURS)
+                .build());
         Assert.assertNotNull(onboardThingIDTarget);
         Assert.assertNotNull(onboardThingIDTarget.getTypedID());
         Assert.assertEquals(TypedID.Types.THING,
@@ -67,8 +69,8 @@ public class OnboardTest extends LargeTestCaseBase {
         Target gateway = gatewayAPI.onboard(
             "gvid-" + UUID.randomUUID().toString(),
             "gatewaypass",
-            (new OnboardWithVendorThingIDOptions.Builder()).setLayoutPosition(
-                LayoutPosition.GATEWAY).build());
+            (new OnboardWithVendorThingIDOptions.Builder())
+                .setLayoutPosition(LayoutPosition.GATEWAY).build());
         Assert.assertNotNull(gateway);
         Assert.assertNotNull(gateway.getTypedID());
         Assert.assertEquals(TypedID.Types.THING,
@@ -78,8 +80,9 @@ public class OnboardTest extends LargeTestCaseBase {
         Target endnode = gatewayAPI.onboardEndnodeWithGateway(
             new PendingEndNode("evid-" + UUID.randomUUID().toString()),
             "endnodepass",
-            (new OnboardEndnodeWithGatewayOptions.Builder()).setDataGroupingInterval(
-                DataGroupingInterval.INTERVAL_12_HOURS).build());
+            (new OnboardEndnodeWithGatewayOptions.Builder())
+                .setDataGroupingInterval(DataGroupingInterval.INTERVAL_12_HOURS)
+                .build());
         Assert.assertNotNull(endnode);
         Assert.assertNotNull(endnode.getTypedID());
         Assert.assertEquals(TypedID.Types.THING,
