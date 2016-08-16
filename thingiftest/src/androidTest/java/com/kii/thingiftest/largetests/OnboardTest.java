@@ -19,37 +19,41 @@ import java.util.UUID;
 
 public class OnboardTest extends LargeTestCaseBase {
 
+
     @Test
-    public void testOnboardWithVendorThingID() throws Exception {
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema();
+    public void testOnboardWithVendorThingIDAndThingID() throws Exception {
+        ThingIFAPI onboardVendorThingIDApi =
+                this.createThingIFAPIWithDemoSchema();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
-        OnboardWithVendorThingIDOptions.Builder builder = new OnboardWithVendorThingIDOptions.Builder();
-        builder.setThingType(DEMO_THING_TYPE).setLayoutPosition(LayoutPosition.STANDALONE);
 
         // on-boarding thing
-        Target target = api.onboard(vendorThingID, thingPassword, builder.build());
-        Assert.assertNotNull(target);
-        Assert.assertNotNull(target.getTypedID());
-        Assert.assertEquals(TypedID.Types.THING, target.getTypedID().getType());
-        Assert.assertNotNull(target.getTypedID().getID());
-        Assert.assertNotNull(target.getAccessToken());
-    }
+        Target onboardVendorThingIDTarget = onboardVendorThingIDApi.onboard(
+            vendorThingID, thingPassword,
+            (new OnboardWithVendorThingIDOptions.Builder()).setThingType(
+                DEMO_THING_TYPE).setLayoutPosition(
+                    LayoutPosition.STANDALONE).build());
+        Assert.assertNotNull(onboardVendorThingIDTarget);
+        Assert.assertNotNull(onboardVendorThingIDTarget.getTypedID());
+        Assert.assertEquals(TypedID.Types.THING,
+                onboardVendorThingIDTarget.getTypedID().getType());
+        Assert.assertNotNull(onboardVendorThingIDTarget.getTypedID().getID());
+        Assert.assertNotNull(onboardVendorThingIDTarget.getAccessToken());
 
-    @Test
-    public void testOnboardWithThingID() throws Exception {
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema();
-        String thingID = "th.9980daa00022-b539-6e11-d1e5-0ea2199b";
-        String thingPassword = "password";
-        OnboardWithThingIDOptions.Builder builder = new OnboardWithThingIDOptions.Builder();
-        builder.setLayoutPosition(LayoutPosition.STANDALONE);
-
+        ThingIFAPI onboardThingIDApi =
+                copyThingIFAPIWithoutTarget(onboardVendorThingIDApi);
         // on-boarding thing
-        Target target = api.onboard(thingID, thingPassword, builder.build());
-        Assert.assertNotNull(target);
-        Assert.assertNotNull(target.getTypedID());
-        Assert.assertEquals(TypedID.Types.THING, target.getTypedID().getType());
-        Assert.assertEquals(thingID, target.getTypedID().getID());
-        Assert.assertNotNull(target.getAccessToken());
+        Target onboardThingIDTarget = onboardThingIDApi.onboard(
+            onboardVendorThingIDTarget.getTypedID().getID(), thingPassword,
+            (new OnboardWithThingIDOptions.Builder()).setLayoutPosition(
+                LayoutPosition.STANDALONE).build());
+        Assert.assertNotNull(onboardThingIDTarget);
+        Assert.assertNotNull(onboardThingIDTarget.getTypedID());
+        Assert.assertEquals(TypedID.Types.THING,
+                onboardThingIDTarget.getTypedID().getType());
+        Assert.assertEquals(onboardThingIDTarget.getTypedID().getID(),
+                onboardThingIDTarget.getTypedID().getID());
+        Assert.assertNotNull(onboardThingIDTarget.getAccessToken());
     }
+
 }
