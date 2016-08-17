@@ -790,6 +790,50 @@ public class ThingIFAPI implements Parcelable {
 
     /**
      * Post new Trigger with commands to IoT Cloud.
+     *
+     * <p>
+     * When thing related to this ThingIFAPI instance meets condition
+     * described by predicate, A registered command sends to thing related to
+     * target.
+     * </p>
+     *
+     * @param schemaName name of the schema.
+     * @param schemaVersion version of schema.
+     * @param actions Specify actions included in the Command is fired by the
+     *                trigger.
+     * @param predicate Specify when the Trigger fires command.
+     * @param target target of trigger.
+     * @return Instance of the Trigger registered in IoT Cloud.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     */
+    @NonNull
+    @WorkerThread
+    public Trigger postNewTrigger(
+            @NonNull String schemaName,
+            int schemaVersion,
+            @NonNull List<Action> actions,
+            @NonNull Predicate predicate,
+            @NonNull Target target) throws ThingIFException {
+        // TODO: implement me.
+        return null;
+    }
+
+    /**
+     * Post new Trigger with commands to IoT Cloud.
+     *
+     * <p>
+     * Short version of {@link #postNewTrigger(String, int, List, Predicate,
+     * Target)}.
+     * </p>
+     *
+     * <p>
+     * This method equals to followings:
+     * </p>
+     * <code>
+     * api.postNewTrigger(schemaName, schemaVersion, actions, predicate, api.getTarget()).
+     * </code>
+     *
      * @param schemaName name of the schema.
      * @param schemaVersion version of schema.
      * @param actions Specify actions included in the Command is fired by the
@@ -798,6 +842,7 @@ public class ThingIFAPI implements Parcelable {
      * @return Instance of the Trigger registered in IoT Cloud.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
+     * @see #postNewTrigger(String, int, List, Predicate, Target)
      */
     @NonNull
     @WorkerThread
