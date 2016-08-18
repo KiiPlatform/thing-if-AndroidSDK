@@ -818,8 +818,7 @@ public class ThingIFAPI implements Parcelable {
             @NonNull List<Action> actions,
             @NonNull Predicate predicate,
             @NonNull Target target) throws ThingIFException {
-        // TODO: implement me.
-        return null;
+        return postNewTriggerWithCommands(schemaName, schemaVersion, actions, predicate, target);
     }
 
     /**
@@ -855,8 +854,16 @@ public class ThingIFAPI implements Parcelable {
             @NonNull List<Action> actions,
             @NonNull Predicate predicate)
             throws ThingIFException {
+        return postNewTriggerWithCommands(schemaName, schemaVersion, actions, predicate, this.target);
+    }
 
-        if (this.target == null) {
+    private Trigger postNewTriggerWithCommands(
+            String schemaName,
+            int schemaVersion,
+            List<Action> actions,
+            Predicate predicate,
+            Target target) throws ThingIFException {
+        if (target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
         if (TextUtils.isEmpty(schemaName)) {
@@ -870,7 +877,7 @@ public class ThingIFAPI implements Parcelable {
         }
         JSONObject requestBody = new JSONObject();
         Schema schema = this.getSchema(schemaName, schemaVersion);
-        Command command = new Command(schemaName, schemaVersion, this.target.getTypedID(), this.owner.getTypedID(), actions);
+        Command command = new Command(schemaName, schemaVersion, target.getTypedID(), this.owner.getTypedID(), actions);
         try {
             requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson(schema).toJson(predicate)));
             requestBody.put("triggersWhat", TriggersWhat.COMMAND.name());
@@ -878,7 +885,7 @@ public class ThingIFAPI implements Parcelable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        return this.postNewTrigger(requestBody);
+        return this.postNewTrigger(requestBody, target);
     }
 
     /**
@@ -913,17 +920,17 @@ public class ThingIFAPI implements Parcelable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        return this.postNewTrigger(requestBody);
+        return this.postNewTrigger(requestBody, this.target);
     }
-    private Trigger postNewTrigger(@NonNull JSONObject requestBody) throws ThingIFException {
-        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers", this.app.getAppID(), this.target.getTypedID().toString());
+    private Trigger postNewTrigger(@NonNull JSONObject requestBody, Target target) throws ThingIFException {
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers", this.app.getAppID(), target.getTypedID().toString());
         String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
 
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MediaTypes.MEDIA_TYPE_JSON, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
         String triggerID = responseBody.optString("triggerID", null);
-        return this.getTrigger(triggerID);
+        return this.getTriggerInner(triggerID, target);
     }
 
     /**
@@ -940,15 +947,21 @@ public class ThingIFAPI implements Parcelable {
     public Trigger getTrigger(
             @NonNull String triggerID)
             throws ThingIFException {
+        return getTriggerInner(triggerID, this.target);
+    }
 
-        if (this.target == null) {
+    private Trigger getTriggerInner(
+            String triggerID,
+            Target target)
+            throws ThingIFException {
+        if (target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
         if (TextUtils.isEmpty(triggerID)) {
             throw new IllegalArgumentException("triggerID is null or empty");
         }
 
-        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}", this.app.getAppID(), this.target.getTypedID().toString(), triggerID);
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}", this.app.getAppID(), target.getTypedID().toString(), triggerID);
         String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
