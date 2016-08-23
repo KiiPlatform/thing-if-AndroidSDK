@@ -862,8 +862,8 @@ public class ThingIFAPI implements Parcelable {
             int schemaVersion,
             List<Action> actions,
             Predicate predicate,
-            Target target) throws ThingIFException {
-        if (target == null) {
+            Target commandTarget) throws ThingIFException {
+        if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
         if (TextUtils.isEmpty(schemaName)) {
@@ -875,9 +875,12 @@ public class ThingIFAPI implements Parcelable {
         if (predicate == null) {
             throw new IllegalArgumentException("predicate is null");
         }
+        if (commandTarget == null) {
+            throw new IllegalArgumentException("Command target is null");
+        }
         JSONObject requestBody = new JSONObject();
         Schema schema = this.getSchema(schemaName, schemaVersion);
-        Command command = new Command(schemaName, schemaVersion, target.getTypedID(), this.owner.getTypedID(), actions);
+        Command command = new Command(schemaName, schemaVersion, commandTarget.getTypedID(), this.owner.getTypedID(), actions);
         try {
             requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson(schema).toJson(predicate)));
             requestBody.put("triggersWhat", TriggersWhat.COMMAND.name());
@@ -885,7 +888,7 @@ public class ThingIFAPI implements Parcelable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        return this.postNewTrigger(requestBody, target);
+        return this.postNewTrigger(requestBody);
     }
 
     /**
@@ -920,17 +923,17 @@ public class ThingIFAPI implements Parcelable {
         } catch (JSONException e) {
             // Won’t happen
         }
-        return this.postNewTrigger(requestBody, this.target);
+        return this.postNewTrigger(requestBody);
     }
-    private Trigger postNewTrigger(@NonNull JSONObject requestBody, Target target) throws ThingIFException {
-        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers", this.app.getAppID(), target.getTypedID().toString());
+    private Trigger postNewTrigger(@NonNull JSONObject requestBody) throws ThingIFException {
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers", this.app.getAppID(), this.target.getTypedID().toString());
         String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
 
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MediaTypes.MEDIA_TYPE_JSON, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
         String triggerID = responseBody.optString("triggerID", null);
-        return this.getTriggerInner(triggerID, target);
+        return this.getTrigger(triggerID);
     }
 
     /**
@@ -947,21 +950,14 @@ public class ThingIFAPI implements Parcelable {
     public Trigger getTrigger(
             @NonNull String triggerID)
             throws ThingIFException {
-        return getTriggerInner(triggerID, this.target);
-    }
-
-    private Trigger getTriggerInner(
-            String triggerID,
-            Target target)
-            throws ThingIFException {
-        if (target == null) {
+        if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
         if (TextUtils.isEmpty(triggerID)) {
             throw new IllegalArgumentException("triggerID is null or empty");
         }
 
-        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}", this.app.getAppID(), target.getTypedID().toString(), triggerID);
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}", this.app.getAppID(), this.target.getTypedID().toString(), triggerID);
         String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);

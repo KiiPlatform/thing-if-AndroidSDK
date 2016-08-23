@@ -401,10 +401,13 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
     @Test
     public void postNewTriggerWithTargetAndSchedulePredicateTest() throws Exception {
         Schema schema = this.createDefaultSchema();
-        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        TypedID thingIDA = new TypedID(TypedID.Types.THING, "th.1234567890");
+        TypedID thingIDB = new TypedID(TypedID.Types.THING, "th.9876543210");
         String accessToken = "thing-access-token-1234";
         String triggerID = "trigger-1234";
-        Target target = new StandaloneThing(thingID.getID(),
+        Target target = new StandaloneThing(thingIDA.getID(),
+                "vendor-thing-id", accessToken);
+        Target commandTarget = new StandaloneThing(thingIDB.getID(),
                 "vendor-thing-id", accessToken);
 
         List<Action> actions = new ArrayList<Action>();
@@ -417,7 +420,7 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
         Command expectedCommand = new Command(
                 schema.getSchemaName(),
                 schema.getSchemaVersion(),
-                target.getTypedID(),
+                commandTarget.getTypedID(),
                 api.getOwner().getTypedID(),
                 actions);
         this.addMockResponseForPostNewTrigger(201, triggerID);
@@ -430,12 +433,13 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
                 null,
                 schema);
 
+        api.setTarget(target);
         Trigger trigger = api.postNewTrigger(
                 DEMO_SCHEMA_NAME,
                 DEMO_SCHEMA_VERSION,
                 actions,
                 predicate,
-                target);
+                commandTarget);
 
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
@@ -447,7 +451,7 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
         // verify the 1st request
         RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
         Assert.assertEquals(
-                BASE_PATH + "/targets/" + thingID.toString() + "/triggers",
+                BASE_PATH + "/targets/" + thingIDA.toString() + "/triggers",
                 request1.getPath());
         Assert.assertEquals("POST", request1.getMethod());
 
@@ -473,7 +477,7 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
         Assert.assertEquals(
                 BASE_PATH +
                         "/targets/" +
-                        thingID.toString() +
+                        thingIDA.toString() +
                         "/triggers/" +
                         triggerID,
                 request2.getPath());
@@ -492,9 +496,11 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
     @Test
     public void postNewTriggerWithTarget403ErrorTest() throws Exception {
         Schema schema = this.createDefaultSchema();
-        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        TypedID thingIDA = new TypedID(TypedID.Types.THING, "th.1234567890");
+        TypedID thingIDB = new TypedID(TypedID.Types.THING, "th.9876543210");
         String accessToken = "thing-access-token-1234";
-        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+        Target target = new StandaloneThing(thingIDA.getID(), "vendor-thing-id", accessToken);
+        Target commandTarget = new StandaloneThing(thingIDB.getID(), "vendor-thing-id", accessToken);
 
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
@@ -505,17 +511,18 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
-        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), commandTarget.getTypedID(), api.getOwner().getTypedID(), actions);
         this.addEmptyMockResponse(403);
 
         try {
-            api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate, target);
+            api.setTarget(target);
+            api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate, commandTarget);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ForbiddenException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers", request.getPath());
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingIDA.toString() + "/triggers", request.getPath());
         Assert.assertEquals("POST", request.getMethod());
 
         Map<String, String> expectedRequestHeaders1 = new HashMap<String, String>();
@@ -535,9 +542,11 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
     @Test
     public void postNewTriggerWithTarget404ErrorTest() throws Exception {
         Schema schema = this.createDefaultSchema();
-        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        TypedID thingIDA = new TypedID(TypedID.Types.THING, "th.1234567890");
+        TypedID thingIDB = new TypedID(TypedID.Types.THING, "th.9876543210");
         String accessToken = "thing-access-token-1234";
-        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+        Target target = new StandaloneThing(thingIDA.getID(), "vendor-thing-id", accessToken);
+        Target commandTarget = new StandaloneThing(thingIDB.getID(), "vendor-thing-id", accessToken);
 
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
@@ -548,17 +557,18 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
-        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), commandTarget.getTypedID(), api.getOwner().getTypedID(), actions);
         this.addEmptyMockResponse(404);
 
         try {
-            api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate, target);
+            api.setTarget(target);
+            api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate, commandTarget);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (NotFoundException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers", request.getPath());
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingIDA.toString() + "/triggers", request.getPath());
         Assert.assertEquals("POST", request.getMethod());
 
         Map<String, String> expectedRequestHeaders1 = new HashMap<String, String>();
@@ -578,9 +588,11 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
     @Test
     public void postNewTriggerWithTarget503ErrorTest() throws Exception {
         Schema schema = this.createDefaultSchema();
-        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        TypedID thingIDA = new TypedID(TypedID.Types.THING, "th.1234567890");
+        TypedID thingIDB = new TypedID(TypedID.Types.THING, "th.9876543210");
         String accessToken = "thing-access-token-1234";
-        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+        Target target = new StandaloneThing(thingIDA.getID(), "vendor-thing-id", accessToken);
+        Target commandTarget = new StandaloneThing(thingIDB.getID(), "vendor-thing-id", accessToken);
 
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
@@ -591,17 +603,18 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
-        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), target.getTypedID(), api.getOwner().getTypedID(), actions);
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), commandTarget.getTypedID(), api.getOwner().getTypedID(), actions);
         this.addEmptyMockResponse(503);
 
         try {
-            api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate, target);
+            api.setTarget(target);
+            api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate, commandTarget);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ServiceUnavailableException e) {
         }
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers", request.getPath());
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingIDA.toString() + "/triggers", request.getPath());
         Assert.assertEquals("POST", request.getMethod());
 
         Map<String, String> expectedRequestHeaders1 = new HashMap<String, String>();
@@ -631,6 +644,7 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
         Predicate predicate = new SchedulePredicate("1 * * * *");
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.setTarget(target);
         api.postNewTrigger(null, DEMO_SCHEMA_VERSION, actions, predicate, target);
     }
     @Test(expected = IllegalArgumentException.class)
@@ -647,6 +661,7 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
         Predicate predicate = new SchedulePredicate("1 * * * *");
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.setTarget(target);
         api.postNewTrigger("", DEMO_SCHEMA_VERSION, actions, predicate, target);
     }
     @Test(expected = IllegalArgumentException.class)
@@ -658,6 +673,7 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
         Predicate predicate = new SchedulePredicate("1 * * * *");
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.setTarget(target);
         api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, null, predicate, target);
     }
     @Test(expected = IllegalArgumentException.class)
@@ -670,6 +686,7 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
         Predicate predicate = new SchedulePredicate("1 * * * *");
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.setTarget(target);
         api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate, target);
     }
     @Test(expected = IllegalArgumentException.class)
@@ -685,6 +702,7 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
         actions.add(setColorTemperature);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        api.setTarget(target);
         api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, null, target);
     }
 }
