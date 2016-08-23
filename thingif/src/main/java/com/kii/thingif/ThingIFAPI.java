@@ -950,6 +950,7 @@ public class ThingIFAPI implements Parcelable {
     public Trigger getTrigger(
             @NonNull String triggerID)
             throws ThingIFException {
+
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
