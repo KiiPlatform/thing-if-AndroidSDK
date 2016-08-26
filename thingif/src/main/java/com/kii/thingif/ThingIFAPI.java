@@ -974,7 +974,9 @@ public class ThingIFAPI implements Parcelable {
                 throw new UnsupportedSchemaException(schemaName, schemaVersion);
             }
         }
-        return this.deserialize(schema, responseBody, Trigger.class);
+        Trigger retval = this.deserialize(schema, responseBody, Trigger.class);
+        retval.setTargetID(this.target.getTypedID());
+        return retval;
     }
 
     /**
@@ -1242,7 +1244,9 @@ public class ThingIFAPI implements Parcelable {
                         continue;
                     }
                 }
-                triggers.add(this.deserialize(schema, triggerJson, Trigger.class));
+                Trigger trigger = this.deserialize(schema, triggerJson, Trigger.class);
+                trigger.setTargetID(this.target.getTypedID());
+                triggers.add(trigger);
             }
         }
         return new Pair<List<Trigger>, String>(triggers, nextPaginationKey);

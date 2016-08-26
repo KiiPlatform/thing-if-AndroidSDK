@@ -17,6 +17,7 @@ import org.json.JSONObject;
 public class Trigger implements Parcelable {
 
     private String triggerID;
+    private TypedID targetID;
     private final Predicate predicate;
     private final Command command;
     private final ServerCode serverCode;
@@ -56,11 +57,9 @@ public class Trigger implements Parcelable {
         this.triggerID = triggerID;
     }
     public TypedID getTargetID() {
-        if (this.command == null) {
-            return null;
-        }
-        return this.command.getTargetID();
+        return this.targetID;
     }
+    public void setTargetID(TypedID targetID) { this.targetID = targetID; }
 
     public boolean disabled() {
         return this.disabled;
@@ -143,6 +142,7 @@ public class Trigger implements Parcelable {
     // Implementation of Parcelable
     protected Trigger(Parcel in) {
         this.triggerID = in.readString();
+        this.targetID = in.readParcelable(TypedID.class.getClassLoader());
         this.predicate = in.readParcelable(Predicate.class.getClassLoader());
         this.command = in.readParcelable(Command.class.getClassLoader());
         this.serverCode = in.readParcelable(Command.class.getClassLoader());
@@ -180,6 +180,7 @@ public class Trigger implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.triggerID);
+        dest.writeParcelable(this.targetID, flags);
         dest.writeParcelable(this.predicate, flags);
         dest.writeParcelable(this.command, flags);
         dest.writeParcelable(this.serverCode, flags);
