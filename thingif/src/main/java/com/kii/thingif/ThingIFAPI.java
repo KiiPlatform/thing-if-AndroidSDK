@@ -818,8 +818,7 @@ public class ThingIFAPI implements Parcelable {
             @NonNull List<Action> actions,
             @NonNull Predicate predicate,
             @NonNull Target target) throws ThingIFException {
-        // TODO: implement me.
-        return null;
+        return postNewTriggerWithCommands(schemaName, schemaVersion, actions, predicate, target);
     }
 
     /**
@@ -855,7 +854,15 @@ public class ThingIFAPI implements Parcelable {
             @NonNull List<Action> actions,
             @NonNull Predicate predicate)
             throws ThingIFException {
+        return postNewTriggerWithCommands(schemaName, schemaVersion, actions, predicate, this.target);
+    }
 
+    private Trigger postNewTriggerWithCommands(
+            String schemaName,
+            int schemaVersion,
+            List<Action> actions,
+            Predicate predicate,
+            Target commandTarget) throws ThingIFException {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
@@ -868,9 +875,12 @@ public class ThingIFAPI implements Parcelable {
         if (predicate == null) {
             throw new IllegalArgumentException("predicate is null");
         }
+        if (commandTarget == null) {
+            throw new IllegalArgumentException("Command target is null");
+        }
         JSONObject requestBody = new JSONObject();
         Schema schema = this.getSchema(schemaName, schemaVersion);
-        Command command = new Command(schemaName, schemaVersion, this.target.getTypedID(), this.owner.getTypedID(), actions);
+        Command command = new Command(schemaName, schemaVersion, commandTarget.getTypedID(), this.owner.getTypedID(), actions);
         try {
             requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson(schema).toJson(predicate)));
             requestBody.put("triggersWhat", TriggersWhat.COMMAND.name());
