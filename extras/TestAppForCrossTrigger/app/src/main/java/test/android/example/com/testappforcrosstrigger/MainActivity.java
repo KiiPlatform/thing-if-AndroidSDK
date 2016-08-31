@@ -75,7 +75,8 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(this.getClass().getName(), "API target ID     : " + api.getTarget().getTypedID().getID());
                     Log.d(this.getClass().getName(), "Command target ID : " + commandTarget.getTypedID().getID());
                     Log.d(this.getClass().getName(), "Trigger target ID : " + response.getTargetID().getID());
-                    Log.d(this.getClass().getName(), "Trigger command ID: " + response.getCommand().getTargetID().getID());
+                    Log.d(this.getClass().getName(), "Trigger com tar ID: " + response.getCommand().getTargetID().getID());
+                    Log.d(this.getClass().getName(), "Trigger command ID: " + response.getCommand().getCommandID());
                 } else {
                     Log.d(this.getClass().getName(), "failed.");
                 }
