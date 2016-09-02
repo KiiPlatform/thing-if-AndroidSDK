@@ -925,6 +925,36 @@ public class ThingIFAPI implements Parcelable {
      * @param triggerID ID ot the Trigger to apply patch
      * @param schemaName name of the schema.
      * @param schemaVersion version of schema.
+     * @param commandTergetID new target ID for Command in Trigger.
+     * @param actions Modified actions.
+     *                If null NonNull predicate must be specified.
+     * @param predicate Modified predicate.
+     *                  If null NonNull actions must be specified.
+     * @return Updated Trigger instance.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws IllegalArgumentException when both actions and predicates are null
+     */
+    @NonNull
+    @WorkerThread
+    public Trigger patchTrigger(
+            @NonNull String triggerID,
+            @NonNull String schemaName,
+            int schemaVersion,
+            @NonNull TypedID commandTergetID,
+            @Nullable List<Action> actions,
+            @Nullable Predicate predicate)
+            throws ThingIFException {
+        // TODO: implement me.
+        return null;
+    }
+
+    /**
+     * Apply Patch to registered Trigger
+     * Modify registered Trigger with specified patch.
+     * @param triggerID ID ot the Trigger to apply patch
+     * @param schemaName name of the schema.
+     * @param schemaVersion version of schema.
      * @param actions Modified actions.
      *                If null NonNull predicate must be specified.
      * @param predicate Modified predicate.
