@@ -925,7 +925,7 @@ public class ThingIFAPI implements Parcelable {
      * @param triggerID ID ot the Trigger to apply patch
      * @param schemaName name of the schema.
      * @param schemaVersion version of schema.
-     * @param commandTerget new target for Command in Trigger.
+     * @param commandTarget new target for Command in Trigger.
      * @param actions Modified actions.
      *                If null NonNull predicate must be specified.
      * @param predicate Modified predicate.
@@ -941,7 +941,7 @@ public class ThingIFAPI implements Parcelable {
             @NonNull String triggerID,
             @NonNull String schemaName,
             int schemaVersion,
-            @NonNull Target commandTerget,
+            @NonNull Target commandTarget,
             @Nullable List<Action> actions,
             @Nullable Predicate predicate)
             throws ThingIFException {
