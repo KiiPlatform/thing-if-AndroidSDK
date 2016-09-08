@@ -945,7 +945,7 @@ public class ThingIFAPI implements Parcelable {
             @NonNull List<Action> actions,
             @NonNull Predicate predicate)
             throws ThingIFException {
-        return patchTriggerWithCommand(triggerID, schemaName, schemaVersion, commandTerget,
+        return patchTriggerWithCommand(triggerID, schemaName, schemaVersion, commandTarget,
                 actions, predicate);
     }
 
@@ -979,12 +979,12 @@ public class ThingIFAPI implements Parcelable {
     }
 
     private Trigger patchTriggerWithCommand(
-            @NonNull String triggerID,
-            @NonNull String schemaName,
+            String triggerID,
+            String schemaName,
             int schemaVersion,
-            @NonNull Target commandTerget,
-            @Nullable List<Action> actions,
-            @Nullable Predicate predicate)
+            Target commandTarget,
+            List<Action> actions,
+            Predicate predicate)
             throws ThingIFException {
 
         if (this.target == null) {
@@ -996,7 +996,7 @@ public class ThingIFAPI implements Parcelable {
         if (TextUtils.isEmpty(schemaName)) {
             throw new IllegalArgumentException("schemaName is null or empty");
         }
-        if (commandTerget == null) {
+        if (commandTarget == null) {
             throw new IllegalArgumentException("Command target is null");
         }
         if (actions == null || actions.size() == 0) {
@@ -1008,7 +1008,7 @@ public class ThingIFAPI implements Parcelable {
 
         JSONObject requestBody = new JSONObject();
         Schema schema = this.getSchema(schemaName, schemaVersion);
-        Command command = new Command(schemaName, schemaVersion, commandTerget.getTypedID(), this.owner.getTypedID(), actions);
+        Command command = new Command(schemaName, schemaVersion, commandTarget.getTypedID(), this.owner.getTypedID(), actions);
         try {
             requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson(schema).toJson(predicate)));
             requestBody.put("command", JsonUtils.newJson(GsonRepository.gson(schema).toJson(command)));
