@@ -925,11 +925,11 @@ public class ThingIFAPI implements Parcelable {
      * @param triggerID ID ot the Trigger to apply patch
      * @param schemaName name of the schema.
      * @param schemaVersion version of schema.
-     * @param commandTarget new target for Command in Trigger.
-     * @param actions Modified actions.
-     *                If null NonNull predicate must be specified.
+     * @param commandTarget new target for Command in Trigger. Every kind of target can be set.
+     * But the owner has to be identical in Command and ThingIFAPI.
+     * When the target returned by getTarget set, the behavior is same as another patchTrigger.
+     * @param actions Modified actions. It's necessary to set at least one action.
      * @param predicate Modified predicate.
-     *                  If null NonNull actions must be specified.
      * @return Updated Trigger instance.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
@@ -942,8 +942,8 @@ public class ThingIFAPI implements Parcelable {
             @NonNull String schemaName,
             int schemaVersion,
             @NonNull Target commandTarget,
-            @Nullable List<Action> actions,
-            @Nullable Predicate predicate)
+            @NonNull List<Action> actions,
+            @NonNull Predicate predicate)
             throws ThingIFException {
         // TODO: implement me.
         return null;
@@ -952,13 +952,14 @@ public class ThingIFAPI implements Parcelable {
     /**
      * Apply Patch to registered Trigger
      * Modify registered Trigger with specified patch.
+     * In this method, target and owner in command are identical with something ThingIFAPI has.
      * @param triggerID ID ot the Trigger to apply patch
      * @param schemaName name of the schema.
      * @param schemaVersion version of schema.
-     * @param actions Modified actions.
-     *                If null NonNull predicate must be specified.
+     * @param actions Modified actions. It's necessary to set at least one action.
+     * This parameter's annotation is @Nullable, but this parameter doesn't permit null.
      * @param predicate Modified predicate.
-     *                  If null NonNull actions must be specified.
+     * This parameter's annotation is @Nullable, but this parameter doesn't permit null.
      * @return Updated Trigger instance.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
