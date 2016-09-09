@@ -945,7 +945,7 @@ public class ThingIFAPI implements Parcelable {
             @NonNull List<Action> actions,
             @NonNull Predicate predicate)
             throws ThingIFException {
-        return patchTriggerWithCommand(triggerID, schemaName, schemaVersion, commandTarget,
+        return patchCommandTrigger(triggerID, schemaName, schemaVersion, commandTarget,
                 actions, predicate);
     }
 
@@ -974,11 +974,11 @@ public class ThingIFAPI implements Parcelable {
             @Nullable List<Action> actions,
             @Nullable Predicate predicate) throws
             ThingIFException {
-        return patchTriggerWithCommand(triggerID, schemaName, schemaVersion, this.target,
+        return patchCommandTrigger(triggerID, schemaName, schemaVersion, this.target,
                 actions, predicate);
     }
 
-    private Trigger patchTriggerWithCommand(
+    private Trigger patchCommandTrigger(
             String triggerID,
             String schemaName,
             int schemaVersion,
