@@ -59,7 +59,6 @@ public class Trigger implements Parcelable {
     public TypedID getTargetID() {
         return this.targetID;
     }
-    public void setTargetID(TypedID targetID) { this.targetID = targetID; }
 
     public boolean disabled() {
         return this.disabled;
