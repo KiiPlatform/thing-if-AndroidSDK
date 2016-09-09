@@ -945,8 +945,8 @@ public class ThingIFAPI implements Parcelable {
             @NonNull List<Action> actions,
             @NonNull Predicate predicate)
             throws ThingIFException {
-        // TODO: implement me.
-        return null;
+        return patchCommandTrigger(triggerID, schemaName, schemaVersion, commandTarget,
+                actions, predicate);
     }
 
     /**
@@ -974,6 +974,18 @@ public class ThingIFAPI implements Parcelable {
             @Nullable List<Action> actions,
             @Nullable Predicate predicate) throws
             ThingIFException {
+        return patchCommandTrigger(triggerID, schemaName, schemaVersion, this.target,
+                actions, predicate);
+    }
+
+    private Trigger patchCommandTrigger(
+            String triggerID,
+            String schemaName,
+            int schemaVersion,
+            Target commandTarget,
+            List<Action> actions,
+            Predicate predicate)
+            throws ThingIFException {
 
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
@@ -984,6 +996,9 @@ public class ThingIFAPI implements Parcelable {
         if (TextUtils.isEmpty(schemaName)) {
             throw new IllegalArgumentException("schemaName is null or empty");
         }
+        if (commandTarget == null) {
+            throw new IllegalArgumentException("Command target is null");
+        }
         if (actions == null || actions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty");
         }
@@ -993,7 +1008,7 @@ public class ThingIFAPI implements Parcelable {
 
         JSONObject requestBody = new JSONObject();
         Schema schema = this.getSchema(schemaName, schemaVersion);
-        Command command = new Command(schemaName, schemaVersion, this.target.getTypedID(), this.owner.getTypedID(), actions);
+        Command command = new Command(schemaName, schemaVersion, commandTarget.getTypedID(), this.owner.getTypedID(), actions);
         try {
             requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson(schema).toJson(predicate)));
             requestBody.put("command", JsonUtils.newJson(GsonRepository.gson(schema).toJson(command)));
