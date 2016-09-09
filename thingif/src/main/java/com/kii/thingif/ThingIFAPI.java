@@ -1425,12 +1425,14 @@ public class ThingIFAPI implements Parcelable {
         return this.deserialize(schema, json.toString(), clazz);
     }
     private Trigger deserialize(Schema schema, JSONObject json, TypedID targetID) throws ThingIFException {
+        JSONObject copied = null;
         try {
-            json.put("targetID", targetID.toString());
+            copied = new JSONObject(json.toString());
+            copied.put("targetID", targetID.toString());
         } catch (JSONException e) {
             throw new ThingIFException("unexpected error.", e);
         }
-        return this.deserialize(schema, json.toString(), Trigger.class);
+        return this.deserialize(schema, copied.toString(), Trigger.class);
     }
     private <T> T deserialize(Schema schema, String json, Class<T> clazz) throws ThingIFException {
         try {
