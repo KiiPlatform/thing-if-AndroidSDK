@@ -790,11 +790,22 @@ public class ThingIFAPI implements Parcelable {
 
     /**
      * Post new Trigger with commands to IoT Cloud.
+     *
+     * <p>
+     * When thing related to this ThingIFAPI instance meets condition
+     * described by predicate, A registered command sends to thing related to
+     * target.
+     * </p>
+     *
+     * {@link getTarget()} instance and target argument must be same owner's
+     * things.
+     *
      * @param schemaName name of the schema.
      * @param schemaVersion version of schema.
      * @param actions Specify actions included in the Command is fired by the
      *                trigger.
      * @param predicate Specify when the Trigger fires command.
+     * @param target target of trigger.
      * @return Instance of the Trigger registered in IoT Cloud.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
@@ -805,9 +816,53 @@ public class ThingIFAPI implements Parcelable {
             @NonNull String schemaName,
             int schemaVersion,
             @NonNull List<Action> actions,
+            @NonNull Predicate predicate,
+            @NonNull Target target) throws ThingIFException {
+        return postNewTriggerWithCommands(schemaName, schemaVersion, actions, predicate, target);
+    }
+
+    /**
+     * Post new Trigger with commands to IoT Cloud.
+     *
+     * <p>
+     * Short version of {@link #postNewTrigger(String, int, List, Predicate,
+     * Target)}.
+     * </p>
+     *
+     * <p>
+     * This method equals to followings:
+     * </p>
+     * <code>
+     * api.postNewTrigger(schemaName, schemaVersion, actions, predicate, api.getTarget()).
+     * </code>
+     *
+     * @param schemaName name of the schema.
+     * @param schemaVersion version of schema.
+     * @param actions Specify actions included in the Command is fired by the
+     *                trigger.
+     * @param predicate Specify when the Trigger fires command.
+     * @return Instance of the Trigger registered in IoT Cloud.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     * @see #postNewTrigger(String, int, List, Predicate, Target)
+     */
+    @NonNull
+    @WorkerThread
+    public Trigger postNewTrigger(
+            @NonNull String schemaName,
+            int schemaVersion,
+            @NonNull List<Action> actions,
             @NonNull Predicate predicate)
             throws ThingIFException {
+        return postNewTriggerWithCommands(schemaName, schemaVersion, actions, predicate, this.target);
+    }
 
+    private Trigger postNewTriggerWithCommands(
+            String schemaName,
+            int schemaVersion,
+            List<Action> actions,
+            Predicate predicate,
+            Target commandTarget) throws ThingIFException {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
@@ -820,9 +875,12 @@ public class ThingIFAPI implements Parcelable {
         if (predicate == null) {
             throw new IllegalArgumentException("predicate is null");
         }
+        if (commandTarget == null) {
+            throw new IllegalArgumentException("Command target is null");
+        }
         JSONObject requestBody = new JSONObject();
         Schema schema = this.getSchema(schemaName, schemaVersion);
-        Command command = new Command(schemaName, schemaVersion, this.target.getTypedID(), this.owner.getTypedID(), actions);
+        Command command = new Command(schemaName, schemaVersion, commandTarget.getTypedID(), this.owner.getTypedID(), actions);
         try {
             requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson(schema).toJson(predicate)));
             requestBody.put("triggersWhat", TriggersWhat.COMMAND.name());
