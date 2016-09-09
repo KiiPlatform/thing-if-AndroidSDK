@@ -974,7 +974,7 @@ public class ThingIFAPI implements Parcelable {
                 throw new UnsupportedSchemaException(schemaName, schemaVersion);
             }
         }
-        return this.deserialize(schema, responseBody, this.target.getTypedID(), Trigger.class);
+        return this.deserialize(schema, responseBody, this.target.getTypedID());
     }
 
     /**
@@ -1242,8 +1242,7 @@ public class ThingIFAPI implements Parcelable {
                         continue;
                     }
                 }
-                triggers.add(this.deserialize(schema, triggerJson, this.target.getTypedID(),
-                        Trigger.class));
+                triggers.add(this.deserialize(schema, triggerJson, this.target.getTypedID()));
             }
         }
         return new Pair<List<Trigger>, String>(triggers, nextPaginationKey);
@@ -1425,13 +1424,13 @@ public class ThingIFAPI implements Parcelable {
     private <T> T deserialize(Schema schema, JSONObject json, Class<T> clazz) throws ThingIFException {
         return this.deserialize(schema, json.toString(), clazz);
     }
-    private <T> T deserialize(Schema schema, JSONObject json, TypedID targetID, Class<T> clazz) throws ThingIFException {
+    private Trigger deserialize(Schema schema, JSONObject json, TypedID targetID) throws ThingIFException {
         try {
             json.put("targetID", targetID.toString());
         } catch (JSONException e) {
             throw new ThingIFException("unexpected error.", e);
         }
-        return this.deserialize(schema, json.toString(), clazz);
+        return this.deserialize(schema, json.toString(), Trigger.class);
     }
     private <T> T deserialize(Schema schema, String json, Class<T> clazz) throws ThingIFException {
         try {
