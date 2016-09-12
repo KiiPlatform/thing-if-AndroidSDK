@@ -32,6 +32,7 @@ import com.kii.thingif.trigger.Trigger;
 import com.kii.thingif.internal.utils.JsonUtils;
 import com.kii.thingif.internal.utils.Path;
 import com.kii.thingif.trigger.TriggeredServerCodeResult;
+import com.kii.thingif.trigger.TriggeringCommandForm;
 import com.kii.thingif.trigger.TriggersWhat;
 import com.squareup.okhttp.MediaType;
 
@@ -857,6 +858,17 @@ public class ThingIFAPI implements Parcelable {
         return postNewTriggerWithCommands(schemaName, schemaVersion, actions, predicate, this.target);
     }
 
+    @NonNull
+    @WorkerThread
+    public Trigger postNewTrigger(
+            @Nullable TriggeringCommandForm form,
+            @Nullable Predicate predicate)
+        throws ThingIFException
+    {
+        // TODO: implement me.
+        return null;
+    }
+
     private Trigger postNewTriggerWithCommands(
             String schemaName,
             int schemaVersion,
@@ -975,6 +987,16 @@ public class ThingIFAPI implements Parcelable {
             }
         }
         return this.deserialize(schema, responseBody, Trigger.class);
+    }
+
+    @NonNull
+    @WorkerThread
+    public Trigger patchTrigger(
+            @Nullable TriggeringCommandForm form,
+            @Nullable Predicate predicate)
+        throws ThingIFException
+    {
+        return null;
     }
 
     /**
