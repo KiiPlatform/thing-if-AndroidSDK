@@ -32,6 +32,7 @@ import com.kii.thingif.trigger.Trigger;
 import com.kii.thingif.internal.utils.JsonUtils;
 import com.kii.thingif.internal.utils.Path;
 import com.kii.thingif.trigger.TriggeredServerCodeResult;
+import com.kii.thingif.trigger.TriggeringCommandForm;
 import com.kii.thingif.trigger.TriggersWhat;
 import com.squareup.okhttp.MediaType;
 
@@ -213,6 +214,40 @@ public class ThingIFAPI implements Parcelable {
             @Nullable String thingType,
             @Nullable JSONObject thingProperties)
             throws ThingIFException {
+        OnboardWithVendorThingIDOptions.Builder builder = new OnboardWithVendorThingIDOptions.Builder();
+        builder.setThingType(thingType).setThingProperties(thingProperties);
+        return onboardWithVendorThingID(vendorThingID, thingPassword, builder.build());
+    }
+
+    /**
+     * On board IoT Cloud with the specified vendor thing ID.
+     * Specified thing will be owned by owner who is specified
+     * IoT Cloud prepares communication channel to the target.
+     * If you are using a gateway, you need to use {@link #onboardEndnodeWithGateway(PendingEndNode, String)} instead.
+     * @param vendorThingID Thing ID given by vendor. Must be specified.
+     * @param thingPassword Thing Password given by vendor. Must be specified.
+     * @param options optional parameters inside.
+     * @return Target instance can be used to operate target, manage resources
+     * of the target.
+     * @throws IllegalStateException Thrown when this instance is already onboarded.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     */
+    @NonNull
+    @WorkerThread
+    public Target onboard(
+            @NonNull String vendorThingID,
+            @NonNull String thingPassword,
+            @Nullable OnboardWithVendorThingIDOptions options)
+            throws ThingIFException {
+        return onboardWithVendorThingID(vendorThingID, thingPassword, options);
+    }
+
+    private Target onboardWithVendorThingID(
+            String vendorThingID,
+            String thingPassword,
+            OnboardWithVendorThingIDOptions options)
+            throws ThingIFException {
         if (this.onboarded()) {
             throw new IllegalStateException("This instance is already onboarded.");
         }
@@ -223,20 +258,37 @@ public class ThingIFAPI implements Parcelable {
             throw new IllegalArgumentException("thingPassword is null or empty");
         }
         JSONObject requestBody = new JSONObject();
+        LayoutPosition layoutPosition = null;
         try {
             requestBody.put("vendorThingID", vendorThingID);
             requestBody.put("thingPassword", thingPassword);
-            if (thingType != null) {
-                requestBody.put("thingType", thingType);
-            }
-            if (thingProperties != null && thingProperties.length() > 0) {
-                requestBody.put("thingProperties", thingProperties);
+            if (options != null) {
+                String thingType = options.getThingType();
+                String firmwareVersion = options.getFirmwareVersion();
+                JSONObject thingProperties = options.getThingProperties();
+                layoutPosition = options.getLayoutPosition();
+                DataGroupingInterval dataGroupingInterval = options.getDataGroupingInterval();
+                if (thingType != null) {
+                    requestBody.put("thingType", thingType);
+                }
+                if (firmwareVersion != null) {
+                    requestBody.put("firmwareVersion", firmwareVersion);
+                }
+                if (thingProperties != null && thingProperties.length() > 0) {
+                    requestBody.put("thingProperties", thingProperties);
+                }
+                if (layoutPosition != null) {
+                    requestBody.put("layoutPosition", layoutPosition.name());
+                }
+                if (dataGroupingInterval != null) {
+                    requestBody.put("dataGroupingInterval", dataGroupingInterval.getInterval());
+                }
             }
             requestBody.put("owner", this.owner.getTypedID().toString());
         } catch (JSONException e) {
             // Won’t happen
         }
-        return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST, requestBody, vendorThingID);
+        return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST, requestBody, vendorThingID, layoutPosition);
     }
 
     /**
@@ -259,6 +311,39 @@ public class ThingIFAPI implements Parcelable {
             @NonNull String thingID,
             @NonNull String thingPassword) throws
             ThingIFException {
+        return onboardWithThingID(thingID, thingPassword, null);
+    }
+
+    /**
+     * On board IoT Cloud with the specified thing ID.
+     * When you are sure that the on boarding process has been done,
+     * this method is more convenient than
+     * {@link #onboard(String, String, OnboardWithVendorThingIDOptions)}.
+     * If you are using a gateway, you need to use {@link #onboardEndnodeWithGateway(PendingEndNode, String)} instead.
+     * @param thingID Thing ID given by IoT Cloud. Must be specified.
+     * @param thingPassword Thing password given by vendor. Must be specified.
+     * @param options optional parameters inside.
+     * @return Target instance can be used to operate target, manage resources
+     * of the target.
+     * @throws IllegalStateException Thrown when this instance is already onboarded.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     */
+    @NonNull
+    @WorkerThread
+    public Target onboard(
+            @NonNull String thingID,
+            @NonNull String thingPassword,
+            @Nullable OnboardWithThingIDOptions options)
+            throws ThingIFException {
+        return onboardWithThingID(thingID, thingPassword, options);
+    }
+
+    private Target onboardWithThingID(
+            String thingID,
+            String thingPassword,
+            OnboardWithThingIDOptions options)
+            throws ThingIFException {
         if (this.onboarded()) {
             throw new IllegalStateException("This instance is already onboarded.");
         }
@@ -269,18 +354,29 @@ public class ThingIFAPI implements Parcelable {
             throw new IllegalArgumentException("thingPassword is null or empty");
         }
         JSONObject requestBody = new JSONObject();
+        LayoutPosition layoutPosition = null;
         try {
             requestBody.put("thingID", thingID);
             requestBody.put("thingPassword", thingPassword);
             requestBody.put("owner", this.owner.getTypedID().toString());
+            if (options != null) {
+                layoutPosition = options.getLayoutPosition();
+                DataGroupingInterval dataGroupingInterval = options.getDataGroupingInterval();
+                if (layoutPosition != null) {
+                    requestBody.put("layoutPosition", layoutPosition.name());
+                }
+                if (dataGroupingInterval != null) {
+                    requestBody.put("dataGroupingInterval", dataGroupingInterval.getInterval());
+                }
+            }
         } catch (JSONException e) {
             // Won’t happen
         }
         // FIXME: Currently, Server does not return the VendorThingID when onboarding is successful.
-        return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_THING_ID_BY_OWNER_REQUEST, requestBody, null);
+        return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_THING_ID_BY_OWNER_REQUEST, requestBody, null, layoutPosition);
     }
 
-    private Target onboard(MediaType contentType, JSONObject requestBody, String vendorThingID) throws ThingIFException {
+    private Target onboard(MediaType contentType, JSONObject requestBody, String vendorThingID, LayoutPosition layoutPosition) throws ThingIFException {
         String path = MessageFormat.format("/thing-if/apps/{0}/onboardings", this.app.getAppID());
         String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
@@ -288,7 +384,14 @@ public class ThingIFAPI implements Parcelable {
         JSONObject responseBody = this.restClient.sendRequest(request);
         String thingID = responseBody.optString("thingID", null);
         String accessToken = responseBody.optString("accessToken", null);
-        this.target = new StandaloneThing(thingID, vendorThingID, accessToken);
+        if (layoutPosition == LayoutPosition.GATEWAY) {
+            this.target = new Gateway(thingID, vendorThingID);
+        } else if (layoutPosition == LayoutPosition.ENDNODE) {
+            this.target = new EndNode(thingID, vendorThingID, accessToken);
+        } else {
+            this.target = new StandaloneThing(thingID, vendorThingID,
+                    accessToken);
+        }
         saveInstance(this);
         return this.target;
     }
@@ -307,6 +410,34 @@ public class ThingIFAPI implements Parcelable {
     public EndNode onboardEndnodeWithGateway(
             @NonNull PendingEndNode pendingEndNode,
             @NonNull String endnodePassword)
+            throws ThingIFException {
+        return onboardEndNodeWithGateway(pendingEndNode, endnodePassword, null);
+    }
+
+    /**
+     * Endpoints execute onboarding for the thing and merge MQTT channel to the gateway.
+     * Thing act as Gateway is already registered and marked as Gateway.
+     *
+     * @param pendingEndNode Pending endnode
+     * @param endnodePassword Password of the End Node
+     * @param options optional parameters inside.
+     * @return Target instance can be used to operate target, manage resources of the target.
+     * @throws IllegalStateException Thrown when this instance is already onboarded.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     */
+    public EndNode onboardEndnodeWithGateway(
+            @NonNull PendingEndNode pendingEndNode,
+            @NonNull String endnodePassword,
+            @Nullable OnboardEndnodeWithGatewayOptions options)
+            throws ThingIFException {
+        return onboardEndNodeWithGateway(pendingEndNode, endnodePassword, options);
+    }
+
+    private EndNode onboardEndNodeWithGateway(
+            PendingEndNode pendingEndNode,
+            String endnodePassword,
+            @Nullable OnboardEndnodeWithGatewayOptions options)
             throws ThingIFException {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding the gateway");
@@ -333,6 +464,12 @@ public class ThingIFAPI implements Parcelable {
             }
             if (pendingEndNode.getThingProperties() != null && pendingEndNode.getThingProperties().length() > 0) {
                 requestBody.put("endNodeThingProperties", pendingEndNode.getThingProperties());
+            }
+            if (options != null) {
+                DataGroupingInterval dataGroupingInterval = options.getDataGroupingInterval();
+                if (dataGroupingInterval != null) {
+                    requestBody.put("dataGroupingInterval", dataGroupingInterval.getInterval());
+                }
             }
             requestBody.put("owner", this.owner.getTypedID().toString());
         } catch (JSONException e) {
@@ -654,11 +791,22 @@ public class ThingIFAPI implements Parcelable {
 
     /**
      * Post new Trigger with commands to IoT Cloud.
+     *
+     * <p>
+     * When thing related to this ThingIFAPI instance meets condition
+     * described by predicate, A registered command sends to thing related to
+     * target.
+     * </p>
+     *
+     * {@link getTarget()} instance and target argument must be same owner's
+     * things.
+     *
      * @param schemaName name of the schema.
      * @param schemaVersion version of schema.
      * @param actions Specify actions included in the Command is fired by the
      *                trigger.
      * @param predicate Specify when the Trigger fires command.
+     * @param target target of trigger.
      * @return Instance of the Trigger registered in IoT Cloud.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
@@ -669,9 +817,64 @@ public class ThingIFAPI implements Parcelable {
             @NonNull String schemaName,
             int schemaVersion,
             @NonNull List<Action> actions,
+            @NonNull Predicate predicate,
+            @NonNull Target target) throws ThingIFException {
+        return postNewTriggerWithCommands(schemaName, schemaVersion, actions, predicate, target);
+    }
+
+    /**
+     * Post new Trigger with commands to IoT Cloud.
+     *
+     * <p>
+     * Short version of {@link #postNewTrigger(String, int, List, Predicate,
+     * Target)}.
+     * </p>
+     *
+     * <p>
+     * This method equals to followings:
+     * </p>
+     * <code>
+     * api.postNewTrigger(schemaName, schemaVersion, actions, predicate, api.getTarget()).
+     * </code>
+     *
+     * @param schemaName name of the schema.
+     * @param schemaVersion version of schema.
+     * @param actions Specify actions included in the Command is fired by the
+     *                trigger.
+     * @param predicate Specify when the Trigger fires command.
+     * @return Instance of the Trigger registered in IoT Cloud.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     * @see #postNewTrigger(String, int, List, Predicate, Target)
+     */
+    @NonNull
+    @WorkerThread
+    public Trigger postNewTrigger(
+            @NonNull String schemaName,
+            int schemaVersion,
+            @NonNull List<Action> actions,
             @NonNull Predicate predicate)
             throws ThingIFException {
+        return postNewTriggerWithCommands(schemaName, schemaVersion, actions, predicate, this.target);
+    }
 
+    @NonNull
+    @WorkerThread
+    public Trigger postNewTrigger(
+            @Nullable TriggeringCommandForm form,
+            @Nullable Predicate predicate)
+        throws ThingIFException
+    {
+        // TODO: implement me.
+        return null;
+    }
+
+    private Trigger postNewTriggerWithCommands(
+            String schemaName,
+            int schemaVersion,
+            List<Action> actions,
+            Predicate predicate,
+            Target commandTarget) throws ThingIFException {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
@@ -684,9 +887,12 @@ public class ThingIFAPI implements Parcelable {
         if (predicate == null) {
             throw new IllegalArgumentException("predicate is null");
         }
+        if (commandTarget == null) {
+            throw new IllegalArgumentException("Command target is null");
+        }
         JSONObject requestBody = new JSONObject();
         Schema schema = this.getSchema(schemaName, schemaVersion);
-        Command command = new Command(schemaName, schemaVersion, this.target.getTypedID(), this.owner.getTypedID(), actions);
+        Command command = new Command(schemaName, schemaVersion, commandTarget.getTypedID(), this.owner.getTypedID(), actions);
         try {
             requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson(schema).toJson(predicate)));
             requestBody.put("triggersWhat", TriggersWhat.COMMAND.name());
@@ -781,6 +987,16 @@ public class ThingIFAPI implements Parcelable {
             }
         }
         return this.deserialize(schema, responseBody, Trigger.class);
+    }
+
+    @NonNull
+    @WorkerThread
+    public Trigger patchTrigger(
+            @Nullable TriggeringCommandForm form,
+            @Nullable Predicate predicate)
+        throws ThingIFException
+    {
+        return null;
     }
 
     /**

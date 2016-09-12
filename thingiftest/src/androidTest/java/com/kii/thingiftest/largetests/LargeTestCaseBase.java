@@ -119,10 +119,27 @@ public abstract class LargeTestCaseBase extends AndroidTestCase {
         builder.addSchema(this.createDefaultSchema());
         return builder.build();
     }
+
+    protected ThingIFAPI copyThingIFAPIWithoutTarget(ThingIFAPI api) {
+        Context context = null;
+        try {
+            context = InstrumentationRegistry.getTargetContext();
+        } catch (Exception e) {
+            context = getContext();
+        }
+        ThingIFAPIBuilder builder = ThingIFAPIBuilder.newBuilder(
+            context, api.getApp(), api.getOwner());
+        for (Schema schema : api.getSchemas()) {
+            builder.addSchema(schema);
+        }
+        return builder.build();
+    }
+
     protected void assertJSONObject(JSONObject expected, JSONObject actual) {
         if (expected == null && actual == null) {
             return;
         }
         Assert.assertEquals(new JsonParser().parse(expected.toString()), new JsonParser().parse(actual.toString()));
     }
+
 }
