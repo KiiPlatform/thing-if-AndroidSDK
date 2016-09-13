@@ -12,9 +12,48 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-public final class TriggeringCommandForm implements Parcelable {
+/**
+ * Form of a command in trigger request.
+ *
+ * This clas contains data in order to create {@link
+ * com.kii.thingif.command.Command} instance got from {@link
+ * Trigger#getCommand()}.
+ * <br><br>
+ * Mandatory data are followings:
+ * <ul>
+ * <li>Name of a schema</li>
+ * <li>Version of a schema</li>
+ * <li>Target thing ID</li>
+ * <li>List of actions</li>
+ * </ul>
+ * Optional data are followings:
+ * <ul>
+ * <li>Title of a schema</li>
+ * <li>Description of a schema</li>
+ * <li>meta data of a schema</li>
+ * </ul>
+ */
+public final class TriggeredCommandForm implements Parcelable {
 
-    public TriggeringCommandForm(
+    /**
+     * Constructs a {@link TriggeredCommandForm} instance.
+     *
+     * @param schemaName name of schema. Must not be null or empty string.
+     * @param schemaVersion version of schema.
+     * @param targetID thing ID issued this command. Must not be
+     * null. Returning value of {@link TypedID#getType()} must be {@link
+     * com.kii.thingif.TypedID.Types#THING}.
+     * @param actions List of actions. Must not be null or empty.
+     * @throws IllegalArgumentException This exception is thrown if one or
+     * more following condition are met.
+     * <UL>
+     *   <LI>schemaName is null or empty string.</LI>
+     *   <LI>targetID is null or type is not {@link
+     *   com.kii.thingif.TypedID.Types#THING}.</LI>
+     *   <LI>actions is null or empty</LI>
+     * </UL>
+     */
+    public TriggeredCommandForm(
             @NonNull String schemaName,
             int schemaVersion,
             @NonNull TypedID targetID,
@@ -24,21 +63,25 @@ public final class TriggeringCommandForm implements Parcelable {
         // TODO: implement me.
     }
 
+    @NonNull
     public String getSchemaName() {
         // TODO: implement me.
         return null;
     }
 
+    @NonNull
     public int getSchemaVersion() {
         // TODO: implement me.
         return 0;
     }
 
+    @NonNull
     public TypedID getTargetID() {
         // TODO: implement me.
         return null;
     }
 
+    @NonNull
     public List<Action> getActions() {
         // TODO: implement me.
         return null;
@@ -74,7 +117,7 @@ public final class TriggeringCommandForm implements Parcelable {
         // TODO: implement me.
     }
 
-    protected TriggeringCommandForm(Parcel in) {
+    protected TriggeredCommandForm(Parcel in) {
         // TODO: implement me.
     }
 
@@ -89,18 +132,18 @@ public final class TriggeringCommandForm implements Parcelable {
         return 0;
     }
 
-    public static final Creator<TriggeringCommandForm> CREATOR =
-            new Creator<TriggeringCommandForm>() {
+    public static final Creator<TriggeredCommandForm> CREATOR =
+            new Creator<TriggeredCommandForm>() {
         @Override
-        public TriggeringCommandForm createFromParcel(Parcel in) {
+        public TriggeredCommandForm createFromParcel(Parcel in) {
             // TODO: implement me.
-            return new TriggeringCommandForm(in);
+            return new TriggeredCommandForm(in);
         }
 
         @Override
-        public TriggeringCommandForm[] newArray(int size) {
+        public TriggeredCommandForm[] newArray(int size) {
             // TODO: implement me.
-            return new TriggeringCommandForm[size];
+            return new TriggeredCommandForm[size];
         }
     };
 }

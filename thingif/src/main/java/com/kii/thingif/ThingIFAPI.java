@@ -31,8 +31,8 @@ import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.Trigger;
 import com.kii.thingif.internal.utils.JsonUtils;
 import com.kii.thingif.internal.utils.Path;
+import com.kii.thingif.trigger.TriggeredCommandForm;
 import com.kii.thingif.trigger.TriggeredServerCodeResult;
-import com.kii.thingif.trigger.TriggeringCommandForm;
 import com.kii.thingif.trigger.TriggersWhat;
 import com.squareup.okhttp.MediaType;
 
@@ -861,7 +861,7 @@ public class ThingIFAPI implements Parcelable {
     @NonNull
     @WorkerThread
     public Trigger postNewTrigger(
-            @NonNull TriggeringCommandForm form,
+            @NonNull TriggeredCommandForm form,
             @NonNull Predicate predicate)
         throws ThingIFException
     {
@@ -993,7 +993,7 @@ public class ThingIFAPI implements Parcelable {
     @WorkerThread
     public Trigger patchTrigger(
             @NonNull String triggerID,
-            @Nullable TriggeringCommandForm form,
+            @Nullable TriggeredCommandForm form,
             @Nullable Predicate predicate)
         throws ThingIFException
     {
