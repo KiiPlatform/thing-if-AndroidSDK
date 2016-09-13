@@ -46,12 +46,12 @@ public final class TriggeredCommandForm implements Parcelable {
      * @param actions List of actions. Must not be null or empty.
      * @throws IllegalArgumentException This exception is thrown if one or
      * more following condition are met.
-     * <UL>
-     *   <LI>schemaName is null or empty string.</LI>
-     *   <LI>targetID is null or type is not {@link
-     *   com.kii.thingif.TypedID.Types#THING}.</LI>
-     *   <LI>actions is null or empty</LI>
-     * </UL>
+     * <ul>
+     *   <li>schemaName is null or empty string.</li>
+     *   <li>targetID is null or type is not {@link
+     *   com.kii.thingif.TypedID.Types#THING}.</li>
+     *   <li>actions is null or empty</li>
+     * </ul>
      */
     public TriggeredCommandForm(
             @NonNull String schemaName,
