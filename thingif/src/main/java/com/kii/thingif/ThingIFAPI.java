@@ -992,6 +992,7 @@ public class ThingIFAPI implements Parcelable {
     @NonNull
     @WorkerThread
     public Trigger patchTrigger(
+            @NonNull String triggerID,
             @Nullable TriggeringCommandForm form,
             @Nullable Predicate predicate)
         throws ThingIFException
