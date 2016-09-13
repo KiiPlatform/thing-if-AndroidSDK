@@ -63,67 +63,129 @@ public final class TriggeredCommandForm implements Parcelable {
         // TODO: implement me.
     }
 
+    /**
+     * Getter of schema name.
+     *
+     * @return schema name
+     */
     @NonNull
     public String getSchemaName() {
         // TODO: implement me.
         return null;
     }
 
+    /**
+     *  Getter of schema version.
+     *
+     * @return schema version
+     */
     @NonNull
     public int getSchemaVersion() {
         // TODO: implement me.
         return 0;
     }
 
+    /**
+     *  Getter of target thing ID.
+     *
+     * @return target thing ID
+     */
     @NonNull
     public TypedID getTargetID() {
         // TODO: implement me.
         return null;
     }
 
+    /**
+     * Getter of actions.
+     *
+     * @return actions
+     */
     @NonNull
     public List<Action> getActions() {
         // TODO: implement me.
         return null;
     }
 
+    /**
+     * Getter of titile.
+     *
+     * @return title
+     */
     @Nullable
     public String getTitle() {
         // TODO: implement me.
         return null;
     }
 
+    /**
+     * Setter of title
+     *
+     * @param title Length of title must be equal or less than 50 characters.
+     * @return this instance
+     * @throws IllegalArgumentException if title is invalid.
+     */
     @NonNull
-    public TriggeredCommandForm setTitle(@Nullable String title) {
+    public TriggeredCommandForm setTitle(
+            @Nullable String title)
+        throws IllegalArgumentException
+    {
         // TODO: implement me.
         return this;
     }
 
+    /**
+     * Getter of description.
+     *
+     * @return description
+     */
     @Nullable
     public String getDescription() {
         // TODO: implement me.
         return null;
     }
 
+    /**
+     * Setter of description
+     *
+     * @param description Length of description must be equal or less than
+     * 200 characters.
+     * @return this instance.
+     * @throws IllegalArgumentException if description is invalid.
+     */
     @NonNull
-    public TriggeredCommandForm setDescription(@Nullable String description) {
+    public TriggeredCommandForm setDescription(
+            @Nullable String description)
+        throws IllegalArgumentException
+    {
         // TODO: implement me.
         return this;
     }
 
+    /**
+     * Getter of meta data.
+     *
+     * @return meta data
+     */
     @Nullable
     public JSONObject getMetadata() {
         // TODO: implement me.
         return null;
     }
 
+    /**
+     * Setter of meta data.
+     *
+     * @param metadata meta data of this command.
+     * @return this instance.
+     */
     @NonNull
     public TriggeredCommandForm setMetadata(@Nullable JSONObject metadata) {
         // TODO: implement me.
         return this;
     }
 
-    protected TriggeredCommandForm(Parcel in) {
+    private TriggeredCommandForm(Parcel in) {
         // TODO: implement me.
     }
 
