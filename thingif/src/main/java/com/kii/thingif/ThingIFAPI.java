@@ -861,8 +861,8 @@ public class ThingIFAPI implements Parcelable {
     @NonNull
     @WorkerThread
     public Trigger postNewTrigger(
-            @Nullable TriggeringCommandForm form,
-            @Nullable Predicate predicate)
+            @NonNull TriggeringCommandForm form,
+            @NonNull Predicate predicate)
         throws ThingIFException
     {
         // TODO: implement me.
