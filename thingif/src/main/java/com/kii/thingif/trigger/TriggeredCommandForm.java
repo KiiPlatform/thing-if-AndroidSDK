@@ -93,8 +93,10 @@ public final class TriggeredCommandForm implements Parcelable {
         return null;
     }
 
-    public void setTitle(@Nullable String title) {
+    @NonNull
+    public TriggeredCommandForm setTitle(@Nullable String title) {
         // TODO: implement me.
+        return this;
     }
 
     @Nullable
@@ -103,8 +105,10 @@ public final class TriggeredCommandForm implements Parcelable {
         return null;
     }
 
-    public void setDescription(@Nullable String description) {
+    @NonNull
+    public TriggeredCommandForm setDescription(@Nullable String description) {
         // TODO: implement me.
+        return this;
     }
 
     @Nullable
@@ -113,8 +117,10 @@ public final class TriggeredCommandForm implements Parcelable {
         return null;
     }
 
-    public void setMetadata(@Nullable JSONObject metadata) {
+    @NonNull
+    public TriggeredCommandForm setMetadata(@Nullable JSONObject metadata) {
         // TODO: implement me.
+        return this;
     }
 
     protected TriggeredCommandForm(Parcel in) {
