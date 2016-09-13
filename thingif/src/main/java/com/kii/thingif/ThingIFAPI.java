@@ -989,6 +989,25 @@ public class ThingIFAPI implements Parcelable {
         return this.deserialize(schema, responseBody, Trigger.class);
     }
 
+    /**
+     * Apply patch to registered trigger.
+     * Modify registered trigger with specified patch.
+     *
+     * @param triggerID ID of the trigger to apply patch.
+     * @param form Form of triggered command. It contains name of schema,
+     * version of schema, list of actions, target IDof thing etc. You can see
+     * detail of form in {@link TriggeredCommandForm}.
+     * @param predicate Modified predicate.
+     * @return Updated trigger instance.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws IllegalArgumentException This exception is thrown if one or
+     * more following conditions are met.
+     * <ul>
+     *  <li>triggerID is null or empty string.</li>
+     *  <li>Both of form and predicate are null</li>
+     * </ul>
+     */
     @NonNull
     @WorkerThread
     public Trigger patchTrigger(
