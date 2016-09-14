@@ -71,6 +71,35 @@ public final class CommandForm implements Parcelable {
     }
 
     /**
+     * Constructs a CommandForm instance.
+     *
+     * <p>
+     * This constructor copies following {@link Command} fields:
+     * </p>
+     *
+     * <ul>
+     *   <li>{@link Command#getSchemaName()}</li>
+     *   <li>{@link Command#getSchemaVersion()}</li>
+     *   <li>{@link Command#getActions()}</li>
+     *   <li>{@link Command#getTargetID()}</li>
+     *   <li>{@link Command#getTitle()}</li>
+     *   <li>{@link Command#getDescription()}</li>
+     *   <li>{@link Command#getMetadata()}</li>
+     * </ul>
+     *
+     * @param command Souce of this CommandForm.
+     * @throws IllegalArgumentException if command is null.
+     */
+    public CommandForm(
+            @NonNull Command command)
+        throws IllegalArgumentException
+    {
+        // TODO: implement me.
+        this(command.getSchemaName(), command.getSchemaVersion(),
+                command.getActions());
+    }
+
+    /**
      * Setter of schema name.
      *
      * <p>
@@ -137,11 +166,13 @@ public final class CommandForm implements Parcelable {
      *
      * <p>
      * {@link com.kii.thingif.ThingIFAPI#postNewTrigger(CommandForm,
-     * Predicate)} and {@link com.kii.thingif.ThingIFAPI#patchTrigger(String,
-     * CommandForm, Predicate)} use {@link CommandForm#getTargetID()} to
-     * specify target of command in trigger. If you do not set target thing
-     * ID with this method, Default target is used. The default target is
-     * {@link com.kii.thingif.ThingIFAPI#getTarget()}.
+     * com.kii.thingif.trigger.Predicate)} and {@link
+     * com.kii.thingif.ThingIFAPI#patchTrigger(String, CommandForm,
+     * com.kii.thingif.trigger.Predicate)} use {@link
+     * CommandForm#getTargetID()} to specify target of command in trigger. If
+     * you do not set target thing ID with this method, Default target is
+     * used. The default target is {@link
+     * com.kii.thingif.ThingIFAPI#getTarget()}.
      * </p>
      *
      * @param targetID
