@@ -41,8 +41,6 @@ public final class TriggeredCommandForm implements Parcelable {
      *
      * @param schemaName name of schema. Must not be null or empty string.
      * @param schemaVersion version of schema.
-     * null. Returning value of {@link TypedID#getType()} must be {@link
-     * com.kii.thingif.TypedID.Types#THING}.
      * @param actions List of actions. Must not be null or empty.
      * @throws IllegalArgumentException This exception is thrown if one or
      * more following conditions are met.
