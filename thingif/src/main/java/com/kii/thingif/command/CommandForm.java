@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.kii.thingif.TypedID;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,6 +28,7 @@ import java.util.List;
  * </ul>
  * Optional data are followings:
  * <ul>
+ * <li>Target thing ID</li>
  * <li>Title of a schema</li>
  * <li>Description of a schema</li>
  * <li>meta data of a schema</li>
@@ -65,6 +68,93 @@ public final class CommandForm implements Parcelable {
         this.schemaName = schemaName;
         this.schemaVersion = schemaVersion;
         this.actions = actions;
+    }
+
+    /**
+     * Setter of schema name.
+     *
+     * <p>
+     * Schema name is requried field of command, so null and empty string is
+     * not acceptable.
+     * </p>
+     *
+     * @param schemaName schema name.
+     * @return this instance.
+     * @throws IllegalArgumentException
+     */
+    @NonNull
+    public CommandForm setSchemaName(
+            @NonNull String schemaName)
+        throws IllegalArgumentException
+    {
+        // TODO: implement me.
+        return this;
+    }
+
+    /**
+     * Setter of schema version.
+     *
+     * @param schemaVersion schema version.
+     * @return this instance.
+     */
+    @NonNull
+    public CommandForm setSchemaVersion(int schemaVersion) {
+        // TODO: implement me.
+        return this;
+    }
+
+    /**
+     * Setter of actions.
+     *
+     * <p>
+     * List of action is required field of command, so null and empty list is
+     * not acceptable.
+     * </p>
+     *
+     * @param actions List of action.
+     * @return this instance.
+     * @throws IllegalArgumentException
+     */
+    @NonNull
+    public CommandForm setActions(
+            @NonNull List<Action> actions)
+        throws IllegalArgumentException
+    {
+        // TODO: implement me.
+        return this;
+    }
+
+    /**
+     * Setter of target thing ID.
+     *
+     * <p>
+     * {@link com.kii.thingif.ThingIFAPI#postNewCommand(CommandForm)} ignores
+     * value of {@link CommandForm#getTargetID()}. If you set target thing id
+     * with this method, the target is ignored. Target thing ID for {@link
+     * com.kii.thingif.ThingIFAPI#postNewCommand(CommandForm)} is always
+     * {@link com.kii.thingif.ThingIFAPI#getTarget()}.
+     * </p>
+     *
+     * <p>
+     * {@link com.kii.thingif.ThingIFAPI#postNewTrigger(CommandForm,
+     * Predicate)} and {@link com.kii.thingif.ThingIFAPI#patchTrigger(String,
+     * CommandForm, Predicate)} use {@link CommandForm#getTargetID()} to
+     * specify target of command in trigger. If you do not set target thing
+     * ID with this method, Default target is used. The default target is
+     * {@link com.kii.thingif.ThingIFAPI#getTarget()}.
+     * </p>
+     *
+     * @param targetID
+     * @return this instance.
+     * @throws IllegalArgumentException
+     */
+    @NonNull
+    public CommandForm setTargetID(
+            @Nullable TypedID targetID)
+        throws IllegalArgumentException
+    {
+        // TODO: implement me.
+        return this;
     }
 
     /**
@@ -139,6 +229,16 @@ public final class CommandForm implements Parcelable {
     @NonNull
     public List<Action> getActions() {
         return this.actions;
+    }
+
+    /**
+     * Getter of target thing ID.
+     *
+     * @return target thing ID
+     */
+    @NonNull
+    public TypedID getTargetID() {
+        return null;
     }
 
     /**
