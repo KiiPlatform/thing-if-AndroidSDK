@@ -87,7 +87,7 @@ public final class CommandForm implements Parcelable {
      *   <li>{@link Command#getMetadata()}</li>
      * </ul>
      *
-     * @param command Souce of this CommandForm.
+     * @param command Souce of this CommandForm instance.
      * @throws IllegalArgumentException if command is null.
      */
     public CommandForm(
@@ -173,6 +173,12 @@ public final class CommandForm implements Parcelable {
      * you do not set target thing ID with this method, Default target is
      * used. The default target is {@link
      * com.kii.thingif.ThingIFAPI#getTarget()}.
+     * </p>
+     *
+     * <p>
+     * If you create trigger which target of command is not default target,
+     * and update trigger with {@link dCommandForm#getTargetID()} as null,
+     * then, command target of updated trigger is changed to default target.
      * </p>
      *
      * @param targetID
