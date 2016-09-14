@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
+import com.kii.thingif.command.Command;
 
 import org.json.JSONObject;
 
@@ -64,6 +65,54 @@ public final class TriggeredCommandForm implements Parcelable {
     }
 
     /**
+     * Constructs a TriggeredCommandForm instance.
+     *
+     * <p>
+     * This constructor copies following {@link Command} fields:
+     * </p>
+     *
+     * <ul>
+     *   <li>{@link Command#getSchemaName()}</li>
+     *   <li>{@link Command#getSchemaVersion()}</li>
+     *   <li>{@link Command#getActions()}</li>
+     *   <li>{@link Command#getTargetID()}</li>
+     *   <li>{@link Command#getTitle()}</li>
+     *   <li>{@link Command#getDescription()}</li>
+     *   <li>{@link Command#getMetadata()}</li>
+     * </ul>
+     *
+     * @param command Souce of this TriggeredCommandForm instance.
+     * @throws IllegalArgumentException if command is null.
+     */
+    public TriggeredCommandForm(
+            @NonNull Command command)
+        throws IllegalArgumentException
+    {
+        // TODO: implement me.
+    }
+
+    /*
+     * Setter of schema name.
+     *
+     * <p>
+     * Schema name is requried field of command, so null and empty string is
+     * not acceptable.
+     * </p>
+     *
+     * @param schemaName schema name.
+     * @return this instance.
+     * @throws IllegalArgumentException
+     */
+    @NonNull
+    public TriggeredCommandForm setSchemaName(
+            @NonNull String schemaName)
+        throws IllegalArgumentException
+    {
+        // TODO: implement me.
+        return this;
+    }
+
+    /**
      * Getter of schema name.
      *
      * @return schema name
@@ -72,6 +121,18 @@ public final class TriggeredCommandForm implements Parcelable {
     public String getSchemaName() {
         // TODO: implement me.
         return null;
+    }
+
+    /**
+     * Setter of schema version.
+     *
+     * @param schemaVersion schema version.
+     * @return this instance.
+     */
+    @NonNull
+    public TriggeredCommandForm setSchemaVersion(int schemaVersion) {
+        // TODO: implement me.
+        return this;
     }
 
     /**
@@ -86,14 +147,24 @@ public final class TriggeredCommandForm implements Parcelable {
     }
 
     /**
-     *  Getter of target thing ID.
+     * Setter of actions.
      *
-     * @return target thing ID
+     * <p>
+     * List of action is required field of command, so null and empty list is
+     * not acceptable.
+     * </p>
+     *
+     * @param actions List of action.
+     * @return this instance.
+     * @throws IllegalArgumentException
      */
     @NonNull
-    public TypedID getTargetID() {
+    public TriggeredCommandForm setActions(
+            @NonNull List<Action> actions)
+        throws IllegalArgumentException
+    {
         // TODO: implement me.
-        return null;
+        return this;
     }
 
     /**
@@ -103,6 +174,33 @@ public final class TriggeredCommandForm implements Parcelable {
      */
     @NonNull
     public List<Action> getActions() {
+        // TODO: implement me.
+        return null;
+    }
+
+    /**
+     * Setter of target thing ID.
+     *
+     * @param targetID
+     * @return this instance.
+     * @throws IllegalArgumentException
+     */
+    @NonNull
+    public TriggeredCommandForm setTargetID(
+            @Nullable TypedID targetID)
+        throws IllegalArgumentException
+    {
+        // TODO: implement me.
+        return this;
+    }
+
+    /**
+     *  Getter of target thing ID.
+     *
+     * @return target thing ID
+     */
+    @NonNull
+    public TypedID getTargetID() {
         // TODO: implement me.
         return null;
     }
