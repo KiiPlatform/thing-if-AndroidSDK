@@ -128,7 +128,7 @@ public class Command implements Parcelable {
 
     /**
      * Get ID of the target thing.
-     * @return
+     * @return target thing ID which is issued this command.
      */
     public TypedID getTargetID() {
         return this.targetID;
@@ -136,7 +136,7 @@ public class Command implements Parcelable {
 
     /**
      * Get ID of the issuer user.
-     * @return
+     * @return issuer ID by which this command is issued.
      */
     public TypedID getIssuerID() {
         return this.issuerID;
@@ -144,7 +144,7 @@ public class Command implements Parcelable {
 
     /**
      * Get list of actions
-     * @return
+     * @return action of this command.
      */
     public List<Action> getActions() {
         return this.actions;
@@ -152,7 +152,7 @@ public class Command implements Parcelable {
 
     /**
      * Get list of action result
-     * @return
+     * @return action results of this command.
      */
     public List<ActionResult> getActionResults() {
         return this.actionResults;
@@ -161,8 +161,8 @@ public class Command implements Parcelable {
     /**
      * Get a action result associated with specified action
      *
-     * @param action
-     * @return
+     * @param action action to specify action result.
+     * @return action reuslt specified with parameter's action.
      */
     public ActionResult getActionResult(@NonNull Action action) {
         if (action == null) {
@@ -180,7 +180,7 @@ public class Command implements Parcelable {
 
     /**
      * Get status of command
-     * @return
+     * @return status of this command.
      */
     public CommandState getCommandState() {
         return this.commandState;
@@ -191,7 +191,7 @@ public class Command implements Parcelable {
 
     /**
      * Get ID of trigger which fired this command
-     * @return
+     * @return trigger ID which fired this command.
      */
     public String getFiredByTriggerID() {
         return this.firedByTriggerID;
@@ -202,7 +202,7 @@ public class Command implements Parcelable {
 
     /**
      * Get creation time
-     * @return
+     * @return creation time of this command.
      */
     public Long getCreated() {
         return this.created;
@@ -212,7 +212,7 @@ public class Command implements Parcelable {
     }
     /**
      * Get modification time
-     * @return
+     * @return modification time of this command.
      */
     public Long getModified() {
         return this.modified;
@@ -221,15 +221,16 @@ public class Command implements Parcelable {
         this.modified = modified;
     }
     /**
-     *
-     * @return
+     * Get title.
+     * @return title of this command.
      */
     public String getTitle() {
         return this.title;
     }
     /**
-     *
-     * @param title
+     * Set title 
+     * @param title of this command.
+     * @throws IllegalArgumentException if title is invalid.
      */
     public void setTitle(String title) {
         if (!TextUtils.isEmpty(title) && title.length() > 50) {
@@ -238,15 +239,16 @@ public class Command implements Parcelable {
         this.title = title;
     }
     /**
-     *
-     * @return
+     * Get description.
+     * @return description of this command.
      */
     public String getDescription() {
         return this.description;
     }
     /**
-     *
-     * @param description
+     * Set description.
+     * @param description description of this command.
+     * @throws IllegalArgumentException if description is invalid.
      */
     public void setDescription(String description) {
         if (!TextUtils.isEmpty(description) && description.length() > 200) {
@@ -255,15 +257,15 @@ public class Command implements Parcelable {
         this.description = description;
     }
     /**
-     *
-     * @return
+     * Get meta data
+     * @return meta data of this command.
      */
     public JSONObject getMetadata() {
         return this.metadata;
     }
     /**
-     *
-     * @param metadata
+     * Set meta data
+     * @param metadata meta data of this command.
      */
     public void setMetadata(JSONObject metadata) {
         this.metadata = metadata;

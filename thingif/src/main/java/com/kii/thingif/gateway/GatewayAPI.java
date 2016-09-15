@@ -69,7 +69,7 @@ public class GatewayAPI implements Parcelable {
      * Required prior to call other APIs access to the gateway.
      * @param username Username of the Gateway.
      * @param password Password of the Gateway.
-     * @throws ThingIFException
+     * @throws ThingIFException Thrown when gateway returns error response.
      */
     @WorkerThread
     public void login(@NonNull String username, @NonNull String password) throws ThingIFException {
@@ -217,7 +217,7 @@ public class GatewayAPI implements Parcelable {
      * Call this api when the End Node onboarding is done.
      * After the call succeeded, End Node will be fully connected to Kii Cloud through the Gateway.
      * @param endNode Onboarded EndNode
-     * @throws ThingIFException
+     * @throws ThingIFException Thrown when gateway returns error response.
      * @throws IllegalStateException Thrown when user is not logged in.
      * See {@link #login(String, String)}
      */
@@ -251,7 +251,7 @@ public class GatewayAPI implements Parcelable {
 
     /** Restore the Gateway.
      * This API can be used only for the Gateway App.
-     * @throws ThingIFException
+     * @throws ThingIFException Thrown when gateway returns error response.
      * @throws IllegalStateException Thrown when user is not logged in.
      * See {@link #login(String, String)}
      */
@@ -272,7 +272,7 @@ public class GatewayAPI implements Parcelable {
      *
      * @param endNodeThingID ID of the end-node assigned by Kii Cloud.
      * @param endNodeVenderThingID ID of the end-node assigned by End Node vendor.
-     * @throws ThingIFException
+     * @throws ThingIFException Thrown when gateway returns error response.
      * @throws IllegalStateException Thrown when user is not logged in.
      * See {@link #login(String, String)}
      */
@@ -306,7 +306,7 @@ public class GatewayAPI implements Parcelable {
      * When the end user replaces the Gateway, Gateway App/End Node App need to obtain the new Gateway’s vendorThingID.
      *
      * @return Gateway Information.
-     * @throws ThingIFException
+     * @throws ThingIFException Thrown when gateway returns error response.
      * @throws IllegalStateException Thrown when user is not logged in.
      */
     @WorkerThread
@@ -333,7 +333,7 @@ public class GatewayAPI implements Parcelable {
 
     /**
      * Get a tag.
-     * @return
+     * @return tag of this Gateway instance.
      */
     @Nullable
     public String getTag() {
@@ -348,7 +348,7 @@ public class GatewayAPI implements Parcelable {
     }
     /**
      * Get AppID
-     * @return
+     * @return app ID
      */
     @NonNull
     public String getAppID() {
@@ -356,7 +356,7 @@ public class GatewayAPI implements Parcelable {
     }
     /**
      * Get AppKey
-     * @return
+     * @return app key
      */
     @NonNull
     public String getAppKey() {
@@ -373,7 +373,7 @@ public class GatewayAPI implements Parcelable {
 
     /**
      * Get Access Token
-     * @return
+     * @return access token.
      */
     @Nullable
     public String getAccessToken() {
@@ -471,7 +471,7 @@ public class GatewayAPI implements Parcelable {
     /**
      * Remove saved specified instance in the SharedPreferences.
      *
-     * @param tag
+     * @param tag tag to specify removing stored instance.
      */
     public static void removeStoredInstance(@Nullable String tag) {
         SharedPreferences preferences = getSharedPreferences();

@@ -126,7 +126,7 @@ public class ThingIFAPI implements Parcelable {
     /**
      * Remove saved specified instance in the SharedPreferences.
      *
-     * @param tag
+     * @param tag tag to specify stored instance.
      */
     public static void removeStoredInstance(@Nullable String tag) {
         SharedPreferences preferences = getSharedPreferences();
@@ -171,8 +171,8 @@ public class ThingIFAPI implements Parcelable {
     /**
      * Create the clone instance that has specified target and tag.
      *
-     * @param target
-     * @param tag
+     * @param target coping target.
+     * @param tag A key to store instnace.
      * @return ThingIFAPI instance
      */
     public ThingIFAPI copyWithTarget(@NonNull Target target, @Nullable String tag) {
@@ -733,7 +733,7 @@ public class ThingIFAPI implements Parcelable {
      * If the Schema of the Command included in the response does not matches with the Schema
      * registered this ThingIfAPI instance, It won't be included in returned value.
      * @param bestEffortLimit Maximum number of the Commands in the response.
-     *                        if the value is <= 0, default limit internally
+     *                        if the value is {@literal <}= 0, default limit internally
      *                        defined is applied.
      *                        Meaning of 'bestEffort' is if the specified limit
      *                        is greater than default limit, default limit is
@@ -797,7 +797,7 @@ public class ThingIFAPI implements Parcelable {
      * target.
      * </p>
      *
-     * {@link getTarget()} instance and target argument must be same owner's
+     * {@link #getTarget()} instance and target argument must be same owner's
      * things.
      *
      * @param schemaName name of the schema.
@@ -1129,12 +1129,13 @@ public class ThingIFAPI implements Parcelable {
 
     /**
      * Retrieves list of server code results that was executed by the specified trigger. Results will be listing with order by modified date descending (latest first)
+     * @param triggerID trigger ID to retrieve server code results.
      * @param bestEffortLimit limit the maximum number of the results in the
      *                        Response. It ensures numbers in
      *                        response is equals to or less than specified number.
      *                        But doesn't ensures number of the results
      *                        in the response is equal to specified value.<br>
-     *                        If the specified value <= 0, Default size of the limit
+     *                        If the specified value {@literal <}= 0, Default size of the limit
      *                        is applied by IoT Cloud.
      * @param paginationKey If specified obtain rest of the items.
      * @return first is list of the results and second is paginationKey returned
@@ -1193,7 +1194,7 @@ public class ThingIFAPI implements Parcelable {
      *                        response is equals to or less than specified number.
      *                        But doesn't ensures number of the Triggers
      *                        in the response is equal to specified value.<br>
-     *                        If the specified value <= 0, Default size of the limit
+     *                        If the specified value {@literal <}= 0, Default size of the limit
      *                        is applied by IoT Cloud.
      * @param paginationKey If specified obtain rest of the items.
      * @return first is list of the Triggers and second is paginationKey returned
@@ -1282,7 +1283,7 @@ public class ThingIFAPI implements Parcelable {
      * Get the Vendor Thing ID of specified Target.
      *
      * @return Vendor Thing ID
-     * @throws ThingIFException
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      */
     @NonNull
     @WorkerThread
@@ -1303,7 +1304,7 @@ public class ThingIFAPI implements Parcelable {
      *
      * @param newVendorThingID New vendor thing id
      * @param newPassword New password
-     * @throws ThingIFException
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      */
     @WorkerThread
     public void updateVendorThingID(@NonNull String newVendorThingID, @NonNull String newPassword) throws ThingIFException {
@@ -1340,7 +1341,7 @@ public class ThingIFAPI implements Parcelable {
     }
     /**
      * Get AppID
-     * @return
+     * @return app ID
      */
     @NonNull
     public String getAppID() {
@@ -1348,7 +1349,7 @@ public class ThingIFAPI implements Parcelable {
     }
     /**
      * Get AppKey
-     * @return
+     * @return app key
      */
     @NonNull
     public String getAppKey() {
@@ -1356,15 +1357,15 @@ public class ThingIFAPI implements Parcelable {
     }
     /**
      * Get base URL
-     * @return
+     * @return base URL
      */
     @NonNull
     public String getBaseUrl() {
         return this.app.getBaseUrl();
     }
     /**
-     *
-     * @return
+     * Get list of schema.
+     * @return list of schema.
      */
     @NonNull
     public List<Schema> getSchemas() {
@@ -1372,7 +1373,7 @@ public class ThingIFAPI implements Parcelable {
     }
     /**
      * Get owner who uses the ThingIFAPI.
-     * @return
+     * @return owner
      */
     @NonNull
     public Owner getOwner() {
@@ -1381,7 +1382,7 @@ public class ThingIFAPI implements Parcelable {
 
     /**
      * Get target thing that is operated by the ThingIFAPI.
-     * @return
+     * @return target of this ThingIFAPI.
      */
     @Nullable
     public Target getTarget() {
@@ -1393,7 +1394,7 @@ public class ThingIFAPI implements Parcelable {
     }
     /**
      * Get a tag.
-     * @return
+     * @return tag.
      */
     @Nullable
     public String getTag() {
