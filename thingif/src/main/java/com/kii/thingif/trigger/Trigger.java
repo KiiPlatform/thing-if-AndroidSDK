@@ -92,15 +92,16 @@ public class Trigger implements Parcelable {
         this.disabledReason = disabledReason;
     }
     /**
-     *
-     * @return
+     * Get title.
+     * @return title of this trigger.
      */
     public String getTitle() {
         return this.title;
     }
     /**
-     *
-     * @param title
+     * Set title
+     * @param title title of this trigger.
+     * @throws IllegalArgumentException if title is invalid.
      */
     public void setTitle(String title) {
         if (!TextUtils.isEmpty(title) && title.length() > 50) {
@@ -109,15 +110,16 @@ public class Trigger implements Parcelable {
         this.title = title;
     }
     /**
-     *
-     * @return
+     * Get description.
+     * @return description of this trigger.
      */
     public String getDescription() {
         return this.description;
     }
     /**
-     *
-     * @param description
+     * Set description.
+     * @param description description of this trigger.
+     * @throws IllegalArgumentException if description is invalid.
      */
     public void setDescription(String description) {
         if (!TextUtils.isEmpty(description) && description.length() > 200) {
@@ -126,15 +128,15 @@ public class Trigger implements Parcelable {
         this.description = description;
     }
     /**
-     *
-     * @return
+     * Get meta data
+     * @return meta data of this trigger.
      */
     public JSONObject getMetadata() {
         return this.metadata;
     }
     /**
-     *
-     * @param metadata
+     * Set meta data
+     * @param metadata meta data of this trigger.
      */
     public void setMetadata(JSONObject metadata) {
         this.metadata = metadata;
