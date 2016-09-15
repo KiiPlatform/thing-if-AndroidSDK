@@ -104,7 +104,7 @@ public final class CommandForm implements Parcelable {
     /**
      * Setter of meta data.
      *
-     * @param metadata
+     * @param metadata meta data of this command.
      * @return this instance.
      */
     public CommandForm setMetadata(@Nullable JSONObject metadata) {
