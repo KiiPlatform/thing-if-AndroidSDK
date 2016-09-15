@@ -797,7 +797,7 @@ public class ThingIFAPI implements Parcelable {
      * target.
      * </p>
      *
-     * {@link getTarget()} instance and target argument must be same owner's
+     * {@link #getTarget()} instance and target argument must be same owner's
      * things.
      *
      * @param schemaName name of the schema.
