@@ -150,7 +150,7 @@ public final class TriggeredCommandForm implements Parcelable {
      *
      * @param actions List of action.
      * @return this instance.
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException actions is null or empty list.
      */
     @NonNull
     public TriggeredCommandForm setActions(
@@ -193,9 +193,10 @@ public final class TriggeredCommandForm implements Parcelable {
      * target.
      * </p>
      *
-     * @param targetID
+     * @param targetID target thing ID.
      * @return this instance.
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException type of targetID is not {@link
+     * TypedID.Types#THING}.
      */
     @NonNull
     public TriggeredCommandForm setTargetID(
