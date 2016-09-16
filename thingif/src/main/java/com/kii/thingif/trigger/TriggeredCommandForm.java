@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Form of a command in trigger request.
  *
- * This clas contains data in order to create {@link
+ * This class contains data in order to create {@link
  * com.kii.thingif.command.Command} instance got from {@link
  * Trigger#getCommand()}.
  * <br><br>
@@ -36,6 +36,9 @@ import java.util.List;
  */
 public final class TriggeredCommandForm implements Parcelable {
 
+    /**
+     * TriggeredCommandForm builder.
+     */
     public static class Builder {
 
         /**
@@ -50,6 +53,7 @@ public final class TriggeredCommandForm implements Parcelable {
          *   <li>schemaName is null or empty string.</li>
          *   <li>actions is null or empty</li>
          * </ul>
+         * @return builder instance.
          */
         @NonNull
         public static Builder builder(
@@ -81,6 +85,7 @@ public final class TriggeredCommandForm implements Parcelable {
          *
          * @param command Souce of this {@link TriggeredCommandForm.Builder}
          * instance.
+         * @return builder instance.
          * @throws IllegalArgumentException if command is null.
          */
         @NonNull
@@ -102,7 +107,7 @@ public final class TriggeredCommandForm implements Parcelable {
          *
          * @param schemaName schema name.
          * @return this instance for method chaining.
-         * @throws IllegalArgumentException
+         * @throws IllegalArgumentException if schemaName is invalid.
          */
         @NonNull
         public Builder setSchemaName(
@@ -305,6 +310,11 @@ public final class TriggeredCommandForm implements Parcelable {
             return null;
         }
 
+        /**
+         * Build {@link TriggeredCommandForm} instance.
+         *
+         * @return {@link TriggeredCommandForm} instance.
+         */
         @NonNull
         public TriggeredCommandForm build() {
             // TODO: implement me.
@@ -329,7 +339,6 @@ public final class TriggeredCommandForm implements Parcelable {
      *
      * @return schema version
      */
-    @NonNull
     public int getSchemaVersion() {
         // TODO: implement me.
         return 0;
