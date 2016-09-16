@@ -190,9 +190,9 @@ public final class TriggeredCommandForm implements Parcelable {
          * <p>
          * {@link
          * com.kii.thingif.ThingIFAPI#postNewTrigger(TriggeredCommandForm,
-         * Predicate)} and {@link
+         * Predicate, TriggerOptions)} and {@link
          * com.kii.thingif.ThingIFAPI#patchTrigger(String,
-         * TriggeredCommandForm, Predicate)} use {@link
+         * TriggeredCommandForm, Predicate, TriggerOptions)} use {@link
          * TriggeredCommandForm#getTargetID()} to specify target of command
          * in trigger. If you do not set target thing ID with this method,
          * Default target is used. The default target is {@link

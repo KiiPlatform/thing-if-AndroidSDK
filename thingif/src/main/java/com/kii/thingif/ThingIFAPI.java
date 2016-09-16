@@ -31,6 +31,8 @@ import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.Trigger;
 import com.kii.thingif.internal.utils.JsonUtils;
 import com.kii.thingif.internal.utils.Path;
+import com.kii.thingif.trigger.TriggerOptions;
+import com.kii.thingif.trigger.TriggeredCommandForm;
 import com.kii.thingif.trigger.TriggeredServerCodeResult;
 import com.kii.thingif.trigger.TriggersWhat;
 import com.squareup.okhttp.MediaType;
@@ -857,6 +859,43 @@ public class ThingIFAPI implements Parcelable {
         return postNewTriggerWithCommands(schemaName, schemaVersion, actions, predicate, this.target);
     }
 
+    /**
+     * Post new Trigger with commands to IoT Cloud.
+     *
+     * <p>
+     * When thing retrieved by {@link #getTarget()} of this ThingIFAPI
+     * instance meets condition described by predicate, A command registered
+     * by {@link TriggeredCommandForm} sends to thing given by {@link
+     * TriggeredCommandForm#getTargetID()}.
+     * </p>
+     *
+     * <p>
+     * {@link #getTarget()} instance and thing specified by {@link
+     * TriggeredCommandForm#getTargetID()} must be same owner's things.
+     * </p>
+     *
+     * @param form Form of triggered command. It contains name of schema,
+     * version of schema, list of actions, target IDof thing etc. You can see
+     * detail of form in {@link TriggeredCommandForm}.
+     * @param predicate Specify when the Trigger fires command.
+     * @param options option fileds of this trigger.
+     * @return Instance of the Trigger registered in IoT Cloud.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws IllegalArgumentException if form and/or predicate is null.
+     */
+    @NonNull
+    @WorkerThread
+    public Trigger postNewTrigger(
+            @NonNull TriggeredCommandForm form,
+            @NonNull Predicate predicate,
+            @Nullable TriggerOptions options)
+        throws ThingIFException
+    {
+        // TODO: implement me.
+        return null;
+    }
+
     private Trigger postNewTriggerWithCommands(
             String schemaName,
             int schemaVersion,
@@ -975,6 +1014,38 @@ public class ThingIFAPI implements Parcelable {
             }
         }
         return this.deserialize(schema, responseBody, Trigger.class);
+    }
+
+    /**
+     * Apply patch to registered trigger.
+     * Modify registered trigger with specified patch.
+     *
+     * @param triggerID ID of the trigger to apply patch.
+     * @param form Form of triggered command. It contains name of schema,
+     * version of schema, list of actions, target IDof thing etc. You can see
+     * detail of form in {@link TriggeredCommandForm}.
+     * @param predicate Modified predicate.
+     * @param options option fileds of this trigger.
+     * @return Updated trigger instance.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws IllegalArgumentException This exception is thrown if one or
+     * more following conditions are met.
+     * <ul>
+     *  <li>triggerID is null or empty string.</li>
+     *  <li>Both of form and predicate are null</li>
+     * </ul>
+     */
+    @NonNull
+    @WorkerThread
+    public Trigger patchTrigger(
+            @NonNull String triggerID,
+            @Nullable TriggeredCommandForm form,
+            @Nullable Predicate predicate,
+            @Nullable TriggerOptions options)
+        throws ThingIFException
+    {
+        return null;
     }
 
     /**
