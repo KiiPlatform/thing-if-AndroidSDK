@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.kii.thingif.TypedID;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,6 +28,7 @@ import java.util.List;
  * </ul>
  * Optional data are followings:
  * <ul>
+ * <li>Target thing ID</li>
  * <li>Title of a schema</li>
  * <li>Description of a schema</li>
  * <li>meta data of a schema</li>
@@ -65,6 +68,130 @@ public final class CommandForm implements Parcelable {
         this.schemaName = schemaName;
         this.schemaVersion = schemaVersion;
         this.actions = actions;
+    }
+
+    /**
+     * Constructs a CommandForm instance.
+     *
+     * <p>
+     * This constructor copies following {@link Command} fields:
+     * </p>
+     *
+     * <ul>
+     *   <li>{@link Command#getSchemaName()}</li>
+     *   <li>{@link Command#getSchemaVersion()}</li>
+     *   <li>{@link Command#getActions()}</li>
+     *   <li>{@link Command#getTargetID()}</li>
+     *   <li>{@link Command#getTitle()}</li>
+     *   <li>{@link Command#getDescription()}</li>
+     *   <li>{@link Command#getMetadata()}</li>
+     * </ul>
+     *
+     * @param command Souce of this CommandForm instance.
+     * @throws IllegalArgumentException if command is null.
+     */
+    public CommandForm(
+            @NonNull Command command)
+        throws IllegalArgumentException
+    {
+        // TODO: implement me.
+        this(command.getSchemaName(), command.getSchemaVersion(),
+                command.getActions());
+    }
+
+    /**
+     * Setter of schema name.
+     *
+     * <p>
+     * Schema name is requried field of command, so null and empty string is
+     * not acceptable.
+     * </p>
+     *
+     * @param schemaName schema name.
+     * @return this instance.
+     * @throws IllegalArgumentException
+     */
+    @NonNull
+    public CommandForm setSchemaName(
+            @NonNull String schemaName)
+        throws IllegalArgumentException
+    {
+        // TODO: implement me.
+        return this;
+    }
+
+    /**
+     * Setter of schema version.
+     *
+     * @param schemaVersion schema version.
+     * @return this instance.
+     */
+    @NonNull
+    public CommandForm setSchemaVersion(int schemaVersion) {
+        // TODO: implement me.
+        return this;
+    }
+
+    /**
+     * Setter of actions.
+     *
+     * <p>
+     * List of action is required field of command, so null and empty list is
+     * not acceptable.
+     * </p>
+     *
+     * @param actions List of action.
+     * @return this instance.
+     * @throws IllegalArgumentException
+     */
+    @NonNull
+    public CommandForm setActions(
+            @NonNull List<Action> actions)
+        throws IllegalArgumentException
+    {
+        // TODO: implement me.
+        return this;
+    }
+
+    /**
+     * Setter of target thing ID.
+     *
+     * <p>
+     * {@link com.kii.thingif.ThingIFAPI#postNewCommand(CommandForm)} ignores
+     * value of {@link CommandForm#getTargetID()}. If you set target thing id
+     * with this method, the target is ignored. Target thing ID for {@link
+     * com.kii.thingif.ThingIFAPI#postNewCommand(CommandForm)} is always
+     * {@link com.kii.thingif.ThingIFAPI#getTarget()}.
+     * </p>
+     *
+     * <p>
+     * {@link com.kii.thingif.ThingIFAPI#postNewTrigger(CommandForm,
+     * com.kii.thingif.trigger.Predicate)} and {@link
+     * com.kii.thingif.ThingIFAPI#patchTrigger(String, CommandForm,
+     * com.kii.thingif.trigger.Predicate)} use {@link
+     * CommandForm#getTargetID()} to specify target of command in trigger. If
+     * you do not set target thing ID with this method, Default target is
+     * used. The default target is {@link
+     * com.kii.thingif.ThingIFAPI#getTarget()}.
+     * </p>
+     *
+     * <p>
+     * If you create trigger which target of command is not default target,
+     * and update trigger with {@link dCommandForm#getTargetID()} as null,
+     * then, command target of updated trigger is changed to default target.
+     * </p>
+     *
+     * @param targetID
+     * @return this instance.
+     * @throws IllegalArgumentException
+     */
+    @NonNull
+    public CommandForm setTargetID(
+            @Nullable TypedID targetID)
+        throws IllegalArgumentException
+    {
+        // TODO: implement me.
+        return this;
     }
 
     /**
@@ -139,6 +266,16 @@ public final class CommandForm implements Parcelable {
     @NonNull
     public List<Action> getActions() {
         return this.actions;
+    }
+
+    /**
+     * Getter of target thing ID.
+     *
+     * @return target thing ID
+     */
+    @NonNull
+    public TypedID getTargetID() {
+        return null;
     }
 
     /**
