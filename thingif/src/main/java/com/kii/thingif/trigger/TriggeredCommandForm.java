@@ -91,7 +91,7 @@ public final class TriggeredCommandForm implements Parcelable {
         // TODO: implement me.
     }
 
-    /*
+    /**
      * Setter of schema name.
      *
      * <p>
@@ -101,7 +101,7 @@ public final class TriggeredCommandForm implements Parcelable {
      *
      * @param schemaName schema name.
      * @return this instance.
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException if schemaName is null or empty string.
      */
     @NonNull
     public TriggeredCommandForm setSchemaName(
@@ -156,7 +156,7 @@ public final class TriggeredCommandForm implements Parcelable {
      *
      * @param actions List of action.
      * @return this instance.
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException  is actions is null or empty list.
      */
     @NonNull
     public TriggeredCommandForm setActions(
@@ -181,13 +181,14 @@ public final class TriggeredCommandForm implements Parcelable {
     /**
      * Setter of target thing ID.
      *
-     * @param targetID
+     * @param targetID target thing ID.
      * @return this instance.
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException if targetID is null or type is not
+     * {@link TypedID.Types#THING}.
      */
     @NonNull
     public TriggeredCommandForm setTargetID(
-            @Nullable TypedID targetID)
+            @NonNull TypedID targetID)
         throws IllegalArgumentException
     {
         // TODO: implement me.
