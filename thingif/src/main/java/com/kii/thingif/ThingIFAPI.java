@@ -26,6 +26,8 @@ import com.kii.thingif.internal.GsonRepository;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
 import com.kii.thingif.schema.Schema;
+import com.kii.thingif.trigger.PatchTriggerForm;
+import com.kii.thingif.trigger.PostNewTriggerForm;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.Trigger;
@@ -857,6 +859,38 @@ public class ThingIFAPI implements Parcelable {
         return postNewTriggerWithCommands(schemaName, schemaVersion, actions, predicate, this.target);
     }
 
+    /**
+     * Post new Trigger with commands to IoT Cloud.
+     *
+     * <p>
+     * When thing retrieved by {@link #getTarget()} of this ThingIFAPI
+     * instance meets condition described by predicate, A command registered
+     * by {@link TriggeredCommandForm} sends to thing given by {@link
+     * TriggeredCommandForm#getTargetID()}.
+     * </p>
+     *
+     * <p>
+     * {@link #getTarget()} instance and thing specified by {@link
+     * TriggeredCommandForm#getTargetID()} must be same owner's things.
+     * </p>
+     *
+     * @param request Request of postNewTrigger. You can see detail of form
+     * in {@link PostNewTriggerForm}.
+     * @return Instance of the Trigger registered in IoT Cloud.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws IllegalArgumentException if form and/or predicate is null.
+     */
+    @NonNull
+    @WorkerThread
+    public Trigger postNewTrigger(
+            @NonNull PostNewTriggerForm form)
+        throws ThingIFException
+    {
+        // TODO: implement me.
+        return null;
+    }
+
     private Trigger postNewTriggerWithCommands(
             String schemaName,
             int schemaVersion,
@@ -975,6 +1009,37 @@ public class ThingIFAPI implements Parcelable {
             }
         }
         return this.deserialize(schema, responseBody, Trigger.class);
+    }
+
+    /**
+     * Apply patch to registered trigger.
+     * Modify registered trigger with specified patch.
+     *
+     * <p>
+     * {@link #getTarget()} instance and thing specified by {@link
+     * TriggeredCommandForm#getTargetID()} must be same owner's things.
+     * </p>
+     *
+     * @param request Request of patchTrigger. You can see detail of form in
+     * {@link PatchTriggerForm}.
+     * @param predicate Modified predicate.
+     * @return Updated trigger instance.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws IllegalArgumentException This exception is thrown if one or
+     * more following conditions are met.
+     * <ul>
+     *  <li>triggerID is null or empty string.</li>
+     *  <li>Both of form and predicate are null</li>
+     * </ul>
+     */
+    @NonNull
+    @WorkerThread
+    public Trigger patchTrigger(
+            @NonNull PatchTriggerForm form)
+        throws ThingIFException
+    {
+        return null;
     }
 
     /**
