@@ -26,8 +26,8 @@ import com.kii.thingif.internal.GsonRepository;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
 import com.kii.thingif.schema.Schema;
-import com.kii.thingif.trigger.PatchTriggerRequest;
-import com.kii.thingif.trigger.PostNewTriggerRequest;
+import com.kii.thingif.trigger.PatchTriggerForm;
+import com.kii.thingif.trigger.PostNewTriggerForm;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.Trigger;
@@ -875,7 +875,7 @@ public class ThingIFAPI implements Parcelable {
      * </p>
      *
      * @param request Request of postNewTrigger. You can see detail of form
-     * in {@link PostNewTriggerRequest}.
+     * in {@link PostNewTriggerForm}.
      * @return Instance of the Trigger registered in IoT Cloud.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
@@ -884,7 +884,7 @@ public class ThingIFAPI implements Parcelable {
     @NonNull
     @WorkerThread
     public Trigger postNewTrigger(
-            @NonNull PostNewTriggerRequest request)
+            @NonNull PostNewTriggerForm request)
         throws ThingIFException
     {
         // TODO: implement me.
@@ -1021,7 +1021,7 @@ public class ThingIFAPI implements Parcelable {
      * </p>
      *
      * @param request Request of patchTrigger. You can see detail of form in
-     * {@link PatchTriggerRequest}.
+     * {@link PatchTriggerForm}.
      * @param predicate Modified predicate.
      * @return Updated trigger instance.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
@@ -1036,7 +1036,7 @@ public class ThingIFAPI implements Parcelable {
     @NonNull
     @WorkerThread
     public Trigger patchTrigger(
-            @NonNull PatchTriggerRequest request)
+            @NonNull PatchTriggerForm request)
         throws ThingIFException
     {
         return null;

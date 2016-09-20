@@ -9,13 +9,12 @@ import org.json.JSONObject;
 
 /**
  */
-public final class PatchTriggerRequest implements Parcelable {
+public final class PostNewTriggerForm implements Parcelable {
 
     public static final class Builder {
 
         @NonNull
         public static Builder builder(
-                @NonNull String triggerID,
                 @NonNull TriggeredCommandForm.Builder form,
                 @NonNull Predicate predicate)
             throws IllegalArgumentException
@@ -25,26 +24,14 @@ public final class PatchTriggerRequest implements Parcelable {
         }
 
         @NonNull
-        public Builder setTriggerID(
-            @NonNull String triggerID) {
-            // TODO: implement me.
-            return this;
-        }
-
-        @NonNull
-        public String getTriggerID() {
-            return null;
-        }
-
-        @NonNull
         public Builder setForm(
-                @Nullable TriggeredCommandForm.Builder form)
+                @NonNull TriggeredCommandForm.Builder form)
             throws IllegalArgumentException
         {
             return this;
         }
 
-        @Nullable
+        @NonNull
         public TriggeredCommandForm.Builder getForm() {
             // TODO: implement me.
             return null;
@@ -52,13 +39,13 @@ public final class PatchTriggerRequest implements Parcelable {
 
         @NonNull
         public Builder setPredicate(
-                @Nullable Predicate predicate)
+                @NonNull Predicate predicate)
             throws IllegalArgumentException
         {
             return this;
         }
 
-        @Nullable
+        @NonNull
         public Predicate getPredicate() {
             // TODO: implement me.
             return null;
@@ -104,7 +91,7 @@ public final class PatchTriggerRequest implements Parcelable {
         }
 
         @NonNull
-        public PatchTriggerRequest build() {
+        public PostNewTriggerForm build() {
             // TODO: implement me.
             return null;
         }
@@ -141,28 +128,33 @@ public final class PatchTriggerRequest implements Parcelable {
         return null;
     }
 
-    protected PatchTriggerRequest(Parcel in) {
+    protected PostNewTriggerForm(Parcel in) {
+        // TODO: implement me.
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        // TODO: implement me.
     }
 
     @Override
     public int describeContents() {
+        // TODO: implement me.
         return 0;
     }
 
-    public static final Creator<PatchTriggerRequest> CREATOR =
-            new Creator<PatchTriggerRequest>() {
+    public static final Creator<PostNewTriggerForm> CREATOR =
+            new Creator<PostNewTriggerForm>() {
         @Override
-        public PatchTriggerRequest createFromParcel(Parcel in) {
-            return new PatchTriggerRequest(in);
+        public PostNewTriggerForm createFromParcel(Parcel in) {
+            // TODO: implement me.
+            return new PostNewTriggerForm(in);
         }
 
         @Override
-        public PatchTriggerRequest[] newArray(int size) {
-            return new PatchTriggerRequest[size];
+        public PostNewTriggerForm[] newArray(int size) {
+            // TODO: implement me.
+            return new PostNewTriggerForm[size];
         }
     };
 }
