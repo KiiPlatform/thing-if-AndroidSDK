@@ -15,11 +15,24 @@ public final class PatchTriggerRequest implements Parcelable {
 
         @NonNull
         public static Builder builder(
+                @NonNull String triggerID,
                 @NonNull TriggeredCommandForm.Builder form,
                 @NonNull Predicate predicate)
             throws IllegalArgumentException
         {
             // TODO: implement me.
+            return null;
+        }
+
+        @NonNull
+        public Builder setTriggerID(
+            @NonNull String triggerID) {
+            // TODO: implement me.
+            return this;
+        }
+
+        @NonNull
+        public String getTriggerID() {
             return null;
         }
 
