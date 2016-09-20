@@ -25,6 +25,15 @@ public final class PatchTriggerForm implements Parcelable {
         }
 
         @NonNull
+        public static Builder build(
+                @NonNull Trigger trigger)
+            throws IllegalArgumentException
+        {
+            // TODO: implement me.
+            return null;
+        }
+
+        @NonNull
         public Builder setTriggerID(
             @NonNull String triggerID) {
             // TODO: implement me.
