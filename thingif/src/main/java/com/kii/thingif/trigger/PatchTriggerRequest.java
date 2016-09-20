@@ -9,7 +9,7 @@ import org.json.JSONObject;
 
 /**
  */
-public final class PostNewTriggerRequest implements Parcelable {
+public final class PatchTriggerRequest implements Parcelable {
 
     public static final class Builder {
 
@@ -25,13 +25,13 @@ public final class PostNewTriggerRequest implements Parcelable {
 
         @NonNull
         public Builder setForm(
-                @NonNull TriggeredCommandForm.Builder form)
+                @Nullable TriggeredCommandForm.Builder form)
             throws IllegalArgumentException
         {
             return this;
         }
 
-        @NonNull
+        @Nullable
         public TriggeredCommandForm.Builder getForm() {
             // TODO: implement me.
             return null;
@@ -39,13 +39,13 @@ public final class PostNewTriggerRequest implements Parcelable {
 
         @NonNull
         public Builder setPredicate(
-                @NonNull Predicate predicate)
+                @Nullable Predicate predicate)
             throws IllegalArgumentException
         {
             return this;
         }
 
-        @NonNull
+        @Nullable
         public Predicate getPredicate() {
             // TODO: implement me.
             return null;
@@ -91,7 +91,7 @@ public final class PostNewTriggerRequest implements Parcelable {
         }
 
         @NonNull
-        public PostNewTriggerRequest build() {
+        public PatchTriggerRequest build() {
             // TODO: implement me.
             return null;
         }
@@ -128,33 +128,28 @@ public final class PostNewTriggerRequest implements Parcelable {
         return null;
     }
 
-    protected PostNewTriggerRequest(Parcel in) {
-        // TODO: implement me.
+    protected PatchTriggerRequest(Parcel in) {
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        // TODO: implement me.
     }
 
     @Override
     public int describeContents() {
-        // TODO: implement me.
         return 0;
     }
 
-    public static final Creator<PostNewTriggerRequest> CREATOR =
-            new Creator<PostNewTriggerRequest>() {
+    public static final Creator<PatchTriggerRequest> CREATOR =
+            new Creator<PatchTriggerRequest>() {
         @Override
-        public PostNewTriggerRequest createFromParcel(Parcel in) {
-            // TODO: implement me.
-            return new PostNewTriggerRequest(in);
+        public PatchTriggerRequest createFromParcel(Parcel in) {
+            return new PatchTriggerRequest(in);
         }
 
         @Override
-        public PostNewTriggerRequest[] newArray(int size) {
-            // TODO: implement me.
-            return new PostNewTriggerRequest[size];
+        public PatchTriggerRequest[] newArray(int size) {
+            return new PatchTriggerRequest[size];
         }
     };
 }
