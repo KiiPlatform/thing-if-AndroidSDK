@@ -30,7 +30,7 @@ public final class TriggerOptions implements Parcelable {
 
         /**
          * Constructs a {@link TriggerOptions.Builder} instance.
-         * 
+         *
          * <p>
          * This constructor copies followings {@link Trigger} fields:
          * </p>
