@@ -884,7 +884,7 @@ public class ThingIFAPI implements Parcelable {
     @NonNull
     @WorkerThread
     public Trigger postNewTrigger(
-            @NonNull PostNewTriggerForm request)
+            @NonNull PostNewTriggerForm form)
         throws ThingIFException
     {
         // TODO: implement me.
@@ -1036,7 +1036,7 @@ public class ThingIFAPI implements Parcelable {
     @NonNull
     @WorkerThread
     public Trigger patchTrigger(
-            @NonNull PatchTriggerForm request)
+            @NonNull PatchTriggerForm form)
         throws ThingIFException
     {
         return null;
