@@ -676,7 +676,7 @@ public class ThingIFAPI implements Parcelable {
                 this.app.getAppID(), this.target.getTypedID().toString());
         String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
-        JSONObject requestBody = serialize(form);
+        JSONObject requestBody = createPostNewCommandRequestBody(form);
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers,
                 MediaTypes.MEDIA_TYPE_JSON, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
@@ -1414,30 +1414,12 @@ public class ThingIFAPI implements Parcelable {
         }
         return headers;
     }
-    private JSONObject serialize(CommandForm src) throws ThingIFException {
-        JSONObject ret = new JSONObject();
+    private JSONObject createPostNewCommandRequestBody(CommandForm src) throws ThingIFException {
+        JSONObject ret = JsonUtils.newJson(GsonRepository.gson().toJson(src));
         try {
-            String schemaName = src.getSchemaName();
-            int schemaVersion = src.getSchemaVersion();
-            ret.put("schema", schemaName);
-            ret.put("schemaVersion", src.getSchemaVersion());
             ret.put("issuer", this.owner.getTypedID().toString());
-            JSONArray actions = new JSONArray();
-            for (Action action : src.getActions()) {
-                actions.put(JsonUtils.newJson(GsonRepository.gson().toJson(action)));
-            }
-            ret.put("actions", actions);
-            if (src.getTitle() != null) {
-                ret.put("title", src.getTitle());
-            }
-            if (src.getDescription() != null) {
-                ret.put("description", src.getDescription());
-            }
-            if (src.getMetadata() != null) {
-                ret.put("metadata", src.getMetadata());
-            }
         } catch (JSONException e) {
-            throw new ThingIFException("serialize failed.", e);
+            throw new ThingIFException("createPostNewCommandRequestBody failed.", e);
         }
         return ret;
     }
