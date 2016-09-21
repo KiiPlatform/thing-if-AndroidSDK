@@ -227,12 +227,6 @@ public class Command implements Parcelable {
     public String getTitle() {
         return this.title;
     }
-    void setTitle(String title) {
-        if (!TextUtils.isEmpty(title) && title.length() > 50) {
-            throw new IllegalArgumentException("title must be less than 51 characters.");
-        }
-        this.title = title;
-    }
     /**
      * Get description.
      * @return description of this command.
@@ -240,21 +234,12 @@ public class Command implements Parcelable {
     public String getDescription() {
         return this.description;
     }
-    void setDescription(String description) {
-        if (!TextUtils.isEmpty(description) && description.length() > 200) {
-            throw new IllegalArgumentException("description must be less than 201 characters.");
-        }
-        this.description = description;
-    }
     /**
      * Get meta data
      * @return meta data of this command.
      */
     public JSONObject getMetadata() {
         return this.metadata;
-    }
-    void setMetadata(JSONObject metadata) {
-        this.metadata = metadata;
     }
 
     // Implementation of Parcelable

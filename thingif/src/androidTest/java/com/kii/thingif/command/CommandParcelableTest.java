@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.internal.util.reflection.Whitebox;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,9 +53,9 @@ public class CommandParcelableTest extends SmallTestBase {
         command.setFiredByTriggerID(firedByTriggerID);
         command.setCreated(created);
         command.setModified(modified);
-        command.setTitle(title);
-        command.setDescription(description);
-        command.setMetadata(metadata);
+        Whitebox.setInternalState(command, "title", title);
+        Whitebox.setInternalState(command, "description", description);
+        Whitebox.setInternalState(command, "metadata", metadata);
 
         Parcel parcel = Parcel.obtain();
         command.writeToParcel(parcel, 0);

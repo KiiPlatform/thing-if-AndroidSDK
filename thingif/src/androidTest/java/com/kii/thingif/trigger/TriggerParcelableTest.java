@@ -15,6 +15,7 @@ import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.internal.util.reflection.Whitebox;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,11 +50,11 @@ public class TriggerParcelableTest extends SmallTestBase {
 
         Trigger trigger = new Trigger(predicate, command);
         trigger.setTriggerID(triggerID);
-        trigger.setDisabled(disabled);
+        Whitebox.setInternalState(trigger, "disabled", disabled);
         trigger.setDisabledReason(disabledReason);
-        trigger.setTitle(title);
-        trigger.setDescription(description);
-        trigger.setMetadata(metadata);
+        Whitebox.setInternalState(trigger, "title", title);
+        Whitebox.setInternalState(trigger, "description", description);
+        Whitebox.setInternalState(trigger, "metadata", metadata);
 
         Parcel parcel = Parcel.obtain();
         trigger.writeToParcel(parcel, 0);
@@ -106,11 +107,11 @@ public class TriggerParcelableTest extends SmallTestBase {
 
         Trigger trigger = new Trigger(predicate, serverCode);
         trigger.setTriggerID(triggerID);
-        trigger.setDisabled(disabled);
+        Whitebox.setInternalState(trigger, "disabled", disabled);
         trigger.setDisabledReason(disabledReason);
-        trigger.setTitle(title);
-        trigger.setDescription(description);
-        trigger.setMetadata(metadata);
+        Whitebox.setInternalState(trigger, "title", title);
+        Whitebox.setInternalState(trigger, "description", description);
+        Whitebox.setInternalState(trigger, "metadata", metadata);
 
         Parcel parcel = Parcel.obtain();
         trigger.writeToParcel(parcel, 0);
