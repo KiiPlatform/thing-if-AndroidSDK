@@ -676,12 +676,7 @@ public class ThingIFAPI implements Parcelable {
                 this.app.getAppID(), this.target.getTypedID().toString());
         String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
-        Command command = new Command(schemaName, schemaVersion, this.owner.getTypedID(),
-                form.getActions());
-        command.setTitle(form.getTitle());
-        command.setDescription(form.getDescription());
-        command.setMetadata(form.getMetadata());
-        JSONObject requestBody = JsonUtils.newJson(GsonRepository.gson(schema).toJson(command));
+        JSONObject requestBody = createPostNewCommandRequestBody(form);
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers,
                 MediaTypes.MEDIA_TYPE_JSON, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
@@ -1418,6 +1413,15 @@ public class ThingIFAPI implements Parcelable {
             headers.put("Authorization", "Bearer " + this.owner.getAccessToken());
         }
         return headers;
+    }
+    private JSONObject createPostNewCommandRequestBody(CommandForm src) throws ThingIFException {
+        JSONObject ret = JsonUtils.newJson(GsonRepository.gson().toJson(src));
+        try {
+            ret.put("issuer", this.owner.getTypedID().toString());
+        } catch (JSONException e) {
+            throw new AssertionError(e);
+        }
+        return ret;
     }
     private <T> T deserialize(JSONObject json, Class<T> clazz) throws ThingIFException {
         return this.deserialize(null, json, clazz);
