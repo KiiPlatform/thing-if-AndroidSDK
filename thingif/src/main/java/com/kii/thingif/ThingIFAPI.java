@@ -1419,7 +1419,7 @@ public class ThingIFAPI implements Parcelable {
         try {
             ret.put("issuer", this.owner.getTypedID().toString());
         } catch (JSONException e) {
-            throw new ThingIFException("createPostNewCommandRequestBody failed.", e);
+            throw new AssertionError(e);
         }
         return ret;
     }
