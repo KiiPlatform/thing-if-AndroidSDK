@@ -41,6 +41,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.internal.util.reflection.Whitebox;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -391,12 +392,12 @@ public class GsonSerializationTest extends SmallTestBase {
         Command command = new Command("SchemaName1", 10, new TypedID(TypedID.Types.THING, "1234"), new TypedID(TypedID.Types.USER, "9876"), actions);
         command.addActionResult(new SetColorResult(true));
         command.addActionResult(new SetColorTemperatureResult(false));
-        command.setTitle("Title of Command");
-        command.setDescription("Description of Command");
+        Whitebox.setInternalState(command, "title", "Title of Command");
+        Whitebox.setInternalState(command, "description", "Description of Command");
         JSONObject metadata = new JSONObject();
         metadata.put("sound", "noisy.mp3");
         metadata.put("led", "red");
-        command.setMetadata(metadata);
+        Whitebox.setInternalState(command, "metadata", metadata);
         Gson gson = GsonRepository.gson(schema);
         JsonObject serializedJson = (JsonObject) new JsonParser().parse(gson.toJson(command));
 
@@ -566,12 +567,12 @@ public class GsonSerializationTest extends SmallTestBase {
         Predicate predicate = new StatePredicate(condition, TriggersWhen.CONDITION_FALSE_TO_TRUE);
         // Trigger
         Trigger trigger = new Trigger(predicate, command);
-        trigger.setTitle("Title of Trigger");
-        trigger.setDescription("Description of Trigger");
+        Whitebox.setInternalState(trigger, "title", "Title of Trigger");
+        Whitebox.setInternalState(trigger, "description", "Description of Trigger");
         JSONObject metadata = new JSONObject();
         metadata.put("sound", "noisy.mp3");
         metadata.put("led", "red");
-        trigger.setMetadata(metadata);
+        Whitebox.setInternalState(trigger, "metadata", metadata);
 
         Gson gson = GsonRepository.gson(schema);
         JsonObject serializedJson = (JsonObject) new JsonParser().parse(gson.toJson(trigger));
@@ -654,12 +655,12 @@ public class GsonSerializationTest extends SmallTestBase {
         Predicate predicate = new StatePredicate(condition, TriggersWhen.CONDITION_FALSE_TO_TRUE);
         // Trigger
         Trigger trigger = new Trigger(predicate, serverCode);
-        trigger.setTitle("Title of Trigger");
-        trigger.setDescription("Description of Trigger");
+        Whitebox.setInternalState(trigger, "title", "Title of Trigger");
+        Whitebox.setInternalState(trigger, "description", "Description of Trigger");
         JSONObject metadata = new JSONObject();
         metadata.put("sound", "noisy.mp3");
         metadata.put("led", "red");
-        trigger.setMetadata(metadata);
+        Whitebox.setInternalState(trigger, "metadata", metadata);
 
         Gson gson = GsonRepository.gson();
         JsonObject serializedJson = (JsonObject) new JsonParser().parse(gson.toJson(trigger));

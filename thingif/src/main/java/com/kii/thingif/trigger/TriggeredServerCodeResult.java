@@ -136,7 +136,7 @@ public class TriggeredServerCodeResult implements Parcelable {
     public String getEndpoint() {
         return this.endpoint;
     }
-    public void setEndpoint(String endpoint) {
+    void setEndpoint(String endpoint) {
         this.endpoint = endpoint;
     }
     public ServerError getError() {
