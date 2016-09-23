@@ -181,7 +181,7 @@ public class GsonSerializationTest extends SmallTestBase {
         builder.addSchema(schema);
         ThingIFAPI api = builder.build();
         Target target = new StandaloneThing("th.1234567890", "vendor-thing-id-001", "thing-access-token-1234");
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
 
         JsonObject expectedJson = (JsonObject) new JsonParser().parse(
                 "{" +
@@ -245,7 +245,7 @@ public class GsonSerializationTest extends SmallTestBase {
         builder.addSchema(schema).setTag("mytag");
         ThingIFAPI api = builder.build();
         Target target = new StandaloneThing("th.1234567890", "vendor-thing-id-001", "thing-access-token-1234");
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
 
         JsonObject expectedJson = (JsonObject) new JsonParser().parse(
                 "{" +

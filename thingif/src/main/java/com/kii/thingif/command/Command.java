@@ -108,9 +108,6 @@ public class Command implements Parcelable {
     public String getCommandID() {
         return this.commandID;
     }
-    void setCommandID(String commandID) {
-        this.commandID = commandID;
-    }
 
     /** Get name of the schema in which command is defined.
      * @return name of the schema.
@@ -185,9 +182,6 @@ public class Command implements Parcelable {
     public CommandState getCommandState() {
         return this.commandState;
     }
-    void setCommandState(CommandState commandState) {
-        this.commandState = commandState;
-    }
 
     /**
      * Get ID of trigger which fired this command
@@ -195,9 +189,6 @@ public class Command implements Parcelable {
      */
     public String getFiredByTriggerID() {
         return this.firedByTriggerID;
-    }
-    void setFiredByTriggerID(String firedByTriggerID) {
-        this.firedByTriggerID = firedByTriggerID;
     }
 
     /**
@@ -207,18 +198,12 @@ public class Command implements Parcelable {
     public Long getCreated() {
         return this.created;
     }
-    void setCreated(Long created) {
-        this.created = created;
-    }
     /**
      * Get modification time
      * @return modification time of this command.
      */
     public Long getModified() {
         return this.modified;
-    }
-    void setModified(Long modified) {
-        this.modified = modified;
     }
     /**
      * Get title.

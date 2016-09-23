@@ -575,9 +575,6 @@ public class ThingIFAPI implements Parcelable {
     public String getInstallationID() {
         return this.installationID;
     }
-    void setInstallationID(String installationID) {
-        this.installationID = installationID;
-    }
 
     /**
      * Uninstall push notification.
@@ -1382,10 +1379,6 @@ public class ThingIFAPI implements Parcelable {
     @Nullable
     public Target getTarget() {
         return this.target;
-    }
-    void setTarget(Target target) {
-        this.target = target;
-        saveInstance(this);
     }
     /**
      * Get a tag.

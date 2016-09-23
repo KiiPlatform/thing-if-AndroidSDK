@@ -52,9 +52,6 @@ public class Trigger implements Parcelable {
     public String getTriggerID() {
         return this.triggerID;
     }
-    void setTriggerID(String triggerID) {
-        this.triggerID = triggerID;
-    }
     public TypedID getTargetID() {
         if (this.command == null) {
             return null;
@@ -84,9 +81,6 @@ public class Trigger implements Parcelable {
     }
     public String getDisabledReason() {
         return this.disabledReason;
-    }
-    void setDisabledReason(String disabledReason) {
-        this.disabledReason = disabledReason;
     }
     /**
      * Get title.

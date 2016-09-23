@@ -49,9 +49,9 @@ public class TriggerParcelableTest extends SmallTestBase {
         metadata.put("sound", "phone.mp3");
 
         Trigger trigger = new Trigger(predicate, command);
-        trigger.setTriggerID(triggerID);
+        Whitebox.setInternalState(trigger, "triggerID", triggerID);
         Whitebox.setInternalState(trigger, "disabled", disabled);
-        trigger.setDisabledReason(disabledReason);
+        Whitebox.setInternalState(trigger, "disabledReason", disabledReason);
         Whitebox.setInternalState(trigger, "title", title);
         Whitebox.setInternalState(trigger, "description", description);
         Whitebox.setInternalState(trigger, "metadata", metadata);
@@ -106,9 +106,9 @@ public class TriggerParcelableTest extends SmallTestBase {
         metadata.put("sound", "phone.mp3");
 
         Trigger trigger = new Trigger(predicate, serverCode);
-        trigger.setTriggerID(triggerID);
+        Whitebox.setInternalState(trigger, "triggerID", triggerID);
         Whitebox.setInternalState(trigger, "disabled", disabled);
-        trigger.setDisabledReason(disabledReason);
+        Whitebox.setInternalState(trigger, "disabledReason", disabledReason);
         Whitebox.setInternalState(trigger, "title", title);
         Whitebox.setInternalState(trigger, "description", description);
         Whitebox.setInternalState(trigger, "metadata", metadata);

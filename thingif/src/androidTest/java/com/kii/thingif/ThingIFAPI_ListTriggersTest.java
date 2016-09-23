@@ -49,7 +49,7 @@ public class ThingIFAPI_ListTriggersTest extends ThingIFAPITestBase {
         String paginationKey = "pagination-12345-key";
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
 
         List<Action> command1Actions = new ArrayList<Action>();
         command1Actions.add(new TurnPower(true));
@@ -124,7 +124,7 @@ public class ThingIFAPI_ListTriggersTest extends ThingIFAPITestBase {
         String paginationKey = "pagination-12345-key";
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
 
         ServerCode serverCode1 = new ServerCode("function_1", "token0001", "app00001", new JSONObject("{\"param\":\"p0001\"}"));
         Condition condition1 = new Condition(new Equals("power", true));
@@ -184,7 +184,7 @@ public class ThingIFAPI_ListTriggersTest extends ThingIFAPITestBase {
         String paginationKey = "pagination-12345-key";
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
 
         List<Action> command1Actions = new ArrayList<Action>();
         command1Actions.add(new TurnPower(true));
@@ -252,7 +252,7 @@ public class ThingIFAPI_ListTriggersTest extends ThingIFAPITestBase {
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(400);
         try {
-            api.setTarget(target);
+            ThingIFAPIUtils.setTarget(api, target);
             api.listTriggers(10, null);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (BadRequestException e) {
@@ -278,7 +278,7 @@ public class ThingIFAPI_ListTriggersTest extends ThingIFAPITestBase {
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(403);
         try {
-            api.setTarget(target);
+            ThingIFAPIUtils.setTarget(api, target);
             api.listTriggers(10, null);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ForbiddenException e) {
@@ -304,7 +304,7 @@ public class ThingIFAPI_ListTriggersTest extends ThingIFAPITestBase {
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(404);
         try {
-            api.setTarget(target);
+            ThingIFAPIUtils.setTarget(api, target);
             api.listTriggers(10, null);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (NotFoundException e) {
@@ -330,7 +330,7 @@ public class ThingIFAPI_ListTriggersTest extends ThingIFAPITestBase {
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(503);
         try {
-            api.setTarget(target);
+            ThingIFAPIUtils.setTarget(api, target);
             api.listTriggers(10, null);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ServiceUnavailableException e) {

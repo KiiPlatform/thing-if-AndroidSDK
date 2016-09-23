@@ -54,7 +54,7 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
         this.addMockResponseForPostNewCommand(201, commandID);
         this.addMockResponseForGetCommand(200, commandID, api.getOwner().getTypedID(), thingID, actions, null, null, created, modified, schema);
 
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
         Command command = api.postNewCommand(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
         // verify the result
         Assert.assertEquals(commandID, command.getCommandID());
@@ -121,7 +121,7 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(400);
 
         try {
-            api.setTarget(target);
+            ThingIFAPIUtils.setTarget(api, target);
             api.postNewCommand(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (BadRequestException e) {
@@ -164,7 +164,7 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(403);
 
         try {
-            api.setTarget(target);
+            ThingIFAPIUtils.setTarget(api, target);
             api.postNewCommand(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ForbiddenException e) {
@@ -208,7 +208,7 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(503);
 
         try {
-            api.setTarget(target);
+            ThingIFAPIUtils.setTarget(api, target);
             api.postNewCommand(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ServiceUnavailableException e) {
@@ -253,7 +253,7 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
         actions.add(new SetColorTemperature(25));
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
         api.postNewCommand(null, DEMO_SCHEMA_VERSION, actions);
     }
     @Test(expected = IllegalArgumentException.class)
@@ -261,7 +261,7 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
         Target target = new StandaloneThing("th.1234567890", "vendor-thing-id", "thing-access-token-1234");
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
         api.postNewCommand(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, null);
     }
     @Test(expected = IllegalArgumentException.class)
@@ -270,7 +270,7 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
         List<Action> actions = new ArrayList<Action>();
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
         api.postNewCommand(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
     }
 
@@ -299,7 +299,7 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
         this.addMockResponseForPostNewCommand(201, commandID);
         this.addMockResponseForGetCommand(200, commandID, api.getOwner().getTypedID(), thingID, actions, null, null, created, modified, schema);
 
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
         Command command = api.postNewCommand(form);
         // verify the result
         Assert.assertEquals(commandID, command.getCommandID());
@@ -372,7 +372,7 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
 
         CommandForm form = new CommandForm(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
         try {
-            api.setTarget(target);
+            ThingIFAPIUtils.setTarget(api, target);
             api.postNewCommand(form);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (BadRequestException e) {
@@ -418,7 +418,7 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
 
         CommandForm form = new CommandForm(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
         try {
-            api.setTarget(target);
+            ThingIFAPIUtils.setTarget(api, target);
             api.postNewCommand(form);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ForbiddenException e) {
@@ -465,7 +465,7 @@ public class ThingIFAPI_PostNewCommandTest extends ThingIFAPITestBase {
 
         CommandForm form = new CommandForm(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions);
         try {
-            api.setTarget(target);
+            ThingIFAPIUtils.setTarget(api, target);
             api.postNewCommand(form);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ServiceUnavailableException e) {

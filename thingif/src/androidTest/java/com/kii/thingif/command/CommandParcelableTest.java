@@ -48,11 +48,11 @@ public class CommandParcelableTest extends SmallTestBase {
         Command command = new Command(schemaName, schemaVersion, target, issuer, actions);
         command.addActionResult(setColorResult);
         command.addActionResult(setColorTemperatureResult);
-        command.setCommandID(commandID);
-        command.setCommandState(commandState);
-        command.setFiredByTriggerID(firedByTriggerID);
-        command.setCreated(created);
-        command.setModified(modified);
+        Whitebox.setInternalState(command, "commandID", commandID);
+        Whitebox.setInternalState(command, "commandState", commandState);
+        Whitebox.setInternalState(command, "firedByTriggerID", firedByTriggerID);
+        Whitebox.setInternalState(command, "created", created);
+        Whitebox.setInternalState(command, "modified", modified);
         Whitebox.setInternalState(command, "title", title);
         Whitebox.setInternalState(command, "description", description);
         Whitebox.setInternalState(command, "metadata", metadata);
