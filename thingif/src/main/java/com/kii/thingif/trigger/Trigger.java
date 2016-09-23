@@ -52,9 +52,6 @@ public class Trigger implements Parcelable {
     public String getTriggerID() {
         return this.triggerID;
     }
-    void setTriggerID(String triggerID) {
-        this.triggerID = triggerID;
-    }
     public TypedID getTargetID() {
         if (this.command == null) {
             return null;
@@ -64,9 +61,6 @@ public class Trigger implements Parcelable {
 
     public boolean disabled() {
         return this.disabled;
-    }
-    public void setDisabled(boolean disabled) {
-        this.disabled = disabled;
     }
 
     public Predicate getPredicate() {
@@ -88,26 +82,12 @@ public class Trigger implements Parcelable {
     public String getDisabledReason() {
         return this.disabledReason;
     }
-    void setDisabledReason(String disabledReason) {
-        this.disabledReason = disabledReason;
-    }
     /**
      * Get title.
      * @return title of this trigger.
      */
     public String getTitle() {
         return this.title;
-    }
-    /**
-     * Set title
-     * @param title title of this trigger.
-     * @throws IllegalArgumentException if title is invalid.
-     */
-    public void setTitle(String title) {
-        if (!TextUtils.isEmpty(title) && title.length() > 50) {
-            throw new IllegalArgumentException("title must be less than 51 characters.");
-        }
-        this.title = title;
     }
     /**
      * Get description.
@@ -117,29 +97,11 @@ public class Trigger implements Parcelable {
         return this.description;
     }
     /**
-     * Set description.
-     * @param description description of this trigger.
-     * @throws IllegalArgumentException if description is invalid.
-     */
-    public void setDescription(String description) {
-        if (!TextUtils.isEmpty(description) && description.length() > 200) {
-            throw new IllegalArgumentException("description must be less than 201 characters.");
-        }
-        this.description = description;
-    }
-    /**
      * Get meta data
      * @return meta data of this trigger.
      */
     public JSONObject getMetadata() {
         return this.metadata;
-    }
-    /**
-     * Set meta data
-     * @param metadata meta data of this trigger.
-     */
-    public void setMetadata(JSONObject metadata) {
-        this.metadata = metadata;
     }
 
     // Implementation of Parcelable

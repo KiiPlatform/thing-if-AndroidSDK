@@ -27,7 +27,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
 
         this.addEmptyMockResponse(204);
 
@@ -58,7 +58,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
 
         this.addEmptyMockResponse(400);
 
@@ -93,7 +93,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
 
         this.addEmptyMockResponse(409);
 
@@ -128,7 +128,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
 
         api.updateVendorThingID(newVendorThingID, newPassword);
     }
@@ -141,7 +141,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
 
         api.updateVendorThingID(newVendorThingID, newPassword);
     }
@@ -154,7 +154,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
 
         api.updateVendorThingID(newVendorThingID, newPassword);
     }
@@ -167,7 +167,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
 
         api.updateVendorThingID(newVendorThingID, newPassword);
     }

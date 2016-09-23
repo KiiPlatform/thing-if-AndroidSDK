@@ -108,9 +108,6 @@ public class Command implements Parcelable {
     public String getCommandID() {
         return this.commandID;
     }
-    void setCommandID(String commandID) {
-        this.commandID = commandID;
-    }
 
     /** Get name of the schema in which command is defined.
      * @return name of the schema.
@@ -185,9 +182,6 @@ public class Command implements Parcelable {
     public CommandState getCommandState() {
         return this.commandState;
     }
-    void setCommandState(CommandState commandState) {
-        this.commandState = commandState;
-    }
 
     /**
      * Get ID of trigger which fired this command
@@ -195,9 +189,6 @@ public class Command implements Parcelable {
      */
     public String getFiredByTriggerID() {
         return this.firedByTriggerID;
-    }
-    void setFiredByTriggerID(String firedByTriggerID) {
-        this.firedByTriggerID = firedByTriggerID;
     }
 
     /**
@@ -207,18 +198,12 @@ public class Command implements Parcelable {
     public Long getCreated() {
         return this.created;
     }
-    void setCreated(Long created) {
-        this.created = created;
-    }
     /**
      * Get modification time
      * @return modification time of this command.
      */
     public Long getModified() {
         return this.modified;
-    }
-    void setModified(Long modified) {
-        this.modified = modified;
     }
     /**
      * Get title.
@@ -228,17 +213,6 @@ public class Command implements Parcelable {
         return this.title;
     }
     /**
-     * Set title 
-     * @param title of this command.
-     * @throws IllegalArgumentException if title is invalid.
-     */
-    public void setTitle(String title) {
-        if (!TextUtils.isEmpty(title) && title.length() > 50) {
-            throw new IllegalArgumentException("title must be less than 51 characters.");
-        }
-        this.title = title;
-    }
-    /**
      * Get description.
      * @return description of this command.
      */
@@ -246,29 +220,11 @@ public class Command implements Parcelable {
         return this.description;
     }
     /**
-     * Set description.
-     * @param description description of this command.
-     * @throws IllegalArgumentException if description is invalid.
-     */
-    public void setDescription(String description) {
-        if (!TextUtils.isEmpty(description) && description.length() > 200) {
-            throw new IllegalArgumentException("description must be less than 201 characters.");
-        }
-        this.description = description;
-    }
-    /**
      * Get meta data
      * @return meta data of this command.
      */
     public JSONObject getMetadata() {
         return this.metadata;
-    }
-    /**
-     * Set meta data
-     * @param metadata meta data of this command.
-     */
-    public void setMetadata(JSONObject metadata) {
-        this.metadata = metadata;
     }
 
     // Implementation of Parcelable

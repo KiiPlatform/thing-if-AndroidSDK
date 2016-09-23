@@ -64,7 +64,7 @@ public class ThingIFAPI_GetCommandTest extends ThingIFAPITestBase {
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addMockResponseForGetCommand(200, commandID, api.getOwner().getTypedID(), thingID, actions, actionResults, state, created, modified, schema);
 
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
         Command command = api.getCommand(commandID);
 
         // verify the result
@@ -111,7 +111,7 @@ public class ThingIFAPI_GetCommandTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(403);
 
         try {
-            api.setTarget(target);
+            ThingIFAPIUtils.setTarget(api, target);
             api.getCommand(commandID);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ForbiddenException e) {
@@ -139,7 +139,7 @@ public class ThingIFAPI_GetCommandTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(404);
 
         try {
-            api.setTarget(target);
+            ThingIFAPIUtils.setTarget(api, target);
             api.getCommand(commandID);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (NotFoundException e) {
@@ -167,7 +167,7 @@ public class ThingIFAPI_GetCommandTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(503);
 
         try {
-            api.setTarget(target);
+            ThingIFAPIUtils.setTarget(api, target);
             api.getCommand(commandID);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ServiceUnavailableException e) {
@@ -215,7 +215,7 @@ public class ThingIFAPI_GetCommandTest extends ThingIFAPITestBase {
         this.addMockResponseForGetCommand(200, commandID, api.getOwner().getTypedID(), thingID, actions, actionResults, state, created, modified, schema);
 
         try {
-            api.setTarget(target);
+            ThingIFAPIUtils.setTarget(api, target);
             api.getCommand(commandID);
             Assert.fail("UnsupportedSchemaException should be thrown");
         } catch (UnsupportedSchemaException e) {
@@ -263,7 +263,7 @@ public class ThingIFAPI_GetCommandTest extends ThingIFAPITestBase {
         this.addMockResponseForGetCommand(200, commandID, api.getOwner().getTypedID(), thingID, actions, actionResults, state, created, modified, schema);
 
         try {
-            api.setTarget(target);
+            ThingIFAPIUtils.setTarget(api, target);
             api.getCommand(commandID);
             Assert.fail("UnsupportedSchemaException should be thrown");
         } catch (UnsupportedSchemaException e) {
@@ -307,7 +307,7 @@ public class ThingIFAPI_GetCommandTest extends ThingIFAPITestBase {
 
         InternalUtils.gsonRepositoryClearCache();
         try {
-            api.setTarget(target);
+            ThingIFAPIUtils.setTarget(api, target);
             api.getCommand(commandID);
             Assert.fail("UnsupportedActionException should be thrown");
         } catch (UnsupportedActionException e) {
@@ -337,7 +337,7 @@ public class ThingIFAPI_GetCommandTest extends ThingIFAPITestBase {
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
         api.getCommand(null);
     }
     @Test(expected = IllegalArgumentException.class)
@@ -347,7 +347,7 @@ public class ThingIFAPI_GetCommandTest extends ThingIFAPITestBase {
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
         api.getCommand("");
     }
 }
