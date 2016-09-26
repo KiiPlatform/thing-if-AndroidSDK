@@ -975,10 +975,41 @@ public class ThingIFAPI implements Parcelable {
      * @param triggerID ID ot the Trigger to apply patch
      * @param schemaName name of the schema.
      * @param schemaVersion version of schema.
-     * @param actions Modified actions.
-     *                If null NonNull predicate must be specified.
+     * @param commandTarget new target for Command in Trigger. Every kind of target can be set.
+     * But the owner has to be identical in Command and ThingIFAPI.
+     * When the target returned by getTarget set, the behavior is same as another patchTrigger.
+     * @param actions Modified actions. It's necessary to set at least one action.
      * @param predicate Modified predicate.
-     *                  If null NonNull actions must be specified.
+     * @return Updated Trigger instance.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws IllegalArgumentException when both actions and predicates are null
+     */
+    @NonNull
+    @WorkerThread
+    public Trigger patchTrigger(
+            @NonNull String triggerID,
+            @NonNull String schemaName,
+            int schemaVersion,
+            @NonNull Target commandTarget,
+            @NonNull List<Action> actions,
+            @NonNull Predicate predicate)
+            throws ThingIFException {
+        return patchCommandTrigger(triggerID, schemaName, schemaVersion, commandTarget,
+                actions, predicate);
+    }
+
+    /**
+     * Apply Patch to registered Trigger
+     * Modify registered Trigger with specified patch.
+     * In this method, target and owner in command are identical with something ThingIFAPI has.
+     * @param triggerID ID ot the Trigger to apply patch
+     * @param schemaName name of the schema.
+     * @param schemaVersion version of schema.
+     * @param actions Modified actions. It's necessary to set at least one action.
+     * This parameter's annotation is @Nullable, but this parameter doesn't permit null.
+     * @param predicate Modified predicate.
+     * This parameter's annotation is @Nullable, but this parameter doesn't permit null.
      * @return Updated Trigger instance.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
@@ -993,6 +1024,18 @@ public class ThingIFAPI implements Parcelable {
             @Nullable List<Action> actions,
             @Nullable Predicate predicate) throws
             ThingIFException {
+        return patchCommandTrigger(triggerID, schemaName, schemaVersion, this.target,
+                actions, predicate);
+    }
+
+    private Trigger patchCommandTrigger(
+            String triggerID,
+            String schemaName,
+            int schemaVersion,
+            Target commandTarget,
+            List<Action> actions,
+            Predicate predicate)
+            throws ThingIFException {
 
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
@@ -1003,6 +1046,9 @@ public class ThingIFAPI implements Parcelable {
         if (TextUtils.isEmpty(schemaName)) {
             throw new IllegalArgumentException("schemaName is null or empty");
         }
+        if (commandTarget == null) {
+            throw new IllegalArgumentException("Command target is null");
+        }
         if (actions == null || actions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty");
         }
@@ -1012,7 +1058,7 @@ public class ThingIFAPI implements Parcelable {
 
         JSONObject requestBody = new JSONObject();
         Schema schema = this.getSchema(schemaName, schemaVersion);
-        Command command = new Command(schemaName, schemaVersion, this.target.getTypedID(), this.owner.getTypedID(), actions);
+        Command command = new Command(schemaName, schemaVersion, commandTarget.getTypedID(), this.owner.getTypedID(), actions);
         try {
             requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson(schema).toJson(predicate)));
             requestBody.put("command", JsonUtils.newJson(GsonRepository.gson(schema).toJson(command)));
