@@ -42,13 +42,13 @@ public final class TriggeredCommandForm implements Parcelable {
      */
     public static class Builder {
 
-        private String schemaName;
-        private int schemaVersion;
-        private List<Action> actions;
-        private TypedID targetID;
-        private String title;
-        private String description;
-        private JSONObject metadata;
+        @NonNull private String schemaName;
+        @NonNull private int schemaVersion;
+        @NonNull private List<Action> actions;
+        @Nullable private TypedID targetID;
+        @Nullable private String title;
+        @Nullable private String description;
+        @Nullable private JSONObject metadata;
 
         Builder(
                 @NonNull String schemaName,
@@ -360,10 +360,34 @@ public final class TriggeredCommandForm implements Parcelable {
          */
         @NonNull
         public TriggeredCommandForm build() {
-            // TODO: implement me.
-            return null;
+            TriggeredCommandForm retval =
+                    new TriggeredCommandForm(
+                        this.schemaName, this.schemaVersion, this.actions);
+            retval.targetID = this.targetID;
+            retval.title = this.title;
+            retval.description = this.description;
+            retval.metadata = this.metadata;
+            return retval;
         }
 
+    }
+
+    @NonNull private final String schemaName;
+    @NonNull private final int schemaVersion;
+    @NonNull private final List<Action> actions;
+    @Nullable private TypedID targetID;
+    @Nullable private String title;
+    @Nullable private String description;
+    @Nullable private JSONObject metadata;
+
+    private TriggeredCommandForm(
+            @NonNull String schemaName,
+            int schemaVersion,
+            @NonNull actions)
+    {
+        this.schemaName = schemaName;
+        this.schemaVersion = schemaVersion;
+        this.actions = actions;
     }
 
     /**
@@ -373,8 +397,7 @@ public final class TriggeredCommandForm implements Parcelable {
      */
     @NonNull
     public String getSchemaName() {
-        // TODO: implement me.
-        return null;
+        return this.schemaName;
     }
 
     /**
@@ -383,8 +406,7 @@ public final class TriggeredCommandForm implements Parcelable {
      * @return schema version
      */
     public int getSchemaVersion() {
-        // TODO: implement me.
-        return 0;
+        return this.schemaVersion;
     }
 
     /**
@@ -394,8 +416,7 @@ public final class TriggeredCommandForm implements Parcelable {
      */
     @NonNull
     public List<Action> getActions() {
-        // TODO: implement me.
-        return null;
+        return this.actions;
     }
 
     /**
@@ -403,10 +424,9 @@ public final class TriggeredCommandForm implements Parcelable {
      *
      * @return target thing ID
      */
-    @NonNull
+    @Nullable
     public TypedID getTargetID() {
-        // TODO: implement me.
-        return null;
+        return this.targetID;
     }
 
     /**
@@ -416,8 +436,7 @@ public final class TriggeredCommandForm implements Parcelable {
      */
     @Nullable
     public String getTitle() {
-        // TODO: implement me.
-        return null;
+        return this.title;
     }
 
     /**
@@ -427,8 +446,7 @@ public final class TriggeredCommandForm implements Parcelable {
      */
     @Nullable
     public String getDescription() {
-        // TODO: implement me.
-        return null;
+        return this.description;
     }
 
     /**
@@ -438,8 +456,7 @@ public final class TriggeredCommandForm implements Parcelable {
      */
     @Nullable
     public JSONObject getMetadata() {
-        // TODO: implement me.
-        return null;
+        return this.metadata;
     }
 
     private TriggeredCommandForm(Parcel in) {
