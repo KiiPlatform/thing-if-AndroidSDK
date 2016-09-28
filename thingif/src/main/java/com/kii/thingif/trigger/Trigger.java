@@ -50,36 +50,77 @@ public class Trigger implements Parcelable {
         this.serverCode = serverCode;
     }
 
+    /**
+     * Get ID of the Trigger.
+     * @return ID of the Trigger
+     */
     public String getTriggerID() {
         return this.triggerID;
     }
+
+    /**
+     * Get Target ID of the Trigger.
+     * When Trigger is created with ThingIFAPI#postNewTrigger() API families,
+     * Target ID is determined by target bound to ThingIFAPI.
+     * @return Target ID of Trigger.
+     */
     public TypedID getTargetID() {
         return this.targetID;
     }
 
+    /**
+     * Indicate whether the Trigger is disabled.
+     * @return true if disabled, otherwise false.
+     */
     public boolean disabled() {
         return this.disabled;
     }
 
+    /**
+     * Get Predicate of the Trigger.
+     * @return Predicate of the Trigger
+     */
     public Predicate getPredicate() {
         return this.predicate;
     }
 
+    /**
+     * Get Command bounds to the Trigger.
+     * @return Command  bounds to the Trigger.
+     */
     public Command getCommand() {
         return this.command;
     }
+
+    /**
+     * Get Server Code bounds to the Trigger.
+     * @return Server Code bounds to the Trigger.
+     */
     public ServerCode getServerCode() {
         return this.serverCode;
     }
+
+    /**
+     * Get enum indicates whether the Command or Server Code is triggered.
+     * @return TriggersWhat enum.
+     */
     public TriggersWhat getTriggersWhat() {
         if (this.command != null) {
             return TriggersWhat.COMMAND;
         }
         return TriggersWhat.SERVER_CODE;
     }
+
+
+    /**
+     * Get the reason of the Trigger has been disabled.
+     * If #disabled is false, It returns null.
+     * @return Reason of the Trigger has been disabled.
+     */
     public String getDisabledReason() {
         return this.disabledReason;
     }
+
     /**
      * Get title.
      * @return title of this trigger.
