@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
@@ -41,6 +42,31 @@ public final class TriggeredCommandForm implements Parcelable {
      */
     public static class Builder {
 
+        private String schemaName;
+        private int schemaVersion;
+        private List<Action> actions;
+        private TypedID targetID;
+        private String title;
+        private String description;
+        private JSONObject metadata;
+
+        Builder(
+                @NonNull String schemaName,
+                int schemaVersion,
+                @NonNull List<Action> actions)
+        {
+            if (TextUtils.isEmpty(schemaName)) {
+                throw new IllegalArgumentException(
+                    "schemaName is null or empty.");
+            }
+            if (CollectionUtils.isEmpty(actions)) {
+                throw new IllegalArgumentException("actions is null or empty.");
+            }
+            this.schemaName = schemaName;
+            this.schemaVersion = schemaVersion;
+            this.actions = actions;
+        }
+
         /**
          * Constructs a {@link TriggeredCommandForm.Builder} instance.
          *
@@ -62,8 +88,7 @@ public final class TriggeredCommandForm implements Parcelable {
                 @NonNull List<Action> actions)
             throws IllegalArgumentException
         {
-            // TODO: implement me.
-            return null;
+            return new Builder(schemaName, schemaVersion, actions);
         }
 
         /**
@@ -93,8 +118,14 @@ public final class TriggeredCommandForm implements Parcelable {
                 @NonNull Command command)
             throws IllegalArgumentException
         {
-            // TODO: implement me.
-            return null;
+            return (new Builder(
+                        command.getSchemaName(),
+                        command.getSchemaVersion(),
+                        command.getActions())).
+                    setTargetID(command.getTargetID()).
+                    setTitle(command.getTitle()).
+                    setDescription(command.getDescription()).
+                    setMetadata(command.getMetadata());
         }
 
         /**
@@ -114,7 +145,11 @@ public final class TriggeredCommandForm implements Parcelable {
                 @NonNull String schemaName)
             throws IllegalArgumentException
         {
-            // TODO: implement me.
+            if (TextUtils.isEmpty(schemaName)) {
+                throw new IllegalArgumentException(
+                    "schemaName is null or empty.");
+            }
+            this.schemaName = schemaName;
             return this;
         }
 
@@ -125,8 +160,7 @@ public final class TriggeredCommandForm implements Parcelable {
          */
         @NonNull
         public String getSchemaName() {
-            // TODO: implement me.
-            return null;
+            return this.schemaName;
         }
 
         /**
@@ -137,7 +171,7 @@ public final class TriggeredCommandForm implements Parcelable {
          */
         @NonNull
         public Builder setSchemaVersion(int schemaVersion) {
-            // TODO: implement me.
+            this.schemaVersion = schemaVersion;
             return this;
         }
 
@@ -148,8 +182,7 @@ public final class TriggeredCommandForm implements Parcelable {
          */
         @NonNull
         public int getSchemaVersion() {
-            // TODO: implement me.
-            return 0;
+            return this.schemaVersion;
         }
 
         /**
@@ -169,7 +202,10 @@ public final class TriggeredCommandForm implements Parcelable {
                 @NonNull List<Action> actions)
             throws IllegalArgumentException
         {
-            // TODO: implement me.
+            if (CollectionUtils.isEmpty(actions)) {
+                throw new IllegalArgumentException("actions is null or empty.");
+            }
+            this.actions = actions;
             return this;
         }
 
@@ -180,8 +216,7 @@ public final class TriggeredCommandForm implements Parcelable {
          */
         @NonNull
         public List<Action> getActions() {
-            // TODO: implement me.
-            return null;
+            return this.actions;
         }
 
         /**
@@ -216,7 +251,11 @@ public final class TriggeredCommandForm implements Parcelable {
                 @Nullable TypedID targetID)
             throws IllegalArgumentException
         {
-            // TODO: implement me.
+            if (targetID != null && targetID.type == Types.THING) {
+                throw new IllegalArgumentException(
+                    "targetID type must be Types.THING");
+            }
+            this.targetID = targetID;
             return this;
         }
 
@@ -225,10 +264,9 @@ public final class TriggeredCommandForm implements Parcelable {
          *
          * @return target thing ID
          */
-        @NonNull
+        @Nullable
         public TypedID getTargetID() {
-            // TODO: implement me.
-            return null;
+            return this.targetID;
         }
 
         /**
@@ -244,7 +282,11 @@ public final class TriggeredCommandForm implements Parcelable {
                 @Nullable String title)
             throws IllegalArgumentException
         {
-            // TODO: implement me.
+            if (title != null && title.length() > 50) {
+                throw new IllegalArgumentException(
+                    "title is more than 50 charactors.");
+            }
+            this.title = title;
             return this;
         }
 
@@ -255,8 +297,7 @@ public final class TriggeredCommandForm implements Parcelable {
          */
         @Nullable
         public String getTitle() {
-            // TODO: implement me.
-            return null;
+            return this.title;
         }
 
         /**
@@ -272,7 +313,11 @@ public final class TriggeredCommandForm implements Parcelable {
                 @Nullable String description)
             throws IllegalArgumentException
         {
-            // TODO: implement me.
+            if (description != null && description.length() > 200) {
+                throw new IllegalArgumentException(
+                    "description is more than 200 charactors.");
+            }
+            this.description = description;
             return this;
         }
 
@@ -283,8 +328,7 @@ public final class TriggeredCommandForm implements Parcelable {
          */
         @Nullable
         public String getDescription() {
-            // TODO: implement me.
-            return null;
+            return this.description;
         }
 
         /**
@@ -295,7 +339,7 @@ public final class TriggeredCommandForm implements Parcelable {
          */
         @NonNull
         public Builder setMetadata(@Nullable JSONObject metadata) {
-            // TODO: implement me.
+            this.metadata = metadata;
             return this;
         }
 
@@ -306,8 +350,7 @@ public final class TriggeredCommandForm implements Parcelable {
          */
         @Nullable
         public JSONObject getMetadata() {
-            // TODO: implement me.
-            return null;
+            return this.meta;
         }
 
         /**
