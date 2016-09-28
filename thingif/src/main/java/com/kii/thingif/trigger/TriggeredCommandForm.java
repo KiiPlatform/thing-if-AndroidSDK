@@ -353,7 +353,7 @@ public final class TriggeredCommandForm implements Parcelable {
          */
         @Nullable
         public JSONObject getMetadata() {
-            return this.meta;
+            return this.metadata;
         }
 
         /**
@@ -386,7 +386,7 @@ public final class TriggeredCommandForm implements Parcelable {
     private TriggeredCommandForm(
             @NonNull String schemaName,
             int schemaVersion,
-            @NonNull actions)
+            @NonNull List<Action> actions)
     {
         this.schemaName = schemaName;
         this.schemaVersion = schemaVersion;
