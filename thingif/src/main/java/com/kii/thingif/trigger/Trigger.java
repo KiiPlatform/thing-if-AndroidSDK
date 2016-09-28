@@ -11,8 +11,6 @@ import com.kii.thingif.command.Command;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.List;
-
 /**
  * Represents a trigger that is fired when status of thing changed or it became at the designated time.
  */
