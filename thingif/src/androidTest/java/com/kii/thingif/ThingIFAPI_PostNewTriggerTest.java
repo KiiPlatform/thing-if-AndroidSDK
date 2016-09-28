@@ -133,6 +133,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         Trigger trigger = api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate, commandTarget);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
+        Assert.assertEquals(target.getTypedID(), trigger.getTargetID());
         Assert.assertEquals(false, trigger.disabled());
         Assert.assertNull(trigger.getDisabledReason());
         Assert.assertNull(trigger.getServerCode());
