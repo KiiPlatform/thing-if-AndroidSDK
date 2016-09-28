@@ -43,7 +43,7 @@ public final class TriggeredCommandForm implements Parcelable {
     /**
      * TriggeredCommandForm builder.
      */
-    public static class Builder {
+    public static final class Builder implements Parcelable {
 
         @NonNull private String schemaName;
         @NonNull private int schemaVersion;
@@ -53,7 +53,7 @@ public final class TriggeredCommandForm implements Parcelable {
         @Nullable private String description;
         @Nullable private JSONObject metadata;
 
-        Builder(
+        private Builder(
                 @NonNull String schemaName,
                 int schemaVersion,
                 @NonNull List<Action> actions)
@@ -372,6 +372,50 @@ public final class TriggeredCommandForm implements Parcelable {
             retval.metadata = this.metadata;
             return retval;
         }
+
+        private Builder(Parcel in) {
+            this.schemaName = in.readString();
+            this.schemaVersion = in.readInt();
+            this.targetID = in.readParcelable(TypedID.class.getClassLoader());
+            this.title = in.readString();
+            this.description = in.readString();
+            String metadata = in. readString();
+            if (metadata != null) {
+                try {
+                    this.metadata = new JSONObject(metadata);
+                } catch (JSONException e) {
+                    // Never happen.
+                }
+            }
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeString(this.schemaName);
+            dest.writeInt(this.schemaVersion);
+            dest.writeParcelable(this.targetID, flags);
+            dest.writeString(this.title);
+            dest.writeString(this.description);
+            dest.writeString(this.metadata != null ?
+                    this.metadata.toString() : null);
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        public static final Creator<Builder> CREATOR = new Creator<Builder>() {
+            @Override
+            public Builder createFromParcel(Parcel in) {
+                return new Builder(in);
+            }
+
+            @Override
+            public Builder[] newArray(int size) {
+                return new Builder[size];
+            }
+        };
 
     }
 
