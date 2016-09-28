@@ -10,8 +10,11 @@ import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -251,7 +254,7 @@ public final class TriggeredCommandForm implements Parcelable {
                 @Nullable TypedID targetID)
             throws IllegalArgumentException
         {
-            if (targetID != null && targetID.type == Types.THING) {
+            if (targetID != null && targetID.getType() == TypedID.Types.THING) {
                 throw new IllegalArgumentException(
                     "targetID type must be Types.THING");
             }
@@ -460,17 +463,37 @@ public final class TriggeredCommandForm implements Parcelable {
     }
 
     private TriggeredCommandForm(Parcel in) {
-        // TODO: implement me.
+        this.schemaName = in.readString();
+        this.schemaVersion = in.readInt();
+        this.actions = new ArrayList<Action>();
+        in.readList(this.actions, null);
+        this.targetID = in.readParcelable(TypedID.class.getClassLoader());
+        this.title = in.readString();
+        this.description = in.readString();
+        String metadata = in. readString();
+        if (metadata != null) {
+            try {
+                this.metadata = new JSONObject(metadata);
+            } catch (JSONException e) {
+                // Never happen.
+            }
+        }
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        // TODO: implement me.
+        dest.writeString(this.schemaName);
+        dest.writeInt(this.schemaVersion);
+        dest.writeList(this.actions);
+        dest.writeParcelable(this.getTargetID(), flags);
+        dest.writeString(this.title);
+        dest.writeString(this.description);
+        dest.writeString(this.metadata != null ?
+                this.metadata.toString() : null);
     }
 
     @Override
     public int describeContents() {
-        // TODO: implement me.
         return 0;
     }
 
@@ -478,13 +501,11 @@ public final class TriggeredCommandForm implements Parcelable {
             new Creator<TriggeredCommandForm>() {
         @Override
         public TriggeredCommandForm createFromParcel(Parcel in) {
-            // TODO: implement me.
             return new TriggeredCommandForm(in);
         }
 
         @Override
         public TriggeredCommandForm[] newArray(int size) {
-            // TODO: implement me.
             return new TriggeredCommandForm[size];
         }
     };
