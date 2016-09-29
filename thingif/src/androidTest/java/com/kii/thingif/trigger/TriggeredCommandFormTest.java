@@ -8,8 +8,10 @@ import com.kii.thingif.SmallTestBase;
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
+import com.kii.thingif.testschemas.SetBrightness;
 import com.kii.thingif.testschemas.SetColor;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -42,18 +44,18 @@ public class TriggeredCommandFormTest extends SmallTestBase {
     }
 
     private static final class TestData {
-        @NonNull final String schemaName;
+        @Nullable final String schemaName;
         final int schemaVersion;
-        @NonNull final List<Action> actions;
+        @Nullable final List<Action> actions;
         @Nullable TypedID targetID;
         @Nullable String title;
         @Nullable String description;
         @Nullable JSONObject metadata;
 
         TestData(
-                @NonNull String schemaName,
+                @Nullable String schemaName,
                 int schemaVersion,
-                @NonNull List<Action> actions,
+                @Nullable List<Action> actions,
                 @Nullable TypedID targetID,
                 @Nullable String title,
                 @Nullable String description,
@@ -66,6 +68,14 @@ public class TriggeredCommandFormTest extends SmallTestBase {
             this.title = title;
             this.description = description;
             this.metadata = metadata;
+        }
+
+        TestData(
+                @Nullable String schemaName,
+                int schemaVersion,
+                @Nullable List<Action> actions)
+        {
+            this(schemaName, schemaVersion, actions, null, null, null, null);
         }
     }
 
@@ -339,6 +349,198 @@ public class TriggeredCommandFormTest extends SmallTestBase {
             Assert.assertEquals(testCase.errorMessge,
                     expected.metadata, form.getMetadata());
         }
+    }
+
+    @NonNull
+    private List<TestCase<String>> createConstructingWithExceptionTestCases() {
+        List<Action> actions = new ArrayList<>();
+        actions.add(new SetColor(128, 0, 255));
+
+        List<TestCase<String>> retval = new ArrayList<>();
+        Collections.addAll(retval,
+                new TestCase<>(
+                    "1",
+                    new TestData(null, 1, actions),
+                    "schemaName is null or empty."),
+                new TestCase<>(
+                    "2",
+                    new TestData("", 1, actions),
+                    "schemaName is null or empty."),
+                new TestCase<>(
+                    "3",
+                    new TestData("schema name", 1, null),
+                    "actions is null or empty."),
+                new TestCase<>(
+                    "4",
+                    new TestData("schema name", 1, new ArrayList<Action>()),
+                    "actions is null or empty."));
+        return retval;
+    }
+
+    @Test
+    public void constructIllegalArgumentExceptionTest() throws Exception {
+        for (TestCase<String> testCase :
+                     createConstructingWithExceptionTestCases()) {
+            TestData input = testCase.input;
+            String expected = testCase.expected;
+            IllegalArgumentException actual = null;
+            try {
+                TriggeredCommandForm.Builder.builder(
+                    input.schemaName,
+                    input.schemaVersion,
+                    input.actions);
+            } catch (IllegalArgumentException e) {
+                actual = e;
+            }
+            Assert.assertNotNull(testCase.errorMessge, actual);
+            Assert.assertEquals(testCase.errorMessge,
+                    expected, actual.getMessage());
+        }
+    }
+
+    @NonNull
+    private List<TestCase<String>> createSetterWithExceptionTestCases() {
+        List<Action> actions = new ArrayList<>();
+        actions.add(new SetColor(128, 0, 255));
+
+        List<TestCase<String>> retval = new ArrayList<>();
+        Collections.addAll(retval,
+                new TestCase<>(
+                    "1",
+                    new TestData("schema name", 1, actions,
+                            new TypedID(TypedID.Types.USER, "dummy-id"),
+                            null, null, null),
+                    "targetID type must be Types.THING"),
+                new TestCase<>(
+                    "2",
+                    new TestData("schema name", 1, actions,
+                            null, RandomStringUtils.random(51), null, null),
+                    "title is more than 50 charactors."),
+                new TestCase<>(
+                    "3",
+                    new TestData("schema name", 1, actions,
+                            null, null, RandomStringUtils.random(201), null),
+                    "description is more than 200 charactors."));
+        return retval;
+    }
+
+    @Test
+    public void setterIllegalArgumentExceptionTest() throws Exception {
+        for (TestCase<String> testCase :
+                     createSetterWithExceptionTestCases()) {
+            TestData input = testCase.input;
+            String expected = testCase.expected;
+            IllegalArgumentException actual = null;
+
+            TriggeredCommandForm.Builder builder =
+                    TriggeredCommandForm.Builder.builder(
+                        input.schemaName,
+                        input.schemaVersion,
+                        input.actions);
+            try {
+                if (input.targetID != null) {
+                    builder.setTargetID(input.targetID);
+                } else if (input.title != null) {
+                    builder.setTitle(input.title);
+                } else if (input.description != null) {
+                    builder.setDescription(input.description);
+                }
+            } catch (IllegalArgumentException e) {
+                actual = e;
+            }
+            Assert.assertNotNull(testCase.errorMessge, actual);
+            Assert.assertEquals(testCase.errorMessge,
+                    expected, actual.getMessage());
+        }
+    }
+
+    @Test
+    public void valueOverwriteTest() throws Exception {
+        String schemaName1 = "schema name 1";
+        int schemaVersion1 = 1;
+        List<Action> actions1 = new ArrayList<>();
+        actions1.add(new SetColor(128, 0, 255));
+
+        TriggeredCommandForm.Builder builder =
+                TriggeredCommandForm.Builder.builder(
+                    schemaName1, schemaVersion1, actions1);
+        Assert.assertEquals(schemaName1, builder.getSchemaName());
+        Assert.assertEquals(schemaVersion1, builder.getSchemaVersion());
+        Assert.assertEquals(actions1, builder.getActions());
+        Assert.assertNull(builder.getTargetID());
+        Assert.assertNull(builder.getTitle());
+        Assert.assertNull(builder.getDescription());
+        Assert.assertNull(builder.getMetadata());
+
+        TriggeredCommandForm form = builder.build();
+
+        Assert.assertEquals(schemaName1, form.getSchemaName());
+        Assert.assertEquals(schemaVersion1, form.getSchemaVersion());
+        Assert.assertEquals(actions1, form.getActions());
+        Assert.assertNull(form.getTargetID());
+        Assert.assertNull(form.getTitle());
+        Assert.assertNull(form.getDescription());
+        Assert.assertNull(form.getMetadata());
+
+        TypedID targetID1 = new TypedID(TypedID.Types.THING, "dummy_id1");
+        String title1 = "title 1";
+        String description1 = "description 1";
+        JSONObject json1 = new JSONObject();
+        json1.put("key1", "value1");
+
+        builder.setTargetID(targetID1).setTitle(title1).
+                setDescription(description1).setMetadata(json1);
+
+        Assert.assertEquals(schemaName1, builder.getSchemaName());
+        Assert.assertEquals(schemaVersion1, builder.getSchemaVersion());
+        Assert.assertEquals(actions1, builder.getActions());
+        Assert.assertEquals(targetID1, builder.getTargetID());
+        Assert.assertEquals(title1, builder.getTitle());
+        Assert.assertEquals(description1, builder.getDescription());
+        Assert.assertEquals(json1, builder.getMetadata());
+
+        form = builder.build();
+
+        Assert.assertEquals(schemaName1, form.getSchemaName());
+        Assert.assertEquals(schemaVersion1, form.getSchemaVersion());
+        Assert.assertEquals(actions1, form.getActions());
+        Assert.assertEquals(targetID1, form.getTargetID());
+        Assert.assertEquals(title1, form.getTitle());
+        Assert.assertEquals(description1, form.getDescription());
+        Assert.assertEquals(json1, form.getMetadata());
+
+        String schemaName2 = "schema name 2";
+        int schemaVersion2 = 2;
+        List<Action> actions2 = new ArrayList<>();
+        actions2.add(new SetBrightness(128));
+        TypedID targetID2 = new TypedID(TypedID.Types.THING, "dummy_id2");
+        String title2 = "title 2";
+        String description2 = "description 2";
+        JSONObject json2 = new JSONObject();
+        json2.put("key2", "value2");
+
+        builder.setSchemaName(schemaName2).setSchemaVersion(schemaVersion2).
+                setActions(actions2).setTargetID(targetID2).setTitle(title2).
+                setDescription(description2).setMetadata(json2);
+
+
+        Assert.assertEquals(schemaName2, builder.getSchemaName());
+        Assert.assertEquals(schemaVersion2, builder.getSchemaVersion());
+        Assert.assertEquals(actions2, builder.getActions());
+        Assert.assertEquals(targetID2, builder.getTargetID());
+        Assert.assertEquals(title2, builder.getTitle());
+        Assert.assertEquals(description2, builder.getDescription());
+        Assert.assertEquals(json2, builder.getMetadata());
+
+        form = builder.build();
+
+        Assert.assertEquals(schemaName2, form.getSchemaName());
+        Assert.assertEquals(schemaVersion2, form.getSchemaVersion());
+        Assert.assertEquals(actions2, form.getActions());
+        Assert.assertEquals(targetID2, form.getTargetID());
+        Assert.assertEquals(title2, form.getTitle());
+        Assert.assertEquals(description2, form.getDescription());
+        Assert.assertEquals(json2, form.getMetadata());
     }
 
 }
