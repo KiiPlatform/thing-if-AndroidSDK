@@ -85,7 +85,7 @@ public class TriggeredCommandFormTest extends SmallTestBase {
         List<TestCase> retval = new ArrayList<>();
         Collections.addAll(retval,
                 createNormalTestCase(
-                    "1",
+                    "no optional",
                     new TestData(
                         "schema name",
                         1,
@@ -95,7 +95,7 @@ public class TriggeredCommandFormTest extends SmallTestBase {
                         null,
                         null)),
                 createNormalTestCase(
-                    "2",
+                    "one optional 1",
                     new TestData(
                         "schema name",
                         1,
@@ -105,7 +105,37 @@ public class TriggeredCommandFormTest extends SmallTestBase {
                         null,
                         null)),
                 createNormalTestCase(
-                    "3",
+                    "one optional 2",
+                    new TestData(
+                        "schema name",
+                        1,
+                        actions,
+                        null,
+                        "title",
+                        null,
+                        null)),
+                createNormalTestCase(
+                    "one optional 3",
+                    new TestData(
+                        "schema name",
+                        1,
+                        actions,
+                        null,
+                        null,
+                        "description",
+                        null)),
+                createNormalTestCase(
+                    "one optional 4",
+                    new TestData(
+                        "schema name",
+                        1,
+                        actions,
+                        null,
+                        null,
+                        null,
+                        json)),
+                createNormalTestCase(
+                    "two optional 1",
                     new TestData(
                         "schema name",
                         1,
@@ -115,25 +145,95 @@ public class TriggeredCommandFormTest extends SmallTestBase {
                         null,
                         null)),
                 createNormalTestCase(
-                    "4",
+                    "two optional 2",
                     new TestData(
                         "schema name",
                         1,
                         actions,
                         new TypedID(TypedID.Types.THING, "dummy_id"),
+                        null,
+                        "description",
+                        null)),
+                createNormalTestCase(
+                    "two optional 3",
+                    new TestData(
+                        "schema name",
+                        1,
+                        actions,
+                        new TypedID(TypedID.Types.THING, "dummy_id"),
+                        null,
+                        null,
+                        json)),
+                createNormalTestCase(
+                    "two optional 4",
+                    new TestData(
+                        "schema name",
+                        1,
+                        actions,
+                        null,
                         "title",
                         "description",
                         null)),
                 createNormalTestCase(
-                    "5",
+                    "two optional 5",
+                    new TestData(
+                        "schema name",
+                        1,
+                        actions,
+                        null,
+                        "title",
+                        null,
+                        json)),
+                createNormalTestCase(
+                    "two optional 6",
+                    new TestData(
+                        "schema name",
+                        1,
+                        actions,
+                        null,
+                        null,
+                        "description",
+                        json)),
+                createNormalTestCase(
+                    "three optional 1",
                     new TestData(
                         "schema name",
                         1,
                         actions,
                         new TypedID(TypedID.Types.THING, "dummy_id"),
+                        "title",
+                        null,
+                        json)),
+                createNormalTestCase(
+                    "three optional 2",
+                    new TestData(
+                        "schema name",
+                        1,
+                        actions,
+                        new TypedID(TypedID.Types.THING, "dummy_id"),
+                        null,
+                        "description",
+                        json)),
+                createNormalTestCase(
+                    "three optional 3",
+                    new TestData(
+                        "schema name",
+                        1,
+                        actions,
+                        null,
                         "title",
                         "description",
                         json)),
+                createNormalTestCase(
+                    "four optional 1",
+                    new TestData(
+                        "schema name",
+                        1,
+                        actions,
+                        new TypedID(TypedID.Types.THING, "dummy_id"),
+                        "title",
+                        "description",
+                        json))
                            );
 
         return retval;
