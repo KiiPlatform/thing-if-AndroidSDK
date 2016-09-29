@@ -7,6 +7,7 @@ import android.support.test.runner.AndroidJUnit4;
 import com.kii.thingif.SmallTestBase;
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
+import com.kii.thingif.command.Command;
 import com.kii.thingif.testschemas.SetColor;
 
 import org.json.JSONException;
@@ -66,6 +67,7 @@ public class TriggeredCommandFormTest extends SmallTestBase {
         }
     }
 
+    @NonNull
     private static TestCase<TestData> createNormalTestCase(
             @NonNull String errorMessage,
             @NonNull TestData inputAndExpected)
@@ -74,7 +76,8 @@ public class TriggeredCommandFormTest extends SmallTestBase {
                 inputAndExpected);
     }
 
-    private static List<TestCase> createNormalTestDataSet()
+    @NonNull
+    private static List<TestCase<TestData>> createNormalTestDataSet()
         throws JSONException
     {
         List<Action> actions = new ArrayList<>();
@@ -82,7 +85,7 @@ public class TriggeredCommandFormTest extends SmallTestBase {
         JSONObject json = new JSONObject();
         json.put("key", "value");
 
-        List<TestCase> retval = new ArrayList<>();
+        List<TestCase<TestData>> retval = new ArrayList<>();
         Collections.addAll(retval,
                 createNormalTestCase(
                     "no optional",
@@ -240,9 +243,10 @@ public class TriggeredCommandFormTest extends SmallTestBase {
     }
 
     @Test
-    public void normalTests() throws Exception {
-        for (TestCase testCase : createNormalTestDataSet()) {
+    public void constructWithThreeArgumentsNormalTest() throws Exception {
+        for (TestCase<TestData> testCase : createNormalTestDataSet()) {
             TestData data = testCase.input;
+            TestData expected = testCase.expected;
             TriggeredCommandForm.Builder builder =
                     TriggeredCommandForm.Builder.builder(
                         data.schemaName,
@@ -269,19 +273,53 @@ public class TriggeredCommandFormTest extends SmallTestBase {
             Assert.assertNotNull(testCase.errorMessge, form);
 
             Assert.assertEquals(testCase.errorMessge,
-                    data.schemaName, form.getSchemaName());
+                    expected.schemaName, form.getSchemaName());
             Assert.assertEquals(testCase.errorMessge,
-                    data.schemaVersion, form.getSchemaVersion());
+                    expected.schemaVersion, form.getSchemaVersion());
             Assert.assertEquals(testCase.errorMessge,
-                    data.actions, form.getActions());
+                    expected.actions, form.getActions());
             Assert.assertEquals(testCase.errorMessge,
-                    data.targetID, form.getTargetID());
+                    expected.targetID, form.getTargetID());
             Assert.assertEquals(testCase.errorMessge,
-                    data.title, form.getTitle());
+                    expected.title, form.getTitle());
             Assert.assertEquals(testCase.errorMessge,
-                    data.description, form.getDescription());
+                    expected.description, form.getDescription());
             Assert.assertEquals(testCase.errorMessge,
-                    data.metadata, form.getMetadata());
+                    expected.metadata, form.getMetadata());
         }
     }
+
+    @NonNull
+    private static Command createCommand(@NonNull TestData data) {
+        return null;
+    }
+
+    @Test
+    public void constructWithCommandNormalTest() throws Exception {
+        for (TestCase<TestData> testCase : createNormalTestDataSet()) {
+            TestData data = testCase.input;
+            TestData expected = testCase.expected;
+            TriggeredCommandForm.Builder builder =
+                    TriggeredCommandForm.Builder.builder(createCommand(data));
+
+            TriggeredCommandForm form = builder.build();
+            Assert.assertNotNull(testCase.errorMessge, form);
+
+            Assert.assertEquals(testCase.errorMessge,
+                    expected.schemaName, form.getSchemaName());
+            Assert.assertEquals(testCase.errorMessge,
+                    expected.schemaVersion, form.getSchemaVersion());
+            Assert.assertEquals(testCase.errorMessge,
+                    expected.actions, form.getActions());
+            Assert.assertEquals(testCase.errorMessge,
+                    expected.targetID, form.getTargetID());
+            Assert.assertEquals(testCase.errorMessge,
+                    expected.title, form.getTitle());
+            Assert.assertEquals(testCase.errorMessge,
+                    expected.description, form.getDescription());
+            Assert.assertEquals(testCase.errorMessge,
+                    expected.metadata, form.getMetadata());
+        }
+    }
+
 }
