@@ -254,7 +254,7 @@ public final class TriggeredCommandForm implements Parcelable {
                 @Nullable TypedID targetID)
             throws IllegalArgumentException
         {
-            if (targetID != null && targetID.getType() == TypedID.Types.THING) {
+            if (targetID != null && targetID.getType() != TypedID.Types.THING) {
                 throw new IllegalArgumentException(
                     "targetID type must be Types.THING");
             }
