@@ -369,7 +369,13 @@ public final class TriggeredCommandForm implements Parcelable {
             retval.targetID = this.targetID;
             retval.title = this.title;
             retval.description = this.description;
-            retval.metadata = this.metadata;
+            if (this.metadata != null) {
+                try {
+                    retval.metadata = new JSONObject(this.metadata.toString());
+                } catch (JSONException e) {
+                    // Never happen.
+                }
+            }
             return retval;
         }
 
