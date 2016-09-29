@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.mockito.Mockito.*;
+
 @RunWith(AndroidJUnit4.class)
 public class TriggeredCommandFormTest extends SmallTestBase {
 
@@ -290,17 +292,34 @@ public class TriggeredCommandFormTest extends SmallTestBase {
     }
 
     @NonNull
-    private static Command createCommand(@NonNull TestData data) {
-        return null;
+    private static Command createCommand(
+            @NonNull TestData data,
+            @NonNull TypedID defaultTarget) {
+        Command retval = mock(Command.class);
+        when(retval.getSchemaName()).thenReturn(data.schemaName);
+        when(retval.getSchemaVersion()).thenReturn(data.schemaVersion);
+        when(retval.getActions()).thenReturn(data.actions);
+        when(retval.getTargetID()).thenReturn(
+            data.targetID != null ? data.targetID : defaultTarget);
+        when(retval.getTitle()).thenReturn(data.title);
+        when(retval.getDescription()).thenReturn(data.description);
+        when(retval.getMetadata()).thenReturn(data.metadata);
+        return retval;
     }
 
     @Test
     public void constructWithCommandNormalTest() throws Exception {
+        TypedID defaultTarget =
+                new TypedID(TypedID.Types.THING, "default_target");
         for (TestCase<TestData> testCase : createNormalTestDataSet()) {
             TestData data = testCase.input;
             TestData expected = testCase.expected;
             TriggeredCommandForm.Builder builder =
-                    TriggeredCommandForm.Builder.builder(createCommand(data));
+                    TriggeredCommandForm.Builder.builder(
+                        createCommand(data, defaultTarget));
+
+            TypedID expectedTargetID = data.targetID != null ?
+                    expected.targetID : defaultTarget;
 
             TriggeredCommandForm form = builder.build();
             Assert.assertNotNull(testCase.errorMessge, form);
@@ -312,7 +331,7 @@ public class TriggeredCommandFormTest extends SmallTestBase {
             Assert.assertEquals(testCase.errorMessge,
                     expected.actions, form.getActions());
             Assert.assertEquals(testCase.errorMessge,
-                    expected.targetID, form.getTargetID());
+                    expectedTargetID, form.getTargetID());
             Assert.assertEquals(testCase.errorMessge,
                     expected.title, form.getTitle());
             Assert.assertEquals(testCase.errorMessge,
