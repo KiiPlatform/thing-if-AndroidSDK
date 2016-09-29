@@ -52,7 +52,7 @@ public final class TriggerOptions implements Parcelable {
          * @param trigger source of this {@link TriggerOptions.Builder}
          * instance.
          * @return builder instance
-         * @throws NullPointerException if trigger is null.
+         * @throws IllegalArgumentException if trigger is null.
          */
         @NonNull
         public static Builder builder(
