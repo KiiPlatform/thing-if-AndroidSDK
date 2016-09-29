@@ -9,6 +9,7 @@ import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.testschemas.SetColor;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
@@ -21,33 +22,39 @@ import java.util.List;
 @RunWith(AndroidJUnit4.class)
 public class TriggeredCommandFormTest extends SmallTestBase {
 
-    private static final class TestCase {
-        @NonNull public final TestData testData;
-        @NonNull public final String title;
+    private static final class TestCase<T> {
+        @NonNull final TestData input;
+        @NonNull final T expected;
+        @NonNull final String errorMessge;
 
-        TestCase(String title, TestData testData) {
-            this.title = title;
-            this.testData = testData;
+        TestCase(
+                @NonNull String errorMessge,
+                @NonNull TestData input,
+                @NonNull T expected)
+        {
+            this.errorMessge = errorMessge;
+            this.input = input;
+            this.expected = expected;
         }
     }
 
     private static final class TestData {
-        @NonNull public final String schemaName;
-        @NonNull public final int schemaVersion;
-        @NonNull public final List<Action> actions;
-        @Nullable public TypedID targetID;
-        @Nullable public String title;
-        @Nullable public String description;
-        @Nullable public JSONObject metadata;
+        @NonNull final String schemaName;
+        final int schemaVersion;
+        @NonNull final List<Action> actions;
+        @Nullable TypedID targetID;
+        @Nullable String title;
+        @Nullable String description;
+        @Nullable JSONObject metadata;
 
         TestData(
-                String schemaName,
+                @NonNull String schemaName,
                 int schemaVersion,
-                List<Action> actions,
-                TypedID targetID,
-                String title,
-                String description,
-                JSONObject metadata)
+                @NonNull List<Action> actions,
+                @Nullable TypedID targetID,
+                @Nullable String title,
+                @Nullable String description,
+                @Nullable JSONObject metadata)
         {
             this.schemaName = schemaName;
             this.schemaVersion = schemaVersion;
@@ -59,68 +66,121 @@ public class TriggeredCommandFormTest extends SmallTestBase {
         }
     }
 
-    private static List<TestCase> TEST_CASES;
+    private static TestCase<TestData> createNormalTestCase(
+            @NonNull String errorMessage,
+            @NonNull TestData inputAndExpected)
+    {
+        return new TestCase<>(errorMessage, inputAndExpected,
+                inputAndExpected);
+    }
 
-    static {
-        List<Action> actions = new ArrayList<Action>();
+    private static List<TestCase> createNormalTestDataSet()
+        throws JSONException
+    {
+        List<Action> actions = new ArrayList<>();
         actions.add(new SetColor(128, 0, 255));
+        JSONObject json = new JSONObject();
+        json.put("key", "value");
 
-        TEST_CASES = new ArrayList<TestCase>();
-        Collections.addAll(TEST_CASES,
-                new TestCase(
+        List<TestCase> retval = new ArrayList<>();
+        Collections.addAll(retval,
+                createNormalTestCase(
                     "1",
                     new TestData(
-                        "schama name",
+                        "schema name",
+                        1,
+                        actions,
+                        null,
+                        null,
+                        null,
+                        null)),
+                createNormalTestCase(
+                    "2",
+                    new TestData(
+                        "schema name",
                         1,
                         actions,
                         new TypedID(TypedID.Types.THING, "dummy_id"),
                         null,
                         null,
-                        null)));
+                        null)),
+                createNormalTestCase(
+                    "3",
+                    new TestData(
+                        "schema name",
+                        1,
+                        actions,
+                        new TypedID(TypedID.Types.THING, "dummy_id"),
+                        "title",
+                        null,
+                        null)),
+                createNormalTestCase(
+                    "4",
+                    new TestData(
+                        "schema name",
+                        1,
+                        actions,
+                        new TypedID(TypedID.Types.THING, "dummy_id"),
+                        "title",
+                        "description",
+                        null)),
+                createNormalTestCase(
+                    "5",
+                    new TestData(
+                        "schema name",
+                        1,
+                        actions,
+                        new TypedID(TypedID.Types.THING, "dummy_id"),
+                        "title",
+                        "description",
+                        json)),
+                           );
+
+        return retval;
     }
 
     @Test
-    public void threeArgumentBuilderTest() throws Exception {
-        for (TestCase testCase : this.TEST_CASES) {
-            TestData data = testCase.testData;
+    public void normalTests() throws Exception {
+        for (TestCase testCase : createNormalTestDataSet()) {
+            TestData data = testCase.input;
             TriggeredCommandForm.Builder builder =
                     TriggeredCommandForm.Builder.builder(
                         data.schemaName,
                         data.schemaVersion,
                         data.actions);
             if (data.targetID != null) {
-                Assert.assertSame(
+                Assert.assertSame(testCase.errorMessge,
                     builder, builder.setTargetID(data.targetID));
             }
             if (data.title != null) {
-                Assert.assertSame(testCase.title,
+                Assert.assertSame(testCase.errorMessge,
                         builder, builder.setTitle(data.title));
             }
             if (data.description != null) {
-                Assert.assertSame(testCase.title,
+                Assert.assertSame(testCase.errorMessge,
                         builder, builder.setDescription(data.description));
             }
             if (data.metadata != null) {
-                Assert.assertSame(testCase.title,
+                Assert.assertSame(testCase.errorMessge,
                         builder, builder.setMetadata(data.metadata));
             }
 
             TriggeredCommandForm form = builder.build();
-            Assert.assertNotNull(testCase.title, form);
+            Assert.assertNotNull(testCase.errorMessge, form);
 
-            Assert.assertEquals(testCase.title,
+            Assert.assertEquals(testCase.errorMessge,
                     data.schemaName, form.getSchemaName());
-            Assert.assertEquals(testCase.title,
+            Assert.assertEquals(testCase.errorMessge,
                     data.schemaVersion, form.getSchemaVersion());
-            Assert.assertEquals(testCase.title,
+            Assert.assertEquals(testCase.errorMessge,
                     data.actions, form.getActions());
-            Assert.assertEquals(testCase.title,
+            Assert.assertEquals(testCase.errorMessge,
                     data.targetID, form.getTargetID());
-            Assert.assertEquals(testCase.title,
+            Assert.assertEquals(testCase.errorMessge,
                     data.title, form.getTitle());
-            Assert.assertEquals(testCase.title,
+            Assert.assertEquals(testCase.errorMessge,
                     data.description, form.getDescription());
-            Assert.assertEquals(testCase.title,
+            Assert.assertEquals(testCase.errorMessge,
                     data.metadata, form.getMetadata());
         }
     }
