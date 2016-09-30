@@ -12,12 +12,12 @@ import org.json.JSONObject;
 /**
  * Options of trigger.
  */
-public final class TriggerOptions implements Parcelable {
+public class TriggerOptions implements Parcelable {
 
     /**
      * TriggerOptions builder.
      */
-    public static final class Builder {
+    public static class Builder {
 
         @Nullable private String title;
         @Nullable private String description;
