@@ -4,18 +4,27 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
  * Options of trigger.
  */
-public final class TriggerOptions implements Parcelable {
+public class TriggerOptions implements Parcelable {
 
     /**
      * TriggerOptions builder.
      */
-    public static final class Builder {
+    public static class Builder {
+
+        @Nullable private String title;
+        @Nullable private String description;
+        @Nullable private JSONObject metadata;
+
+        private Builder() {
+        }
 
         /**
          * Constructs a {@link TriggerOptions.Builder} instance.
@@ -24,8 +33,7 @@ public final class TriggerOptions implements Parcelable {
          */
         @NonNull
         public static Builder builder() {
-            // TODO: implement me.
-            return null;
+            return new Builder();
         }
 
         /**
@@ -51,8 +59,12 @@ public final class TriggerOptions implements Parcelable {
                 @NonNull Trigger trigger)
             throws IllegalArgumentException
         {
-            // TODO: implement me.
-            return null;
+            if (trigger == null) {
+                throw new IllegalArgumentException("trigger is null.");
+            }
+            return new Builder().setTitle(trigger.getTitle()).
+                    setDescription(trigger.getDescription()).
+                    setMetadata(trigger.getMetadata());
         }
 
         /**
@@ -68,7 +80,11 @@ public final class TriggerOptions implements Parcelable {
                 @Nullable String title)
             throws IllegalArgumentException
         {
-            // TODO: implement me.
+            if (title != null && title.length() > 50) {
+                throw new IllegalArgumentException(
+                    "title is more than 50 charactors.");
+            }
+            this.title = title;
             return this;
         }
 
@@ -79,8 +95,7 @@ public final class TriggerOptions implements Parcelable {
          */
         @Nullable
         public String getTitle() {
-            // TODO: implement me.
-            return null;
+            return this.title;
         }
 
         /**
@@ -96,7 +111,11 @@ public final class TriggerOptions implements Parcelable {
                 @Nullable String description)
             throws IllegalArgumentException
         {
-            // TODO: implement me.
+            if (description != null && description.length() > 200) {
+                throw new IllegalArgumentException(
+                    "description is more than 200 charactors.");
+            }
+            this.description = description;
             return this;
         }
 
@@ -107,8 +126,7 @@ public final class TriggerOptions implements Parcelable {
          */
         @Nullable
         public String getDescription() {
-            // TODO: implement me.
-            return null;
+            return this.description;
         }
 
         /**
@@ -119,7 +137,7 @@ public final class TriggerOptions implements Parcelable {
          */
         @NonNull
         public Builder setMetadata(@Nullable JSONObject metadata) {
-            // TODO: implement me.
+            this.metadata = metadata;
             return this;
         }
 
@@ -130,8 +148,7 @@ public final class TriggerOptions implements Parcelable {
          */
         @Nullable
         public JSONObject getMetadata() {
-            // TODO: implement me.
-            return null;
+            return this.metadata;
         }
 
         /**
@@ -141,8 +158,28 @@ public final class TriggerOptions implements Parcelable {
          */
         @NonNull
         public TriggerOptions build() {
-            // TODO: implement me.
-            return null;
+            return new TriggerOptions(this.title, this.description,
+                    this.metadata);
+        }
+    }
+
+    @Nullable private String title;
+    @Nullable private String description;
+    @Nullable private JSONObject metadata;
+
+    private TriggerOptions(
+            @Nullable String title,
+            @Nullable String description,
+            @Nullable JSONObject metadata)
+    {
+        this.title = title;
+        this.description = description;
+        if (metadata != null) {
+            try {
+                this.metadata = new JSONObject(metadata.toString());
+            } catch (JSONException e) {
+                // Nerver happen.
+            }
         }
     }
 
@@ -153,8 +190,7 @@ public final class TriggerOptions implements Parcelable {
      */
     @Nullable
     public String getTitle() {
-        // TODO: implement me.
-        return null;
+        return this.title;
     }
 
     /**
@@ -164,8 +200,7 @@ public final class TriggerOptions implements Parcelable {
      */
     @Nullable
     public String getDescription() {
-        // TODO: implement me.
-        return null;
+        return this.description;
     }
 
     /**
@@ -175,22 +210,32 @@ public final class TriggerOptions implements Parcelable {
      */
     @Nullable
     public JSONObject getMetadata() {
-        // TODO: implement me.
-        return null;
+        return this.metadata;
     }
 
-    protected TriggerOptions(Parcel in) {
-        // TODO: implements me.
+    private TriggerOptions(Parcel in) {
+        this.title = in.readString();
+        this.description = in.readString();
+        String metadata = in.readString();
+        if (!TextUtils.isEmpty(metadata)) {
+            try {
+                this.metadata = new JSONObject(metadata);
+            } catch (JSONException ignore) {
+                // Never happen
+            }
+        }
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        // TODO: implements me.
+        dest.writeString(this.title);
+        dest.writeString(this.description);
+        dest.writeString(
+            this.metadata == null ? null : this.metadata.toString());
     }
 
     @Override
     public int describeContents() {
-        // TODO: implements me.
         return 0;
     }
 
@@ -198,13 +243,11 @@ public final class TriggerOptions implements Parcelable {
             new Creator<TriggerOptions>() {
         @Override
         public TriggerOptions createFromParcel(Parcel in) {
-            // TODO: implements me.
             return new TriggerOptions(in);
         }
 
         @Override
         public TriggerOptions[] newArray(int size) {
-            // TODO: implements me.
             return new TriggerOptions[size];
         }
     };

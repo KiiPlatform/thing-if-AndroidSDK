@@ -1,5 +1,6 @@
 package com.kii.thingif.trigger;
 
+import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.test.runner.AndroidJUnit4;
@@ -298,6 +299,34 @@ public class TriggeredCommandFormTest extends SmallTestBase {
                     expected.description, form.getDescription());
             assertJSONObject(testCase.errorMessge,
                     expected.metadata, form.getMetadata());
+
+            Parcel parcel = Parcel.obtain();
+            form.writeToParcel(parcel, 0);
+            parcel.setDataPosition(0);
+            TriggeredCommandForm deserialized =
+                    TriggeredCommandForm.CREATOR.createFromParcel(parcel);
+            Assert.assertNotNull(testCase.errorMessge, deserialized);
+
+            Assert.assertEquals(testCase.errorMessge,
+                    expected.schemaName, deserialized.getSchemaName());
+            Assert.assertEquals(testCase.errorMessge,
+                    expected.schemaVersion, deserialized.getSchemaVersion());
+            Assert.assertEquals(testCase.errorMessge,
+                    expected.actions.size(), deserialized.getActions().size());
+            for (int i = 0; i < deserialized.getActions().size(); ++i) {
+                Assert.assertArrayEquals(
+                    testCase.errorMessge,
+                    ((SetColor)(expected.actions.get(i))).color,
+                    ((SetColor)(deserialized.getActions().get(i))).color);
+            }
+            Assert.assertEquals(testCase.errorMessge,
+                    expected.targetID, deserialized.getTargetID());
+            Assert.assertEquals(testCase.errorMessge,
+                    expected.title, deserialized.getTitle());
+            Assert.assertEquals(testCase.errorMessge,
+                    expected.description, deserialized.getDescription());
+            assertJSONObject(testCase.errorMessge,
+                    expected.metadata, deserialized.getMetadata());
         }
     }
 
