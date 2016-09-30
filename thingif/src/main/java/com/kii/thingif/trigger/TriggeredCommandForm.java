@@ -475,7 +475,7 @@ public class TriggeredCommandForm implements Parcelable {
         this.schemaName = in.readString();
         this.schemaVersion = in.readInt();
         this.actions = new ArrayList<>();
-        in.readList(this.actions, null);
+        in.readList(this.actions, TriggeredCommandForm.class.getClassLoader());
         this.targetID = in.readParcelable(TypedID.class.getClassLoader());
         this.title = in.readString();
         this.description = in.readString();
