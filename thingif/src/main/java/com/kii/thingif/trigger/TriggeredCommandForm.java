@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.google.gson.annotations.SerializedName;
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
@@ -384,9 +385,11 @@ public class TriggeredCommandForm implements Parcelable {
 
     }
 
+    @SerializedName("schema")
     @NonNull private final String schemaName;
     private final int schemaVersion;
     @NonNull private final List<Action> actions;
+    @SerializedName("target")
     @Nullable private TypedID targetID;
     @Nullable private String title;
     @Nullable private String description;

@@ -880,6 +880,9 @@ public class ThingIFAPI implements Parcelable {
             @Nullable TriggerOptions options)
         throws ThingIFException
     {
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
+        }
         if (form == null) {
             throw new IllegalArgumentException("form is null.");
         }
@@ -895,8 +898,13 @@ public class ThingIFAPI implements Parcelable {
             requestBody.put("triggersWhat", TriggersWhat.COMMAND.name());
             requestBody.put("predicate", JsonUtils.newJson(
                         GsonRepository.gson(schema).toJson(predicate)));
-            requestBody.put("command", JsonUtils.newJson(
-                        GsonRepository.gson(schema).toJson(form)));
+            JSONObject command = JsonUtils.newJson(
+                GsonRepository.gson(schema).toJson(form));
+            command.put("issuer", this.owner.getTypedID());
+            if (form.getTargetID() == null) {
+                command.put("target", this.target.getTypedID().toString());
+            }
+            requestBody.put("command", command);
         } catch (JSONException e) {
             // Won't happen.
             e.printStackTrace();
