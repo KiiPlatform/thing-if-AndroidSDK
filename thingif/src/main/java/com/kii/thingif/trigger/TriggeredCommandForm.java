@@ -4,13 +4,17 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -39,7 +43,32 @@ public final class TriggeredCommandForm implements Parcelable {
     /**
      * TriggeredCommandForm builder.
      */
-    public static class Builder {
+    public static final class Builder implements Parcelable {
+
+        @NonNull private String schemaName;
+        private int schemaVersion;
+        @NonNull private List<Action> actions;
+        @Nullable private TypedID targetID;
+        @Nullable private String title;
+        @Nullable private String description;
+        @Nullable private JSONObject metadata;
+
+        private Builder(
+                @NonNull String schemaName,
+                int schemaVersion,
+                @NonNull List<Action> actions)
+        {
+            if (TextUtils.isEmpty(schemaName)) {
+                throw new IllegalArgumentException(
+                    "schemaName is null or empty.");
+            }
+            if (isEmpty(actions)) {
+                throw new IllegalArgumentException("actions is null or empty.");
+            }
+            this.schemaName = schemaName;
+            this.schemaVersion = schemaVersion;
+            this.actions = actions;
+        }
 
         /**
          * Constructs a {@link TriggeredCommandForm.Builder} instance.
@@ -62,8 +91,7 @@ public final class TriggeredCommandForm implements Parcelable {
                 @NonNull List<Action> actions)
             throws IllegalArgumentException
         {
-            // TODO: implement me.
-            return null;
+            return new Builder(schemaName, schemaVersion, actions);
         }
 
         /**
@@ -93,8 +121,14 @@ public final class TriggeredCommandForm implements Parcelable {
                 @NonNull Command command)
             throws IllegalArgumentException
         {
-            // TODO: implement me.
-            return null;
+            return (new Builder(
+                        command.getSchemaName(),
+                        command.getSchemaVersion(),
+                        command.getActions())).
+                    setTargetID(command.getTargetID()).
+                    setTitle(command.getTitle()).
+                    setDescription(command.getDescription()).
+                    setMetadata(command.getMetadata());
         }
 
         /**
@@ -114,7 +148,11 @@ public final class TriggeredCommandForm implements Parcelable {
                 @NonNull String schemaName)
             throws IllegalArgumentException
         {
-            // TODO: implement me.
+            if (TextUtils.isEmpty(schemaName)) {
+                throw new IllegalArgumentException(
+                    "schemaName is null or empty.");
+            }
+            this.schemaName = schemaName;
             return this;
         }
 
@@ -125,8 +163,7 @@ public final class TriggeredCommandForm implements Parcelable {
          */
         @NonNull
         public String getSchemaName() {
-            // TODO: implement me.
-            return null;
+            return this.schemaName;
         }
 
         /**
@@ -137,7 +174,7 @@ public final class TriggeredCommandForm implements Parcelable {
          */
         @NonNull
         public Builder setSchemaVersion(int schemaVersion) {
-            // TODO: implement me.
+            this.schemaVersion = schemaVersion;
             return this;
         }
 
@@ -146,10 +183,8 @@ public final class TriggeredCommandForm implements Parcelable {
          *
          * @return schema version
          */
-        @NonNull
         public int getSchemaVersion() {
-            // TODO: implement me.
-            return 0;
+            return this.schemaVersion;
         }
 
         /**
@@ -169,7 +204,10 @@ public final class TriggeredCommandForm implements Parcelable {
                 @NonNull List<Action> actions)
             throws IllegalArgumentException
         {
-            // TODO: implement me.
+            if (isEmpty(actions)) {
+                throw new IllegalArgumentException("actions is null or empty.");
+            }
+            this.actions = actions;
             return this;
         }
 
@@ -180,8 +218,7 @@ public final class TriggeredCommandForm implements Parcelable {
          */
         @NonNull
         public List<Action> getActions() {
-            // TODO: implement me.
-            return null;
+            return this.actions;
         }
 
         /**
@@ -216,7 +253,11 @@ public final class TriggeredCommandForm implements Parcelable {
                 @Nullable TypedID targetID)
             throws IllegalArgumentException
         {
-            // TODO: implement me.
+            if (targetID != null && targetID.getType() != TypedID.Types.THING) {
+                throw new IllegalArgumentException(
+                    "targetID type must be Types.THING");
+            }
+            this.targetID = targetID;
             return this;
         }
 
@@ -225,10 +266,9 @@ public final class TriggeredCommandForm implements Parcelable {
          *
          * @return target thing ID
          */
-        @NonNull
+        @Nullable
         public TypedID getTargetID() {
-            // TODO: implement me.
-            return null;
+            return this.targetID;
         }
 
         /**
@@ -244,7 +284,11 @@ public final class TriggeredCommandForm implements Parcelable {
                 @Nullable String title)
             throws IllegalArgumentException
         {
-            // TODO: implement me.
+            if (title != null && title.length() > 50) {
+                throw new IllegalArgumentException(
+                    "title is more than 50 charactors.");
+            }
+            this.title = title;
             return this;
         }
 
@@ -255,8 +299,7 @@ public final class TriggeredCommandForm implements Parcelable {
          */
         @Nullable
         public String getTitle() {
-            // TODO: implement me.
-            return null;
+            return this.title;
         }
 
         /**
@@ -272,7 +315,11 @@ public final class TriggeredCommandForm implements Parcelable {
                 @Nullable String description)
             throws IllegalArgumentException
         {
-            // TODO: implement me.
+            if (description != null && description.length() > 200) {
+                throw new IllegalArgumentException(
+                    "description is more than 200 charactors.");
+            }
+            this.description = description;
             return this;
         }
 
@@ -283,8 +330,7 @@ public final class TriggeredCommandForm implements Parcelable {
          */
         @Nullable
         public String getDescription() {
-            // TODO: implement me.
-            return null;
+            return this.description;
         }
 
         /**
@@ -295,7 +341,7 @@ public final class TriggeredCommandForm implements Parcelable {
          */
         @NonNull
         public Builder setMetadata(@Nullable JSONObject metadata) {
-            // TODO: implement me.
+            this.metadata = metadata;
             return this;
         }
 
@@ -306,8 +352,7 @@ public final class TriggeredCommandForm implements Parcelable {
          */
         @Nullable
         public JSONObject getMetadata() {
-            // TODO: implement me.
-            return null;
+            return this.metadata;
         }
 
         /**
@@ -317,10 +362,88 @@ public final class TriggeredCommandForm implements Parcelable {
          */
         @NonNull
         public TriggeredCommandForm build() {
-            // TODO: implement me.
-            return null;
+            TriggeredCommandForm retval =
+                    new TriggeredCommandForm(
+                        this.schemaName, this.schemaVersion, this.actions);
+            retval.targetID = this.targetID;
+            retval.title = this.title;
+            retval.description = this.description;
+            if (this.metadata != null) {
+                try {
+                    retval.metadata = new JSONObject(this.metadata.toString());
+                } catch (JSONException e) {
+                    // Never happen.
+                }
+            }
+            return retval;
         }
 
+        private Builder(Parcel in) {
+            this.schemaName = in.readString();
+            this.schemaVersion = in.readInt();
+            this.targetID = in.readParcelable(TypedID.class.getClassLoader());
+            this.title = in.readString();
+            this.description = in.readString();
+            String metadata = in. readString();
+            if (metadata != null) {
+                try {
+                    this.metadata = new JSONObject(metadata);
+                } catch (JSONException e) {
+                    // Never happen.
+                }
+            }
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeString(this.schemaName);
+            dest.writeInt(this.schemaVersion);
+            dest.writeParcelable(this.targetID, flags);
+            dest.writeString(this.title);
+            dest.writeString(this.description);
+            dest.writeString(this.metadata != null ?
+                    this.metadata.toString() : null);
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        public static final Creator<Builder> CREATOR = new Creator<Builder>() {
+            @Override
+            public Builder createFromParcel(Parcel in) {
+                return new Builder(in);
+            }
+
+            @Override
+            public Builder[] newArray(int size) {
+                return new Builder[size];
+            }
+        };
+
+        private static boolean isEmpty(Collection<?> collection) {
+            return collection == null || collection.isEmpty();
+        }
+
+    }
+
+    @NonNull private final String schemaName;
+    private final int schemaVersion;
+    @NonNull private final List<Action> actions;
+    @Nullable private TypedID targetID;
+    @Nullable private String title;
+    @Nullable private String description;
+    @Nullable private JSONObject metadata;
+
+    private TriggeredCommandForm(
+            @NonNull String schemaName,
+            int schemaVersion,
+            @NonNull List<Action> actions)
+    {
+        this.schemaName = schemaName;
+        this.schemaVersion = schemaVersion;
+        this.actions = actions;
     }
 
     /**
@@ -330,8 +453,7 @@ public final class TriggeredCommandForm implements Parcelable {
      */
     @NonNull
     public String getSchemaName() {
-        // TODO: implement me.
-        return null;
+        return this.schemaName;
     }
 
     /**
@@ -340,8 +462,7 @@ public final class TriggeredCommandForm implements Parcelable {
      * @return schema version
      */
     public int getSchemaVersion() {
-        // TODO: implement me.
-        return 0;
+        return this.schemaVersion;
     }
 
     /**
@@ -351,8 +472,7 @@ public final class TriggeredCommandForm implements Parcelable {
      */
     @NonNull
     public List<Action> getActions() {
-        // TODO: implement me.
-        return null;
+        return this.actions;
     }
 
     /**
@@ -360,10 +480,9 @@ public final class TriggeredCommandForm implements Parcelable {
      *
      * @return target thing ID
      */
-    @NonNull
+    @Nullable
     public TypedID getTargetID() {
-        // TODO: implement me.
-        return null;
+        return this.targetID;
     }
 
     /**
@@ -373,8 +492,7 @@ public final class TriggeredCommandForm implements Parcelable {
      */
     @Nullable
     public String getTitle() {
-        // TODO: implement me.
-        return null;
+        return this.title;
     }
 
     /**
@@ -384,8 +502,7 @@ public final class TriggeredCommandForm implements Parcelable {
      */
     @Nullable
     public String getDescription() {
-        // TODO: implement me.
-        return null;
+        return this.description;
     }
 
     /**
@@ -395,22 +512,41 @@ public final class TriggeredCommandForm implements Parcelable {
      */
     @Nullable
     public JSONObject getMetadata() {
-        // TODO: implement me.
-        return null;
+        return this.metadata;
     }
 
     private TriggeredCommandForm(Parcel in) {
-        // TODO: implement me.
+        this.schemaName = in.readString();
+        this.schemaVersion = in.readInt();
+        this.actions = new ArrayList<>();
+        in.readList(this.actions, null);
+        this.targetID = in.readParcelable(TypedID.class.getClassLoader());
+        this.title = in.readString();
+        this.description = in.readString();
+        String metadata = in. readString();
+        if (metadata != null) {
+            try {
+                this.metadata = new JSONObject(metadata);
+            } catch (JSONException e) {
+                // Never happen.
+            }
+        }
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        // TODO: implement me.
+        dest.writeString(this.schemaName);
+        dest.writeInt(this.schemaVersion);
+        dest.writeList(this.actions);
+        dest.writeParcelable(this.getTargetID(), flags);
+        dest.writeString(this.title);
+        dest.writeString(this.description);
+        dest.writeString(this.metadata != null ?
+                this.metadata.toString() : null);
     }
 
     @Override
     public int describeContents() {
-        // TODO: implement me.
         return 0;
     }
 
@@ -418,13 +554,11 @@ public final class TriggeredCommandForm implements Parcelable {
             new Creator<TriggeredCommandForm>() {
         @Override
         public TriggeredCommandForm createFromParcel(Parcel in) {
-            // TODO: implement me.
             return new TriggeredCommandForm(in);
         }
 
         @Override
         public TriggeredCommandForm[] newArray(int size) {
-            // TODO: implement me.
             return new TriggeredCommandForm[size];
         }
     };
