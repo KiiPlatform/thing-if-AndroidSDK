@@ -46,7 +46,7 @@ public final class TriggeredCommandForm implements Parcelable {
     public static final class Builder implements Parcelable {
 
         @NonNull private String schemaName;
-        @NonNull private int schemaVersion;
+        private int schemaVersion;
         @NonNull private List<Action> actions;
         @Nullable private TypedID targetID;
         @Nullable private String title;
@@ -426,7 +426,7 @@ public final class TriggeredCommandForm implements Parcelable {
     }
 
     @NonNull private final String schemaName;
-    @NonNull private final int schemaVersion;
+    private final int schemaVersion;
     @NonNull private final List<Action> actions;
     @Nullable private TypedID targetID;
     @Nullable private String title;
