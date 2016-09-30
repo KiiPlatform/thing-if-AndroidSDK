@@ -38,12 +38,12 @@ import java.util.List;
  * <li>meta data of a schema</li>
  * </ul>
  */
-public final class TriggeredCommandForm implements Parcelable {
+public class TriggeredCommandForm implements Parcelable {
 
     /**
      * TriggeredCommandForm builder.
      */
-    public static final class Builder implements Parcelable {
+    public static class Builder {
 
         @NonNull private String schemaName;
         private int schemaVersion;
@@ -377,50 +377,6 @@ public final class TriggeredCommandForm implements Parcelable {
             }
             return retval;
         }
-
-        private Builder(Parcel in) {
-            this.schemaName = in.readString();
-            this.schemaVersion = in.readInt();
-            this.targetID = in.readParcelable(TypedID.class.getClassLoader());
-            this.title = in.readString();
-            this.description = in.readString();
-            String metadata = in. readString();
-            if (metadata != null) {
-                try {
-                    this.metadata = new JSONObject(metadata);
-                } catch (JSONException e) {
-                    // Never happen.
-                }
-            }
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeString(this.schemaName);
-            dest.writeInt(this.schemaVersion);
-            dest.writeParcelable(this.targetID, flags);
-            dest.writeString(this.title);
-            dest.writeString(this.description);
-            dest.writeString(this.metadata != null ?
-                    this.metadata.toString() : null);
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        public static final Creator<Builder> CREATOR = new Creator<Builder>() {
-            @Override
-            public Builder createFromParcel(Parcel in) {
-                return new Builder(in);
-            }
-
-            @Override
-            public Builder[] newArray(int size) {
-                return new Builder[size];
-            }
-        };
 
         private static boolean isEmpty(Collection<?> collection) {
             return collection == null || collection.isEmpty();
