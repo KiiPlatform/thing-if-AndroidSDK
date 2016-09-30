@@ -10,11 +10,11 @@ import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -62,7 +62,7 @@ public final class TriggeredCommandForm implements Parcelable {
                 throw new IllegalArgumentException(
                     "schemaName is null or empty.");
             }
-            if (CollectionUtils.isEmpty(actions)) {
+            if (isEmpty(actions)) {
                 throw new IllegalArgumentException("actions is null or empty.");
             }
             this.schemaName = schemaName;
@@ -183,7 +183,6 @@ public final class TriggeredCommandForm implements Parcelable {
          *
          * @return schema version
          */
-        @NonNull
         public int getSchemaVersion() {
             return this.schemaVersion;
         }
@@ -205,7 +204,7 @@ public final class TriggeredCommandForm implements Parcelable {
                 @NonNull List<Action> actions)
             throws IllegalArgumentException
         {
-            if (CollectionUtils.isEmpty(actions)) {
+            if (isEmpty(actions)) {
                 throw new IllegalArgumentException("actions is null or empty.");
             }
             this.actions = actions;
@@ -423,6 +422,10 @@ public final class TriggeredCommandForm implements Parcelable {
             }
         };
 
+        private static boolean isEmpty(Collection<?> collection) {
+            return collection == null || collection.isEmpty();
+        }
+
     }
 
     @NonNull private final String schemaName;
@@ -515,7 +518,7 @@ public final class TriggeredCommandForm implements Parcelable {
     private TriggeredCommandForm(Parcel in) {
         this.schemaName = in.readString();
         this.schemaVersion = in.readInt();
-        this.actions = new ArrayList<Action>();
+        this.actions = new ArrayList<>();
         in.readList(this.actions, null);
         this.targetID = in.readParcelable(TypedID.class.getClassLoader());
         this.title = in.readString();
