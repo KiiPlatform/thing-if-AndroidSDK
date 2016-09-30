@@ -296,7 +296,7 @@ public class TriggeredCommandFormTest extends SmallTestBase {
                     expected.title, form.getTitle());
             Assert.assertEquals(testCase.errorMessge,
                     expected.description, form.getDescription());
-            assertEqualsJson(testCase.errorMessge,
+            assertJSONObject(testCase.errorMessge,
                     expected.metadata, form.getMetadata());
         }
     }
@@ -346,7 +346,7 @@ public class TriggeredCommandFormTest extends SmallTestBase {
                     expected.title, form.getTitle());
             Assert.assertEquals(testCase.errorMessge,
                     expected.description, form.getDescription());
-            assertEqualsJson(testCase.errorMessge,
+            assertJSONObject(testCase.errorMessge,
                     expected.metadata, form.getMetadata());
         }
     }
@@ -497,7 +497,7 @@ public class TriggeredCommandFormTest extends SmallTestBase {
         Assert.assertEquals(targetID1, builder.getTargetID());
         Assert.assertEquals(title1, builder.getTitle());
         Assert.assertEquals(description1, builder.getDescription());
-        assertEqualsJson(json1, builder.getMetadata());
+        assertJSONObject(json1, builder.getMetadata());
 
         form = builder.build();
 
@@ -507,7 +507,7 @@ public class TriggeredCommandFormTest extends SmallTestBase {
         Assert.assertEquals(targetID1, form.getTargetID());
         Assert.assertEquals(title1, form.getTitle());
         Assert.assertEquals(description1, form.getDescription());
-        assertEqualsJson(json1, form.getMetadata());
+        assertJSONObject(json1, form.getMetadata());
 
         String schemaName2 = "schema name 2";
         int schemaVersion2 = 2;
@@ -530,7 +530,7 @@ public class TriggeredCommandFormTest extends SmallTestBase {
         Assert.assertEquals(targetID2, builder.getTargetID());
         Assert.assertEquals(title2, builder.getTitle());
         Assert.assertEquals(description2, builder.getDescription());
-        assertEqualsJson(json2, builder.getMetadata());
+        assertJSONObject(json2, builder.getMetadata());
 
         form = builder.build();
 
@@ -540,37 +540,7 @@ public class TriggeredCommandFormTest extends SmallTestBase {
         Assert.assertEquals(targetID2, form.getTargetID());
         Assert.assertEquals(title2, form.getTitle());
         Assert.assertEquals(description2, form.getDescription());
-        assertEqualsJson(json2, form.getMetadata());
-    }
-
-    private static void assertEqualsJson(
-            JSONObject expected,
-            JSONObject actual)
-    {
-        if (expected == null && actual == null) {
-            // sccess casel
-            return;
-        } else if (expected != null && actual != null) {
-            Assert.assertEquals(expected.toString(), actual.toString());
-        } else {
-            Assert.fail("expected and actual is not same.");
-        }
-    }
-
-    private static void assertEqualsJson(
-            String errorMessge,
-            JSONObject expected,
-            JSONObject actual)
-    {
-        if (expected == null && actual == null) {
-            // sccess case
-            return;
-        } else if (expected != null && actual != null) {
-            Assert.assertEquals(errorMessge, expected.toString(),
-                    actual.toString());
-        } else {
-            Assert.fail(errorMessge + ": expected and actual is not same.");
-        }
+        assertJSONObject(json2, form.getMetadata());
     }
 
 }
