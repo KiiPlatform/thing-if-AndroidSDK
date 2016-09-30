@@ -40,6 +40,7 @@ import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
@@ -323,6 +324,15 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
     }
     protected void assertRequestBody(JsonElement expected, RecordedRequest actual) {
         Assert.assertEquals("request body", expected, new JsonParser().parse(actual.getBody().readUtf8()));
+    }
+
+    protected void assertRequestBodyByJSON(
+            JsonElement expected,
+            RecordedRequest actual)
+        throws JSONException
+    {
+        assertJSONObject(new JSONObject(expected.toString()),
+                new JSONObject(actual.getBody().readUtf8()));
     }
 
     /**
