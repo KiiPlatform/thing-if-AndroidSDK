@@ -907,7 +907,8 @@ public class ThingIFAPI implements Parcelable {
             requestBody.put("command", command);
         } catch (JSONException e) {
             // Won't happen.
-            e.printStackTrace();
+            // TODO: remove this after test finished.
+            throw new RuntimeException(e);
         }
         return postNewTrigger(requestBody);
     }
