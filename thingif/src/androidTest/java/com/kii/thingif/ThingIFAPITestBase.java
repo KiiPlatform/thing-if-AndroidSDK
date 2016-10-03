@@ -29,6 +29,7 @@ import com.kii.thingif.trigger.SchedulePredicate;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.StatePredicate;
 import com.kii.thingif.trigger.Trigger;
+import com.kii.thingif.trigger.TriggerOptions;
 import com.kii.thingif.trigger.TriggeredServerCodeResult;
 import com.kii.thingif.trigger.clause.And;
 import com.kii.thingif.trigger.clause.Clause;
@@ -156,9 +157,29 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         this.server.enqueue(response);
     }
     protected void addMockResponseForGetTriggerWithCommand(int httpStatus, String triggerID, Command command, Predicate predicate, Boolean disabled, String disabledReason, Schema schema) {
+        addMockResponseForGetTriggerWithCommand(httpStatus, triggerID, command,
+                predicate, null, disabled, disabledReason, schema);
+    }
+
+    protected void addMockResponseForGetTriggerWithCommand(
+            int httpStatus,
+            String triggerID,
+            Command command,
+            Predicate predicate,
+            TriggerOptions options,
+            Boolean disabled,
+            String disabledReason,
+            Schema schema)
+    {
         MockResponse response = new MockResponse().setResponseCode(httpStatus);
         if (httpStatus == 200) {
-            JsonObject responseBody = new JsonObject();
+            JsonObject responseBody = null;
+            if (options == null) {
+                responseBody = new JsonObject();
+            } else {
+                responseBody =
+                    GsonRepository.gson().toJsonTree(options).getAsJsonObject();
+            }
             if (triggerID != null) {
                 responseBody.addProperty("triggerID", triggerID);
             }

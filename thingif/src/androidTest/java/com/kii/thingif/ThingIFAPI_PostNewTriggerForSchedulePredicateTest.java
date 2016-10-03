@@ -17,6 +17,7 @@ import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.SchedulePredicate;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.Trigger;
+import com.kii.thingif.trigger.TriggerOptions;
 import com.kii.thingif.trigger.TriggeredCommandForm;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
@@ -416,6 +417,11 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
+        JSONObject metadata = new JSONObject();
+        metadata.put("key", "value");
+        TriggerOptions options = TriggerOptions.Builder.builder().
+                setTitle("title").setDescription("description").
+                setMetadata(metadata).build();
         Command expectedCommand = new Command(
                 schema.getSchemaName(),
                 schema.getSchemaVersion(),
@@ -428,6 +434,7 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
                 triggerID,
                 expectedCommand,
                 predicate,
+                options,
                 false,
                 null,
                 schema);
@@ -439,7 +446,7 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
                     DEMO_SCHEMA_VERSION,
                     actions).setTargetID(thingIDB).build(),
                 predicate,
-                null);
+                options);
 
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
@@ -464,7 +471,8 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
         expectedRequestHeaders1.put("Content-Type", "application/json");
         this.assertRequestHeader(expectedRequestHeaders1, request1);
 
-        JsonObject expectedRequestBody = new JsonObject();
+        JsonObject expectedRequestBody =
+                GsonRepository.gson().toJsonTree(options).getAsJsonObject();
         expectedRequestBody.add("command",
                 GsonRepository.gson(schema).toJsonTree(expectedCommand));
         expectedRequestBody.add("predicate",
