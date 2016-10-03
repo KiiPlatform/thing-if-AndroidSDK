@@ -889,17 +889,18 @@ public class ThingIFAPI implements Parcelable {
         if (predicate == null) {
             throw new IllegalArgumentException("predicate is null.");
         }
-        Schema schema =
-            this.getSchema(form.getSchemaName(), form.getSchemaVersion());
         JSONObject requestBody = options != null ?
                 JsonUtils.newJson(GsonRepository.gson().toJson(options)) :
                 new JSONObject();
         try {
             requestBody.put("triggersWhat", TriggersWhat.COMMAND.name());
             requestBody.put("predicate", JsonUtils.newJson(
-                        GsonRepository.gson(schema).toJson(predicate)));
+                        GsonRepository.gson().toJson(predicate)));
             JSONObject command = JsonUtils.newJson(
-                GsonRepository.gson(schema).toJson(form));
+                GsonRepository.gson(
+                    this.getSchema(
+                        form.getSchemaName(),
+                        form.getSchemaVersion())).toJson(form));
             command.put("issuer", this.owner.getTypedID());
             if (form.getTargetID() == null) {
                 command.put("target", this.target.getTypedID().toString());
