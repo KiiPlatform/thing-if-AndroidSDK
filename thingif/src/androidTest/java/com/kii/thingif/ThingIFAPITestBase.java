@@ -489,6 +489,16 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         this.assertCommand(schema, expected.getCommand(), actual.getCommand());
         this.assertServerCode(expected.getServerCode(), actual.getServerCode());
     }
+
+    protected void assertTriggerOptions(
+            TriggerOptions expected,
+            Trigger actual)
+    {
+        Assert.assertEquals(expected.getTitle(), actual.getTitle());
+        Assert.assertEquals(expected.getDescription(), actual.getDescription());
+        assertJSONObject(expected.getMetadata(), actual.getMetadata());
+    }
+
     protected void assertTriggerServerCodeResult(TriggeredServerCodeResult expected, TriggeredServerCodeResult actual) {
         Assert.assertEquals(expected.isSucceeded(), actual.isSucceeded());
         Assert.assertEquals(expected.getReturnedValue(), actual.getReturnedValue());

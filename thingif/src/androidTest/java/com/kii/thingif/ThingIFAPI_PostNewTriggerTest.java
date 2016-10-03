@@ -145,6 +145,9 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         Assert.assertNull(trigger.getServerCode());
         this.assertPredicate(predicate, trigger.getPredicate());
         this.assertCommand(schema, expectedCommand, trigger.getCommand());
+        if (options != null) {
+            assertTriggerOptions(options, trigger);
+        }
         // verify the 1st request
         RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
         Assert.assertEquals(BASE_PATH + "/targets/" + thingIDA.toString() + "/triggers", request1.getPath());
