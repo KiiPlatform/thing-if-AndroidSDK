@@ -19,6 +19,8 @@ import com.kii.thingif.trigger.ScheduleOncePredicate;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.StatePredicate;
 import com.kii.thingif.trigger.Trigger;
+import com.kii.thingif.trigger.TriggerOptions;
+import com.kii.thingif.trigger.TriggeredCommandForm;
 import com.kii.thingif.trigger.TriggersWhen;
 import com.kii.thingif.trigger.clause.Equals;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
@@ -108,7 +110,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         this.postNewTriggerWithCommandTest(predicate);
     }
 
-    void postNewTriggerWithTargetAndCommandTest(Predicate predicate) throws Exception {
+    void postNewTriggerWithFormAndOptionTest(Predicate predicate, TriggerOptions options) throws Exception {
         Schema schema = this.createDefaultSchema();
         TypedID thingIDA = new TypedID(TypedID.Types.THING, "th.1234567890");
         TypedID thingIDB = new TypedID(TypedID.Types.THING, "th.9876543210");
@@ -127,10 +129,16 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
 
         Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), commandTarget.getTypedID(), api.getOwner().getTypedID(), actions);
         this.addMockResponseForPostNewTrigger(201, triggerID);
-        this.addMockResponseForGetTriggerWithCommand(200, triggerID, expectedCommand, predicate, false, null, schema);
+        this.addMockResponseForGetTriggerWithCommand(200, triggerID, expectedCommand, predicate, options, false, null, schema);
 
         api.setTarget(target);
-        Trigger trigger = api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate, commandTarget);
+        Trigger trigger = api.postNewTrigger(
+            TriggeredCommandForm.Builder.builder(
+                DEMO_SCHEMA_NAME,
+                DEMO_SCHEMA_VERSION,
+                actions).setTargetID(thingIDB).build(),
+            predicate,
+            options);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -151,6 +159,12 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         this.assertRequestHeader(expectedRequestHeaders1, request1);
 
         JsonObject expectedRequestBody = new JsonObject();
+        if (options == null) {
+            expectedRequestBody = new JsonObject();
+        } else {
+            expectedRequestBody =
+                GsonRepository.gson().toJsonTree(options).getAsJsonObject();
+        }
         expectedRequestBody.add("command", GsonRepository.gson(schema).toJsonTree(expectedCommand));
         expectedRequestBody.add("predicate", GsonRepository.gson(schema).toJsonTree(predicate));
         expectedRequestBody.add("triggersWhat", new JsonPrimitive("COMMAND"));
@@ -168,14 +182,25 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         this.assertRequestHeader(expectedRequestHeaders2, request2);
     }
     @Test
-    public void postNewStateTriggerWithTargetAndCommandTest() throws Exception {
+    public void postNewStateTriggerWithFormTest() throws Exception {
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
-        this.postNewTriggerWithTargetAndCommandTest(predicate);
+        this.postNewTriggerWithFormAndOptionTest(predicate, null);
     }
+
     @Test
-    public void postNewScheduledOnceTriggerWithTargetAndCommandTest() throws Exception {
+    public void postNewScheduleOnceTriggerWithFormTest() throws Exception {
         ScheduleOncePredicate predicate = new ScheduleOncePredicate(System.currentTimeMillis());
-        this.postNewTriggerWithTargetAndCommandTest(predicate);
+        this.postNewTriggerWithFormAndOptionTest(predicate, null);
+    }
+
+    @Test
+    public void postNewStriggerWithFormAndOptionTest() throws Exception {
+        ScheduleOncePredicate predicate = new ScheduleOncePredicate(System.currentTimeMillis());
+        JSONObject metadata = new JSONObject();
+        metadata.put("key", "value");
+        this.postNewTriggerWithFormAndOptionTest(predicate,
+                TriggerOptions.Builder.builder().setTitle("title").
+                setDescription("description").setMetadata(metadata).build());
     }
 
     @Test
@@ -448,6 +473,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, null);
     }
 
+    /*
     @Test
     public void postNewTriggerWithTarget403ErrorTest() throws Exception {
         Schema schema = this.createDefaultSchema();
@@ -658,4 +684,5 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         api.setTarget(target);
         api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, null, target);
     }
+    */
 }
