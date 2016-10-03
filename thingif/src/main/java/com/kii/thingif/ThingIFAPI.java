@@ -794,48 +794,20 @@ public class ThingIFAPI implements Parcelable {
      * Post new Trigger with commands to IoT Cloud.
      *
      * <p>
-     * When thing related to this ThingIFAPI instance meets condition
-     * described by predicate, A registered command sends to thing related to
-     * target.
-     * </p>
-     *
-     * {@link #getTarget()} instance and target argument must be same owner's
-     * things.
-     *
-     * @param schemaName name of the schema.
-     * @param schemaVersion version of schema.
-     * @param actions Specify actions included in the Command is fired by the
-     *                trigger.
-     * @param predicate Specify when the Trigger fires command.
-     * @param target target of trigger.
-     * @return Instance of the Trigger registered in IoT Cloud.
-     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
-     * @throws ThingIFRestException Thrown when server returns error response.
-     */
-    @NonNull
-    @WorkerThread
-    public Trigger postNewTrigger(
-            @NonNull String schemaName,
-            int schemaVersion,
-            @NonNull List<Action> actions,
-            @NonNull Predicate predicate,
-            @NonNull Target target) throws ThingIFException {
-        return postNewTriggerWithCommands(schemaName, schemaVersion, actions, predicate, target);
-    }
-
-    /**
-     * Post new Trigger with commands to IoT Cloud.
-     *
-     * <p>
-     * Short version of {@link #postNewTrigger(String, int, List, Predicate,
-     * Target)}.
+     * Limited version of {@link #postNewTrigger(TriggeredCommandForm,
+     * Predicate, TriggerOptions)}.
      * </p>
      *
      * <p>
      * This method equals to followings:
      * </p>
      * <code>
-     * api.postNewTrigger(schemaName, schemaVersion, actions, predicate, api.getTarget()).
+     * api.postNewTrigger(
+     *         TriggeredCommandForm.Builder.builder(
+     *             schemaName,
+     *             schemaVersion,
+     *             actions).setTargetID(api.getTarget()).build(),
+     *         predicate, null).
      * </code>
      *
      * @param schemaName name of the schema.
@@ -846,7 +818,7 @@ public class ThingIFAPI implements Parcelable {
      * @return Instance of the Trigger registered in IoT Cloud.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @see #postNewTrigger(String, int, List, Predicate, Target)
+     * @see #postNewTrigger(TriggeredCommandForm, Predicate, TriggerOptions)
      */
     @NonNull
     @WorkerThread
@@ -855,8 +827,15 @@ public class ThingIFAPI implements Parcelable {
             int schemaVersion,
             @NonNull List<Action> actions,
             @NonNull Predicate predicate)
-            throws ThingIFException {
-        return postNewTriggerWithCommands(schemaName, schemaVersion, actions, predicate, this.target);
+            throws ThingIFException
+    {
+        return postNewTriggerWithForm(
+            TriggeredCommandForm.Builder.builder(
+                schemaName,
+                schemaVersion,
+                actions).build(),
+            predicate,
+            null);
     }
 
     /**
@@ -892,42 +871,47 @@ public class ThingIFAPI implements Parcelable {
             @Nullable TriggerOptions options)
         throws ThingIFException
     {
-        // TODO: implement me.
-        return null;
+        return postNewTriggerWithForm(form, predicate, options);
     }
 
-    private Trigger postNewTriggerWithCommands(
-            String schemaName,
-            int schemaVersion,
-            List<Action> actions,
-            Predicate predicate,
-            Target commandTarget) throws ThingIFException {
+    private Trigger postNewTriggerWithForm(
+            @NonNull TriggeredCommandForm form,
+            @NonNull Predicate predicate,
+            @Nullable TriggerOptions options)
+        throws ThingIFException
+    {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
-        if (TextUtils.isEmpty(schemaName)) {
-            throw new IllegalArgumentException("schemaName is null or empty");
-        }
-        if (actions == null || actions.size() == 0) {
-            throw new IllegalArgumentException("actions is null or empty");
+        if (form == null) {
+            throw new IllegalArgumentException("form is null.");
         }
         if (predicate == null) {
-            throw new IllegalArgumentException("predicate is null");
+            throw new IllegalArgumentException("predicate is null.");
         }
-        if (commandTarget == null) {
-            throw new IllegalArgumentException("Command target is null");
-        }
-        JSONObject requestBody = new JSONObject();
-        Schema schema = this.getSchema(schemaName, schemaVersion);
-        Command command = new Command(schemaName, schemaVersion, commandTarget.getTypedID(), this.owner.getTypedID(), actions);
+        JSONObject requestBody = options != null ?
+                JsonUtils.newJson(GsonRepository.gson().toJson(options)) :
+                new JSONObject();
         try {
-            requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson(schema).toJson(predicate)));
             requestBody.put("triggersWhat", TriggersWhat.COMMAND.name());
-            requestBody.put("command", JsonUtils.newJson(GsonRepository.gson(schema).toJson(command)));
+            requestBody.put("predicate", JsonUtils.newJson(
+                        GsonRepository.gson().toJson(predicate)));
+            JSONObject command = JsonUtils.newJson(
+                GsonRepository.gson(
+                    this.getSchema(
+                        form.getSchemaName(),
+                        form.getSchemaVersion())).toJson(form));
+            command.put("issuer", this.owner.getTypedID());
+            if (form.getTargetID() == null) {
+                command.put("target", this.target.getTypedID().toString());
+            }
+            requestBody.put("command", command);
         } catch (JSONException e) {
-            // Won’t happen
+            // Won't happen.
+            // TODO: remove this after test finished.
+            throw new RuntimeException(e);
         }
-        return this.postNewTrigger(requestBody);
+        return postNewTrigger(requestBody);
     }
 
     /**
