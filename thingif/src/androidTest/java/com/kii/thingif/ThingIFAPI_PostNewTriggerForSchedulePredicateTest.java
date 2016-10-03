@@ -455,6 +455,7 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
         Assert.assertNull(trigger.getServerCode());
         this.assertPredicate(predicate, trigger.getPredicate());
         this.assertCommand(schema, expectedCommand, trigger.getCommand());
+        assertTriggerOptions(options, trigger);
         // verify the 1st request
         RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
         Assert.assertEquals(

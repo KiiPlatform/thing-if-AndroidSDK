@@ -1017,7 +1017,7 @@ public class ThingIFAPI implements Parcelable {
      * more following conditions are met.
      * <ul>
      *  <li>triggerID is null or empty string.</li>
-     *  <li>Both of form and predicate are null</li>
+     *  <li>All of form, predicate and options are null</li>
      * </ul>
      */
     @NonNull
@@ -1029,19 +1029,28 @@ public class ThingIFAPI implements Parcelable {
             @Nullable TriggerOptions options)
         throws ThingIFException
     {
-        return null;
+        return patchTriggerWithForm(triggerID, form, predicate, options);
     }
 
     /**
      * Apply Patch to registered Trigger
      * Modify registered Trigger with specified patch.
+     *
+     * <p>
+     * Limited version of {@link #patchTrigger(String, TriggeredCommandForm,
+     * Predicate, TriggerOptions)}
+     * <p>
+     *
      * @param triggerID ID ot the Trigger to apply patch
-     * @param schemaName name of the schema.
-     * @param schemaVersion version of schema.
+     * @param schemaName name of the schema. if actions is not null and not
+     * empty, this must be not null. if actions is null or empty, this
+     * argument is ignored.
+     * @param schemaVersion version of schema. if actions is null or empty,
+     * this argument is ignored.
      * @param actions Modified actions.
-     *                If null NonNull predicate must be specified.
+     *                If null or empty, predicate must not be null.
      * @param predicate Modified predicate.
-     *                  If null NonNull actions must be specified.
+     *                  If null, actions must not be null and empty.
      * @return Updated Trigger instance.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
@@ -1051,37 +1060,72 @@ public class ThingIFAPI implements Parcelable {
     @WorkerThread
     public Trigger patchTrigger(
             @NonNull String triggerID,
-            @NonNull String schemaName,
+            @Nullable String schemaName,
             int schemaVersion,
             @Nullable List<Action> actions,
             @Nullable Predicate predicate) throws
             ThingIFException {
+        if ((actions == null || actions.size() == 0) && predicate == null) {
+            throw new IllegalArgumentException(
+                "actions is null or empty and predicate is null.");
+        }
+        TriggeredCommandForm form = null;
+        if (actions != null && actions.size() > 0) {
+            form = TriggeredCommandForm.Builder.builder(
+                schemaName, schemaVersion, actions).build();
+        }
+        return patchTriggerWithForm(triggerID, form, predicate, null);
+    }
 
+    @NonNull
+    @WorkerThread
+    private Trigger patchTriggerWithForm(
+            @NonNull String triggerID,
+            @Nullable TriggeredCommandForm form,
+            @Nullable Predicate predicate,
+            @Nullable TriggerOptions options)
+        throws ThingIFException
+    {
         if (this.target == null) {
-            throw new IllegalStateException("Can not perform this action before onboarding");
+            throw new IllegalStateException(
+                "Can not perform this action before onboarding");
         }
         if (TextUtils.isEmpty(triggerID)) {
             throw new IllegalArgumentException("triggerID is null or empty");
         }
-        if (TextUtils.isEmpty(schemaName)) {
-            throw new IllegalArgumentException("schemaName is null or empty");
-        }
-        if (actions == null || actions.size() == 0) {
-            throw new IllegalArgumentException("actions is null or empty");
-        }
-        if (predicate == null) {
-            throw new IllegalArgumentException("predicate is null");
+        if (form == null && predicate == null && options == null) {
+            throw new IllegalArgumentException(
+                "All of form, predicate and options are null.");
         }
 
-        JSONObject requestBody = new JSONObject();
-        Schema schema = this.getSchema(schemaName, schemaVersion);
-        Command command = new Command(schemaName, schemaVersion, this.target.getTypedID(), this.owner.getTypedID(), actions);
+        JSONObject requestBody = null;
         try {
-            requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson(schema).toJson(predicate)));
-            requestBody.put("command", JsonUtils.newJson(GsonRepository.gson(schema).toJson(command)));
+            if (options != null) {
+                requestBody =
+                    JsonUtils.newJson(GsonRepository.gson().toJson(options));
+            } else {
+                requestBody = new JSONObject();
+            }
+
             requestBody.put("triggersWhat", TriggersWhat.COMMAND.name());
+            if (predicate != null) {
+                requestBody.put("predicate",
+                        JsonUtils.newJson(
+                            GsonRepository.gson().toJson(predicate)));
+            }
+            if (form != null) {
+                JSONObject command = JsonUtils.newJson(
+                    GsonRepository.gson(
+                        this.getSchema(form.getSchemaName(),
+                                form.getSchemaVersion())).toJson(form));
+                command.put("issuer", this.owner.getTypedID());
+                if (form.getTargetID() == null) {
+                    command.put("target", this.target.getTypedID().toString());
+                }
+                requestBody.put("command", command);
+            }
         } catch (JSONException e) {
-            // Won’t happen
+            // Won't happen
         }
         return this.patchTrigger(triggerID, requestBody);
     }
