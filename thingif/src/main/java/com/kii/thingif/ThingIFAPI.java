@@ -795,7 +795,7 @@ public class ThingIFAPI implements Parcelable {
      * </p>
      * <code>
      * api.postNewTrigger(
-     *         TriggeredCommandForm.Builder.builder(
+     *         TriggeredCommandForm.Builder.newBuilder(
      *             schemaName,
      *             schemaVersion,
      *             actions).setTargetID(api.getTarget()).build(),
@@ -822,7 +822,7 @@ public class ThingIFAPI implements Parcelable {
             throws ThingIFException
     {
         return postNewTriggerWithForm(
-            TriggeredCommandForm.Builder.builder(
+            TriggeredCommandForm.Builder.newBuilder(
                 schemaName,
                 schemaVersion,
                 actions).build(),
@@ -1063,7 +1063,7 @@ public class ThingIFAPI implements Parcelable {
         }
         TriggeredCommandForm form = null;
         if (actions != null && actions.size() > 0) {
-            form = TriggeredCommandForm.Builder.builder(
+            form = TriggeredCommandForm.Builder.newBuilder(
                 schemaName, schemaVersion, actions).build();
         }
         return patchTriggerWithForm(triggerID, form, predicate, null);

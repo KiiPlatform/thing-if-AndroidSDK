@@ -132,7 +132,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
 
         ThingIFAPIUtils.setTarget(api, target);
         Trigger trigger = api.postNewTrigger(
-            TriggeredCommandForm.Builder.builder(
+            TriggeredCommandForm.Builder.newBuilder(
                 DEMO_SCHEMA_NAME,
                 DEMO_SCHEMA_VERSION,
                 actions).setTargetID(thingIDB).build(),
@@ -498,7 +498,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         try {
             ThingIFAPIUtils.setTarget(api, target);
             api.postNewTrigger(
-                TriggeredCommandForm.Builder.builder(
+                TriggeredCommandForm.Builder.newBuilder(
                     DEMO_SCHEMA_NAME,
                     DEMO_SCHEMA_VERSION,
                     actions).setTargetID(thingIDB).build(),
@@ -548,7 +548,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         try {
             ThingIFAPIUtils.setTarget(api, target);
             api.postNewTrigger(
-                TriggeredCommandForm.Builder.builder(
+                TriggeredCommandForm.Builder.newBuilder(
                     DEMO_SCHEMA_NAME,
                     DEMO_SCHEMA_VERSION,
                     actions).setTargetID(thingIDB).build(),
@@ -598,7 +598,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         try {
             ThingIFAPIUtils.setTarget(api, target);
             api.postNewTrigger(
-                TriggeredCommandForm.Builder.builder(
+                TriggeredCommandForm.Builder.newBuilder(
                     DEMO_SCHEMA_NAME,
                     DEMO_SCHEMA_VERSION,
                     actions).setTargetID(thingIDB).build(),
@@ -654,7 +654,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         ThingIFAPIUtils.setTarget(api, target);
         api.postNewTrigger(
-            TriggeredCommandForm.Builder.builder(
+            TriggeredCommandForm.Builder.newBuilder(
                 DEMO_SCHEMA_NAME,
                 DEMO_SCHEMA_VERSION,
                 actions).build(),
