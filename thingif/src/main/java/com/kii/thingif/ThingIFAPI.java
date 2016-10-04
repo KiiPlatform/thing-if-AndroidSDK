@@ -1149,11 +1149,58 @@ public class ThingIFAPI implements Parcelable {
         }
         return this.patchTrigger(triggerID, requestBody);
     }
+
+    /**
+     * Apply Patch to registered Trigger
+     * Modify registered Trigger with specified patch.
+     *
+     * @param triggerID ID ot the Trigger to apply patch
+     * @param serverCode Specify server code you want to execute.
+     * @param predicate Modified predicate.
+     * @param options option fileds of this trigger.
+     * @return Updated Trigger instance.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws IllegalArgumentException when all of  serverCode, predicates
+     * and options are null.
+     */
     @NonNull
     @WorkerThread
     public Trigger patchTrigger(
             @NonNull String triggerID,
-            @NonNull ServerCode serverCode,
+            @Nullable ServerCode serverCode,
+            @Nullable Predicate predicate,
+            @Nullable TriggerOptions options)
+        throws ThingIFException
+    {
+        // TODO: implement me.
+        return null;
+    }
+    /**
+     * Apply Patch to registered Trigger
+     * Modify registered Trigger with specified patch.
+     *
+     * <p>
+     * Limited version of {@link #patchTrigger(String, ServerCode, Predicate,
+     * TriggerOptions)}
+     * <p>
+     *
+     * @param triggerID ID ot the Trigger to apply patch
+     * @param serverCode Specify server code you want to execute. If null,
+     * predicate must not be null.
+     * @param predicate Modified predicate. If null, serverCode must not be
+     * null.
+     * @return Updated Trigger instance.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws IllegalArgumentException when both server and predicates are
+     * null.
+     */
+    @NonNull
+    @WorkerThread
+    public Trigger patchTrigger(
+            @NonNull String triggerID,
+            @Nullable ServerCode serverCode,
             @Nullable Predicate predicate) throws ThingIFException {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
