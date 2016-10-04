@@ -675,7 +675,7 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         ThingIFAPIUtils.setTarget(api, target);
-        api.postNewTrigger(null, predicate, null);
+        api.postNewTrigger((TriggeredCommandForm)null , predicate, null);
     }
 
     @Test(expected = IllegalArgumentException.class)

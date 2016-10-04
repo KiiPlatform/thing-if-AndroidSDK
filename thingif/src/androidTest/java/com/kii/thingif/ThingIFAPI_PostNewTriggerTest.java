@@ -635,7 +635,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         ThingIFAPIUtils.setTarget(api, target);
-        api.postNewTrigger(null,
+        api.postNewTrigger((TriggeredCommandForm)null,
                 predicate,
                 TriggerOptions.Builder.newBuilder().setTitle("title").build());
     }
