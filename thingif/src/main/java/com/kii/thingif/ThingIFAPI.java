@@ -1234,8 +1234,16 @@ public class ThingIFAPI implements Parcelable {
             } else {
                 requestBody = new JSONObject();
             }
-            requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson().toJson(predicate)));
-            requestBody.put("serverCode", JsonUtils.newJson(GsonRepository.gson().toJson(serverCode)));
+            if (predicate != null) {
+                requestBody.put("predicate",
+                        JsonUtils.newJson(
+                            GsonRepository.gson().toJson(predicate)));
+            }
+            if (serverCode != null) {
+                requestBody.put("serverCode",
+                        JsonUtils.newJson(
+                            GsonRepository.gson().toJson(serverCode)));
+            }
             requestBody.put("triggersWhat", TriggersWhat.SERVER_CODE.name());
         } catch (JSONException e) {
             // Won't happen
