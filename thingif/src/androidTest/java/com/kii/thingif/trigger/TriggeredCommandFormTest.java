@@ -261,7 +261,7 @@ public class TriggeredCommandFormTest extends SmallTestBase {
             TestData data = testCase.input;
             TestData expected = testCase.expected;
             TriggeredCommandForm.Builder builder =
-                    TriggeredCommandForm.Builder.builder(
+                    TriggeredCommandForm.Builder.newBuilder(
                         data.schemaName,
                         data.schemaVersion,
                         data.actions);
@@ -354,7 +354,7 @@ public class TriggeredCommandFormTest extends SmallTestBase {
             TestData data = testCase.input;
             TestData expected = testCase.expected;
             TriggeredCommandForm.Builder builder =
-                    TriggeredCommandForm.Builder.builder(
+                    TriggeredCommandForm.Builder.newBuilderFromCommand(
                         createCommand(data, defaultTarget));
 
             TypedID expectedTargetID = data.targetID != null ?
@@ -414,7 +414,7 @@ public class TriggeredCommandFormTest extends SmallTestBase {
             String expected = testCase.expected;
             IllegalArgumentException actual = null;
             try {
-                TriggeredCommandForm.Builder.builder(
+                TriggeredCommandForm.Builder.newBuilder(
                     input.schemaName,
                     input.schemaVersion,
                     input.actions);
@@ -462,7 +462,7 @@ public class TriggeredCommandFormTest extends SmallTestBase {
             IllegalArgumentException actual = null;
 
             TriggeredCommandForm.Builder builder =
-                    TriggeredCommandForm.Builder.builder(
+                    TriggeredCommandForm.Builder.newBuilder(
                         input.schemaName,
                         input.schemaVersion,
                         input.actions);
@@ -491,7 +491,7 @@ public class TriggeredCommandFormTest extends SmallTestBase {
         actions1.add(new SetColor(128, 0, 255));
 
         TriggeredCommandForm.Builder builder =
-                TriggeredCommandForm.Builder.builder(
+                TriggeredCommandForm.Builder.newBuilder(
                     schemaName1, schemaVersion1, actions1);
         Assert.assertEquals(schemaName1, builder.getSchemaName());
         Assert.assertEquals(schemaVersion1, builder.getSchemaVersion());

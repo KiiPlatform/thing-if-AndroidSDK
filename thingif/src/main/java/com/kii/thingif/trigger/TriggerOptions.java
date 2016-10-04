@@ -32,39 +32,8 @@ public class TriggerOptions implements Parcelable {
          * @return builder instance.
          */
         @NonNull
-        public static Builder builder() {
+        public static Builder newBuilder() {
             return new Builder();
-        }
-
-        /**
-         * Constructs a {@link TriggerOptions.Builder} instance.
-         *
-         * <p>
-         * This constructor copies followings {@link Trigger} fields:
-         * </p>
-         *
-         * <ul>
-         * <li>{@link Trigger#getTitle()}</li>
-         * <li>{@link Trigger#getDescription()}</li>
-         * <li>{@link Trigger#getMetadata()}</li>
-         * </ul>
-         *
-         * @param trigger source of this {@link TriggerOptions.Builder}
-         * instance.
-         * @return builder instance
-         * @throws IllegalArgumentException if trigger is null.
-         */
-        @NonNull
-        public static Builder builder(
-                @NonNull Trigger trigger)
-            throws IllegalArgumentException
-        {
-            if (trigger == null) {
-                throw new IllegalArgumentException("trigger is null.");
-            }
-            return new Builder().setTitle(trigger.getTitle()).
-                    setDescription(trigger.getDescription()).
-                    setMetadata(trigger.getMetadata());
         }
 
         /**

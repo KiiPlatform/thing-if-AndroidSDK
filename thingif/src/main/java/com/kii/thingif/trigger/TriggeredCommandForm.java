@@ -86,7 +86,7 @@ public class TriggeredCommandForm implements Parcelable {
          * @return builder instance.
          */
         @NonNull
-        public static Builder builder(
+        public static Builder newBuilder(
                 @NonNull String schemaName,
                 int schemaVersion,
                 @NonNull List<Action> actions)
@@ -118,7 +118,7 @@ public class TriggeredCommandForm implements Parcelable {
          * @throws IllegalArgumentException if command is null.
          */
         @NonNull
-        public static Builder builder(
+        public static Builder newBuilderFromCommand(
                 @NonNull Command command)
             throws IllegalArgumentException
         {

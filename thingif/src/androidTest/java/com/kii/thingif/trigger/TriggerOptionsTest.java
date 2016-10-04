@@ -96,7 +96,7 @@ public class TriggerOptionsTest extends SmallTestBase {
             TestData input = test.input;
             TestData expected = test.expected;
             String errorMessage = test.errorMessage;
-            TriggerOptions.Builder builder = TriggerOptions.Builder.builder();
+            TriggerOptions.Builder builder = TriggerOptions.Builder.newBuilder();
 
             if (input.title != null) {
                 Assert.assertEquals(errorMessage,
@@ -162,7 +162,7 @@ public class TriggerOptionsTest extends SmallTestBase {
             TestData input = test.input;
             String expected = test.expected;
             String errorMessage = test.errorMessage;
-            TriggerOptions.Builder builder = TriggerOptions.Builder.builder();
+            TriggerOptions.Builder builder = TriggerOptions.Builder.newBuilder();
             IllegalArgumentException actual = null;
 
             try {
@@ -186,7 +186,7 @@ public class TriggerOptionsTest extends SmallTestBase {
         JSONObject metadata1 = new JSONObject();
         metadata1.put("key1", "value1");
 
-        TriggerOptions.Builder builder = TriggerOptions.Builder.builder();
+        TriggerOptions.Builder builder = TriggerOptions.Builder.newBuilder();
 
         builder.setTitle(title1).setDescription(description1).
                 setMetadata(metadata1);
