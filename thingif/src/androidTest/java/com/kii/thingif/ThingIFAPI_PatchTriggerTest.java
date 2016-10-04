@@ -410,6 +410,85 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
     }
 
     @Test
+    public void patchTriggerNullTriggerID() throws Exception {
+        Schema schema = createDefaultSchema();
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id",
+                accessToken);
+        ThingIFAPI api = createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+
+        TriggerOptions options = TriggerOptions.Builder.newBuilder().
+                setTitle("title").
+                setDescription("description").
+                setMetadata(new JSONObject("{\"key\":\"value\"}")).build();
+        ServerCode serverCode = new ServerCode(
+            "function_name", "token12345", "app0001",
+            new JSONObject("{\"param\":\"p0001\"}"));
+        ScheduleOncePredicate predicate = new ScheduleOncePredicate(1000);
+
+        IllegalArgumentException actual = null;
+        ThingIFAPIUtils.setTarget(api, target);
+        try {
+            api.patchTrigger(null, serverCode, predicate, options);
+        } catch (IllegalArgumentException e) {
+            actual = e;
+        }
+        Assert.assertNotNull(actual);
+        Assert.assertEquals(actual.getMessage(), "triggerID is null or empty.");
+    }
+
+    @Test
+    public void patchTriggerEmptyTriggerID() throws Exception {
+        Schema schema = createDefaultSchema();
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id",
+                accessToken);
+        ThingIFAPI api = createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+
+        TriggerOptions options = TriggerOptions.Builder.newBuilder().
+                setTitle("title").
+                setDescription("description").
+                setMetadata(new JSONObject("{\"key\":\"value\"}")).build();
+        ServerCode serverCode = new ServerCode(
+            "function_name", "token12345", "app0001",
+            new JSONObject("{\"param\":\"p0001\"}"));
+        ScheduleOncePredicate predicate = new ScheduleOncePredicate(1000);
+
+        IllegalArgumentException actual = null;
+        ThingIFAPIUtils.setTarget(api, target);
+        try {
+            api.patchTrigger("", serverCode, predicate, options);
+        } catch (IllegalArgumentException e) {
+            actual = e;
+        }
+        Assert.assertNotNull(actual);
+        Assert.assertEquals(actual.getMessage(), "triggerID is null or empty.");
+    }
+
+    @Test
+    public void patchTriggerEmptyTriggerID() throws Exception {
+        Schema schema = createDefaultSchema();
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id",
+                accessToken);
+        ThingIFAPI api = createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+
+        IllegalArgumentException actual = null;
+        ThingIFAPIUtils.setTarget(api, target);
+        try {
+            api.patchTrigger("triggerID", null, null, null);
+        } catch (IllegalArgumentException e) {
+            actual = e;
+        }
+        Assert.assertNotNull(actual);
+        Assert.assertEquals(actual.getMessage(),
+                "serverCode, predicate and options are null.");
+    }
+
+    @Test
     public void patchTrigger403ErrorTest() throws Exception {
         Schema schema = this.createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
