@@ -254,8 +254,8 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
     private void patchTriggerWithServerCodeAndOptionsTest(
             Predicate predicate,
             boolean sendServerCode,
-            boolean sendOptions
-            )
+            boolean sendPredicate,
+            boolean sendOptions)
         throws Exception
     {
         Schema schema = createDefaultSchema();
@@ -282,7 +282,7 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
         Trigger trigger = api.patchTrigger(
                 triggerID,
                 sendServerCode ? expectedServerCode : null,
-                predicate,
+                sendPredicate ? predicate : null,
                 sendOptions ? expectedOptions : null);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
@@ -317,7 +317,7 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
             expectedRequestBody.add("serverCode",
                     GsonRepository.gson().toJsonTree(expectedServerCode));
         }
-        if (predicate != null) {
+        if (sendPredicate) {
             expectedRequestBody.add("predicate",
                     GsonRepository.gson().toJsonTree(predicate));
         }
@@ -346,7 +346,7 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
         StatePredicate predicate = new StatePredicate(
             new Condition(new Equals("power", true)),
             TriggersWhen.CONDITION_CHANGED);
-        patchTriggerWithServerCodeAndOptionsTest(predicate, true, true);
+        patchTriggerWithServerCodeAndOptionsTest(predicate, true, true, true);
     }
 
     @Test
@@ -356,7 +356,7 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
         StatePredicate predicate = new StatePredicate(
             new Condition(new Equals("power", true)),
             TriggersWhen.CONDITION_CHANGED);
-        patchTriggerWithServerCodeAndOptionsTest(predicate, false, true);
+        patchTriggerWithServerCodeAndOptionsTest(predicate, false, true, true);
     }
 
     @Test
@@ -366,7 +366,7 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
         StatePredicate predicate = new StatePredicate(
             new Condition(new Equals("power", true)),
             TriggersWhen.CONDITION_CHANGED);
-        patchTriggerWithServerCodeAndOptionsTest(predicate, true, false);
+        patchTriggerWithServerCodeAndOptionsTest(predicate, true, true, false);
     }
 
     @Test
@@ -374,7 +374,7 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
         throws Exception
     {
         ScheduleOncePredicate predicate = new ScheduleOncePredicate(1000);
-        patchTriggerWithServerCodeAndOptionsTest(predicate, true, true);
+        patchTriggerWithServerCodeAndOptionsTest(predicate, true, true, true);
     }
 
     @Test
@@ -382,7 +382,7 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
         throws Exception
     {
         ScheduleOncePredicate predicate = new ScheduleOncePredicate(1000);
-        patchTriggerWithServerCodeAndOptionsTest(predicate, false, true);
+        patchTriggerWithServerCodeAndOptionsTest(predicate, false, true, true);
     }
 
     @Test
@@ -390,21 +390,23 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
         throws Exception
     {
         ScheduleOncePredicate predicate = new ScheduleOncePredicate(1000);
-        patchTriggerWithServerCodeAndOptionsTest(predicate, true, false);
+        patchTriggerWithServerCodeAndOptionsTest(predicate, true, true, false);
     }
 
     @Test
     public void patchTriggerWithServerCodeAndNoPrecicateAndNoOptionsTest()
         throws Exception
     {
-        patchTriggerWithServerCodeAndOptionsTest(null, true, false);
+        ScheduleOncePredicate predicate = new ScheduleOncePredicate(1000);
+        patchTriggerWithServerCodeAndOptionsTest(predicate, true, false, false);
     }
 
     @Test
     public void patchTriggerWithServerCodeAndNoPrecicateAndOptionsTest()
         throws Exception
     {
-        patchTriggerWithServerCodeAndOptionsTest(null, true, true);
+        ScheduleOncePredicate predicate = new ScheduleOncePredicate(1000);
+        patchTriggerWithServerCodeAndOptionsTest(predicate, true, false, true);
     }
 
     @Test
