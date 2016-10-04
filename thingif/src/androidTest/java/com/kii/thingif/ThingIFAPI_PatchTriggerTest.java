@@ -468,7 +468,7 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
     }
 
     @Test
-    public void patchTriggerEmptyTriggerID() throws Exception {
+    public void patchTriggerOnlyTriggerID() throws Exception {
         Schema schema = createDefaultSchema();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
@@ -479,7 +479,7 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
         IllegalArgumentException actual = null;
         ThingIFAPIUtils.setTarget(api, target);
         try {
-            api.patchTrigger("triggerID", null, null, null);
+            api.patchTrigger("triggerID", (ServerCode)null, null, null);
         } catch (IllegalArgumentException e) {
             actual = e;
         }
