@@ -44,7 +44,7 @@ public class ThingIFAPI_ListCommandTest extends ThingIFAPITestBase {
         String paginationKey = "pagination-12345-key";
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
 
         List<Action> command1Actions = new ArrayList<Action>();
         command1Actions.add(new TurnPower(true));
@@ -129,7 +129,7 @@ public class ThingIFAPI_ListCommandTest extends ThingIFAPITestBase {
         this.addMockResponseForListCommands(200, new Command[]{command}, paginationKey, schema);
 
         // verify the result
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
         Pair<List<Command>, String> result = api.listCommands(0, null);
         Assert.assertEquals(paginationKey, result.second);
         List<Command> commands = result.first;
@@ -160,7 +160,7 @@ public class ThingIFAPI_ListCommandTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(400);
 
         try {
-            api.setTarget(target);
+            ThingIFAPIUtils.setTarget(api, target);
             api.listCommands(10, null);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (BadRequestException e) {
@@ -189,7 +189,7 @@ public class ThingIFAPI_ListCommandTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(404);
 
         try {
-            api.setTarget(target);
+            ThingIFAPIUtils.setTarget(api, target);
             api.listCommands(10, null);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (NotFoundException e) {

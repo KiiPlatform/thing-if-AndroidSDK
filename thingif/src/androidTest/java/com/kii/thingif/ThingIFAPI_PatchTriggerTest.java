@@ -63,7 +63,7 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(204);
         this.addMockResponseForGetTriggerWithCommand(200, triggerID, expectedCommand, predicate, false, null, schema);
 
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
         Trigger trigger = api.patchTrigger(triggerID, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
@@ -135,7 +135,7 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
         addMockResponseForGetTriggerWithCommand(200, triggerID,
                 expectedCommand, predicate, options, false, null, schema);
 
-        api.setTarget(new StandaloneThing(thingID.getID(),
+        ThingIFAPIUtils.setTarget(api, new StandaloneThing(thingID.getID(),
                         "vendor-thing-id", accessToken));
         Trigger trigger = api.patchTrigger(
             triggerID,
@@ -202,7 +202,7 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(204);
         this.addMockResponseForGetTriggerWithServerCode(200, triggerID, expectedServerCode, predicate, false, null, schema);
 
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
         Trigger trigger = api.patchTrigger(triggerID, expectedServerCode, predicate);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
@@ -271,7 +271,7 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(403);
 
         try {
-            api.setTarget(target);
+            ThingIFAPIUtils.setTarget(api, target);
             api.patchTrigger(triggerID, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ForbiddenException e) {
@@ -315,7 +315,7 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(404);
 
         try {
-            api.setTarget(target);
+            ThingIFAPIUtils.setTarget(api, target);
             api.patchTrigger(triggerID, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (NotFoundException e) {
@@ -359,7 +359,7 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(503);
 
         try {
-            api.setTarget(target);
+            ThingIFAPIUtils.setTarget(api, target);
             api.patchTrigger(triggerID, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ServiceUnavailableException e) {
@@ -412,7 +412,7 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
         api.patchTrigger(null, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
     }
     @Test(expected = IllegalArgumentException.class)
@@ -430,7 +430,7 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
         api.patchTrigger(null, DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate);
     }
     @Test(expected = IllegalArgumentException.class)
@@ -449,7 +449,7 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
         api.patchTrigger(triggerID, null, DEMO_SCHEMA_VERSION, actions, predicate);
     }
     @Test(expected = IllegalArgumentException.class)
@@ -468,7 +468,7 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
         api.patchTrigger(triggerID, "", DEMO_SCHEMA_VERSION, actions, predicate);
     }
 
@@ -497,7 +497,7 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
         addEmptyMockResponse(403);
 
         try {
-            api.setTarget(new StandaloneThing(thingID.getID(),
+            ThingIFAPIUtils.setTarget(api, new StandaloneThing(thingID.getID(),
                             "vendor-thing-id", accessToken));
             api.patchTrigger(
                 triggerID,
@@ -558,7 +558,7 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
         addEmptyMockResponse(404);
 
         try {
-            api.setTarget(new StandaloneThing(thingID.getID(),
+            ThingIFAPIUtils.setTarget(api, new StandaloneThing(thingID.getID(),
                             "vendor-thing-id", accessToken));
             api.patchTrigger(
                 triggerID,
@@ -618,8 +618,8 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
         addEmptyMockResponse(503);
 
         try {
-            api.setTarget(new StandaloneThing(
-                        thingID.getID(), "vendor-thing-id", accessToken));
+            ThingIFAPIUtils.setTarget(api, new StandaloneThing(thingID.getID(),
+                            "vendor-thing-id", accessToken));
             api.patchTrigger(
                 triggerID,
                 TriggeredCommandForm.Builder.builder(
@@ -677,7 +677,7 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
                         TriggersWhen.CONDITION_CHANGED);
 
         ThingIFAPI api = createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(new StandaloneThing(thingID.getID(),
+        ThingIFAPIUtils.setTarget(api, new StandaloneThing(thingID.getID(),
                         "vendor-thing-id", accessToken));
         api.patchTrigger(
             null,
@@ -705,7 +705,7 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
             TriggersWhen.CONDITION_CHANGED);
 
         ThingIFAPI api = createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(new StandaloneThing(thingID.getID(),
+        ThingIFAPIUtils.setTarget(api, new StandaloneThing(thingID.getID(),
                         "vendor-thing-id", accessToken));
         api.patchTrigger(
             "",

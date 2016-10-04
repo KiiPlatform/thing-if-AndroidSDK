@@ -577,9 +577,6 @@ public class ThingIFAPI implements Parcelable {
     public String getInstallationID() {
         return this.installationID;
     }
-    void setInstallationID(String installationID) {
-        this.installationID = installationID;
-    }
 
     /**
      * Uninstall push notification.
@@ -678,12 +675,7 @@ public class ThingIFAPI implements Parcelable {
                 this.app.getAppID(), this.target.getTypedID().toString());
         String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
-        Command command = new Command(schemaName, schemaVersion, this.owner.getTypedID(),
-                form.getActions());
-        command.setTitle(form.getTitle());
-        command.setDescription(form.getDescription());
-        command.setMetadata(form.getMetadata());
-        JSONObject requestBody = JsonUtils.newJson(GsonRepository.gson(schema).toJson(command));
+        JSONObject requestBody = createPostNewCommandRequestBody(form);
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers,
                 MediaTypes.MEDIA_TYPE_JSON, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
@@ -997,7 +989,7 @@ public class ThingIFAPI implements Parcelable {
                 throw new UnsupportedSchemaException(schemaName, schemaVersion);
             }
         }
-        return this.deserialize(schema, responseBody, Trigger.class);
+        return this.deserialize(schema, responseBody, this.target.getTypedID());
     }
 
     /**
@@ -1342,7 +1334,7 @@ public class ThingIFAPI implements Parcelable {
                         continue;
                     }
                 }
-                triggers.add(this.deserialize(schema, triggerJson, Trigger.class));
+                triggers.add(this.deserialize(schema, triggerJson, this.target.getTypedID()));
             }
         }
         return new Pair<List<Trigger>, String>(triggers, nextPaginationKey);
@@ -1487,10 +1479,6 @@ public class ThingIFAPI implements Parcelable {
     public Target getTarget() {
         return this.target;
     }
-    void setTarget(Target target) {
-        this.target = target;
-        saveInstance(this);
-    }
     /**
      * Get a tag.
      * @return tag.
@@ -1518,11 +1506,30 @@ public class ThingIFAPI implements Parcelable {
         }
         return headers;
     }
+    private JSONObject createPostNewCommandRequestBody(CommandForm src) throws ThingIFException {
+        JSONObject ret = JsonUtils.newJson(GsonRepository.gson().toJson(src));
+        try {
+            ret.put("issuer", this.owner.getTypedID().toString());
+        } catch (JSONException e) {
+            throw new AssertionError(e);
+        }
+        return ret;
+    }
     private <T> T deserialize(JSONObject json, Class<T> clazz) throws ThingIFException {
         return this.deserialize(null, json, clazz);
     }
     private <T> T deserialize(Schema schema, JSONObject json, Class<T> clazz) throws ThingIFException {
         return this.deserialize(schema, json.toString(), clazz);
+    }
+    private Trigger deserialize(Schema schema, JSONObject json, TypedID targetID) throws ThingIFException {
+        JSONObject copied = null;
+        try {
+            copied = new JSONObject(json.toString());
+            copied.put("targetID", targetID.toString());
+        } catch (JSONException e) {
+            throw new ThingIFException("unexpected error.", e);
+        }
+        return this.deserialize(schema, copied.toString(), Trigger.class);
     }
     private <T> T deserialize(Schema schema, String json, Class<T> clazz) throws ThingIFException {
         try {
