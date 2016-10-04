@@ -20,6 +20,18 @@ public abstract class SmallTestBase extends AndroidTestCase {
         // So unit test must clear that cache in order to avoid the side effect.
         InternalUtils.gsonRepositoryClearCache();
     }
+    protected void assertJSONObject(
+            String errorMessage,
+            JSONObject expected,
+            JSONObject actual)
+    {
+        if (expected == null && actual == null) {
+            return;
+        }
+        Assert.assertEquals(errorMessage,
+                new JsonParser().parse(expected.toString()),
+                new JsonParser().parse(actual.toString()));
+    }
     protected void assertJSONObject(JSONObject expected, JSONObject actual) {
         if (expected == null && actual == null) {
             return;

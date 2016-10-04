@@ -19,6 +19,8 @@ import com.kii.thingif.trigger.ScheduleOncePredicate;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.StatePredicate;
 import com.kii.thingif.trigger.Trigger;
+import com.kii.thingif.trigger.TriggerOptions;
+import com.kii.thingif.trigger.TriggeredCommandForm;
 import com.kii.thingif.trigger.TriggersWhen;
 import com.kii.thingif.trigger.clause.Equals;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
@@ -108,14 +110,13 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         this.postNewTriggerWithCommandTest(predicate);
     }
 
-    void postNewTriggerWithTargetAndCommandTest(Predicate predicate) throws Exception {
+    void postNewTriggerWithFormAndOptionTest(Predicate predicate, TriggerOptions options) throws Exception {
         Schema schema = this.createDefaultSchema();
         TypedID thingIDA = new TypedID(TypedID.Types.THING, "th.1234567890");
         TypedID thingIDB = new TypedID(TypedID.Types.THING, "th.9876543210");
         String accessToken = "thing-access-token-1234";
         String triggerID = "trigger-1234";
         Target target = new StandaloneThing(thingIDA.getID(), "vendor-thing-id", accessToken);
-        Target commandTarget = new StandaloneThing(thingIDB.getID(), "vendor-thing-id", accessToken);
 
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
@@ -125,12 +126,18 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
-        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), commandTarget.getTypedID(), api.getOwner().getTypedID(), actions);
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), thingIDB, api.getOwner().getTypedID(), actions);
         this.addMockResponseForPostNewTrigger(201, triggerID);
-        this.addMockResponseForGetTriggerWithCommand(200, triggerID, expectedCommand, predicate, false, null, schema);
+        this.addMockResponseForGetTriggerWithCommand(200, triggerID, expectedCommand, predicate, options, false, null, schema);
 
         ThingIFAPIUtils.setTarget(api, target);
-        Trigger trigger = api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate, commandTarget);
+        Trigger trigger = api.postNewTrigger(
+            TriggeredCommandForm.Builder.newBuilder(
+                DEMO_SCHEMA_NAME,
+                DEMO_SCHEMA_VERSION,
+                actions).setTargetID(thingIDB).build(),
+            predicate,
+            options);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(target.getTypedID(), trigger.getTargetID());
@@ -139,6 +146,9 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         Assert.assertNull(trigger.getServerCode());
         this.assertPredicate(predicate, trigger.getPredicate());
         this.assertCommand(schema, expectedCommand, trigger.getCommand());
+        if (options != null) {
+            assertTriggerOptions(options, trigger);
+        }
         // verify the 1st request
         RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
         Assert.assertEquals(BASE_PATH + "/targets/" + thingIDA.toString() + "/triggers", request1.getPath());
@@ -152,6 +162,12 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         this.assertRequestHeader(expectedRequestHeaders1, request1);
 
         JsonObject expectedRequestBody = new JsonObject();
+        if (options == null) {
+            expectedRequestBody = new JsonObject();
+        } else {
+            expectedRequestBody =
+                GsonRepository.gson().toJsonTree(options).getAsJsonObject();
+        }
         expectedRequestBody.add("command", GsonRepository.gson(schema).toJsonTree(expectedCommand));
         expectedRequestBody.add("predicate", GsonRepository.gson(schema).toJsonTree(predicate));
         expectedRequestBody.add("triggersWhat", new JsonPrimitive("COMMAND"));
@@ -169,14 +185,25 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         this.assertRequestHeader(expectedRequestHeaders2, request2);
     }
     @Test
-    public void postNewStateTriggerWithTargetAndCommandTest() throws Exception {
+    public void postNewStateTriggerWithFormTest() throws Exception {
         StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
-        this.postNewTriggerWithTargetAndCommandTest(predicate);
+        this.postNewTriggerWithFormAndOptionTest(predicate, null);
     }
+
     @Test
-    public void postNewScheduledOnceTriggerWithTargetAndCommandTest() throws Exception {
+    public void postNewScheduleOnceTriggerWithFormTest() throws Exception {
         ScheduleOncePredicate predicate = new ScheduleOncePredicate(System.currentTimeMillis());
-        this.postNewTriggerWithTargetAndCommandTest(predicate);
+        this.postNewTriggerWithFormAndOptionTest(predicate, null);
+    }
+
+    @Test
+    public void postNewStriggerWithFormAndOptionTest() throws Exception {
+        ScheduleOncePredicate predicate = new ScheduleOncePredicate(System.currentTimeMillis());
+        JSONObject metadata = new JSONObject();
+        metadata.put("key", "value");
+        this.postNewTriggerWithFormAndOptionTest(predicate,
+                TriggerOptions.Builder.newBuilder().setTitle("title").
+                setDescription("description").setMetadata(metadata).build());
     }
 
     @Test
@@ -448,7 +475,6 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         ThingIFAPIUtils.setTarget(api, target);
         api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, null);
     }
-
     @Test
     public void postNewTriggerWithTarget403ErrorTest() throws Exception {
         Schema schema = this.createDefaultSchema();
@@ -456,7 +482,6 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         TypedID thingIDB = new TypedID(TypedID.Types.THING, "th.9876543210");
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingIDA.getID(), "vendor-thing-id", accessToken);
-        Target commandTarget = new StandaloneThing(thingIDB.getID(), "vendor-thing-id", accessToken);
 
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
@@ -467,12 +492,18 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
-        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), commandTarget.getTypedID(), api.getOwner().getTypedID(), actions);
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), thingIDB, api.getOwner().getTypedID(), actions);
         this.addEmptyMockResponse(403);
 
         try {
             ThingIFAPIUtils.setTarget(api, target);
-            api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate, commandTarget);
+            api.postNewTrigger(
+                TriggeredCommandForm.Builder.newBuilder(
+                    DEMO_SCHEMA_NAME,
+                    DEMO_SCHEMA_VERSION,
+                    actions).setTargetID(thingIDB).build(),
+                predicate,
+                null);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ForbiddenException e) {
         }
@@ -501,7 +532,6 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         TypedID thingIDB = new TypedID(TypedID.Types.THING, "th.9876543210");
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingIDA.getID(), "vendor-thing-id", accessToken);
-        Target commandTarget = new StandaloneThing(thingIDB.getID(), "vendor-thing-id", accessToken);
 
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
@@ -512,12 +542,18 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
-        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), commandTarget.getTypedID(), api.getOwner().getTypedID(), actions);
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), thingIDB, api.getOwner().getTypedID(), actions);
         this.addEmptyMockResponse(404);
 
         try {
             ThingIFAPIUtils.setTarget(api, target);
-            api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate, commandTarget);
+            api.postNewTrigger(
+                TriggeredCommandForm.Builder.newBuilder(
+                    DEMO_SCHEMA_NAME,
+                    DEMO_SCHEMA_VERSION,
+                    actions).setTargetID(thingIDB).build(),
+                predicate,
+                null);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (NotFoundException e) {
         }
@@ -546,7 +582,6 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         TypedID thingIDB = new TypedID(TypedID.Types.THING, "th.9876543210");
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingIDA.getID(), "vendor-thing-id", accessToken);
-        Target commandTarget = new StandaloneThing(thingIDB.getID(), "vendor-thing-id", accessToken);
 
         List<Action> actions = new ArrayList<Action>();
         SetColor setColor = new SetColor(128, 0, 255);
@@ -557,12 +592,18 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
 
-        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), commandTarget.getTypedID(), api.getOwner().getTypedID(), actions);
+        Command expectedCommand = new Command(schema.getSchemaName(), schema.getSchemaVersion(), thingIDB, api.getOwner().getTypedID(), actions);
         this.addEmptyMockResponse(503);
 
         try {
             ThingIFAPIUtils.setTarget(api, target);
-            api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate, commandTarget);
+            api.postNewTrigger(
+                TriggeredCommandForm.Builder.newBuilder(
+                    DEMO_SCHEMA_NAME,
+                    DEMO_SCHEMA_VERSION,
+                    actions).setTargetID(thingIDB).build(),
+                predicate,
+                null);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ServiceUnavailableException e) {
         }
@@ -585,41 +626,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         this.assertRequestBody(expectedRequestBody, request);
     }
     @Test(expected = IllegalArgumentException.class)
-    public void postNewTriggerWithTargetAndNullSchemaNameTest() throws Exception {
-        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
-        String accessToken = "thing-access-token-1234";
-        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
-
-        List<Action> actions = new ArrayList<Action>();
-        SetColor setColor = new SetColor(128, 0, 255);
-        SetColorTemperature setColorTemperature = new SetColorTemperature(25);
-        actions.add(setColor);
-        actions.add(setColorTemperature);
-        StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
-
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        ThingIFAPIUtils.setTarget(api, target);
-        api.postNewTrigger(null, DEMO_SCHEMA_VERSION, actions, predicate, target);
-    }
-    @Test(expected = IllegalArgumentException.class)
-    public void postNewTriggerWithTargetAndEmptySchemaNameTest() throws Exception {
-        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
-        String accessToken = "thing-access-token-1234";
-        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
-
-        List<Action> actions = new ArrayList<Action>();
-        SetColor setColor = new SetColor(128, 0, 255);
-        SetColorTemperature setColorTemperature = new SetColorTemperature(25);
-        actions.add(setColor);
-        actions.add(setColorTemperature);
-        StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
-
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        ThingIFAPIUtils.setTarget(api, target);
-        api.postNewTrigger("", DEMO_SCHEMA_VERSION, actions, predicate, target);
-    }
-    @Test(expected = IllegalArgumentException.class)
-    public void postNewTriggerWithTargetAndNullActionsTest() throws Exception {
+    public void postNewTriggerWithNullFormTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
@@ -628,20 +635,9 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         ThingIFAPIUtils.setTarget(api, target);
-        api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, null, predicate, target);
-    }
-    @Test(expected = IllegalArgumentException.class)
-    public void postNewTriggerWithTargetAndEmptyActionsTest() throws Exception {
-        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
-        String accessToken = "thing-access-token-1234";
-        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
-
-        List<Action> actions = new ArrayList<Action>();
-        StatePredicate predicate = new StatePredicate(new Condition(new Equals("power", true)), TriggersWhen.CONDITION_CHANGED);
-
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        ThingIFAPIUtils.setTarget(api, target);
-        api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, predicate, target);
+        api.postNewTrigger(null,
+                predicate,
+                TriggerOptions.Builder.newBuilder().setTitle("title").build());
     }
     @Test(expected = IllegalArgumentException.class)
     public void postNewTriggerWithTargetAndNullPredicateTest() throws Exception {
@@ -657,6 +653,12 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         ThingIFAPIUtils.setTarget(api, target);
-        api.postNewTrigger(DEMO_SCHEMA_NAME, DEMO_SCHEMA_VERSION, actions, null, target);
+        api.postNewTrigger(
+            TriggeredCommandForm.Builder.newBuilder(
+                DEMO_SCHEMA_NAME,
+                DEMO_SCHEMA_VERSION,
+                actions).build(),
+            null,
+            TriggerOptions.Builder.newBuilder().setTitle("title").build());
     }
 }

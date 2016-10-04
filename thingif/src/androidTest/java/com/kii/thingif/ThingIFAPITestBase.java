@@ -29,6 +29,7 @@ import com.kii.thingif.trigger.SchedulePredicate;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.StatePredicate;
 import com.kii.thingif.trigger.Trigger;
+import com.kii.thingif.trigger.TriggerOptions;
 import com.kii.thingif.trigger.TriggeredServerCodeResult;
 import com.kii.thingif.trigger.clause.And;
 import com.kii.thingif.trigger.clause.Clause;
@@ -40,6 +41,7 @@ import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
@@ -155,9 +157,29 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         this.server.enqueue(response);
     }
     protected void addMockResponseForGetTriggerWithCommand(int httpStatus, String triggerID, Command command, Predicate predicate, Boolean disabled, String disabledReason, Schema schema) {
+        addMockResponseForGetTriggerWithCommand(httpStatus, triggerID, command,
+                predicate, null, disabled, disabledReason, schema);
+    }
+
+    protected void addMockResponseForGetTriggerWithCommand(
+            int httpStatus,
+            String triggerID,
+            Command command,
+            Predicate predicate,
+            TriggerOptions options,
+            Boolean disabled,
+            String disabledReason,
+            Schema schema)
+    {
         MockResponse response = new MockResponse().setResponseCode(httpStatus);
         if (httpStatus == 200) {
-            JsonObject responseBody = new JsonObject();
+            JsonObject responseBody = null;
+            if (options == null) {
+                responseBody = new JsonObject();
+            } else {
+                responseBody =
+                    GsonRepository.gson().toJsonTree(options).getAsJsonObject();
+            }
             if (triggerID != null) {
                 responseBody.addProperty("triggerID", triggerID);
             }
@@ -325,6 +347,15 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         Assert.assertEquals("request body", expected, new JsonParser().parse(actual.getBody().readUtf8()));
     }
 
+    protected void assertRequestBodyByJSON(
+            JsonElement expected,
+            RecordedRequest actual)
+        throws JSONException
+    {
+        assertJSONObject(new JSONObject(expected.toString()),
+                new JSONObject(actual.getBody().readUtf8()));
+    }
+
     /**
      * Utilities of checking request header.
      * Don't include X-Kii-SDK header in expected param and don't remove it from
@@ -458,6 +489,16 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         this.assertCommand(schema, expected.getCommand(), actual.getCommand());
         this.assertServerCode(expected.getServerCode(), actual.getServerCode());
     }
+
+    protected void assertTriggerOptions(
+            TriggerOptions expected,
+            Trigger actual)
+    {
+        Assert.assertEquals(expected.getTitle(), actual.getTitle());
+        Assert.assertEquals(expected.getDescription(), actual.getDescription());
+        assertJSONObject(expected.getMetadata(), actual.getMetadata());
+    }
+
     protected void assertTriggerServerCodeResult(TriggeredServerCodeResult expected, TriggeredServerCodeResult actual) {
         Assert.assertEquals(expected.isSucceeded(), actual.isSucceeded());
         Assert.assertEquals(expected.getReturnedValue(), actual.getReturnedValue());
