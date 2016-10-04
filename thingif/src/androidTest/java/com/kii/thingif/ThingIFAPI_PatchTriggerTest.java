@@ -126,7 +126,7 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
         JSONObject metadata = new JSONObject();
         metadata.put("key", "value");
         TriggerOptions options =
-            TriggerOptions.Builder.builder().setTitle("title").
+            TriggerOptions.Builder.newBuilder().setTitle("title").
                 setDescription("description").setMetadata(metadata).build();
         Command expectedCommand = new Command(schema.getSchemaName(),
                 schema.getSchemaVersion(),

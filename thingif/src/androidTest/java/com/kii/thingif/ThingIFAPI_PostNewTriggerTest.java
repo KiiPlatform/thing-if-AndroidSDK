@@ -202,7 +202,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         JSONObject metadata = new JSONObject();
         metadata.put("key", "value");
         this.postNewTriggerWithFormAndOptionTest(predicate,
-                TriggerOptions.Builder.builder().setTitle("title").
+                TriggerOptions.Builder.newBuilder().setTitle("title").
                 setDescription("description").setMetadata(metadata).build());
     }
 
@@ -637,7 +637,7 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
         ThingIFAPIUtils.setTarget(api, target);
         api.postNewTrigger(null,
                 predicate,
-                TriggerOptions.Builder.builder().setTitle("title").build());
+                TriggerOptions.Builder.newBuilder().setTitle("title").build());
     }
     @Test(expected = IllegalArgumentException.class)
     public void postNewTriggerWithTargetAndNullPredicateTest() throws Exception {
@@ -659,6 +659,6 @@ public class ThingIFAPI_PostNewTriggerTest extends ThingIFAPITestBase {
                 DEMO_SCHEMA_VERSION,
                 actions).build(),
             null,
-            TriggerOptions.Builder.builder().setTitle("title").build());
+            TriggerOptions.Builder.newBuilder().setTitle("title").build());
     }
 }

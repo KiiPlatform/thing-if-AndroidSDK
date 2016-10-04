@@ -419,7 +419,7 @@ public class ThingIFAPI_PostNewTriggerForSchedulePredicateTest
 
         JSONObject metadata = new JSONObject();
         metadata.put("key", "value");
-        TriggerOptions options = TriggerOptions.Builder.builder().
+        TriggerOptions options = TriggerOptions.Builder.newBuilder().
                 setTitle("title").setDescription("description").
                 setMetadata(metadata).build();
         Command expectedCommand = new Command(

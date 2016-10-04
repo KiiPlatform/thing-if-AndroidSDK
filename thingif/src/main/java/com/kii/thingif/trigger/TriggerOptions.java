@@ -32,7 +32,7 @@ public class TriggerOptions implements Parcelable {
          * @return builder instance.
          */
         @NonNull
-        public static Builder builder() {
+        public static Builder newBuilder() {
             return new Builder();
         }
 
