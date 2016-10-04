@@ -911,6 +911,34 @@ public class ThingIFAPI implements Parcelable {
      *
      * @param serverCode Specify server code you want to execute.
      * @param predicate Specify when the Trigger fires command.
+     * @param options option fileds of this trigger.
+     * @return Instance of the Trigger registered in IoT Cloud.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     */
+    @NonNull
+    @WorkerThread
+    public Trigger postNewTrigger(
+            @NonNull ServerCode serverCode,
+            @NonNull Predicate predicate,
+            @Nullable TriggerOptions options)
+        throws ThingIFException
+    {
+        // TODO: implement me.
+        return null;
+    }
+
+    /**
+     * Post new Trigger with server code to IoT Cloud.
+     *
+     * <p>
+     * Limited version of {@link #postNewTrigger(ServerCode, Predicate,
+     * TriggerOptions)}. This method can not be set title, description and
+     * metadata of {@link Trigger}.
+     * </p>
+     *
+     * @param serverCode Specify server code you want to execute.
+     * @param predicate Specify when the Trigger fires command.
      * @return Instance of the Trigger registered in IoT Cloud.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
