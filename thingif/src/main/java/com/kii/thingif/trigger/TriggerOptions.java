@@ -55,7 +55,7 @@ public class TriggerOptions implements Parcelable {
          * @throws IllegalArgumentException if trigger is null.
          */
         @NonNull
-        public static Builder builder(
+        public static Builder newBuilderFromTrigger(
                 @NonNull Trigger trigger)
             throws IllegalArgumentException
         {
