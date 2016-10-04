@@ -1223,7 +1223,7 @@ public class ThingIFAPI implements Parcelable {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
         if (TextUtils.isEmpty(triggerID)) {
-            throw new IllegalArgumentException("triggerID is null or empty.");
+            throw new IllegalArgumentException("triggerID is null or empty");
         }
         if (serverCode == null && predicate == null && options == null) {
             throw new IllegalArgumentException(
