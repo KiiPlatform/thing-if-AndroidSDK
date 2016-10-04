@@ -200,9 +200,35 @@ public abstract class ThingIFAPITestBase extends SmallTestBase {
         this.server.enqueue(response);
     }
     protected void addMockResponseForGetTriggerWithServerCode(int httpStatus, String triggerID, ServerCode serverCode, Predicate predicate, Boolean disabled, String disabledReason, Schema schema) {
+        addMockResponseForGetTriggerWithServerCode(
+            httpStatus,
+            triggerID,
+            serverCode,
+            predicate,
+            null,
+            disabled,
+            disabledReason,
+            schema);
+    }
+
+    protected void addMockResponseForGetTriggerWithServerCode(
+            int httpStatus,
+            String triggerID,
+            ServerCode serverCode,
+            Predicate predicate,
+            TriggerOptions options,
+            Boolean disabled,
+            String disabledReason,
+            Schema schema)
+    {
         MockResponse response = new MockResponse().setResponseCode(httpStatus);
         if (httpStatus == 200) {
-            JsonObject responseBody = new JsonObject();
+            JsonObject responseBody = null;
+            if (options != null) {
+                responseBody = GsonRepository.gson().toJsonTree(options).getAsJsonObject();
+            } else {
+                responseBody = new JsonObject();
+            }
             if (triggerID != null) {
                 responseBody.addProperty("triggerID", triggerID);
             }
