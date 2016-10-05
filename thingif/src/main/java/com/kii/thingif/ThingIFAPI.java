@@ -924,8 +924,7 @@ public class ThingIFAPI implements Parcelable {
             @Nullable TriggerOptions options)
         throws ThingIFException
     {
-        // TODO: implement me.
-        return null;
+        return postServerCodeNewTrigger(serverCode, predicate, options);
     }
 
     /**
@@ -949,8 +948,20 @@ public class ThingIFAPI implements Parcelable {
             @NonNull ServerCode serverCode,
             @NonNull Predicate predicate)
             throws ThingIFException {
+        return postServerCodeNewTrigger(serverCode, predicate, null);
+    }
+
+    @NonNull
+    @WorkerThread
+    public Trigger postServerCodeNewTrigger(
+            @NonNull ServerCode serverCode,
+            @NonNull Predicate predicate,
+            @Nullable TriggerOptions options)
+        throws ThingIFException
+    {
         if (this.target == null) {
-            throw new IllegalStateException("Can not perform this action before onboarding");
+            throw new IllegalStateException(
+                "Can not perform this action before onboarding");
         }
         if (serverCode == null) {
             throw new IllegalArgumentException("serverCode is null");
@@ -958,13 +969,15 @@ public class ThingIFAPI implements Parcelable {
         if (predicate == null) {
             throw new IllegalArgumentException("predicate is null");
         }
-        JSONObject requestBody = new JSONObject();
+        JSONObject requestBody = options != null ?
+                JsonUtils.newJson(GsonRepository.gson().toJson(options)) :
+                new JSONObject();
         try {
             requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson().toJson(predicate)));
             requestBody.put("triggersWhat", TriggersWhat.SERVER_CODE.name());
             requestBody.put("serverCode", JsonUtils.newJson(GsonRepository.gson().toJson(serverCode)));
         } catch (JSONException e) {
-            // Won’t happen
+            // Won't happen
         }
         return this.postNewTrigger(requestBody);
     }

@@ -657,7 +657,8 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
     @Test(expected = IllegalStateException.class)
     public void patchTriggerWithNullArgumentsTest() throws Exception {
         ThingIFAPI api = createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.patchTrigger("trigger-1234", null, null, null);
+        api.patchTrigger("trigger-1234", (TriggeredCommandForm)null, null,
+                null);
     }
 
     @Test(expected = IllegalArgumentException.class)
