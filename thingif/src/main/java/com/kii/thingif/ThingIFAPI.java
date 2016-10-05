@@ -1186,9 +1186,10 @@ public class ThingIFAPI implements Parcelable {
             @Nullable TriggerOptions options)
         throws ThingIFException
     {
-        // TODO: implement me.
-        return null;
+        return patchServerCodeTrigger(triggerID, serverCode, predicate,
+                options);
     }
+
     /**
      * Apply Patch to registered Trigger
      * Modify registered Trigger with specified patch.
@@ -1215,25 +1216,53 @@ public class ThingIFAPI implements Parcelable {
             @NonNull String triggerID,
             @Nullable ServerCode serverCode,
             @Nullable Predicate predicate) throws ThingIFException {
+        if (serverCode == null && predicate == null) {
+            throw new IllegalArgumentException(
+                "serverCode and predicate are null.");
+        }
+        return patchServerCodeTrigger(triggerID, serverCode, predicate, null);
+    }
+
+    @NonNull
+    @WorkerThread
+    private Trigger patchServerCodeTrigger(
+            @NonNull String triggerID,
+            @Nullable ServerCode serverCode,
+            @Nullable Predicate predicate,
+            @Nullable TriggerOptions options)
+        throws ThingIFException
+    {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
         if (TextUtils.isEmpty(triggerID)) {
             throw new IllegalArgumentException("triggerID is null or empty");
         }
-        if (serverCode == null) {
-            throw new IllegalArgumentException("serverCode is null");
+        if (serverCode == null && predicate == null && options == null) {
+            throw new IllegalArgumentException(
+                "serverCode, predicate and options are null.");
         }
-        if (predicate == null) {
-            throw new IllegalArgumentException("predicate is null");
-        }
-        JSONObject requestBody = new JSONObject();
+        JSONObject requestBody = null;
         try {
-            requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson().toJson(predicate)));
-            requestBody.put("serverCode", JsonUtils.newJson(GsonRepository.gson().toJson(serverCode)));
+            if (options != null) {
+                requestBody = JsonUtils.newJson(
+                    GsonRepository.gson().toJson(options));
+            } else {
+                requestBody = new JSONObject();
+            }
+            if (predicate != null) {
+                requestBody.put("predicate",
+                        JsonUtils.newJson(
+                            GsonRepository.gson().toJson(predicate)));
+            }
+            if (serverCode != null) {
+                requestBody.put("serverCode",
+                        JsonUtils.newJson(
+                            GsonRepository.gson().toJson(serverCode)));
+            }
             requestBody.put("triggersWhat", TriggersWhat.SERVER_CODE.name());
         } catch (JSONException e) {
-            // Won’t happen
+            // Won't happen
         }
         return this.patchTrigger(triggerID, requestBody);
     }
