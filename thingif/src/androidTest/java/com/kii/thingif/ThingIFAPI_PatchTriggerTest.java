@@ -435,7 +435,7 @@ public class ThingIFAPI_PatchTriggerTest extends ThingIFAPITestBase {
             actual = e;
         }
         Assert.assertNotNull(actual);
-        Assert.assertEquals(actual.getMessage(), "triggerID is null or empty.");
+        Assert.assertEquals(actual.getMessage(), "triggerID is null or empty");
     }
 
     @Test
