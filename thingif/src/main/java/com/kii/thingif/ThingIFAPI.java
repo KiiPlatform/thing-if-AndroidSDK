@@ -953,7 +953,7 @@ public class ThingIFAPI implements Parcelable {
 
     @NonNull
     @WorkerThread
-    public Trigger postServerCodeNewTrigger(
+    private Trigger postServerCodeNewTrigger(
             @NonNull ServerCode serverCode,
             @NonNull Predicate predicate,
             @Nullable TriggerOptions options)
