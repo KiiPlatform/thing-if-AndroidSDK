@@ -43,7 +43,7 @@ public class KiiApp implements Parcelable {
      * Who host Kii Cloud in private/ dedicated location
      * Will use this constructor to instantiate KiiApp.
      * (Private/ Dedicated location is only available in Enterprise subscription.)
-     * If you're using public Kii Cloud, please use {@link KiiApp(String, String, Site)}
+     * If you're using public Kii Cloud, please use {@link KiiApp#KiiApp(String, String, Site)}
      * With this constructor, {@link #getSiteName()} returns fixed string "CUSTOM".
      * @param appID ID of the app.
      * @param appKey Key of the app.
@@ -134,7 +134,7 @@ public class KiiApp implements Parcelable {
      * For Private/ Dedicated Kii Cloud instance users.<br><br>
      *
      * Public Kii Cloud user who uses apps created on https://developer.kii.com does not need to
-     * interact with this Builder. Just use {@link KiiApp(String, String, Site)} is fine.
+     * interact with this Builder. Just use {@link KiiApp#KiiApp(String, String, Site)} is fine.
      */
     public static class Builder {
         final private String hostName;
@@ -208,7 +208,7 @@ public class KiiApp implements Parcelable {
          * Optional. by Default "CUSTOM" is applied.
          * This site name should match with your Gateway Agent configuration
          * if you interact Gateway Agent with this SDK.
-         * @param siteName
+         * @param siteName site name.
          * @return builder instance
          * @throws IllegalArgumentException when siteName is null or empty.
          */

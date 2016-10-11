@@ -29,21 +29,21 @@ public class ServerError implements Parcelable {
 
     /**
      * Gets the error message
-     * @return
+     * @return error message.
      */
     public String getErrorMessage() {
         return errorMessage;
     }
     /**
      * Gets the error code
-     * @return
+     * @return error code.
      */
     public String getErrorCode() {
         return errorCode;
     }
     /**
      * Gets the detail message
-     * @return
+     * @return detail message.
      */
     public String getDetailMessage() {
         return detailMessage;

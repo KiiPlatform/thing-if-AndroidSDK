@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.google.gson.annotations.SerializedName;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,6 +35,7 @@ import java.util.List;
  */
 public final class CommandForm implements Parcelable {
 
+    @SerializedName("schema")
     private final @NonNull String schemaName;
     private final int schemaVersion;
     private final @NonNull List<Action> actions;
@@ -104,7 +107,7 @@ public final class CommandForm implements Parcelable {
     /**
      * Setter of meta data.
      *
-     * @param metadata
+     * @param metadata meta data of this command.
      * @return this instance.
      */
     public CommandForm setMetadata(@Nullable JSONObject metadata) {
