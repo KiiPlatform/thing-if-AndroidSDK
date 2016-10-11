@@ -17,6 +17,7 @@ import org.json.JSONObject;
 public class Trigger implements Parcelable {
 
     private String triggerID;
+    private TypedID targetID;
     private final Predicate predicate;
     private final Command command;
     private final ServerCode serverCode;
@@ -49,100 +50,103 @@ public class Trigger implements Parcelable {
         this.serverCode = serverCode;
     }
 
+    /**
+     * Get ID of the Trigger.
+     * @return ID of the Trigger
+     */
     public String getTriggerID() {
         return this.triggerID;
     }
-    void setTriggerID(String triggerID) {
-        this.triggerID = triggerID;
-    }
+
+    /**
+     * Get Target ID of the Trigger.
+     * When Trigger is created with ThingIFAPI#postNewTrigger() API families,
+     * Target ID is determined by target bound to ThingIFAPI.
+     * @return Target ID of Trigger.
+     */
     public TypedID getTargetID() {
-        if (this.command == null) {
-            return null;
-        }
-        return this.command.getTargetID();
+        return this.targetID;
     }
 
+    /**
+     * Indicate whether the Trigger is disabled.
+     * @return true if disabled, otherwise false.
+     */
     public boolean disabled() {
         return this.disabled;
     }
-    public void setDisabled(boolean disabled) {
-        this.disabled = disabled;
-    }
 
+    /**
+     * Get Predicate of the Trigger.
+     * @return Predicate of the Trigger
+     */
     public Predicate getPredicate() {
         return this.predicate;
     }
 
+    /**
+     * Get Command bounds to the Trigger.
+     * @return Command  bounds to the Trigger.
+     */
     public Command getCommand() {
         return this.command;
     }
+
+    /**
+     * Get Server Code bounds to the Trigger.
+     * @return Server Code bounds to the Trigger.
+     */
     public ServerCode getServerCode() {
         return this.serverCode;
     }
+
+    /**
+     * Get enum indicates whether the Command or Server Code is triggered.
+     * @return TriggersWhat enum.
+     */
     public TriggersWhat getTriggersWhat() {
         if (this.command != null) {
             return TriggersWhat.COMMAND;
         }
         return TriggersWhat.SERVER_CODE;
     }
+
+
+    /**
+     * Get the reason of the Trigger has been disabled.
+     * If #disabled is false, It returns null.
+     * @return Reason of the Trigger has been disabled.
+     */
     public String getDisabledReason() {
         return this.disabledReason;
     }
-    void setDisabledReason(String disabledReason) {
-        this.disabledReason = disabledReason;
-    }
+
     /**
-     *
-     * @return
+     * Get title.
+     * @return title of this trigger.
      */
     public String getTitle() {
         return this.title;
     }
     /**
-     *
-     * @param title
-     */
-    public void setTitle(String title) {
-        if (!TextUtils.isEmpty(title) && title.length() > 50) {
-            throw new IllegalArgumentException("title must be less than 51 characters.");
-        }
-        this.title = title;
-    }
-    /**
-     *
-     * @return
+     * Get description.
+     * @return description of this trigger.
      */
     public String getDescription() {
         return this.description;
     }
     /**
-     *
-     * @param description
-     */
-    public void setDescription(String description) {
-        if (!TextUtils.isEmpty(description) && description.length() > 200) {
-            throw new IllegalArgumentException("description must be less than 201 characters.");
-        }
-        this.description = description;
-    }
-    /**
-     *
-     * @return
+     * Get meta data
+     * @return meta data of this trigger.
      */
     public JSONObject getMetadata() {
         return this.metadata;
-    }
-    /**
-     *
-     * @param metadata
-     */
-    public void setMetadata(JSONObject metadata) {
-        this.metadata = metadata;
     }
 
     // Implementation of Parcelable
     protected Trigger(Parcel in) {
         this.triggerID = in.readString();
+        this.targetID = in.readParcelable(TypedID.class.getClassLoader());
         this.predicate = in.readParcelable(Predicate.class.getClassLoader());
         this.command = in.readParcelable(Command.class.getClassLoader());
         this.serverCode = in.readParcelable(Command.class.getClassLoader());
@@ -180,6 +184,7 @@ public class Trigger implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.triggerID);
+        dest.writeParcelable(this.targetID, flags);
         dest.writeParcelable(this.predicate, flags);
         dest.writeParcelable(this.command, flags);
         dest.writeParcelable(this.serverCode, flags);

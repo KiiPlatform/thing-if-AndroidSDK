@@ -1,10 +1,12 @@
 package com.kii.thingif.trigger;
 
+import org.mockito.internal.util.reflection.Whitebox;
+
 public class TriggerUtils {
     public static void setTriggerID(Trigger trigger, String triggerID) {
-        trigger.setTriggerID(triggerID);
+        Whitebox.setInternalState(trigger, "triggerID", triggerID);
     }
     public static void setDisabledReason(Trigger trigger, String disabledReason) {
-        trigger.setDisabledReason(disabledReason);
+        Whitebox.setInternalState(trigger, "disabledReason", disabledReason);
     }
 }

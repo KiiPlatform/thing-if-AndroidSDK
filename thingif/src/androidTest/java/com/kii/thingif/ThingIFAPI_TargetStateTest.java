@@ -35,7 +35,7 @@ public class ThingIFAPI_TargetStateTest extends ThingIFAPITestBase {
         this.addMockResponse(200, new JsonParser().parse(responseBody));
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
         LightState lightState = api.getTargetState(LightState.class);
         // verify the result
         Assert.assertEquals(true, lightState.power);
@@ -64,7 +64,7 @@ public class ThingIFAPI_TargetStateTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
         api.getTargetState(null);
     }
 }

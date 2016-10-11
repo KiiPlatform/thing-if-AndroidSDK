@@ -49,7 +49,7 @@ public class GatewayAPIBuilder {
      * @param context Application context.
      * @param app Kii Cloud Application.
      * @param gatewayAddress address information for the gateway
-     * @return
+     * @return GatewayAPIBuilder instance.
      */
     @NonNull
     public static GatewayAPIBuilder newBuilder(
