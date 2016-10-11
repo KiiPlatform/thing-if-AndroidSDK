@@ -16,3 +16,73 @@ allprojects {
         jcenter()
     }
 }
+
+task replaceGatewayIFAPITestVersion {
+    def target = "thingif/src/androidTest/java/com/kii/thingif/gateway/GatewayAPITestBase.java"
+    def reader = new InputStreamReader(new FileInputStream(target), "UTF-8")
+    def builder = new StringBuilder()
+    for (def str = reader.readLine(); str != null; str = reader.readLine()) {
+        if (str.contains("private static final String SDK_VERSION ")) {
+            str = str.replaceFirst("[\\d\\.]+", "${thingIfVersion}")
+	}
+        builder.append(str).append("\n")
+    }
+    reader.close()
+    def dest = new FileOutputStream(target)
+    dest.write(builder.toString().getBytes("UTF-8"))
+    dest.close()
+}
+
+task replaceThingIFAPITestVersion {
+    def target = "thingif/src/androidTest/java/com/kii/thingif/ThingIFAPITestBase.java"
+    def reader = new InputStreamReader(new FileInputStream(target), "UTF-8")
+    def builder = new StringBuilder()
+    for (def str = reader.readLine(); str != null; str = reader.readLine()) {
+        if (str.contains("private static final String SDK_VERSION ")) {
+            str = str.replaceFirst("[\\d\\.]+", "${thingIfVersion}")
+	}
+        builder.append(str).append("\n")
+    }
+    reader.close()
+    def dest = new FileOutputStream(target)
+    dest.write(builder.toString().getBytes("UTF-8"))
+    dest.close()
+}
+
+task replaceThingIFAPIVersion {
+    def target = "thingif/src/main/java/com/kii/thingif/ThingIFAPI.java"
+    def reader = new InputStreamReader(new FileInputStream(target), "UTF-8")
+    def builder = new StringBuilder()
+    for (def str = reader.readLine(); str != null; str = reader.readLine()) {
+        if (str.contains("private static final String SDK_VERSION ")) {
+            str = str.replaceFirst("[\\d\\.]+", "${thingIfVersion}")
+	}
+        builder.append(str).append("\n")
+    }
+    reader.close()
+    def dest = new FileOutputStream(target)
+    dest.write(builder.toString().getBytes("UTF-8"))
+    dest.close()
+}
+
+task replaceSdkInfoVersion {
+    def target = "sdk-info.txt"
+    def reader = new InputStreamReader(new FileInputStream(target), "UTF-8")
+    def builder = new StringBuilder()
+    for (def str = reader.readLine(); str != null; str = reader.readLine()) {
+        if (str.contains("version: ")) {
+            str = str.replaceFirst("[\\d\\.]+", "${thingIfVersion}")
+	}
+        builder.append(str).append("\n")
+    }
+    reader.close()
+    def dest = new FileOutputStream(target)
+    dest.write(builder.toString().getBytes("UTF-8"))
+    dest.close()
+}
+
+task replaceVersion(dependsOn: [replaceSdkInfoVersion,
+        replaceThingIFAPIVersion,
+        replaceThingIFAPITestVersion,
+        replaceGatewayIFAPITestVersion]) {
+}
