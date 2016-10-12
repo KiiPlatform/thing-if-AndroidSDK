@@ -16,3 +16,57 @@ allprojects {
         jcenter()
     }
 }
+
+task replaceGatewayIFAPITestVersion(type: ReplaceVersionTask) {
+    target = "thingif/src/androidTest/java/com/kii/thingif/gateway/GatewayAPITestBase.java"
+    replacing = "private static final String SDK_VERSION "
+    version = thingIfVersion
+}
+
+task replaceThingIFAPITestVersion(type: ReplaceVersionTask) {
+    target = "thingif/src/androidTest/java/com/kii/thingif/ThingIFAPITestBase.java"
+    replacing = "private static final String SDK_VERSION "
+    version = thingIfVersion
+}
+
+task replaceThingIFAPIVersion(type: ReplaceVersionTask) {
+    target = "thingif/src/main/java/com/kii/thingif/ThingIFAPI.java"
+    replacing = "private static final String SDK_VERSION "
+    version = thingIfVersion
+}
+
+task replaceSdkInfoVersion(type: ReplaceVersionTask) {
+    target = "sdk-info.txt"
+    replacing = "version: "
+    version = thingIfVersion
+}
+
+task replaceVersion(dependsOn: [replaceSdkInfoVersion,
+        replaceThingIFAPIVersion,
+        replaceThingIFAPITestVersion,
+        replaceGatewayIFAPITestVersion]) {
+}
+
+class ReplaceVersionTask extends DefaultTask {
+
+    String target = null
+    String replacing = null
+    String version = null
+
+    @TaskAction
+    def replace() {
+        def reader = new InputStreamReader(new FileInputStream(target), "UTF-8")
+        def builder = new StringBuilder()
+        for (def str = reader.readLine(); str != null; str = reader.readLine()) {
+            if (str.contains(replacing)) {
+                str = str.replaceFirst("[\\d\\.]+", version)
+    	}
+            builder.append(str).append("\n")
+        }
+        reader.close()
+        def dest = new FileOutputStream(target)
+        dest.write(builder.toString().getBytes("UTF-8"))
+        dest.close()
+
+    }
+}
