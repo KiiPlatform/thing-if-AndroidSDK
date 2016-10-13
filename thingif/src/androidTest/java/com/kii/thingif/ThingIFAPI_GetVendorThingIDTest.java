@@ -25,7 +25,7 @@ public class ThingIFAPI_GetVendorThingIDTest extends ThingIFAPITestBase {
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
 
         this.addMockResponseForGetVendorThingID(200, vendorThingID);
 
@@ -50,7 +50,7 @@ public class ThingIFAPI_GetVendorThingIDTest extends ThingIFAPITestBase {
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
 
         this.addEmptyMockResponse(404);
 

@@ -76,7 +76,7 @@ public class ThingIFAPIBuilder {
     }
 
     /** Add Schema to the ThingIFAPI.
-     * @param schema
+     * @param schema schema for {@link ThingIFAPI} instance.
      * @return ThingIFAPIBuilder instance for method chaining.
      */
     @NonNull
@@ -92,8 +92,8 @@ public class ThingIFAPIBuilder {
 
     /**
      * Set target thing to the ThingIFAPI.
-     * @param target
-     * @return
+     * @param target target of {@link ThingIFAPI} instance.
+     * @return builder instance for chaining call.
      */
     public ThingIFAPIBuilder setTarget(Target target) {
         this.target = target;
@@ -121,8 +121,8 @@ public class ThingIFAPIBuilder {
 
     /**
      * Set InstallationID to the ThingIFAPI.
-     * @param installationID
-     * @return
+     * @param installationID installation id
+     * @return builder instance for chaining call.
      */
     public ThingIFAPIBuilder setInstallationID(String installationID) {
         this.installationID = installationID;

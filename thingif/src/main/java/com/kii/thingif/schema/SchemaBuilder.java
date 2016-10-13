@@ -35,6 +35,7 @@ public class SchemaBuilder {
      * @param schemaName name of the schema.
      * @param schemaVersion version of schema.
      * @param stateClass State class defines target state in this schema.
+     * @return SchemaBuilder instance.
      */
     public static SchemaBuilder newSchemaBuilder(
             @NonNull String thingType,

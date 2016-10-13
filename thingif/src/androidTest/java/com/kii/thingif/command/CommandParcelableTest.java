@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.internal.util.reflection.Whitebox;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,14 +48,14 @@ public class CommandParcelableTest extends SmallTestBase {
         Command command = new Command(schemaName, schemaVersion, target, issuer, actions);
         command.addActionResult(setColorResult);
         command.addActionResult(setColorTemperatureResult);
-        command.setCommandID(commandID);
-        command.setCommandState(commandState);
-        command.setFiredByTriggerID(firedByTriggerID);
-        command.setCreated(created);
-        command.setModified(modified);
-        command.setTitle(title);
-        command.setDescription(description);
-        command.setMetadata(metadata);
+        Whitebox.setInternalState(command, "commandID", commandID);
+        Whitebox.setInternalState(command, "commandState", commandState);
+        Whitebox.setInternalState(command, "firedByTriggerID", firedByTriggerID);
+        Whitebox.setInternalState(command, "created", created);
+        Whitebox.setInternalState(command, "modified", modified);
+        Whitebox.setInternalState(command, "title", title);
+        Whitebox.setInternalState(command, "description", description);
+        Whitebox.setInternalState(command, "metadata", metadata);
 
         Parcel parcel = Parcel.obtain();
         command.writeToParcel(parcel, 0);

@@ -24,20 +24,8 @@ public class StatePredicate extends Predicate {
     public Condition getCondition() {
         return this.condition;
     }
-    public void setCondition(@NonNull Condition condition) {
-        if (condition == null) {
-            throw new IllegalArgumentException("condition is null");
-        }
-        this.condition = condition;
-    }
     public TriggersWhen getTriggersWhen() {
         return this.triggersWhen;
-    }
-    public void setTriggersWhen(@NonNull TriggersWhen triggersWhen) {
-        if (triggersWhen == null) {
-            throw new IllegalArgumentException("triggersWhen is null");
-        }
-        this.triggersWhen = triggersWhen;
     }
 
     // Implementation of Parcelable

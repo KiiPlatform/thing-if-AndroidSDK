@@ -53,7 +53,7 @@ public class ThingIFAPI_EnableTriggerTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(204);
         this.addMockResponseForGetTriggerWithCommand(200, triggerID, expectedCommand, predicate, false, null, schema);
 
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
         Trigger trigger = api.enableTrigger(triggerID, true);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
@@ -98,7 +98,7 @@ public class ThingIFAPI_EnableTriggerTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(204);
         this.addMockResponseForGetTriggerWithCommand(200, triggerID, expectedCommand, predicate, true, null, schema);
 
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
         Trigger trigger = api.enableTrigger(triggerID, false);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
@@ -131,7 +131,7 @@ public class ThingIFAPI_EnableTriggerTest extends ThingIFAPITestBase {
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(403);
         try {
-            api.setTarget(target);
+            ThingIFAPIUtils.setTarget(api, target);
             api.enableTrigger(triggerID, false);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ForbiddenException e) {
@@ -150,7 +150,7 @@ public class ThingIFAPI_EnableTriggerTest extends ThingIFAPITestBase {
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(404);
         try {
-            api.setTarget(target);
+            ThingIFAPIUtils.setTarget(api, target);
             api.enableTrigger(triggerID, false);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (NotFoundException e) {
@@ -169,7 +169,7 @@ public class ThingIFAPI_EnableTriggerTest extends ThingIFAPITestBase {
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
         this.addEmptyMockResponse(503);
         try {
-            api.setTarget(target);
+            ThingIFAPIUtils.setTarget(api, target);
             api.enableTrigger(triggerID, false);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ServiceUnavailableException e) {
@@ -191,7 +191,7 @@ public class ThingIFAPI_EnableTriggerTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
         api.enableTrigger(null, false);
     }
     @Test(expected = IllegalArgumentException.class)
@@ -200,7 +200,7 @@ public class ThingIFAPI_EnableTriggerTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
         ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
-        api.setTarget(target);
+        ThingIFAPIUtils.setTarget(api, target);
         api.enableTrigger("", false);
     }
 }
