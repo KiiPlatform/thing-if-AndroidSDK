@@ -13,6 +13,7 @@ import android.util.Base64;
 
 import com.kii.thingif.KiiApp;
 import com.kii.thingif.MediaTypes;
+import com.kii.thingif.SDKVersion;
 import com.kii.thingif.exception.StoredGatewayAPIInstanceNotFoundException;
 import com.kii.thingif.exception.ThingIFException;
 import com.kii.thingif.internal.GsonRepository;
@@ -33,6 +34,8 @@ import java.util.Map;
 public class GatewayAPI implements Parcelable {
 
     private static final String SHARED_PREFERENCES_KEY_INSTANCE = "GatewayAPI_INSTANCE";
+    private static final String SHARED_PREFERENCES_SDK_VERSION_KEY = "GatewayAPI_VERSION";
+    private static final String MINIMUM_LOADABLE_SDK_VERSION = "0.13.0";
     private static Context context;
     private final String tag;
     private final KiiApp app;
@@ -453,6 +456,12 @@ public class GatewayAPI implements Parcelable {
     public static GatewayAPI loadFromStoredInstance(@NonNull Context context, @Nullable String tag) throws StoredGatewayAPIInstanceNotFoundException {
         GatewayAPI.context = context.getApplicationContext();
         SharedPreferences preferences = getSharedPreferences();
+
+        String sdkVersion = preferences.getString(getStoredSDKVersionKey(tag), null);
+        if (!isLoadableSDKVersion(sdkVersion)) {
+            throw new StoredGatewayAPIInstanceNotFoundException(tag);
+        }
+
         String serializedJson = preferences.getString(getSharedPreferencesKey(tag), null);
         if (serializedJson != null) {
             return  GsonRepository.gson().fromJson(serializedJson, GatewayAPI.class);
@@ -476,6 +485,7 @@ public class GatewayAPI implements Parcelable {
     public static void removeStoredInstance(@Nullable String tag) {
         SharedPreferences preferences = getSharedPreferences();
         SharedPreferences.Editor editor = preferences.edit();
+        editor.remove(getStoredSDKVersionKey(tag));
         editor.remove(getSharedPreferencesKey(tag));
         editor.apply();
     }
@@ -483,6 +493,7 @@ public class GatewayAPI implements Parcelable {
         SharedPreferences preferences = getSharedPreferences();
         if (preferences != null) {
             SharedPreferences.Editor editor = preferences.edit();
+            editor.putString(getStoredSDKVersionKey(instance.tag), SDKVersion.versionString);
             editor.putString(getSharedPreferencesKey(instance.tag), GsonRepository.gson().toJson(instance));
             editor.apply();
         }
@@ -490,10 +501,38 @@ public class GatewayAPI implements Parcelable {
     private static String getSharedPreferencesKey(String tag) {
         return SHARED_PREFERENCES_KEY_INSTANCE + (tag == null ? "" : "_"  +tag);
     }
+
+    private static String getStoredSDKVersionKey(String tag) {
+        return SHARED_PREFERENCES_SDK_VERSION_KEY + (tag == null ? "" : "_"  +tag);
+    }
+
     private static SharedPreferences getSharedPreferences() {
         if (context != null) {
             return context.getSharedPreferences("com.kii.thingif.preferences", Context.MODE_PRIVATE);
         }
         return null;
+    }
+
+    private static boolean isLoadableSDKVersion(String actualSDKVersion) {
+        if (actualSDKVersion == null) {
+            return false;
+        }
+
+        String[] actualVersions = actualSDKVersion.split("\\.");
+        if (actualVersions.length != 3) {
+            return false;
+        }
+
+        String[] expectVersions = GatewayAPI.MINIMUM_LOADABLE_SDK_VERSION.split("\\.");
+        for (int i = 0; i < 3; ++i) {
+            int actual = Integer.parseInt(actualVersions[i]);
+            int expect = Integer.parseInt(expectVersions[i]);
+            if (actual < expect) {
+                return false;
+            } else if (actual > expect) {
+                break;
+            }
+        }
+        return true;
     }
 }

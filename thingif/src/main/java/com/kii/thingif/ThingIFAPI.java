@@ -53,7 +53,8 @@ import java.util.Map;
 public class ThingIFAPI implements Parcelable {
 
     private static final String SHARED_PREFERENCES_KEY_INSTANCE = "ThingIFAPI_INSTANCE";
-    private static final String SDK_VERSION = "0.13.0";
+    private static final String SHARED_PREFERENCES_SDK_VERSION_KEY = "ThingIFAPI_VERSION";
+    private static final String MINIMUM_LOADABLE_SDK_VERSION = "0.13.0";
 
     private static Context context;
     private final String tag;
@@ -110,6 +111,12 @@ public class ThingIFAPI implements Parcelable {
     public static ThingIFAPI loadFromStoredInstance(@NonNull Context context, String tag) throws StoredThingIFAPIInstanceNotFoundException {
         ThingIFAPI.context = context.getApplicationContext();
         SharedPreferences preferences = getSharedPreferences();
+
+        String sdkVersion = preferences.getString(getStoredSDKVersionKey(tag), null);
+        if (!isLoadableSDKVersion(sdkVersion)) {
+            throw new StoredThingIFAPIInstanceNotFoundException(tag);
+        }
+
         String serializedJson = preferences.getString(getSharedPreferencesKey(tag), null);
         if (serializedJson != null) {
             return  GsonRepository.gson().fromJson(serializedJson, ThingIFAPI.class);
@@ -133,6 +140,7 @@ public class ThingIFAPI implements Parcelable {
     public static void removeStoredInstance(@Nullable String tag) {
         SharedPreferences preferences = getSharedPreferences();
         SharedPreferences.Editor editor = preferences.edit();
+        editor.remove(getStoredSDKVersionKey(tag));
         editor.remove(getSharedPreferencesKey(tag));
         editor.apply();
     }
@@ -140,12 +148,40 @@ public class ThingIFAPI implements Parcelable {
         SharedPreferences preferences = getSharedPreferences();
         if (preferences != null) {
             SharedPreferences.Editor editor = preferences.edit();
+            editor.putString(getStoredSDKVersionKey(instance.tag), SDKVersion.versionString);
             editor.putString(getSharedPreferencesKey(instance.tag), GsonRepository.gson().toJson(instance));
             editor.apply();
         }
     }
     private static String getSharedPreferencesKey(String tag) {
         return SHARED_PREFERENCES_KEY_INSTANCE + (tag == null ? "" : "_"  +tag);
+    }
+
+    private static String getStoredSDKVersionKey(String tag) {
+        return SHARED_PREFERENCES_SDK_VERSION_KEY + (tag == null ? "" : "_"  +tag);
+    }
+
+    private static boolean isLoadableSDKVersion(String actualSDKVersion) {
+        if (actualSDKVersion == null) {
+            return false;
+        }
+
+        String[] actualVersions = actualSDKVersion.split("\\.");
+        if (actualVersions.length != 3) {
+            return false;
+        }
+
+        String[] expectVersions = ThingIFAPI.MINIMUM_LOADABLE_SDK_VERSION.split("\\.");
+        for (int i = 0; i < 3; ++i) {
+            int actual = Integer.parseInt(actualVersions[i]);
+            int expect = Integer.parseInt(expectVersions[i]);
+            if (actual < expect) {
+                return false;
+            } else if (actual > expect) {
+                break;
+            }
+        }
+        return true;
     }
 
     ThingIFAPI(
@@ -1709,7 +1745,7 @@ public class ThingIFAPI implements Parcelable {
      */
     @NonNull
     public static String getSDKVersion() {
-        return SDK_VERSION;
+        return SDKVersion.versionString;
     }
 
 }
