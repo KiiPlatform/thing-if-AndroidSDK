@@ -132,7 +132,7 @@ public class GatewayAPI_StoredInstanceTest extends GatewayAPITestBase {
     }
 
     @Test
-    public void loadFromStoredInstanceUpperTest() throws Exception {
+    public void loadFromStoredInstanceUpperSDKVersionTest() throws Exception {
         String username = "user01";
         String password = "pa$$word";
         String accessToken = "token-abcd1234";
