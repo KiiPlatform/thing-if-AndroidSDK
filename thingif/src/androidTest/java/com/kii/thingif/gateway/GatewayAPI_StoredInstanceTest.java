@@ -7,7 +7,8 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.kii.thingif.KiiApp;
-import com.kii.thingif.exception.StoredGatewayAPIInstanceNotFoundException;
+import com.kii.thingif.exception.StoredInstanceNotFoundException;
+import com.kii.thingif.exception.UnloadableInstanceVersionException;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -73,17 +74,17 @@ public class GatewayAPI_StoredInstanceTest extends GatewayAPITestBase {
 
         try {
             GatewayAPI.loadFromStoredInstance(InstrumentationRegistry.getTargetContext(), "GatewayB");
-            fail("StoredGatewayAPIInstanceNotFoundException should be thrown");
-        } catch (StoredGatewayAPIInstanceNotFoundException e) {
+            fail("StoredInstanceNotFoundException should be thrown");
+        } catch (StoredInstanceNotFoundException e) {
         }
     }
 
-    @Test(expected = StoredGatewayAPIInstanceNotFoundException.class)
+    @Test(expected = StoredInstanceNotFoundException.class)
     public void loadFromStoredInstanceWithoutStoredInstanceTest() throws Exception {
         GatewayAPI.loadFromStoredInstance(InstrumentationRegistry.getTargetContext());
     }
 
-    @Test(expected = StoredGatewayAPIInstanceNotFoundException.class)
+    @Test(expected = UnloadableInstanceVersionException.class)
     public void loadFromStoredInstanceNoSDKVersionTest() throws Exception {
         String username = "user01";
         String password = "pa$$word";
@@ -107,7 +108,7 @@ public class GatewayAPI_StoredInstanceTest extends GatewayAPITestBase {
         GatewayAPI.loadFromStoredInstance(context);
     }
 
-    @Test(expected = StoredGatewayAPIInstanceNotFoundException.class)
+    @Test(expected = UnloadableInstanceVersionException.class)
     public void loadFromStoredInstanceLowerSDKVersionTest() throws Exception {
         String username = "user01";
         String password = "pa$$word";
@@ -160,5 +161,12 @@ public class GatewayAPI_StoredInstanceTest extends GatewayAPITestBase {
         assertEquals(api.getGatewayAddress().getPort(), restoredApi.getGatewayAddress().getPort());
         assertEquals(api.getGatewayAddress().getScheme(), restoredApi.getGatewayAddress().getScheme());
         Assert.assertEquals(api.getAccessToken(), restoredApi.getAccessToken());
+
+        GatewayAPI.removeAllStoredInstances();
+        try {
+            GatewayAPI.loadFromStoredInstance(InstrumentationRegistry.getTargetContext(), "ThingB");
+            fail("StoredInstanceNotFoundException should be thrown");
+        } catch (StoredInstanceNotFoundException e) {
+        }
     }
 }

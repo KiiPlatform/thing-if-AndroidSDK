@@ -6,7 +6,8 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.google.gson.JsonParser;
-import com.kii.thingif.exception.StoredThingIFAPIInstanceNotFoundException;
+import com.kii.thingif.exception.StoredInstanceNotFoundException;
+import com.kii.thingif.exception.UnloadableInstanceVersionException;
 import com.kii.thingif.internal.GsonRepository;
 
 import org.json.JSONObject;
@@ -52,8 +53,8 @@ public class ThingIFAPI_StoredInstanceTest extends ThingIFAPITestBase {
         ThingIFAPI.removeAllStoredInstances();
         try {
             ThingIFAPI.loadFromStoredInstance(InstrumentationRegistry.getTargetContext(), "ThingB");
-            fail("StoredThingIFAPIInstanceNotFoundException should be thrown");
-        } catch (StoredThingIFAPIInstanceNotFoundException e) {
+            fail("StoredInstanceNotFoundException should be thrown");
+        } catch (StoredInstanceNotFoundException e) {
         }
     }
     @Test
@@ -87,16 +88,16 @@ public class ThingIFAPI_StoredInstanceTest extends ThingIFAPITestBase {
 
         try {
             ThingIFAPI.loadFromStoredInstance(InstrumentationRegistry.getTargetContext(), "ThingB");
-            fail("StoredThingIFAPIInstanceNotFoundException should be thrown");
-        } catch (StoredThingIFAPIInstanceNotFoundException e) {
+            fail("StoredInstanceNotFoundException should be thrown");
+        } catch (StoredInstanceNotFoundException e) {
         }
     }
-    @Test(expected = StoredThingIFAPIInstanceNotFoundException.class)
+    @Test(expected = StoredInstanceNotFoundException.class)
     public void loadFromStoredInstanceWithoutStoredInstanceTest() throws Exception {
         ThingIFAPI.loadFromStoredInstance(InstrumentationRegistry.getTargetContext());
     }
 
-    @Test(expected = StoredThingIFAPIInstanceNotFoundException.class)
+    @Test(expected = UnloadableInstanceVersionException.class)
     public void loadFromStoredInstanceNoSDKVersionTest() throws Exception {
         String vendorThingID = "v1234567890abcde";
         String thingPassword = "password";
@@ -121,7 +122,7 @@ public class ThingIFAPI_StoredInstanceTest extends ThingIFAPITestBase {
         ThingIFAPI.loadFromStoredInstance(context);
     }
 
-    @Test(expected = StoredThingIFAPIInstanceNotFoundException.class)
+    @Test(expected = UnloadableInstanceVersionException.class)
     public void loadFromStoredInstanceLowerSDKVersionTest() throws Exception {
         String vendorThingID = "v1234567890abcde";
         String thingPassword = "password";
@@ -183,8 +184,8 @@ public class ThingIFAPI_StoredInstanceTest extends ThingIFAPITestBase {
         ThingIFAPI.removeAllStoredInstances();
         try {
             ThingIFAPI.loadFromStoredInstance(InstrumentationRegistry.getTargetContext(), "ThingB");
-            fail("StoredThingIFAPIInstanceNotFoundException should be thrown");
-        } catch (StoredThingIFAPIInstanceNotFoundException e) {
+            fail("StoredInstanceNotFoundException should be thrown");
+        } catch (StoredInstanceNotFoundException e) {
         }
     }
 }
