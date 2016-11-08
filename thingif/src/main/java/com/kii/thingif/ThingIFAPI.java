@@ -120,9 +120,10 @@ public class ThingIFAPI implements Parcelable {
             throw new StoredInstanceNotFoundException(tag);
         }
 
-        String sdkVersion = preferences.getString(getStoredSDKVersionKey(tag), null);
-        if (!isLoadableSDKVersion(sdkVersion)) {
-            throw new UnloadableInstanceVersionException(tag);
+        String storedSDKVersion = preferences.getString(getStoredSDKVersionKey(tag), null);
+        if (!isLoadableSDKVersion(storedSDKVersion)) {
+            throw new UnloadableInstanceVersionException(tag, storedSDKVersion,
+                    MINIMUM_LOADABLE_SDK_VERSION);
         }
 
         return  GsonRepository.gson().fromJson(serializedJson, ThingIFAPI.class);
