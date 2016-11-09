@@ -421,7 +421,8 @@ public class GatewayAPI implements Parcelable {
     /**
      * Try to load the instance of GatewayAPI using stored serialized instance.
      * <BR>
-     * Instance is automatically saved when {@link #login(String, String)} is called.
+     * Instance is automatically saved when {@link #login(String, String)} is called
+     * and successfully completed.
      * <BR>
      *
      * If the GatewayAPI instance is build without the tag, all instance is saved in same place
