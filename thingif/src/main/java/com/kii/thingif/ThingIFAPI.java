@@ -11,8 +11,8 @@ import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
 import com.google.gson.JsonParseException;
-import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
+import com.kii.thingif.command.CommandActions;
 import com.kii.thingif.command.CommandForm;
 import com.kii.thingif.exception.ThingIFException;
 import com.kii.thingif.exception.ThingIFRestException;
@@ -610,11 +610,11 @@ public class ThingIFAPI implements Parcelable {
     @NonNull
     @WorkerThread
     public Command postNewCommand(
-            @NonNull List<Action> actions) throws ThingIFException {
+            @NonNull CommandActions actions) throws ThingIFException {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
-        if (actions == null || actions.size() == 0) {
+        if (actions == null || actions.getActions().size() == 0) {
             throw new IllegalArgumentException("actions is null or empty");
         }
 
@@ -783,7 +783,7 @@ public class ThingIFAPI implements Parcelable {
     @NonNull
     @WorkerThread
     public Trigger postNewTrigger(
-            @NonNull List<Action> actions,
+            @NonNull CommandActions actions,
             @NonNull Predicate predicate)
             throws ThingIFException
     {
@@ -1038,15 +1038,15 @@ public class ThingIFAPI implements Parcelable {
     @WorkerThread
     public Trigger patchTrigger(
             @NonNull String triggerID,
-            @Nullable List<Action> actions,
+            @Nullable CommandActions actions,
             @Nullable Predicate predicate) throws
             ThingIFException {
-        if ((actions == null || actions.size() == 0) && predicate == null) {
+        if ((actions == null || actions.getActions().size() == 0) && predicate == null) {
             throw new IllegalArgumentException(
                 "actions is null or empty and predicate is null.");
         }
         TriggeredCommandForm form = null;
-        if (actions != null && actions.size() > 0) {
+        if (actions != null && actions.getActions().size() > 0) {
             form = TriggeredCommandForm.Builder.newBuilder(
                 actions).build();
         }

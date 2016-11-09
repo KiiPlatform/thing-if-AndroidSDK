@@ -6,13 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.google.gson.annotations.SerializedName;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Form of a command.
@@ -33,7 +28,7 @@ import java.util.List;
  */
 public final class CommandForm implements Parcelable {
 
-    private final @NonNull List<Action> actions;
+    private final @NonNull CommandActions actions;
 
     private @Nullable String title;
     private @Nullable String description;
@@ -46,10 +41,10 @@ public final class CommandForm implements Parcelable {
      * @throws IllegalArgumentException when actions is null or empty.
      */
     public CommandForm(
-            @NonNull List<Action> actions)
+            @NonNull CommandActions actions)
         throws IllegalArgumentException
     {
-        if (actions == null || actions.size() == 0) {
+        if (actions == null || actions.getActions().size() == 0) {
             throw new IllegalArgumentException("actions is null or empty.");
         }
         this.actions = actions;
@@ -106,7 +101,7 @@ public final class CommandForm implements Parcelable {
      * @return actions
      */
     @NonNull
-    public List<Action> getActions() {
+    public CommandActions getActions() {
         return this.actions;
     }
 
@@ -147,7 +142,7 @@ public final class CommandForm implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeList(this.actions);
+        dest.writeParcelable(this.actions, flags);
         dest.writeString(this.title);
         dest.writeString(this.description);
         dest.writeString(this.metadata == null ? null : this.metadata.toString());
@@ -165,8 +160,7 @@ public final class CommandForm implements Parcelable {
     };
 
     private CommandForm(Parcel in) {
-        this.actions = new ArrayList<Action>();
-        in.readList(this.actions, null);
+        this.actions = in.readParcelable(CommandActions.class.getClassLoader());
         this.title = in.readString();
         this.description = in.readString();
         String metadata = in.readString();

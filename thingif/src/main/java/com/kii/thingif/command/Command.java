@@ -11,10 +11,6 @@ import com.kii.thingif.TypedID;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
 /**
  * Represents a command that is executed by the thing
  */
@@ -25,8 +21,6 @@ public class Command implements Parcelable {
     private final TypedID targetID;
     @SerializedName("issuer")
     private final TypedID issuerID;
-    private final List<Action> actions;
-    private List<ActionResult> actionResults;
     @SerializedName("commandState")
     private CommandState commandState;
     private String firedByTriggerID;
@@ -37,17 +31,19 @@ public class Command implements Parcelable {
     private String title;
     private String description;
     private JSONObject metadata;
+    private final CommandActions actions;
+    private CommandActionResults actionResults;
 
     public Command(@NonNull TypedID targetID,
                    @NonNull TypedID issuerID,
-                   @NonNull List<Action> actions) {
+                   @NonNull CommandActions actions) {
         if (targetID == null) {
             throw new IllegalArgumentException("targetID is null");
         }
         if (issuerID == null) {
             throw new IllegalArgumentException("issuerID is null");
         }
-        if (actions == null || actions.size() == 0) {
+        if (actions == null || actions.getActions().size() == 0) {
             throw new IllegalArgumentException("actions is null or empty");
         }
         this.targetID = targetID;
@@ -55,34 +51,39 @@ public class Command implements Parcelable {
         this.actions = actions;
     }
     public Command(@NonNull TypedID issuerID,
-                   @NonNull List<Action> actions) {
+                   @NonNull CommandActions actions) {
         if (issuerID == null) {
             throw new IllegalArgumentException("issuerID is null");
         }
-        if (actions == null || actions.size() == 0) {
+        if (actions == null || actions.getActions().size() == 0) {
             throw new IllegalArgumentException("actions is null or empty");
         }
         this.targetID = null;
         this.issuerID = issuerID;
         this.actions = actions;
     }
+
+    public void addTraitAliasActionResult(@NonNull TraitEnabledActionResults.TraitAliasActionResults ar){
+        // TODO: impment me
+    }
     public void addActionResult(@NonNull ActionResult ar) {
-        if (ar == null) {
-            throw new IllegalArgumentException("ActionResult is null");
-        }
-        boolean hasAction = false;
-        for (Action action : this.actions) {
-            if (TextUtils.equals(ar.getActionName(), action.getActionName())) {
-                hasAction = true;
-            }
-        }
-        if (!hasAction) {
-            throw new IllegalArgumentException(ar.getActionName() + " is not contained in this Command");
-        }
-        if (this.actionResults == null) {
-            this.actionResults = new ArrayList<ActionResult>();
-        }
-        this.actionResults.add(ar);
+        //TODO: fix me
+//        if (ar == null) {
+//            throw new IllegalArgumentException("ActionResult is null");
+//        }
+//        boolean hasAction = false;
+//        for (Action action : this.actions) {
+//            if (TextUtils.equals(ar.getActionName(), action.getActionName())) {
+//                hasAction = true;
+//            }
+//        }
+//        if (!hasAction) {
+//            throw new IllegalArgumentException(ar.getActionName() + " is not contained in this Command");
+//        }
+//        if (this.actionResults == null) {
+//            this.actionResults = new ArrayList<ActionResult>();
+//        }
+//        this.actionResults.add(ar);
     }
 
     /** Get ID of the command.
@@ -112,7 +113,7 @@ public class Command implements Parcelable {
      * Get list of actions
      * @return action of this command.
      */
-    public List<Action> getActions() {
+    public CommandActions getActions() {
         return this.actions;
     }
 
@@ -120,7 +121,7 @@ public class Command implements Parcelable {
      * Get list of action result
      * @return action results of this command.
      */
-    public List<ActionResult> getActionResults() {
+    public CommandActionResults getActionResults() {
         return this.actionResults;
     }
 
@@ -134,13 +135,14 @@ public class Command implements Parcelable {
         if (action == null) {
             throw new IllegalArgumentException("action is null");
         }
-        if (this.getActionResults() != null) {
-            for (ActionResult result : this.getActionResults()) {
-                if (TextUtils.equals(action.getActionName(), result.getActionName())) {
-                    return result;
-                }
-            }
-        }
+        //TODO: fix me
+//        if (this.getActionResults() != null) {
+//            for (ActionResult result : this.getActionResults()) {
+//                if (TextUtils.equals(action.getActionName(), result.getActionName())) {
+//                    return result;
+//                }
+//            }
+//        }
         return null;
     }
 
@@ -201,10 +203,8 @@ public class Command implements Parcelable {
         this.commandID = in.readString();
         this.targetID = in.readParcelable(TypedID.class.getClassLoader());
         this.issuerID = in.readParcelable(TypedID.class.getClassLoader());
-        this.actions = new ArrayList<Action>();
-        in.readList(this.actions, Command.class.getClassLoader());
-        this.actionResults = new ArrayList<ActionResult>();
-        in.readList(this.actionResults, Command.class.getClassLoader());
+        this.actions = in.readParcelable(CommandActions.class.getClassLoader());
+        this.actionResults = in.readParcelable(CommandActionResults.class.getClassLoader());
         this.commandState = (CommandState)in.readSerializable();
         this.firedByTriggerID = in.readString();
         this.created = (Long)in.readValue(Command.class.getClassLoader());
@@ -240,8 +240,8 @@ public class Command implements Parcelable {
         dest.writeString(this.commandID);
         dest.writeParcelable(this.targetID, flags);
         dest.writeParcelable(this.issuerID, flags);
-        dest.writeList(this.actions);
-        dest.writeList(this.actionResults);
+        dest.writeParcelable(this.actions, flags);
+        dest.writeParcelable(this.actionResults, flags);
         dest.writeSerializable(this.commandState);
         dest.writeString(this.firedByTriggerID);
         dest.writeValue(this.created);

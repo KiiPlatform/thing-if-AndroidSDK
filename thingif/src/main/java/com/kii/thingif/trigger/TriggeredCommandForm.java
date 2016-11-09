@@ -7,15 +7,13 @@ import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 import com.kii.thingif.TypedID;
-import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
+import com.kii.thingif.command.CommandActions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Form of a command in trigger request.
@@ -43,16 +41,16 @@ public class TriggeredCommandForm implements Parcelable {
      */
     public static class Builder {
 
-        @NonNull private List<Action> actions;
+        @NonNull private CommandActions actions;
         @Nullable private TypedID targetID;
         @Nullable private String title;
         @Nullable private String description;
         @Nullable private JSONObject metadata;
 
         private Builder(
-                @NonNull List<Action> actions)
+                @NonNull CommandActions actions)
         {
-            if (isEmpty(actions)) {
+            if (actions == null || actions.getActions().size() == 0) {
                 throw new IllegalArgumentException("actions is null or empty.");
             }
             this.actions = actions;
@@ -62,17 +60,12 @@ public class TriggeredCommandForm implements Parcelable {
          * Constructs a {@link TriggeredCommandForm.Builder} instance.
          *
          * @param actions List of actions. Must not be null or empty.
-         * @throws IllegalArgumentException This exception is thrown if one or
-         * more following conditions are met.
-         * <ul>
-         *   <li>schemaName is null or empty string.</li>
-         *   <li>actions is null or empty</li>
-         * </ul>
+         * @throws IllegalArgumentException This exception is thrown when actions is null or empty
          * @return builder instance.
          */
         @NonNull
         public static Builder newBuilder(
-                @NonNull List<Action> actions)
+                @NonNull CommandActions actions)
             throws IllegalArgumentException
         {
             return new Builder(actions);
@@ -124,10 +117,10 @@ public class TriggeredCommandForm implements Parcelable {
          */
         @NonNull
         public Builder setActions(
-                @NonNull List<Action> actions)
+                @NonNull CommandActions actions)
             throws IllegalArgumentException
         {
-            if (isEmpty(actions)) {
+            if (actions == null || actions.getActions().size() == 0) {
                 throw new IllegalArgumentException("actions is null or empty.");
             }
             this.actions = actions;
@@ -140,7 +133,7 @@ public class TriggeredCommandForm implements Parcelable {
          * @return actions
          */
         @NonNull
-        public List<Action> getActions() {
+        public CommandActions getActions() {
             return this.actions;
         }
 
@@ -306,7 +299,7 @@ public class TriggeredCommandForm implements Parcelable {
 
     }
 
-    @NonNull private final List<Action> actions;
+    @NonNull private final CommandActions actions;
     @SerializedName("target")
     @Nullable private TypedID targetID;
     @Nullable private String title;
@@ -314,7 +307,7 @@ public class TriggeredCommandForm implements Parcelable {
     @Nullable private JSONObject metadata;
 
     private TriggeredCommandForm(
-            @NonNull List<Action> actions)
+            @NonNull CommandActions actions)
     {
         this.actions = actions;
     }
@@ -325,7 +318,7 @@ public class TriggeredCommandForm implements Parcelable {
      * @return actions
      */
     @NonNull
-    public List<Action> getActions() {
+    public CommandActions getActions() {
         return this.actions;
     }
 
@@ -370,8 +363,7 @@ public class TriggeredCommandForm implements Parcelable {
     }
 
     private TriggeredCommandForm(Parcel in) {
-        this.actions = new ArrayList<>();
-        in.readList(this.actions, TriggeredCommandForm.class.getClassLoader());
+        this.actions = in.readParcelable(CommandActions.class.getClassLoader());
         this.targetID = in.readParcelable(TypedID.class.getClassLoader());
         this.title = in.readString();
         this.description = in.readString();
@@ -387,7 +379,7 @@ public class TriggeredCommandForm implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeList(this.actions);
+        dest.writeParcelable(this.actions, flags);
         dest.writeParcelable(this.getTargetID(), flags);
         dest.writeString(this.title);
         dest.writeString(this.description);
