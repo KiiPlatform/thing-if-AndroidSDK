@@ -201,13 +201,17 @@ public class GsonRepository {
             }
             JsonObject json = (JsonObject)jsonElement;
             String type = json.get("type").getAsString();
+            String alias = null;
+            if (json.get("alias") != null) {
+                alias = json.get("alias").getAsString();
+            }
             if (TextUtils.equals("eq", type)) {
                 if (((JsonPrimitive)json.get("value")).isString()) {
-                    return new Equals(json.get("field").getAsString(), json.get("value").getAsString());
+                    return new Equals(json.get("field").getAsString(), json.get("value").getAsString(), alias);
                 } else if (((JsonPrimitive)json.get("value")).isNumber()) {
-                    return new Equals(json.get("field").getAsString(), json.get("value").getAsLong());
+                    return new Equals(json.get("field").getAsString(), json.get("value").getAsLong(), alias);
                 } else if (((JsonPrimitive)json.get("value")).isBoolean()) {
-                    return new Equals(json.get("field").getAsString(), json.get("value").getAsBoolean());
+                    return new Equals(json.get("field").getAsString(), json.get("value").getAsBoolean(), alias);
                 } else {
                     // Won't happens
                     throw new AssertionError("Detected unexpected type of value");

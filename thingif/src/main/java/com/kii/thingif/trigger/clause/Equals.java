@@ -10,25 +10,32 @@ public class Equals extends Clause {
 
     private final String field;
     private final Object value;
-    public Equals(@NonNull String field, String value) {
+    private final String alias;
+    public Equals(@NonNull String field, String value, String alias) {
         this.field = field;
         this.value = value;
+        this.alias = alias;
     }
 
-    public Equals(String field, long value) {
+    public Equals(String field, long value, String alias) {
         this.field = field;
         this.value = value;
+        this.alias = alias;
     }
 
-    public Equals(String field, boolean value) {
+    public Equals(String field, boolean value, String alias) {
         this.field = field;
         this.value = value;
+        this.alias = alias;
     }
     public String getField() {
         return this.field;
     }
     public Object getValue() {
         return this.value;
+    }
+    public String getAlias() {
+        return this.alias;
     }
 
     @Override
@@ -38,6 +45,9 @@ public class Equals extends Clause {
             ret.put("type", "eq");
             ret.put("field", this.field);
             ret.put("value", this.value);
+            if(this.alias != null) {
+                ret.put("alias", this.alias);
+            }
             return ret;
         } catch (JSONException e) {
             // Won't happens.
@@ -51,6 +61,7 @@ public class Equals extends Clause {
         if (o == null || getClass() != o.getClass()) return false;
         Equals equals = (Equals) o;
         if (!field.equals(equals.field)) return false;
+        if (this.alias != null && !this.alias.equals(equals.alias)) return false;
         return value.equals(equals.value);
     }
     @Override
@@ -74,6 +85,7 @@ public class Equals extends Clause {
             // Won't happens.
             throw new AssertionError("Detected unexpected value.");
         }
+        this.alias = in.readString();
     }
     public static final Creator<Equals> CREATOR = new Creator<Equals>() {
         @Override
@@ -100,5 +112,6 @@ public class Equals extends Clause {
         } else if (Boolean.class.isInstance(this.value)) {
             dest.writeByte((byte)((Boolean)this.value ? 1 : 0));
         }
+        dest.writeString(this.alias);
     }
 }
