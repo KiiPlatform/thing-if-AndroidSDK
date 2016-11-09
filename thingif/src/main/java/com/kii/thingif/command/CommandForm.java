@@ -42,21 +42,13 @@ public final class CommandForm implements Parcelable {
     /**
      * Constructs a CommandForm instance.
      *
-     * @param schemaName name of schema. Must not be null or empty string.
-     * @param schemaVersion version of schema.
      * @param actions List of actions. Must not be null or empty.
-     * @throws IllegalArgumentException when schemaName is null or empty
-     * string and/or actions is null or empty.
+     * @throws IllegalArgumentException when actions is null or empty.
      */
     public CommandForm(
-            @NonNull String schemaName,
-            int schemaVersion,
             @NonNull List<Action> actions)
         throws IllegalArgumentException
     {
-        if (TextUtils.isEmpty(schemaName)) {
-            throw new IllegalArgumentException("schemaName is null or empty.");
-        }
         if (actions == null || actions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty.");
         }

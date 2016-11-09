@@ -25,7 +25,6 @@ import com.kii.thingif.gateway.PendingEndNode;
 import com.kii.thingif.internal.GsonRepository;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
-import com.kii.thingif.schema.Schema;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.Trigger;
@@ -60,7 +59,6 @@ public class ThingIFAPI implements Parcelable {
     private final KiiApp app;
     private final Owner owner;
     private Target target;
-    private final Map<Pair<String, Integer>, Schema> schemas = new HashMap<Pair<String, Integer>, Schema>();
     private final IoTRestClient restClient;
     private String installationID;
 
@@ -154,7 +152,6 @@ public class ThingIFAPI implements Parcelable {
             @NonNull KiiApp app,
             @NonNull Owner owner,
             @Nullable Target target,
-            @NonNull List<Schema> schemas,
             String installationID) {
         // Parameters are checked by ThingIFAPIBuilder
         if (context != null) {
@@ -164,9 +161,6 @@ public class ThingIFAPI implements Parcelable {
         this.app = app;
         this.owner = owner;
         this.target = target;
-        for (Schema schema : schemas) {
-            this.schemas.put(new Pair<String, Integer>(schema.getSchemaName(), schema.getSchemaVersion()), schema);
-        }
         this.installationID = installationID;
         this.restClient = new IoTRestClient();
     }
@@ -181,7 +175,7 @@ public class ThingIFAPI implements Parcelable {
         if (target == null) {
             throw new IllegalArgumentException("target is null");
         }
-        ThingIFAPI api = new ThingIFAPI(context, tag, this.app, this.owner, target, new ArrayList<Schema>(this.schemas.values()), this.installationID);
+        ThingIFAPI api = new ThingIFAPI(context, tag, this.app, this.owner, target, this.installationID);
         saveInstance(api);
         return api;
     }
@@ -778,8 +772,6 @@ public class ThingIFAPI implements Parcelable {
      *         predicate, null).
      * </code>
      *
-     * @param schemaName name of the schema.
-     * @param schemaVersion version of schema.
      * @param actions Specify actions included in the Command is fired by the
      *                trigger.
      * @param predicate Specify when the Trigger fires command.
@@ -791,16 +783,12 @@ public class ThingIFAPI implements Parcelable {
     @NonNull
     @WorkerThread
     public Trigger postNewTrigger(
-            @NonNull String schemaName,
-            int schemaVersion,
             @NonNull List<Action> actions,
             @NonNull Predicate predicate)
             throws ThingIFException
     {
         return postNewTriggerWithForm(
             TriggeredCommandForm.Builder.newBuilder(
-                schemaName,
-                schemaVersion,
                 actions).build(),
             predicate,
             null);
@@ -1037,11 +1025,6 @@ public class ThingIFAPI implements Parcelable {
      * <p>
      *
      * @param triggerID ID ot the Trigger to apply patch
-     * @param schemaName name of the schema. if actions is not null and not
-     * empty, this must be not null. if actions is null or empty, this
-     * argument is ignored.
-     * @param schemaVersion version of schema. if actions is null or empty,
-     * this argument is ignored.
      * @param actions Modified actions.
      *                If null or empty, predicate must not be null.
      * @param predicate Modified predicate.
@@ -1055,8 +1038,6 @@ public class ThingIFAPI implements Parcelable {
     @WorkerThread
     public Trigger patchTrigger(
             @NonNull String triggerID,
-            @Nullable String schemaName,
-            int schemaVersion,
             @Nullable List<Action> actions,
             @Nullable Predicate predicate) throws
             ThingIFException {
@@ -1067,7 +1048,7 @@ public class ThingIFAPI implements Parcelable {
         TriggeredCommandForm form = null;
         if (actions != null && actions.size() > 0) {
             form = TriggeredCommandForm.Builder.newBuilder(
-                schemaName, schemaVersion, actions).build();
+                actions).build();
         }
         return patchTriggerWithForm(triggerID, form, predicate, null);
     }
@@ -1522,14 +1503,6 @@ public class ThingIFAPI implements Parcelable {
         return this.app.getBaseUrl();
     }
     /**
-     * Get list of schema.
-     * @return list of schema.
-     */
-    @NonNull
-    public List<Schema> getSchemas() {
-        return new ArrayList<Schema>(this.schemas.values());
-    }
-    /**
      * Get owner who uses the ThingIFAPI.
      * @return owner
      */
@@ -1614,10 +1587,6 @@ public class ThingIFAPI implements Parcelable {
         this.app = in.readParcelable(KiiApp.class.getClassLoader());
         this.owner = in.readParcelable(Owner.class.getClassLoader());
         this.target = in.readParcelable(Target.class.getClassLoader());
-        ArrayList<Schema> schemas = in.createTypedArrayList(Schema.CREATOR);
-        for (Schema schema : schemas) {
-            this.schemas.put(new Pair<String, Integer>(schema.getSchemaName(), schema.getSchemaVersion()), schema);
-        }
         this.restClient = new IoTRestClient();
         this.installationID = in.readString();
     }
@@ -1642,7 +1611,6 @@ public class ThingIFAPI implements Parcelable {
         dest.writeParcelable(this.app, flags);
         dest.writeParcelable(this.owner, flags);
         dest.writeParcelable(this.target, flags);
-        dest.writeTypedList(new ArrayList<Schema>(this.schemas.values()));
         dest.writeString(this.installationID);
     }
 
