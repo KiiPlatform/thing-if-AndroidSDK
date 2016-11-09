@@ -533,7 +533,7 @@ public class GsonRepository {
      * @return
      */
     public static Gson gson() {
-        return gson(null);
+        return DEFAULT_GSON;
     }
     /**
      * Returns the Gson instance that can handle Action class and ActionResult class that are defined specified schema.

@@ -22,22 +22,17 @@ import java.util.List;
  * <br><br>
  * Mandatory data are followings:
  * <ul>
- * <li>Name of a schema</li>
- * <li>Version of a schema</li>
  * <li>List of actions</li>
  * </ul>
  * Optional data are followings:
  * <ul>
- * <li>Title of a schema</li>
- * <li>Description of a schema</li>
- * <li>meta data of a schema</li>
+ * <li>Title of a command</li>
+ * <li>Description of a command</li>
+ * <li>meta data of a command</li>
  * </ul>
  */
 public final class CommandForm implements Parcelable {
 
-    @SerializedName("schema")
-    private final @NonNull String schemaName;
-    private final int schemaVersion;
     private final @NonNull List<Action> actions;
 
     private @Nullable String title;
@@ -65,8 +60,6 @@ public final class CommandForm implements Parcelable {
         if (actions == null || actions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty.");
         }
-        this.schemaName = schemaName;
-        this.schemaVersion = schemaVersion;
         this.actions = actions;
     }
 
@@ -116,25 +109,6 @@ public final class CommandForm implements Parcelable {
     }
 
     /**
-     * Getter of schema name.
-     *
-     * @return schema name
-     */
-    @NonNull
-    public String getSchemaName() {
-        return this.schemaName;
-    }
-
-    /**
-     *  Getter of schema version.
-     *
-     * @return schema version
-     */
-    public int getSchemaVersion() {
-        return this.schemaVersion;
-    }
-
-    /**
      * Getter of actions.
      *
      * @return actions
@@ -181,8 +155,6 @@ public final class CommandForm implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.schemaName);
-        dest.writeInt(this.schemaVersion);
         dest.writeList(this.actions);
         dest.writeString(this.title);
         dest.writeString(this.description);
@@ -201,8 +173,6 @@ public final class CommandForm implements Parcelable {
     };
 
     private CommandForm(Parcel in) {
-        this.schemaName = in.readString();
-        this.schemaVersion = in.readInt();
         this.actions = new ArrayList<Action>();
         in.readList(this.actions, null);
         this.title = in.readString();

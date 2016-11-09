@@ -605,8 +605,6 @@ public class ThingIFAPI implements Parcelable {
      * Post new command to IoT Cloud.
      * Command will be delivered to specified target and result will be notified
      * through push notification.
-     * @param schemaName name of the schema.
-     * @param schemaVersion version of schema.
      * @param actions Actions to be executed.
      * @return Created Command instance. At this time, Command is delivered to
      * the target Asynchronously and may not finished. Actual Result will be
@@ -618,15 +616,9 @@ public class ThingIFAPI implements Parcelable {
     @NonNull
     @WorkerThread
     public Command postNewCommand(
-            @NonNull String schemaName,
-            int schemaVersion,
             @NonNull List<Action> actions) throws ThingIFException {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
-        }
-        Schema schema = this.getSchema(schemaName, schemaVersion);
-        if (schema == null) {
-            throw new UnsupportedSchemaException(schemaName, schemaVersion);
         }
         if (actions == null || actions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty");
@@ -635,8 +627,8 @@ public class ThingIFAPI implements Parcelable {
         String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/commands", this.app.getAppID(), this.target.getTypedID().toString());
         String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
-        Command command = new Command(schemaName, schemaVersion, this.owner.getTypedID(), actions);
-        JSONObject requestBody = JsonUtils.newJson(GsonRepository.gson(schema).toJson(command));
+        Command command = new Command(this.owner.getTypedID(), actions);
+        JSONObject requestBody = JsonUtils.newJson(GsonRepository.gson().toJson(command));
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MediaTypes.MEDIA_TYPE_JSON, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
 
@@ -663,12 +655,6 @@ public class ThingIFAPI implements Parcelable {
             @NonNull CommandForm form) throws ThingIFException {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
-        }
-        final String schemaName = form.getSchemaName();
-        final int schemaVersion = form.getSchemaVersion();
-        Schema schema = this.getSchema(schemaName, schemaVersion);
-        if (schema == null) {
-            throw new UnsupportedSchemaException(schemaName, schemaVersion);
         }
 
         String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/commands",
@@ -716,11 +702,7 @@ public class ThingIFAPI implements Parcelable {
 
         String schemaName = responseBody.optString("schema", null);
         int schemaVersion = responseBody.optInt("schemaVersion");
-        Schema schema = this.getSchema(schemaName, schemaVersion);
-        if (schema == null) {
-            throw new UnsupportedSchemaException(schemaName, schemaVersion);
-        }
-        return this.deserialize(schema, responseBody, Command.class);
+        return this.deserialize(responseBody, Command.class);
     }
     /**
      * List Commands in the specified Target.<br>
@@ -770,13 +752,7 @@ public class ThingIFAPI implements Parcelable {
         if (commandArray != null) {
             for (int i = 0; i < commandArray.length(); i++) {
                 JSONObject commandJson = commandArray.optJSONObject(i);
-                String schemaName = commandJson.optString("schema", null);
-                int schemaVersion = commandJson.optInt("schemaVersion");
-                Schema schema = this.getSchema(schemaName, schemaVersion);
-                if (schema == null) {
-                    continue;
-                }
-                commands.add(this.deserialize(schema, commandJson, Command.class));
+                commands.add(this.deserialize(commandJson, Command.class));
             }
         }
         return new Pair<List<Command>, String>(commands, nextPaginationKey);
@@ -889,10 +865,7 @@ public class ThingIFAPI implements Parcelable {
             requestBody.put("predicate", JsonUtils.newJson(
                         GsonRepository.gson().toJson(predicate)));
             JSONObject command = JsonUtils.newJson(
-                GsonRepository.gson(
-                    this.getSchema(
-                        form.getSchemaName(),
-                        form.getSchemaVersion())).toJson(form));
+                GsonRepository.gson().toJson(form));
             command.put("issuer", this.owner.getTypedID());
             if (form.getTargetID() == null) {
                 command.put("target", this.target.getTypedID().toString());
@@ -1019,18 +992,7 @@ public class ThingIFAPI implements Parcelable {
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
-
-        Schema schema = null;
-        JSONObject commandObject = responseBody.optJSONObject("command");
-        if (commandObject != null) {
-            String schemaName = commandObject.optString("schema", null);
-            int schemaVersion = commandObject.optInt("schemaVersion");
-            schema = this.getSchema(schemaName, schemaVersion);
-            if (schema == null) {
-                throw new UnsupportedSchemaException(schemaName, schemaVersion);
-            }
-        }
-        return this.deserialize(schema, responseBody, this.target.getTypedID());
+        return this.deserialize(responseBody, this.target.getTypedID());
     }
 
     /**
@@ -1148,9 +1110,7 @@ public class ThingIFAPI implements Parcelable {
             }
             if (form != null) {
                 JSONObject command = JsonUtils.newJson(
-                    GsonRepository.gson(
-                        this.getSchema(form.getSchemaName(),
-                                form.getSchemaVersion())).toJson(form));
+                    GsonRepository.gson().toJson(form));
                 command.put("issuer", this.owner.getTypedID());
                 if (form.getTargetID() == null) {
                     command.put("target", this.target.getTypedID().toString());
@@ -1441,17 +1401,7 @@ public class ThingIFAPI implements Parcelable {
         if (triggerArray != null) {
             for (int i = 0; i < triggerArray.length(); i++) {
                 JSONObject triggerJson = triggerArray.optJSONObject(i);
-                JSONObject commandJson = triggerJson.optJSONObject("command");
-                Schema schema = null;
-                if (commandJson != null) {
-                    String schemaName = commandJson.optString("schema", null);
-                    int schemaVersion = commandJson.optInt("schemaVersion");
-                    schema = this.getSchema(schemaName, schemaVersion);
-                    if (schema == null) {
-                        continue;
-                    }
-                }
-                triggers.add(this.deserialize(schema, triggerJson, this.target.getTypedID()));
+                triggers.add(this.deserialize(triggerJson, this.target.getTypedID()));
             }
         }
         return new Pair<List<Trigger>, String>(triggers, nextPaginationKey);
@@ -1605,11 +1555,6 @@ public class ThingIFAPI implements Parcelable {
         return this.tag;
     }
 
-    @Nullable
-    private Schema getSchema(String schemaName, int schemaVersion) {
-        return this.schemas.get(new Pair<String, Integer>(schemaName, schemaVersion));
-    }
-
     private Map<String, String> newHeader() {
         Map<String, String> headers = new HashMap<String, String>();
         if (!TextUtils.isEmpty(this.getAppID())) {
@@ -1632,13 +1577,11 @@ public class ThingIFAPI implements Parcelable {
         }
         return ret;
     }
+
     private <T> T deserialize(JSONObject json, Class<T> clazz) throws ThingIFException {
-        return this.deserialize(null, json, clazz);
+        return this.deserialize(json.toString(), clazz);
     }
-    private <T> T deserialize(Schema schema, JSONObject json, Class<T> clazz) throws ThingIFException {
-        return this.deserialize(schema, json.toString(), clazz);
-    }
-    private Trigger deserialize(Schema schema, JSONObject json, TypedID targetID) throws ThingIFException {
+    private Trigger deserialize(JSONObject json, TypedID targetID) throws ThingIFException {
         JSONObject copied = null;
         try {
             copied = new JSONObject(json.toString());
@@ -1646,11 +1589,11 @@ public class ThingIFAPI implements Parcelable {
         } catch (JSONException e) {
             throw new ThingIFException("unexpected error.", e);
         }
-        return this.deserialize(schema, copied.toString(), Trigger.class);
+        return this.deserialize(copied.toString(), Trigger.class);
     }
-    private <T> T deserialize(Schema schema, String json, Class<T> clazz) throws ThingIFException {
+    private <T> T deserialize(String json, Class<T> clazz) throws ThingIFException {
         try {
-            return GsonRepository.gson(schema).fromJson(json, clazz);
+            return GsonRepository.gson().fromJson(json, clazz);
         } catch (JsonParseException e) {
             if (e.getCause() instanceof ThingIFException) {
                 throw (ThingIFException)e.getCause();
