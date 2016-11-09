@@ -434,6 +434,9 @@ public class GatewayAPI implements Parcelable {
      * You need specify tag to load the instance by the
      * {@link #loadFromStoredInstance(Context, String) api}.
      *
+     * When you catch exceptions, please call {@link #onboard(String, String, String, JSONObject)}
+     * for saving or updating serialized instance.
+     *
      * @param context context
      * @return ThingIFAPI instance.
      * @throws StoredInstanceNotFoundException when the instance has not stored yet.
