@@ -14,9 +14,10 @@ import com.google.gson.JsonParseException;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
 import com.kii.thingif.command.CommandForm;
+import com.kii.thingif.exception.StoredInstanceNotFoundException;
 import com.kii.thingif.exception.ThingIFException;
 import com.kii.thingif.exception.ThingIFRestException;
-import com.kii.thingif.exception.StoredThingIFAPIInstanceNotFoundException;
+import com.kii.thingif.exception.UnloadableInstanceVersionException;
 import com.kii.thingif.exception.UnsupportedActionException;
 import com.kii.thingif.exception.UnsupportedSchemaException;
 import com.kii.thingif.gateway.EndNode;
@@ -53,7 +54,8 @@ import java.util.Map;
 public class ThingIFAPI implements Parcelable {
 
     private static final String SHARED_PREFERENCES_KEY_INSTANCE = "ThingIFAPI_INSTANCE";
-    private static final String SDK_VERSION = "0.13.0";
+    private static final String SHARED_PREFERENCES_SDK_VERSION_KEY = "ThingIFAPI_VERSION";
+    private static final String MINIMUM_LOADABLE_SDK_VERSION = "0.13.0";
 
     private static Context context;
     private final String tag;
@@ -87,12 +89,16 @@ public class ThingIFAPI implements Parcelable {
      * You need specify tag to load the instance by the
      * {@link #loadFromStoredInstance(Context, String) api}.
      *
+     * When you catch exceptions, please call {@link #onboard(String, String, String, JSONObject)}
+     * for saving or updating serialized instance.
+     *
      * @param context context
      * @return ThingIFAPI instance.
-     * @throws StoredThingIFAPIInstanceNotFoundException when the instance has not stored yet.
+     * @throws StoredInstanceNotFoundException when the instance has not stored yet.
+     * @throws UnloadableInstanceVersionException when the instance couldn't be loaded.
      */
     @NonNull
-    public static ThingIFAPI loadFromStoredInstance(@NonNull Context context) throws StoredThingIFAPIInstanceNotFoundException {
+    public static ThingIFAPI loadFromStoredInstance(@NonNull Context context) throws StoredInstanceNotFoundException, UnloadableInstanceVersionException {
         return loadFromStoredInstance(context, null);
     }
 
@@ -104,17 +110,26 @@ public class ThingIFAPI implements Parcelable {
      * @param context context
      * @param  tag specified when the ThingIFAPI has been built.
      * @return ThingIFAPI instance.
-     * @throws StoredThingIFAPIInstanceNotFoundException when the instance has not stored yet.
+     * @throws StoredInstanceNotFoundException when the instance has not stored yet.
+     * @throws UnloadableInstanceVersionException when the instance couldn't be loaded.
      */
     @NonNull
-    public static ThingIFAPI loadFromStoredInstance(@NonNull Context context, String tag) throws StoredThingIFAPIInstanceNotFoundException {
+    public static ThingIFAPI loadFromStoredInstance(@NonNull Context context, String tag) throws StoredInstanceNotFoundException, UnloadableInstanceVersionException {
         ThingIFAPI.context = context.getApplicationContext();
         SharedPreferences preferences = getSharedPreferences();
-        String serializedJson = preferences.getString(getSharedPreferencesKey(tag), null);
-        if (serializedJson != null) {
-            return  GsonRepository.gson().fromJson(serializedJson, ThingIFAPI.class);
+
+        String serializedJson = preferences.getString(getStoredInstanceKey(tag), null);
+        if (serializedJson == null) {
+            throw new StoredInstanceNotFoundException(tag);
         }
-        throw new StoredThingIFAPIInstanceNotFoundException(tag);
+
+        String storedSDKVersion = preferences.getString(getStoredSDKVersionKey(tag), null);
+        if (!isLoadableSDKVersion(storedSDKVersion)) {
+            throw new UnloadableInstanceVersionException(tag, storedSDKVersion,
+                    MINIMUM_LOADABLE_SDK_VERSION);
+        }
+
+        return  GsonRepository.gson().fromJson(serializedJson, ThingIFAPI.class);
     }
     /**
      * Clear all saved instances in the SharedPreferences.
@@ -133,19 +148,48 @@ public class ThingIFAPI implements Parcelable {
     public static void removeStoredInstance(@Nullable String tag) {
         SharedPreferences preferences = getSharedPreferences();
         SharedPreferences.Editor editor = preferences.edit();
-        editor.remove(getSharedPreferencesKey(tag));
+        editor.remove(getStoredSDKVersionKey(tag));
+        editor.remove(getStoredInstanceKey(tag));
         editor.apply();
     }
     private static void saveInstance(ThingIFAPI instance) {
         SharedPreferences preferences = getSharedPreferences();
         if (preferences != null) {
             SharedPreferences.Editor editor = preferences.edit();
-            editor.putString(getSharedPreferencesKey(instance.tag), GsonRepository.gson().toJson(instance));
+            editor.putString(getStoredSDKVersionKey(instance.tag), SDKVersion.versionString);
+            editor.putString(getStoredInstanceKey(instance.tag), GsonRepository.gson().toJson(instance));
             editor.apply();
         }
     }
-    private static String getSharedPreferencesKey(String tag) {
+    private static String getStoredInstanceKey(String tag) {
         return SHARED_PREFERENCES_KEY_INSTANCE + (tag == null ? "" : "_"  +tag);
+    }
+
+    private static String getStoredSDKVersionKey(String tag) {
+        return SHARED_PREFERENCES_SDK_VERSION_KEY + (tag == null ? "" : "_"  +tag);
+    }
+
+    private static boolean isLoadableSDKVersion(String storedSDKVersion) {
+        if (storedSDKVersion == null) {
+            return false;
+        }
+
+        String[] actualVersions = storedSDKVersion.split("\\.");
+        if (actualVersions.length != 3) {
+            return false;
+        }
+
+        String[] minimumLoadableVersions = ThingIFAPI.MINIMUM_LOADABLE_SDK_VERSION.split("\\.");
+        for (int i = 0; i < 3; ++i) {
+            int actual = Integer.parseInt(actualVersions[i]);
+            int expect = Integer.parseInt(minimumLoadableVersions[i]);
+            if (actual < expect) {
+                return false;
+            } else if (actual > expect) {
+                break;
+            }
+        }
+        return true;
     }
 
     ThingIFAPI(
@@ -1709,7 +1753,7 @@ public class ThingIFAPI implements Parcelable {
      */
     @NonNull
     public static String getSDKVersion() {
-        return SDK_VERSION;
+        return SDKVersion.versionString;
     }
 
 }

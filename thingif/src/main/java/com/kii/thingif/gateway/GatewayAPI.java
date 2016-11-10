@@ -13,8 +13,10 @@ import android.util.Base64;
 
 import com.kii.thingif.KiiApp;
 import com.kii.thingif.MediaTypes;
-import com.kii.thingif.exception.StoredGatewayAPIInstanceNotFoundException;
+import com.kii.thingif.SDKVersion;
+import com.kii.thingif.exception.StoredInstanceNotFoundException;
 import com.kii.thingif.exception.ThingIFException;
+import com.kii.thingif.exception.UnloadableInstanceVersionException;
 import com.kii.thingif.internal.GsonRepository;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
@@ -33,6 +35,8 @@ import java.util.Map;
 public class GatewayAPI implements Parcelable {
 
     private static final String SHARED_PREFERENCES_KEY_INSTANCE = "GatewayAPI_INSTANCE";
+    private static final String SHARED_PREFERENCES_SDK_VERSION_KEY = "GatewayAPI_VERSION";
+    private static final String MINIMUM_LOADABLE_SDK_VERSION = "0.13.0";
     private static Context context;
     private final String tag;
     private final KiiApp app;
@@ -417,7 +421,8 @@ public class GatewayAPI implements Parcelable {
     /**
      * Try to load the instance of GatewayAPI using stored serialized instance.
      * <BR>
-     * Instance is automatically saved when {@link #login(String, String)} is called.
+     * Instance is automatically saved when {@link #login(String, String)} is called
+     * and successfully completed.
      * <BR>
      *
      * If the GatewayAPI instance is build without the tag, all instance is saved in same place
@@ -430,12 +435,16 @@ public class GatewayAPI implements Parcelable {
      * You need specify tag to load the instance by the
      * {@link #loadFromStoredInstance(Context, String) api}.
      *
+     * When you catch exceptions, please call {@link #login(String, String)}
+     * for saving or updating serialized instance.
+     *
      * @param context context
      * @return ThingIFAPI instance.
-     * @throws StoredGatewayAPIInstanceNotFoundException when the instance has not stored yet.
+     * @throws StoredInstanceNotFoundException when the instance has not stored yet.
+     * @throws UnloadableInstanceVersionException when the instance couldn't be loaded.
      */
     @NonNull
-    public static GatewayAPI loadFromStoredInstance(@NonNull Context context) throws StoredGatewayAPIInstanceNotFoundException {
+    public static GatewayAPI loadFromStoredInstance(@NonNull Context context) throws StoredInstanceNotFoundException, UnloadableInstanceVersionException {
         return loadFromStoredInstance(context, null);
     }
 
@@ -447,17 +456,26 @@ public class GatewayAPI implements Parcelable {
      * @param context context
      * @param  tag specified when the ThingIFAPI has been built.
      * @return GatewayAPI instance.
-     * @throws StoredGatewayAPIInstanceNotFoundException when the instance has not stored yet.
+     * @throws StoredInstanceNotFoundException when the instance has not stored yet.
+     * @throws UnloadableInstanceVersionException when the instance couldn't be loaded.
      */
     @NonNull
-    public static GatewayAPI loadFromStoredInstance(@NonNull Context context, @Nullable String tag) throws StoredGatewayAPIInstanceNotFoundException {
+    public static GatewayAPI loadFromStoredInstance(@NonNull Context context, @Nullable String tag) throws StoredInstanceNotFoundException, UnloadableInstanceVersionException {
         GatewayAPI.context = context.getApplicationContext();
         SharedPreferences preferences = getSharedPreferences();
-        String serializedJson = preferences.getString(getSharedPreferencesKey(tag), null);
-        if (serializedJson != null) {
-            return  GsonRepository.gson().fromJson(serializedJson, GatewayAPI.class);
+
+        String serializedJson = preferences.getString(getStoredInstanceKey(tag), null);
+        if (serializedJson == null) {
+            throw new StoredInstanceNotFoundException(tag);
         }
-        throw new StoredGatewayAPIInstanceNotFoundException(tag);
+
+        String storedSDKVersion = preferences.getString(getStoredSDKVersionKey(tag), null);
+        if (!isLoadableSDKVersion(storedSDKVersion)) {
+            throw new UnloadableInstanceVersionException(tag, storedSDKVersion,
+                    MINIMUM_LOADABLE_SDK_VERSION);
+        }
+
+        return  GsonRepository.gson().fromJson(serializedJson, GatewayAPI.class);
     }
     /**
      * Clear all saved instances in the SharedPreferences.
@@ -476,24 +494,54 @@ public class GatewayAPI implements Parcelable {
     public static void removeStoredInstance(@Nullable String tag) {
         SharedPreferences preferences = getSharedPreferences();
         SharedPreferences.Editor editor = preferences.edit();
-        editor.remove(getSharedPreferencesKey(tag));
+        editor.remove(getStoredSDKVersionKey(tag));
+        editor.remove(getStoredInstanceKey(tag));
         editor.apply();
     }
     private static void saveInstance(GatewayAPI instance) {
         SharedPreferences preferences = getSharedPreferences();
         if (preferences != null) {
             SharedPreferences.Editor editor = preferences.edit();
-            editor.putString(getSharedPreferencesKey(instance.tag), GsonRepository.gson().toJson(instance));
+            editor.putString(getStoredSDKVersionKey(instance.tag), SDKVersion.versionString);
+            editor.putString(getStoredInstanceKey(instance.tag), GsonRepository.gson().toJson(instance));
             editor.apply();
         }
     }
-    private static String getSharedPreferencesKey(String tag) {
+    private static String getStoredInstanceKey(String tag) {
         return SHARED_PREFERENCES_KEY_INSTANCE + (tag == null ? "" : "_"  +tag);
     }
+
+    private static String getStoredSDKVersionKey(String tag) {
+        return SHARED_PREFERENCES_SDK_VERSION_KEY + (tag == null ? "" : "_"  +tag);
+    }
+
     private static SharedPreferences getSharedPreferences() {
         if (context != null) {
             return context.getSharedPreferences("com.kii.thingif.preferences", Context.MODE_PRIVATE);
         }
         return null;
+    }
+
+    private static boolean isLoadableSDKVersion(String storedSDKVersion) {
+        if (storedSDKVersion == null) {
+            return false;
+        }
+
+        String[] actualVersions = storedSDKVersion.split("\\.");
+        if (actualVersions.length != 3) {
+            return false;
+        }
+
+        String[] minimumLoadableVersions = GatewayAPI.MINIMUM_LOADABLE_SDK_VERSION.split("\\.");
+        for (int i = 0; i < 3; ++i) {
+            int actual = Integer.parseInt(actualVersions[i]);
+            int expect = Integer.parseInt(minimumLoadableVersions[i]);
+            if (actual < expect) {
+                return false;
+            } else if (actual > expect) {
+                break;
+            }
+        }
+        return true;
     }
 }
