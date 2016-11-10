@@ -1471,6 +1471,17 @@ public class ThingIFAPI implements Parcelable {
         this.restClient.sendRequest(request);
     }
 
+    /**
+     * Update firmwareVersion of the thing
+     * @param newFwVersion
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws IllegalArgumentException when newFwVersion is null or empty
+     */
+    public void updateFirmwareVersion(@NonNull String newFwVersion) {
+        //TODO: implement me
+    }
+
     /** Get Kii App
      * @return Kii Cloud Application.
      */
