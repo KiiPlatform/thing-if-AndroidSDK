@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.0'
+        classpath 'com.android.tools.build:gradle:2.2.2'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -69,4 +69,27 @@ class ReplaceVersionTask extends DefaultTask {
         dest.close()
 
     }
+}
+
+task prepareArchives(dependsOn: [
+        ":thingif:makeAAR",
+        ":thingif:sourcesJar",
+         "thingif:javadocJar"]) {
+    mustRunAfter "thingif:clean"
+    doLast {
+        delete "archives"
+        mkdir "archives"
+    }
+}
+
+task generateArchives(type: Copy,
+    dependsOn:
+        [
+            ":thingif:clean",
+            prepareArchives
+        ]) {
+    from "thingif/build/outputs/aar/thingif-release.aar"
+    from "thingif/build/libs/thingif-javadoc.jar"
+    from "thingif/build/libs/thingif-sources.jar"
+    into "archives"
 }
