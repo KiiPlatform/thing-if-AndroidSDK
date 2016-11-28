@@ -1,5 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
+apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven-publish'
 
 buildscript {
@@ -8,6 +9,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.2'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -134,4 +136,38 @@ publishing {
             }
         }
     }
+}
+
+// configure for bintrayUpload task
+bintray {
+    user = System.getenv("BINTRAY_USER")
+    key = System.getenv("BINTRAY_PASS")
+
+    //the files to deploy are the result of maven publication
+    publications = ['kiiArchives']
+    dryRun = false; // deploy files
+
+    publish = true //If version should be auto published after an upload
+
+    //Package configuration. The plugin will use the repo and name properties to check if the package already exists. In that case, there's no need to configure the other package properties (like userOrg, desc, etc).
+    pkg {
+        repo = 'KiiAndroidSDK'
+        name = 'thing-if-sdk'
+        userOrg = 'kii'
+        websiteUrl = 'http://documentation.kii.com/'
+        issueTrackerUrl = 'https://github.com/KiiPlatform/thing-if-AndroidSDK/issues'
+        labels = ['IoT', 'Cloud', 'Kii', 'Backend']
+        publicDownloadNumbers = true
+        version {
+            name = thingIfVersion //Bintray logical version name
+            desc = 'Android SDK for Kii Thing Interaction Framework'
+            released  = new Date()
+            vcsTag = thingIfVersion
+        }
+    }
+}
+
+// it needs to execute generateArchives first
+bintrayUpload {
+    dependsOn generateArchives, 'generatePomFileForKiiArchivesPublication'
 }
