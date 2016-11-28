@@ -60,4 +60,11 @@ test:
       fi
     - >
 
+deployment:
+  production:
+    tag: /v[0-9]+.*/
+    commands:
+      - bash circleci_scripts/release_doc.sh
+      - sh ./gradlew bintrayUpload
+
 # vim:set tw=2 ts=2 sw=2 tw=0 et fenc=utf8:
