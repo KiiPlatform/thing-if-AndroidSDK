@@ -1422,11 +1422,31 @@ public class ThingIFAPI implements Parcelable {
     }
 
     /**
-     * Get the Vendor Thing ID of specified Target.
-     *
-     * @return Vendor Thing ID
+     * Get the State of specified alias of Target thing.
+     * State will be serialized with Gson library.
+     * @param classOfS Specify class of the State.
+     * @param alias Name of Trait alias to fetch state.
+     * @param <S> State class.
+     * @return Instance of Target State.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
      */
+    @NonNull
+    @WorkerThread
+    public <S extends TargetState> S getTargetState(
+            @NonNull Class<S> classOfS,
+            @NonNull String alias) throws ThingIFException {
+
+        //TODO: implement me
+        return null;
+    }
+
+        /**
+         * Get the Vendor Thing ID of specified Target.
+         *
+         * @return Vendor Thing ID
+         * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+         */
     @NonNull
     @WorkerThread
     public String getVendorThingID() throws ThingIFException {
