@@ -1546,9 +1546,8 @@ public class ThingIFAPI implements Parcelable {
     /**
      * Update thingType of thing. This method must be used to make thing start to use trait.
      * @param thingType ThingType must be already defined.
-     * @param firmwareVersion Firmware version to be updated. The firmware version must be already defined.
      */
-    public void updateThing( @NonNull String thingType, String firmwareVersion) {
+    public void updateThingType( @NonNull String thingType) {
         //TODO: implement me
     }
     /** Get Kii App
