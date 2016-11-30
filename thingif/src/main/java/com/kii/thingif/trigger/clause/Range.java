@@ -13,7 +13,15 @@ public class Range extends Clause {
     private final Long lowerLimit;
     private final Boolean upperIncluded;
     private final Boolean lowerIncluded;
-    private final String alias;
+    private String alias;
+
+    public Range(String field, Long upperLimit, Boolean upperIncluded, Long lowerLimit, Boolean lowerIncluded) {
+        this.field = field;
+        this.upperLimit = upperLimit;
+        this.upperIncluded = upperIncluded;
+        this.lowerLimit = lowerLimit;
+        this.lowerIncluded = lowerIncluded;
+    }
 
     public Range(String field, Long upperLimit, Boolean upperIncluded, Long lowerLimit, Boolean lowerIncluded, String alias) {
         this.field = field;
@@ -23,6 +31,36 @@ public class Range extends Clause {
         this.lowerIncluded = lowerIncluded;
         this.alias = alias;
     }
+
+    public static Range range(
+            @NonNull String field,
+            Number upperLimit,
+            Boolean upperIncluded,
+            Number lowerLimit,
+            Boolean lowerIncluded) {
+        return new Range(field, upperLimit.longValue(), upperIncluded, lowerLimit.longValue(), lowerIncluded);
+    }
+    public static Range greaterThan(
+            @NonNull String field,
+            @NonNull Number lowerLimit) {
+        return new Range(field, null, null, lowerLimit.longValue(), Boolean.FALSE);
+    }
+    public static Range greaterThanEquals(
+            @NonNull String field,
+            @NonNull Number lowerLimit) {
+        return new Range(field, null, null, lowerLimit.longValue(), Boolean.TRUE);
+    }
+    public static Range lessThan(
+            @NonNull String field,
+            @NonNull Number upperLimit) {
+        return new Range(field, upperLimit.longValue(), Boolean.FALSE, null, null);
+    }
+    public static Range lessThanEquals(
+            @NonNull String field,
+            @NonNull Number upperLimit) {
+        return new Range(field, upperLimit.longValue(), Boolean.TRUE, null, null);
+    }
+
     public static Range range(
             @NonNull String field,
             Number upperLimit,

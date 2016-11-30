@@ -155,6 +155,23 @@ public class Command implements Parcelable {
     public List<Action> getActions() {
         List<Action> allActions = new ArrayList<>();
         for(int i=0; i<this.actions.size(); i++) {
+            if(this.actions.get(i) instanceof Action){
+                Action action = (Action)this.actions.get(i);
+                allActions.add(action);
+            }else if(this.actions.get(i) instanceof TraitActions){
+                throw new IllegalStateException("Actions of this command support trait.");
+            }
+        }
+        return allActions;
+    }
+
+    /**
+     * Get list of Action instances
+     * @return action of this command.
+     */
+    public List<Action> getAllActions() {
+        List<Action> allActions = new ArrayList<>();
+        for(int i=0; i<this.actions.size(); i++) {
             if(this.actions.get(i) instanceof TraitActions){
                 TraitActions traitActions = (TraitActions) this.actions.get(i);
                 allActions.addAll(traitActions.getActions());

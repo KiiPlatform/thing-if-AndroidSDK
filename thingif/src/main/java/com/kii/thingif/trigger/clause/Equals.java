@@ -10,7 +10,21 @@ public class Equals extends Clause {
 
     private final String field;
     private final Object value;
-    private final String alias;
+    private String alias;
+    public Equals(@NonNull String field, String value) {
+        this.field = field;
+        this.value = value;
+    }
+
+    public Equals(String field, long value) {
+        this.field = field;
+        this.value = value;
+    }
+
+    public Equals(String field, boolean value) {
+        this.field = field;
+        this.value = value;
+    }
     public Equals(@NonNull String field, String value, String alias) {
         this.field = field;
         this.value = value;

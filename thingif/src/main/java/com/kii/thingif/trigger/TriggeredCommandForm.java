@@ -9,6 +9,7 @@ import com.google.gson.annotations.SerializedName;
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
+import com.kii.thingif.command.TraitEnabledCommandActions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,7 +51,7 @@ public class TriggeredCommandForm implements Parcelable {
         @Nullable private JSONObject metadata;
 
         private Builder(
-                @NonNull List<Action> actions)
+                @NonNull List actions)
         {
             if (actions == null || actions.size() == 0) {
                 throw new IllegalArgumentException("actions is null or empty.");
@@ -71,6 +72,20 @@ public class TriggeredCommandForm implements Parcelable {
             throws IllegalArgumentException
         {
             return new Builder(actions);
+        }
+
+        /**
+         * Construct a {@link TriggeredCommandForm.Builder} instance.
+         * @param traitActions {@link TraitEnabledCommandActions} instance
+         * @return builder instance
+         * @throws IllegalArgumentException This exception is thrown when actions is null.
+         */
+        public static Builder newBuilder(
+                    @NonNull TraitEnabledCommandActions traitActions
+        )
+                throws IllegalArgumentException
+        {
+             return new Builder(traitActions.toArray());
         }
 
         /**
@@ -128,6 +143,17 @@ public class TriggeredCommandForm implements Parcelable {
                 throw new IllegalArgumentException("actions is null or empty.");
             }
             this.actions = actions;
+            return this;
+        }
+
+        public Builder setActions(
+                    @NonNull TraitEnabledCommandActions actions
+        )
+                throws IllegalArgumentException{
+            if (actions == null || actions.toArray().size() == 0) {
+                throw new IllegalArgumentException("actions is null or empty.");
+            }
+            this.actions = actions.toArray();
             return this;
         }
 
@@ -311,7 +337,7 @@ public class TriggeredCommandForm implements Parcelable {
     @Nullable private JSONObject metadata;
 
     private TriggeredCommandForm(
-            @NonNull List<Action> actions)
+            @NonNull List actions)
     {
         this.actions = actions;
     }
