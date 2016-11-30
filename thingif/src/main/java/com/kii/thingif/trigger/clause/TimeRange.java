@@ -11,6 +11,11 @@ public class TimeRange extends Clause{
 
     private Date lowerLimit;
     private Date upperLimit;
+
+    public TimeRange(Date lowerLimit, Date upperLimit) {
+        this.lowerLimit = lowerLimit;
+        this.upperLimit = upperLimit;
+    }
     @Override
     public JSONObject toJSONObject() {
         JSONObject ret = new JSONObject();

@@ -25,7 +25,9 @@ import com.kii.thingif.gateway.PendingEndNode;
 import com.kii.thingif.internal.GsonRepository;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
+import com.kii.thingif.query.AggregatedHistoryStatesResponse;
 import com.kii.thingif.query.Aggregation;
+import com.kii.thingif.query.HistoryStateQuery;
 import com.kii.thingif.query.HistoryStatesResponse;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.Predicate;
@@ -36,7 +38,6 @@ import com.kii.thingif.trigger.TriggerOptions;
 import com.kii.thingif.trigger.TriggeredCommandForm;
 import com.kii.thingif.trigger.TriggeredServerCodeResult;
 import com.kii.thingif.trigger.TriggersWhat;
-import com.kii.thingif.trigger.clause.Clause;
 import com.squareup.okhttp.MediaType;
 
 import org.json.JSONArray;
@@ -1506,42 +1507,39 @@ public class ThingIFAPI implements Parcelable {
     }
 
     /**
-     * Query history state of thing, which is not using trait.
-     * @param clause clause to query history states
-     * @param grouped If true provided instance of GroupedHistoryStatesResponse will be responded,
-     *                otherwise instance of UngroupedHistoryStatesResponse will be responded.
-     * @param aggregations Array of Aggregation instances for the query results.
-     * @return Instance of GroupedHistoryStatesResponse or UngroupedHistoryStatesResponse.
+     * Query history state of target thing
+     * @param classOfS Specify class of the State.
+     * @param query instance of {@link HistoryStateQuery}
+     * @param <S> State class.
+     * @return instance of {@link HistoryStatesResponse}
      */
-    public HistoryStatesResponse queryState(
-            @NonNull  Clause clause,
-            @NonNull  boolean grouped,
-            List<Aggregation> aggregations) {
+    public <S extends TargetState> HistoryStatesResponse queryHistoryStates(
+            @NonNull Class<S> classOfS,
+            @NonNull HistoryStateQuery query) {
         //TODO: implement me
         return null;
     }
 
     /**
-     * Query history state of thing, which is using trait.
-     * @param clause clause to query history states
-     * @param grouped If true provided instance of GroupedHistoryStatesResponse will be responded,
-     *                otherwise instance of UngroupedHistoryStatesResponse will be responded.
-     * @param alias Name of trait alias to query, must be already defined.
-     * @param firmwareVersion Firmware version specified to query. If null is provided, API will query
-     *                        state for all versions.
-     * @param aggregations Array of Aggregation instances to aggregate the query results.
-     * @return Instance of GroupedHistoryStatesResponse or UngroupedHistoryStatesResponse.
+     * Aggregate history state of target thing grouped by DataGroupingIntervals.
+     * If target thing is using trait then DataGroupingIntervals of trait is used.
+     * If target thing is not using trait, and specified DataGroupingIntervals during onboarding,
+     *  then the specified grouping intervals is used.
+     * @param classOfS Specify class of the State.
+     * @param query instance of {@link HistoryStateQuery}
+     * @param aggregation instance of {@link Aggregation}
+     * @param <S> State class.
+     * @return instance of {@link AggregatedHistoryStatesResponse}
      */
-    public HistoryStatesResponse  queryState(
-            @NonNull  Clause clause,
-            @NonNull  boolean grouped,
-            @NonNull  String alias,
-            String firmwareVersion,
-            List<Aggregation> aggregations
-            ) {
-        //TODO: implement me
+    public  <S extends TargetState> AggregatedHistoryStatesResponse aggregateHistoryStates(
+            @NonNull Class<S> classOfS,
+            @NonNull HistoryStateQuery query,
+            @NonNull Aggregation aggregation
+            ){
+        //TODO: implement me, need to add grouped=true in request body
         return null;
     }
+
 
     /**
      * Update thingType of thing. This method must be used to make thing start to use trait.

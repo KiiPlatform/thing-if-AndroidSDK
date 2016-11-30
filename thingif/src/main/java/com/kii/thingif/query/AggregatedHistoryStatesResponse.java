@@ -5,7 +5,12 @@ import com.kii.thingif.TargetState;
 import java.util.Date;
 import java.util.List;
 
-public class GroupedHistoryStatesResponse extends HistoryStatesResponse {
+public class AggregatedHistoryStatesResponse {
+    private String queryDescription;
+    private boolean grouped;
+    private List results;
+    private List<AggregationResult> aggregations;
+
     public class GroupedResult {
         private Date rangeFrom;
         private Date rangeTo;
@@ -21,7 +26,7 @@ public class GroupedHistoryStatesResponse extends HistoryStatesResponse {
         }
     }
 
-    public GroupedHistoryStatesResponse(
+    public AggregatedHistoryStatesResponse(
             String queryDescription,
             boolean grouped,
             List<GroupedResult> results,
