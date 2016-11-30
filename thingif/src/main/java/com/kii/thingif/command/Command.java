@@ -11,6 +11,9 @@ import com.kii.thingif.TypedID;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Represents a command that is executed by the thing
  */
@@ -31,19 +34,19 @@ public class Command implements Parcelable {
     private String title;
     private String description;
     private JSONObject metadata;
-    private final CommandActions actions;
-    private CommandActionResults actionResults;
+    private final List actions;
+    private List actionResults;
 
     public Command(@NonNull TypedID targetID,
                    @NonNull TypedID issuerID,
-                   @NonNull CommandActions actions) {
+                   @NonNull List<Action> actions) {
         if (targetID == null) {
             throw new IllegalArgumentException("targetID is null");
         }
         if (issuerID == null) {
             throw new IllegalArgumentException("issuerID is null");
         }
-        if (actions == null || actions.getActions().size() == 0) {
+        if (actions == null || actions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty");
         }
         this.targetID = targetID;
@@ -51,11 +54,11 @@ public class Command implements Parcelable {
         this.actions = actions;
     }
     public Command(@NonNull TypedID issuerID,
-                   @NonNull CommandActions actions) {
+                   @NonNull List<Action> actions) {
         if (issuerID == null) {
             throw new IllegalArgumentException("issuerID is null");
         }
-        if (actions == null || actions.getActions().size() == 0) {
+        if (actions == null || actions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty");
         }
         this.targetID = null;
@@ -63,15 +66,51 @@ public class Command implements Parcelable {
         this.actions = actions;
     }
 
-    public void addTraitAliasActionResult(@NonNull TraitEnabledActionResults.TraitAliasActionResults ar){
-        // TODO: impment me
+    public Command(@NonNull TypedID targetID,
+                   @NonNull TypedID issuerID,
+                   @NonNull TraitEnabledCommandActions actions) {
+        if (targetID == null) {
+            throw new IllegalArgumentException("targetID is null");
+        }
+        if (issuerID == null) {
+            throw new IllegalArgumentException("issuerID is null");
+        }
+        if (actions == null || actions.toArray().size() == 0) {
+            throw new IllegalArgumentException("actions is null or empty");
+        }
+        this.targetID = targetID;
+        this.issuerID = issuerID;
+        this.actions = actions.toArray();
     }
-    public void addActionResult(@NonNull ActionResult ar) {
-        //TODO: fix me
-//        if (ar == null) {
-//            throw new IllegalArgumentException("ActionResult is null");
-//        }
-//        boolean hasAction = false;
+    public Command(@NonNull TypedID issuerID,
+                   @NonNull TraitEnabledCommandActions actions) {
+        if (issuerID == null) {
+            throw new IllegalArgumentException("issuerID is null");
+        }
+        if (actions == null || actions.toArray().size() == 0) {
+            throw new IllegalArgumentException("actions is null or empty");
+        }
+        this.targetID = null;
+        this.issuerID = issuerID;
+        this.actions = actions.toArray();
+    }
+
+    public void addActionResult(@NonNull String alias, @NonNull ActionResult ar) {
+        // TODO: implement me
+    }
+
+    public void addActionResults(@NonNull String alias, @NonNull List<ActionResult> ars) {
+        // TODO: implement me
+    }
+
+    public void addActionResult(@NonNull ActionResult ar) throws Exception{
+        if (ar == null) {
+            throw new IllegalArgumentException("ActionResult is null");
+        }
+        boolean hasAction = false;
+        //TODO: FIXME
+        // first check whether actions is trait format, if yes throw exception
+        // else check whether action name of action result in actions array
 //        for (Action action : this.actions) {
 //            if (TextUtils.equals(ar.getActionName(), action.getActionName())) {
 //                hasAction = true;
@@ -110,21 +149,70 @@ public class Command implements Parcelable {
     }
 
     /**
-     * Get list of actions
+     * Get list of Action instances
      * @return action of this command.
      */
-    public CommandActions getActions() {
-        return this.actions;
+    public List<Action> getActions() {
+        List<Action> allActions = new ArrayList<>();
+        for(int i=0; i<this.actions.size(); i++) {
+            if(this.actions.get(i) instanceof TraitActions){
+                TraitActions traitActions = (TraitActions) this.actions.get(i);
+                allActions.addAll(traitActions.getActions());
+            }else if(this.actions.get(i) instanceof Action){
+                Action action = (Action)this.actions.get(i);
+                allActions.add(action);
+            }
+        }
+        return allActions;
+    }
+
+    public List<String> getAlias() {
+        List<String> allAlias = new ArrayList<>();
+        for(int i=0; i<this.actions.size(); i++) {
+            if(this.actions.get(i) instanceof TraitActions){
+                TraitActions traitActions = (TraitActions) this.actions.get(i);
+                allAlias.add(traitActions.getAlias());
+            }
+        }
+        return allAlias;
+    }
+
+    /**
+     * Get actions with specified trait alias name.
+     * @param alias Name of trait alias.
+     * @return List of Action instance of the specified trait alias.
+     */
+    public List<Action> getActions(String alias) {
+        //TODO: implement me
+        return new ArrayList<>();
     }
 
     /**
      * Get list of action result
      * @return action results of this command.
      */
-    public CommandActionResults getActionResults() {
-        return this.actionResults;
+    public List<ActionResult> getActionResults() {
+        List<ActionResult> allResults = new ArrayList<>();
+        for(int i= 0; i<this.actionResults.size(); i++) {
+            if(this.actionResults.get(i) instanceof TraitActionResults){
+                TraitActionResults results = (TraitActionResults)this.actionResults.get(i);
+                allResults.addAll(results.getActionResults());
+            }else if(this.actionResults.get(i) instanceof ActionResult) {
+                allResults.add((ActionResult)this.actionResults.get(i));
+            }
+        }
+        return allResults;
     }
 
+    public List<ActionResult> getActionResults(@NonNull String alias) {
+        //TODO: implement me
+        return new ArrayList<>();
+    }
+
+    public ActionResult getActionResult(@NonNull String alias, @NonNull Action action) {
+        //TODO: implement me
+        return null;
+    }
     /**
      * Get a action result associated with specified action
      *
@@ -203,8 +291,10 @@ public class Command implements Parcelable {
         this.commandID = in.readString();
         this.targetID = in.readParcelable(TypedID.class.getClassLoader());
         this.issuerID = in.readParcelable(TypedID.class.getClassLoader());
-        this.actions = in.readParcelable(CommandActions.class.getClassLoader());
-        this.actionResults = in.readParcelable(CommandActionResults.class.getClassLoader());
+        this.actions = new ArrayList();
+        in.readList(this.actions, null);
+        this.actionResults = new ArrayList<>();
+        in.readList(this.actionResults, null);
         this.commandState = (CommandState)in.readSerializable();
         this.firedByTriggerID = in.readString();
         this.created = (Long)in.readValue(Command.class.getClassLoader());
@@ -240,8 +330,8 @@ public class Command implements Parcelable {
         dest.writeString(this.commandID);
         dest.writeParcelable(this.targetID, flags);
         dest.writeParcelable(this.issuerID, flags);
-        dest.writeParcelable(this.actions, flags);
-        dest.writeParcelable(this.actionResults, flags);
+        dest.writeList(this.actions);
+        dest.writeList(this.actionResults);
         dest.writeSerializable(this.commandState);
         dest.writeString(this.firedByTriggerID);
         dest.writeValue(this.created);

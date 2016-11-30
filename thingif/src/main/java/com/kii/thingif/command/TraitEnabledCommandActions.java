@@ -1,36 +1,34 @@
 package com.kii.thingif.command;
 
 import android.os.Parcel;
+import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class TraitEnabledCommandActions extends CommandActions {
-    public class TraitAliasActions {
-        private String traitAlias;
-        private List<Action> actions;
+public class TraitEnabledCommandActions implements Parcelable{
 
-        public TraitAliasActions(
-                String traitAlias,
-                List<Action> actions
-        ){
-            this.traitAlias = traitAlias;
-            this.actions = actions;
-        }
-        public String getTraitAlias() {
-            return traitAlias;
-        }
+    private List<TraitActions> actions;
 
-        public List<Action> getActions() {
-            return actions;
-        }
+    public TraitEnabledCommandActions(){
+        this.actions = new ArrayList<>();
     }
 
-    public TraitEnabledCommandActions(List<TraitAliasActions> aliasActions){
-        super(aliasActions);
+    public TraitEnabledCommandActions(List<TraitActions> aliasActions){
+        this.actions = new ArrayList<>();
+        this.actions.addAll(aliasActions);
     }
 
-    public void addAction(TraitAliasActions aliasActions) {
-        actions.add(aliasActions);
+    public void addActions(TraitActions actions) {
+        this.actions.add(actions);
+    }
+
+    public void addActions(String alias, List<Action> actions) {
+        this.actions.add(new TraitActions(alias, actions));
+    }
+
+    public List toArray(){
+        return this.actions;
     }
 
     // Implementation of Parcelable
@@ -40,8 +38,7 @@ public class TraitEnabledCommandActions extends CommandActions {
     }
 
     protected TraitEnabledCommandActions(Parcel in) {
-        super(in);
-        this.actions = in.readArrayList(TraitAliasActions.class.getClassLoader());
+        this.actions = in.readArrayList(TraitActions.class.getClassLoader());
     }
 
     @Override

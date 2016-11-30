@@ -1,37 +1,34 @@
 package com.kii.thingif.command;
 
 import android.os.Parcel;
+import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class TraitEnabledActionResults extends CommandActionResults {
+public class TraitEnabledActionResults implements Parcelable {
+    private List<TraitActionResults> actionResults;
 
-
-    public class TraitAliasActionResults {
-        private String traitAlias;
-        private List<ActionResult> results;
-        TraitAliasActionResults(String traitAlias, List<ActionResult> results) {
-            this.traitAlias = traitAlias;
-            this.results = results;
-        }
-
-        public String getTraitAlias() {
-            return traitAlias;
-        }
-
-        public List<ActionResult> getResults() {
-            return results;
-        }
+    public TraitEnabledActionResults(){
+        this.actionResults = new ArrayList<>();
     }
 
-    public TraitEnabledActionResults(List<TraitAliasActionResults> results) {
-        super(results);
+    public TraitEnabledActionResults(List<TraitActionResults> results) {
+        this.actionResults = new ArrayList<>();
+        this.actionResults.addAll(results);
     }
 
-    public void addActionResult(TraitAliasActionResults result) {
+    public void addActionResult(TraitActionResults result) {
         this.actionResults.add(result);
     }
 
+    public void addActionResult(String alias, List<ActionResult> results) {
+        this.actionResults.add(new TraitActionResults(alias, results));
+    }
+
+    public List toArray(){
+        return this.actionResults;
+    }
     // Implementation of Parcelable
     @Override
     public int describeContents() {
@@ -39,8 +36,8 @@ public class TraitEnabledActionResults extends CommandActionResults {
     }
 
     protected TraitEnabledActionResults(Parcel in) {
-        super(in);
-        this.actionResults = in.readArrayList(TraitAliasActionResults.class.getClassLoader());
+        this.actionResults = new ArrayList<>();
+        in.readList(this.actionResults, null);
     }
 
     @Override

@@ -9,6 +9,9 @@ import android.text.TextUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Form of a command.
  *
@@ -28,7 +31,7 @@ import org.json.JSONObject;
  */
 public final class CommandForm implements Parcelable {
 
-    private final @NonNull CommandActions actions;
+    private final @NonNull List actions;
 
     private @Nullable String title;
     private @Nullable String description;
@@ -37,19 +40,34 @@ public final class CommandForm implements Parcelable {
     /**
      * Constructs a CommandForm instance.
      *
+     * @param actions Instance of TraitEnabledCommandActions represents trait format actoins.
+     * @throws IllegalArgumentException when actions is null or empty.
+     */
+    public CommandForm(
+            @NonNull TraitEnabledCommandActions actions)
+        throws IllegalArgumentException
+    {
+        if (actions == null || actions.toArray().size() == 0) {
+            throw new IllegalArgumentException("actions is null or empty.");
+        }
+        this.actions = actions.toArray();
+    }
+
+    /**
+     * Constructs a CommandForm instance.
+     *
      * @param actions List of actions. Must not be null or empty.
      * @throws IllegalArgumentException when actions is null or empty.
      */
     public CommandForm(
-            @NonNull CommandActions actions)
-        throws IllegalArgumentException
+            @NonNull List<Action> actions)
+            throws IllegalArgumentException
     {
-        if (actions == null || actions.getActions().size() == 0) {
+        if (actions == null || actions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty.");
         }
         this.actions = actions;
     }
-
     /**
      * Setter of title
      *
@@ -101,7 +119,7 @@ public final class CommandForm implements Parcelable {
      * @return actions
      */
     @NonNull
-    public CommandActions getActions() {
+    public List getActions() {
         return this.actions;
     }
 
@@ -142,7 +160,7 @@ public final class CommandForm implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(this.actions, flags);
+        dest.writeList(this.actions);
         dest.writeString(this.title);
         dest.writeString(this.description);
         dest.writeString(this.metadata == null ? null : this.metadata.toString());
@@ -160,7 +178,8 @@ public final class CommandForm implements Parcelable {
     };
 
     private CommandForm(Parcel in) {
-        this.actions = in.readParcelable(CommandActions.class.getClassLoader());
+        this.actions = new ArrayList();
+        in.readList(this.actions, null);
         this.title = in.readString();
         this.description = in.readString();
         String metadata = in.readString();
