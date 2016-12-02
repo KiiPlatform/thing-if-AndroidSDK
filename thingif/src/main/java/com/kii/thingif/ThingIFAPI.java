@@ -1498,11 +1498,11 @@ public class ThingIFAPI implements Parcelable {
     /**
      * Update firmwareVersion of the thing
      * @param newFwVersion
+     * @throws IllegalArgumentException when newFwVersion is null or empty.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws IllegalArgumentException when newFwVersion is null or empty
      */
-    public void updateFirmwareVersion(@NonNull String newFwVersion) {
+    public void updateFirmwareVersion(@NonNull String newFwVersion) throws ThingIFException{
         //TODO: implement me
     }
 
@@ -1512,10 +1512,13 @@ public class ThingIFAPI implements Parcelable {
      * @param query instance of {@link HistoryStateQuery}
      * @param <S> State class.
      * @return instance of {@link HistoryStatesResponse}
+     * @throws IllegalArgumentException when classOfS or query is null.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
      */
-    public <S extends TargetState> HistoryStatesResponse queryHistoryStates(
+    public <S extends TargetState> HistoryStatesResponse<S> queryHistoryStates(
             @NonNull Class<S> classOfS,
-            @NonNull HistoryStateQuery query) {
+            @NonNull HistoryStateQuery query)  throws ThingIFException{
         //TODO: implement me
         return null;
     }
@@ -1530,12 +1533,15 @@ public class ThingIFAPI implements Parcelable {
      * @param aggregation instance of {@link Aggregation}
      * @param <S> State class.
      * @return instance of {@link AggregatedHistoryStatesResponse}
+     * @throws IllegalArgumentException when classOfS, query or aggregation is null.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
      */
     public  <S extends TargetState> AggregatedHistoryStatesResponse aggregateHistoryStates(
             @NonNull Class<S> classOfS,
             @NonNull HistoryStateQuery query,
             @NonNull Aggregation aggregation
-            ){
+            ) throws  ThingIFException {
         //TODO: implement me, need to add grouped=true in request body
         return null;
     }
@@ -1544,8 +1550,11 @@ public class ThingIFAPI implements Parcelable {
     /**
      * Update thingType of thing. This method must be used to make thing start to use trait.
      * @param thingType ThingType must be already defined.
+     * @throws IllegalArgumentException Thrown when thingType is empty or null.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
      */
-    public void updateThingType( @NonNull String thingType) {
+    public void updateThingType( @NonNull String thingType) throws ThingIFException{
         //TODO: implement me
     }
     /** Get Kii App

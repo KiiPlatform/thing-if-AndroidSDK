@@ -30,4 +30,11 @@ public class ThingIFRestException extends ThingIFException {
         }
         return super.getMessage();
     }
+
+    public String getTargetFirmwareVersion() {
+        if (this.body != null) {
+            return this.body.optString("targetFirmwareVersion", null);
+        }
+        return null;
+    }
 }

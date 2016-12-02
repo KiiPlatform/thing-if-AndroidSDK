@@ -19,18 +19,16 @@ public class Aggregation implements Parcelable{
     /**
      * Initialize Aggregation
      * @param type Type of aggregation
-     * @param responseField
      * @param field
      * @param fieldType
      */
     public Aggregation(
             AggregationType type,
-            String responseField,
             String field,
             String fieldType
     ) {
         this.type = type;
-        this.responseField = responseField;
+        this.responseField = type.toString().toLowerCase();
         this.field = field;
         this.fieldType = fieldType;
     }
@@ -47,6 +45,18 @@ public class Aggregation implements Parcelable{
             // Won't happens.
             throw new RuntimeException(e);
         }
+    }
+
+    public AggregationType getType() {
+        return type;
+    }
+
+    public String getField() {
+        return field;
+    }
+
+    public String getFieldType() {
+        return fieldType;
     }
 
     protected Aggregation(Parcel in) {
