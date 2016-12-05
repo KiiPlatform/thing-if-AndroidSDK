@@ -37,6 +37,16 @@ public class Command implements Parcelable {
     private final List actions;
     private List actionResults;
 
+    /**
+     * Initialize Command
+     * @param targetID TypedID of target thing.
+     * @param issuerID TypedID of issuer.
+     * @param actions List of actions. Class of action item only accept {@link Action}
+     *                or {@link TraitActions}
+     * @throws IllegalArgumentException Thrown when targetID, issuerID is null.
+     *   Or actions is null or empty. Or if actions is not empty, but the action element
+     *   is not Action or TraitActions.
+     */
     public Command(@NonNull TypedID targetID,
                    @NonNull TypedID issuerID,
                    @NonNull List<Action> actions) {
@@ -49,50 +59,32 @@ public class Command implements Parcelable {
         if (actions == null || actions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty");
         }
+        //TODO: check class of element of action
         this.targetID = targetID;
-        this.issuerID = issuerID;
-        this.actions = actions;
-    }
-    public Command(@NonNull TypedID issuerID,
-                   @NonNull List<Action> actions) {
-        if (issuerID == null) {
-            throw new IllegalArgumentException("issuerID is null");
-        }
-        if (actions == null || actions.size() == 0) {
-            throw new IllegalArgumentException("actions is null or empty");
-        }
-        this.targetID = null;
         this.issuerID = issuerID;
         this.actions = actions;
     }
 
-    public Command(@NonNull TypedID targetID,
-                   @NonNull TypedID issuerID,
-                   @NonNull TraitEnabledCommandActions actions) {
-        if (targetID == null) {
-            throw new IllegalArgumentException("targetID is null");
-        }
-        if (issuerID == null) {
-            throw new IllegalArgumentException("issuerID is null");
-        }
-        if (actions == null || actions.toArray().size() == 0) {
-            throw new IllegalArgumentException("actions is null or empty");
-        }
-        this.targetID = targetID;
-        this.issuerID = issuerID;
-        this.actions = actions.toArray();
-    }
+    /**
+     * Initialize Command
+     * @param issuerID TypedID of issuer.
+     * @param actions List of actions. Class of action item only accept {@link Action}
+     *                or {@link TraitActions}
+     * @throws IllegalArgumentException Thrown when targetID, issuerID is null.
+     *   Or actions is null or empty. Or if actions is not empty, but the action element
+     *   is not Action or TraitActions.
+     */
     public Command(@NonNull TypedID issuerID,
-                   @NonNull TraitEnabledCommandActions actions) {
+                   @NonNull List actions) {
         if (issuerID == null) {
             throw new IllegalArgumentException("issuerID is null");
         }
-        if (actions == null || actions.toArray().size() == 0) {
+        if (actions == null || actions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty");
         }
         this.targetID = null;
         this.issuerID = issuerID;
-        this.actions = actions.toArray();
+        this.actions = actions;
     }
 
     public void addActionResult(@NonNull String alias, @NonNull ActionResult ar) {
