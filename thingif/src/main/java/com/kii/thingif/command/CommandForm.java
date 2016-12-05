@@ -40,17 +40,30 @@ public final class CommandForm implements Parcelable {
     /**
      * Constructs a CommandForm instance.
      *
-     * @param actions Instance of {@link TraitEnabledCommandActions}.
+     * @param actions List of {@link TraitActions} instances.
      * @throws IllegalArgumentException when actions is null or empty.
      */
-    public CommandForm(
-            @NonNull TraitEnabledCommandActions actions)
+    public static CommandForm newTraitCommand(
+            @NonNull List<TraitActions> actions)
         throws IllegalArgumentException
     {
-        if (actions == null || actions.toArray().size() == 0) {
+        if (actions == null || actions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty.");
         }
-        this.actions = actions.toArray();
+        CommandForm form = new CommandForm();
+        form.actions.addAll(actions);
+        return form;
+    }
+
+    public static CommandForm newCommand(
+            @NonNull List<Action> actions)
+            throws IllegalArgumentException
+    {
+        return new CommandForm(actions);
+    }
+
+    private CommandForm(){
+        this.actions = new ArrayList();
     }
 
     /**
@@ -59,7 +72,7 @@ public final class CommandForm implements Parcelable {
      * @param actions List of actions. Must not be null or empty.
      * @throws IllegalArgumentException when actions is null or empty.
      */
-    public CommandForm(
+    private CommandForm(
             @NonNull List<Action> actions)
             throws IllegalArgumentException
     {

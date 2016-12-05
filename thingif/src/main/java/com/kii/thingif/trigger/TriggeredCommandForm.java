@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName;
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
-import com.kii.thingif.command.TraitEnabledCommandActions;
+import com.kii.thingif.command.TraitActions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -76,16 +76,16 @@ public class TriggeredCommandForm implements Parcelable {
 
         /**
          * Construct a {@link TriggeredCommandForm.Builder} instance.
-         * @param traitActions {@link TraitEnabledCommandActions} instance
+         * @param actions List of {@link TraitActions} instances.
          * @return builder instance
          * @throws IllegalArgumentException This exception is thrown when actions is null.
          */
-        public static Builder newBuilder(
-                    @NonNull TraitEnabledCommandActions traitActions
+        public static Builder newBuilderWithTraitActions(
+                    @NonNull List<TraitActions> actions
         )
                 throws IllegalArgumentException
         {
-             return new Builder(traitActions.toArray());
+             return new Builder(actions);
         }
 
         /**
@@ -143,17 +143,6 @@ public class TriggeredCommandForm implements Parcelable {
                 throw new IllegalArgumentException("actions is null or empty.");
             }
             this.actions = actions;
-            return this;
-        }
-
-        public Builder setActions(
-                    @NonNull TraitEnabledCommandActions actions
-        )
-                throws IllegalArgumentException{
-            if (actions == null || actions.toArray().size() == 0) {
-                throw new IllegalArgumentException("actions is null or empty.");
-            }
-            this.actions = actions.toArray();
             return this;
         }
 
