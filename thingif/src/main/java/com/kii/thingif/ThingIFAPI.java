@@ -1529,11 +1529,13 @@ public class ThingIFAPI implements Parcelable {
      * If target thing is not using trait, and specified DataGroupingIntervals during onboarding,
      *  then the specified grouping intervals is used.
      * @param classOfS Specify class of the State.
-     * @param query instance of {@link HistoryStateQuery}
+     * @param query instance of {@link HistoryStateQuery}. An instance of
+     *  {@link com.kii.thingif.trigger.clause.TimeRange} must be included in clause.
      * @param aggregation instance of {@link Aggregation}
      * @param <S> State class.
      * @return instance of {@link AggregatedHistoryStatesResponse}
      * @throws IllegalArgumentException when classOfS, query or aggregation is null.
+     *  If no TimeRange found in clause of aggregation, this exception is shown too.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
      */

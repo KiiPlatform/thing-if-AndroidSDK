@@ -40,7 +40,7 @@ public final class CommandForm implements Parcelable {
     /**
      * Constructs a CommandForm instance.
      *
-     * @param actions Instance of TraitEnabledCommandActions represents trait format actoins.
+     * @param actions Instance of {@link TraitEnabledCommandActions}.
      * @throws IllegalArgumentException when actions is null or empty.
      */
     public CommandForm(

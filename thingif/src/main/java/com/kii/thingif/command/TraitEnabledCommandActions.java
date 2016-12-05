@@ -6,6 +6,9 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represent trait formatted actions in {@link Command}.
+ */
 public class TraitEnabledCommandActions implements Parcelable{
 
     private List<TraitActions> actions;
@@ -14,19 +17,37 @@ public class TraitEnabledCommandActions implements Parcelable{
         this.actions = new ArrayList<>();
     }
 
+    /**
+     * Initialize with TraitActions List
+     * @param aliasActions List of TraitActions instances
+     */
     public TraitEnabledCommandActions(List<TraitActions> aliasActions){
         this.actions = new ArrayList<>();
         this.actions.addAll(aliasActions);
     }
 
+    /**
+     * Append with TraitActions instance
+     * @param actions {@link TraitActions} instance
+     */
     public void addActions(TraitActions actions) {
         this.actions.add(actions);
     }
 
+    /**
+     * Append with alias and Action List. Alias and actions list will be used for
+     * creating TraitAction instance then append to TraitAction instances list
+     * @param alias Alias string.
+     * @param actions List of Action instance.
+     */
     public void addActions(String alias, List<Action> actions) {
         this.actions.add(new TraitActions(alias, actions));
     }
 
+    /**
+     * Get list of TraitAction instances
+     * @return
+     */
     public List toArray(){
         return this.actions;
     }
