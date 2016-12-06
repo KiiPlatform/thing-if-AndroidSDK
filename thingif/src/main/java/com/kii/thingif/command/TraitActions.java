@@ -1,15 +1,11 @@
 package com.kii.thingif.command;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class TraitActions {
-    private String alias;
-    private List<Action> actions;
-
-    public TraitActions(String alias, List<Action> actions) {
-        this.alias = alias;
-        this.actions = actions;
-    }
+public abstract class TraitActions extends CommandActionItem implements Serializable {
+    protected transient String alias;
+    protected transient List<Action> actions;
 
     public String getAlias() {
         return alias;

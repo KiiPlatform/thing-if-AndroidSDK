@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Represents a command that is executed by the thing
  */
-public class Command implements Parcelable {
+public class Command<AT extends CommandActionItem, RT extends CommandActionResultItem> implements Parcelable {
 
     private String commandID;
     @SerializedName("target")
@@ -34,8 +34,8 @@ public class Command implements Parcelable {
     private String title;
     private String description;
     private JSONObject metadata;
-    private final List actions;
-    private List actionResults;
+    private final List<AT> actions;
+    private List<RT> actionResults;
 
     /**
      * Initialize Command
@@ -49,7 +49,7 @@ public class Command implements Parcelable {
      */
     public Command(@NonNull TypedID targetID,
                    @NonNull TypedID issuerID,
-                   @NonNull List<Action> actions) {
+                   @NonNull List<AT> actions) {
         if (targetID == null) {
             throw new IllegalArgumentException("targetID is null");
         }
@@ -75,7 +75,7 @@ public class Command implements Parcelable {
      *   is not Action or TraitActions.
      */
     public Command(@NonNull TypedID issuerID,
-                   @NonNull List actions) {
+                   @NonNull List<AT> actions) {
         if (issuerID == null) {
             throw new IllegalArgumentException("issuerID is null");
         }
@@ -144,73 +144,16 @@ public class Command implements Parcelable {
      * Get list of Action instances
      * @return action of this command.
      */
-    public List<Action> getActions() {
-        List<Action> allActions = new ArrayList<>();
-        for(int i=0; i<this.actions.size(); i++) {
-            if(this.actions.get(i) instanceof Action){
-                Action action = (Action)this.actions.get(i);
-                allActions.add(action);
-            }else if(this.actions.get(i) instanceof TraitActions){
-                throw new IllegalStateException("Actions of this command support trait.");
-            }
-        }
-        return allActions;
-    }
-
-    /**
-     * Get list of Action instances
-     * @return action of this command.
-     */
-    public List<Action> getAllActions() {
-        List<Action> allActions = new ArrayList<>();
-        for(int i=0; i<this.actions.size(); i++) {
-            if(this.actions.get(i) instanceof TraitActions){
-                TraitActions traitActions = (TraitActions) this.actions.get(i);
-                allActions.addAll(traitActions.getActions());
-            }else if(this.actions.get(i) instanceof Action){
-                Action action = (Action)this.actions.get(i);
-                allActions.add(action);
-            }
-        }
-        return allActions;
-    }
-
-    public List<String> getAlias() {
-        List<String> allAlias = new ArrayList<>();
-        for(int i=0; i<this.actions.size(); i++) {
-            if(this.actions.get(i) instanceof TraitActions){
-                TraitActions traitActions = (TraitActions) this.actions.get(i);
-                allAlias.add(traitActions.getAlias());
-            }
-        }
-        return allAlias;
-    }
-
-    /**
-     * Get actions with specified trait alias name.
-     * @param alias Name of trait alias.
-     * @return List of Action instance of the specified trait alias.
-     */
-    public List<Action> getActions(String alias) {
-        //TODO: implement me
-        return new ArrayList<>();
+    public List<AT> getActions() {
+        return actions;
     }
 
     /**
      * Get list of action result
      * @return action results of this command.
      */
-    public List<ActionResult> getActionResults() {
-        List<ActionResult> allResults = new ArrayList<>();
-        for(int i= 0; i<this.actionResults.size(); i++) {
-            if(this.actionResults.get(i) instanceof TraitActionResults){
-                TraitActionResults results = (TraitActionResults)this.actionResults.get(i);
-                allResults.addAll(results.getActionResults());
-            }else if(this.actionResults.get(i) instanceof ActionResult) {
-                allResults.add((ActionResult)this.actionResults.get(i));
-            }
-        }
-        return allResults;
+    public List<RT> getActionResults() {
+        return actionResults;
     }
 
     public List<ActionResult> getActionResults(@NonNull String alias) {

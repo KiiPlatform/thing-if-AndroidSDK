@@ -2,7 +2,7 @@ package com.kii.thingif.command;
 
 import java.util.List;
 
-public class TraitActionResults {
+public class TraitActionResults extends CommandActionResultItem{
     private String alias;
     private List<ActionResult> actionResults;
 
