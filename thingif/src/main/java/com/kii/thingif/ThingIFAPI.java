@@ -1403,7 +1403,7 @@ public class ThingIFAPI implements Parcelable {
      */
     @NonNull
     @WorkerThread
-    public <S extends TargetState> S getTargetState(
+    public <S extends TargetState & TargetTraitStates> S getTargetState(
             @NonNull Class<S> classOfS) throws ThingIFException {
 
         if (this.target == null) {
