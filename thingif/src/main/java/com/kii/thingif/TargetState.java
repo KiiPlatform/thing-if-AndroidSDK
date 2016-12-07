@@ -1,4 +1,4 @@
 package com.kii.thingif;
 
-public interface TargetState {
+public abstract class TargetState extends AbstractState{
 }
