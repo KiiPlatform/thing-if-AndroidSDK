@@ -26,12 +26,12 @@ public class TraitThingIFAPI implements Parcelable{
      */
     public static class Builder{
 
-        private final Context context;
-        private final KiiApp app;
-        private final Owner owner;
-        private Target target;
-        private String installationID;
-        private String tag;
+        private @Nullable final Context context;
+        private @NonNull  final KiiApp app;
+        private @NonNull  final Owner owner;
+        private @Nullable Target target;
+        private @Nullable String installationID;
+        private @Nullable String tag;
 
 
         private Builder(
@@ -71,7 +71,7 @@ public class TraitThingIFAPI implements Parcelable{
          * @param target target of {@link TraitThingIFAPI} instance.
          * @return builder instance for chaining call.
          */
-        public Builder setTarget(Target target) {
+        public Builder setTarget(@Nullable Target target) {
             this.target = target;
             return this;
         }
@@ -100,7 +100,7 @@ public class TraitThingIFAPI implements Parcelable{
          * @param installationID installation id
          * @return builder instance for chaining call.
          */
-        public Builder setInstallationID(String installationID) {
+        public Builder setInstallationID(@Nullable String installationID) {
             this.installationID = installationID;
             return this;
         }
@@ -159,7 +159,9 @@ public class TraitThingIFAPI implements Parcelable{
      * @throws StoredThingIFAPIInstanceNotFoundException when the instance has not stored yet.
      */
     @NonNull
-    public static TraitThingIFAPI loadFromStoredInstance(@NonNull Context context, String tag) throws StoredThingIFAPIInstanceNotFoundException {
+    public static TraitThingIFAPI loadFromStoredInstance(
+            @NonNull Context context,
+            @Nullable String tag) throws StoredThingIFAPIInstanceNotFoundException {
         TraitThingIFAPI.context = context.getApplicationContext();
         SharedPreferences preferences = getSharedPreferences();
         String serializedJson = preferences.getString(getSharedPreferencesKey(tag), null);
@@ -188,7 +190,8 @@ public class TraitThingIFAPI implements Parcelable{
         editor.remove(getSharedPreferencesKey(tag));
         editor.apply();
     }
-    private static void saveInstance(TraitThingIFAPI instance) {
+    private static void saveInstance(
+            @NonNull TraitThingIFAPI instance) {
         SharedPreferences preferences = getSharedPreferences();
         if (preferences != null) {
             SharedPreferences.Editor editor = preferences.edit();
@@ -196,7 +199,8 @@ public class TraitThingIFAPI implements Parcelable{
             editor.apply();
         }
     }
-    private static String getSharedPreferencesKey(String tag) {
+    private static String getSharedPreferencesKey(
+            @Nullable String tag) {
         return SHARED_PREFERENCES_KEY_INSTANCE + (tag == null ? "" : "_"  +tag);
     }
 
