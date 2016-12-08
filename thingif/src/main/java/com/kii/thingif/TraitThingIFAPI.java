@@ -16,14 +16,104 @@ import com.kii.thingif.gateway.PendingEndNode;
 import com.kii.thingif.internal.GsonRepository;
 
 public class TraitThingIFAPI implements Parcelable{
-    private ThingIFAPI thingIfApi;
-    private static final String SHARED_PREFERENCES_KEY_INSTANCE = "TraitThingIFAPI_INSTANCE";
     private static Context context;
-    private final String tag;
+    private @NonNull ThingIFAPI thingIfApi;
+    private static final String SHARED_PREFERENCES_KEY_INSTANCE = "TraitThingIFAPI_INSTANCE";
+    private @Nullable final String tag;
 
-    TraitThingIFAPI(ThingIFAPI thingIfApi){
-        this.thingIfApi = thingIfApi;
-        tag = null;
+    /**
+     * TraitThingIFAPI builder
+     */
+    public static class Builder{
+
+        private final Context context;
+        private final KiiApp app;
+        private final Owner owner;
+        private Target target;
+        private String installationID;
+        private String tag;
+
+
+        private Builder(
+            @NonNull Context context,
+            @NonNull KiiApp app,
+            @NonNull Owner owner)
+        {
+            this.context = context;
+            this.app = app;
+            this.owner = owner;
+        }
+        /** Instantiate new Builder.
+         * @param context Application context.
+         * @param app Kii Cloud Application.
+         * @param owner Specify who uses the ThingIFAPI.
+         * @return Builder instance.
+         */
+        @NonNull
+        public static Builder newBuilder(
+                @NonNull Context context,
+                @NonNull KiiApp app,
+                @NonNull Owner owner) {
+            if (context == null) {
+                throw new IllegalArgumentException("context is null");
+            }
+            if (app == null) {
+                throw new IllegalArgumentException("app is null");
+            }
+            if (owner == null) {
+                throw new IllegalArgumentException("owner is null");
+            }
+            return new Builder(context, app, owner);
+        }
+
+        /**
+         * Set target thing to the TraitThingIFAPI.
+         * @param target target of {@link TraitThingIFAPI} instance.
+         * @return builder instance for chaining call.
+         */
+        public Builder setTarget(Target target) {
+            this.target = target;
+            return this;
+        }
+
+        /** Set tag to this TraitThingIFAPI instance.
+         * tag is used to distinguish storage area of instance.
+         * <br>
+         * If the api instance is tagged with same string, It will be overwritten.
+         * <br>
+         * If the api instance is tagged with different string, Different key is used to store the
+         * instance.
+         * <br>
+         * <br>
+         * Please refer to {@link TraitThingIFAPI#loadFromStoredInstance(Context, String)} as well.
+         * @param tag if null or empty string is passed, it will be ignored.
+         * @return builder instance for chaining call.
+         */
+        @NonNull
+        public Builder setTag(@Nullable String tag) {
+            this.tag = tag;
+            return this;
+        }
+
+        /**
+         * Set InstallationID to the TraitThingIFAPI.
+         * @param installationID installation id
+         * @return builder instance for chaining call.
+         */
+        public Builder setInstallationID(String installationID) {
+            this.installationID = installationID;
+            return this;
+        }
+
+        /** Instantiate new TraitThingIFAPI instance.
+         * @return TraitThingIFAPI instance.
+         * @throws IllegalStateException when schema is not present.
+         */
+        @NonNull
+        public TraitThingIFAPI build() {
+            return new TraitThingIFAPI(this.context, this.tag, app, this.owner, this.target, this.installationID);
+        }
+
     }
 
     /**
@@ -110,20 +200,17 @@ public class TraitThingIFAPI implements Parcelable{
         return SHARED_PREFERENCES_KEY_INSTANCE + (tag == null ? "" : "_"  +tag);
     }
 
-    TraitThingIFAPI(
-            @Nullable Context context,
+    private TraitThingIFAPI(
+            @NonNull Context context,
             @Nullable String tag,
             @NonNull KiiApp app,
             @NonNull Owner owner,
             @Nullable Target target,
-            String installationID) {
+            @Nullable String installationID) {
         // Parameters are checked by TraitThingIFAPIBuilder
-        if (context != null) {
-            TraitThingIFAPI.context = context.getApplicationContext();
-        }
         this.tag = tag;
         this.thingIfApi = ThingIFAPIBuilder
-                .newBuilder(context, app, owner)
+                .newBuilder(context.getApplicationContext(), app, owner)
                 .setTag(tag)
                 .setTarget(target)
                 .setInstallationID(installationID)
@@ -140,7 +227,14 @@ public class TraitThingIFAPI implements Parcelable{
         if (target == null) {
             throw new IllegalArgumentException("target is null");
         }
-        TraitThingIFAPI api = new TraitThingIFAPI(this.thingIfApi.copyWithTarget(target, tag));
+        ThingIFAPI thingIfApi = this.thingIfApi.copyWithTarget(target, tag);
+
+        TraitThingIFAPI api = new TraitThingIFAPI(
+                this.context,
+                this.tag,this.getApp(),
+                this.getOwner(),
+                target,
+                thingIfApi.getInstallationID());
         saveInstance(api);
         return api;
     }
@@ -166,7 +260,7 @@ public class TraitThingIFAPI implements Parcelable{
             @NonNull String thingPassword,
             @Nullable OnboardWithVendorThingIDOptions options)
             throws ThingIFException {
-        return thingIfApi.onboard(vendorThingID, thingPassword, options);
+        return this.thingIfApi.onboard(vendorThingID, thingPassword, options);
     }
 
     /**
@@ -188,7 +282,7 @@ public class TraitThingIFAPI implements Parcelable{
             @NonNull String thingID,
             @NonNull String thingPassword) throws
             ThingIFException {
-        return thingIfApi.onboard(thingID, thingPassword);
+        return this.thingIfApi.onboard(thingID, thingPassword);
     }
 
     /**
@@ -213,7 +307,7 @@ public class TraitThingIFAPI implements Parcelable{
             @NonNull String thingPassword,
             @Nullable OnboardWithThingIDOptions options)
             throws ThingIFException {
-        return thingIfApi.onboard(thingID, thingPassword, options);
+        return this.thingIfApi.onboard(thingID, thingPassword, options);
     }
 
     /**
@@ -231,7 +325,7 @@ public class TraitThingIFAPI implements Parcelable{
             @NonNull PendingEndNode pendingEndNode,
             @NonNull String endnodePassword)
             throws ThingIFException {
-        return thingIfApi.onboardEndnodeWithGateway(pendingEndNode, endnodePassword);
+        return this.thingIfApi.onboardEndnodeWithGateway(pendingEndNode, endnodePassword);
     }
 
     /**
@@ -251,7 +345,7 @@ public class TraitThingIFAPI implements Parcelable{
             @NonNull String endnodePassword,
             @Nullable OnboardEndnodeWithGatewayOptions options)
             throws ThingIFException {
-        return thingIfApi.onboardEndnodeWithGateway(pendingEndNode, endnodePassword, options);
+        return this.thingIfApi.onboardEndnodeWithGateway(pendingEndNode, endnodePassword, options);
     }
 
     /**
@@ -260,7 +354,7 @@ public class TraitThingIFAPI implements Parcelable{
      */
     public boolean onboarded()
     {
-        return thingIfApi.onboarded();
+        return this.thingIfApi.onboarded();
     }
 
     /**
@@ -285,7 +379,7 @@ public class TraitThingIFAPI implements Parcelable{
             @Nullable String deviceToken,
             @NonNull PushBackend pushBackend
     ) throws ThingIFException {
-        return thingIfApi.installPush(deviceToken, pushBackend);
+        return this.thingIfApi.installPush(deviceToken, pushBackend);
     }
 
     /**
@@ -311,7 +405,7 @@ public class TraitThingIFAPI implements Parcelable{
             @NonNull PushBackend pushBackend,
             boolean development
     ) throws ThingIFException{
-        return thingIfApi.installPush(deviceToken, pushBackend, development);
+        return this.thingIfApi.installPush(deviceToken, pushBackend, development);
     }
     /**
      * Get installationID if the push is already installed.
@@ -320,7 +414,7 @@ public class TraitThingIFAPI implements Parcelable{
      */
     @Nullable
     public String getInstallationID() {
-        return thingIfApi.getInstallationID();
+        return this.thingIfApi.getInstallationID();
     }
 
     /**
@@ -336,7 +430,7 @@ public class TraitThingIFAPI implements Parcelable{
     @NonNull
     @WorkerThread
     public void uninstallPush(@NonNull String installationID) throws ThingIFException {
-        thingIfApi.uninstallPush(installationID);
+        this.thingIfApi.uninstallPush(installationID);
     }
 
     /**
@@ -348,7 +442,7 @@ public class TraitThingIFAPI implements Parcelable{
     @NonNull
     @WorkerThread
     public String getVendorThingID() throws ThingIFException {
-        return thingIfApi.getVendorThingID();
+        return this.thingIfApi.getVendorThingID();
     }
 
     /**
@@ -360,7 +454,7 @@ public class TraitThingIFAPI implements Parcelable{
      */
     @WorkerThread
     public void updateVendorThingID(@NonNull String newVendorThingID, @NonNull String newPassword) throws ThingIFException {
-        thingIfApi.updateVendorThingID(newVendorThingID, newPassword);
+        this.thingIfApi.updateVendorThingID(newVendorThingID, newPassword);
     }
 
     /** Get Kii App
@@ -368,7 +462,7 @@ public class TraitThingIFAPI implements Parcelable{
      */
     @NonNull
     public KiiApp getApp() {
-        return thingIfApi.getApp();
+        return this.thingIfApi.getApp();
     }
     /**
      * Get AppID
@@ -376,7 +470,7 @@ public class TraitThingIFAPI implements Parcelable{
      */
     @NonNull
     public String getAppID() {
-        return thingIfApi.getAppID();
+        return this.thingIfApi.getAppID();
     }
     /**
      * Get AppKey
@@ -384,7 +478,7 @@ public class TraitThingIFAPI implements Parcelable{
      */
     @NonNull
     public String getAppKey() {
-        return thingIfApi.getAppKey();
+        return this.thingIfApi.getAppKey();
     }
     /**
      * Get base URL
@@ -392,7 +486,7 @@ public class TraitThingIFAPI implements Parcelable{
      */
     @NonNull
     public String getBaseUrl() {
-        return thingIfApi.getBaseUrl();
+        return this.thingIfApi.getBaseUrl();
     }
     /**
      * Get owner who uses the ThingIFAPI.
@@ -400,7 +494,7 @@ public class TraitThingIFAPI implements Parcelable{
      */
     @NonNull
     public Owner getOwner() {
-        return thingIfApi.getOwner();
+        return this.thingIfApi.getOwner();
     }
 
     /**
@@ -409,7 +503,7 @@ public class TraitThingIFAPI implements Parcelable{
      */
     @Nullable
     public Target getTarget() {
-        return thingIfApi.getTarget();
+        return this.thingIfApi.getTarget();
     }
     /**
      * Get a tag.
