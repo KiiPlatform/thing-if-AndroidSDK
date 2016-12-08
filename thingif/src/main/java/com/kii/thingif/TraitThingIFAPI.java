@@ -7,13 +7,21 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
+import android.util.Pair;
 
+import com.kii.thingif.command.Command;
+import com.kii.thingif.command.TraitCommand;
+import com.kii.thingif.command.TraitCommandForm;
 import com.kii.thingif.exception.StoredThingIFAPIInstanceNotFoundException;
 import com.kii.thingif.exception.ThingIFException;
 import com.kii.thingif.exception.ThingIFRestException;
+import com.kii.thingif.exception.UnsupportedActionException;
+import com.kii.thingif.exception.UnsupportedSchemaException;
 import com.kii.thingif.gateway.EndNode;
 import com.kii.thingif.gateway.PendingEndNode;
 import com.kii.thingif.internal.GsonRepository;
+
+import java.util.List;
 
 public class TraitThingIFAPI implements Parcelable{
     private static Context context;
@@ -551,6 +559,75 @@ public class TraitThingIFAPI implements Parcelable{
     @NonNull
     public static String getSDKVersion() {
         return ThingIFAPI.getSDKVersion();
+    }
+
+    /**
+     * Post new command to IoT Cloud.
+     * Command will be delivered to specified target and result will be notified
+     * through push notification.
+     * @param form form of command. It contains name of schema, version of
+     * schema, list of actions etc.
+     * @return Created Command instance. At this time, Command is delivered to
+     * the target Asynchronously and may not finished. Actual Result will be
+     * delivered through push notification or you can check the latest status
+     * of the command by calling {@link #getCommand}.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     */
+    @NonNull
+    @WorkerThread
+    public TraitCommand postNewCommand(TraitCommandForm form) throws ThingIFException {
+        //TODO: implement me
+        return null;
+    }
+
+    /**
+     * Get specified command.
+     * @param commandID ID of the command to obtain. ID is present in the
+     *                  instance returned by {@link #postNewCommand}
+     *                  and can be obtained by {@link TraitCommand#getCommandID}
+     *
+     * @return Command instance.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws UnsupportedSchemaException Thrown when the returned response has a schema that cannot handle this instance.
+     * @throws UnsupportedActionException Thrown when the returned response has a action that cannot handle this instance.
+     */
+    @NonNull
+    @WorkerThread
+    public TraitCommand getCommand(
+            @NonNull String commandID)
+            throws ThingIFException {
+        //TODO: implement me
+        return null;
+    }
+
+    /**
+     * List TraitCommands in the specified Target.
+     * @param bestEffortLimit Maximum number of the Commands in the response.
+     *                        if the value is {@literal <}= 0, default limit internally
+     *                        defined is applied.
+     *                        Meaning of 'bestEffort' is if the specified limit
+     *                        is greater than default limit, default limit is
+     *                        applied.
+     * @param paginationKey Used to get the next page of previously obtained.
+     *                      If there is further page to obtain, this method
+     *                      returns paginationKey as the 2nd element of pair.
+     *                      Applying this key to the argument results continue
+     *                      to get the result from the next page.
+     * @return 1st Element is TraitCommands belongs to the Target. 2nd element is
+     * paginationKey if there is next page to be obtained.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws UnsupportedActionException Thrown when the returned response has a action that cannot handle this instance.
+     */
+    @NonNull
+    public Pair<List<TraitCommand>, String> listCommands (
+            int bestEffortLimit,
+            @Nullable String paginationKey)
+            throws ThingIFException {
+        //TODO: implement me
+        return null;
     }
 
     private static SharedPreferences getSharedPreferences() {
