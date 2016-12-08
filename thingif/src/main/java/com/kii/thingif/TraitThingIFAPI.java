@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.util.Pair;
 
-import com.kii.thingif.command.Command;
 import com.kii.thingif.command.TraitCommand;
 import com.kii.thingif.command.TraitCommandForm;
 import com.kii.thingif.exception.StoredThingIFAPIInstanceNotFoundException;
