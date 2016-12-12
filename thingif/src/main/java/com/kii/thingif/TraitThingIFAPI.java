@@ -8,12 +8,19 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
-import com.kii.thingif.exception.StoredThingIFAPIInstanceNotFoundException;
-import com.kii.thingif.exception.ThingIFException;
-import com.kii.thingif.exception.ThingIFRestException;
-import com.kii.thingif.gateway.EndNode;
-import com.kii.thingif.gateway.PendingEndNode;
-import com.kii.thingif.internal.GsonRepository;
+import com.kii.thingif.core.KiiApp;
+import com.kii.thingif.core.OnboardEndnodeWithGatewayOptions;
+import com.kii.thingif.core.OnboardWithThingIDOptions;
+import com.kii.thingif.core.OnboardWithVendorThingIDOptions;
+import com.kii.thingif.core.Owner;
+import com.kii.thingif.core.PushBackend;
+import com.kii.thingif.core.Target;
+import com.kii.thingif.core.exception.StoredThingIFAPIInstanceNotFoundException;
+import com.kii.thingif.core.exception.ThingIFException;
+import com.kii.thingif.core.exception.ThingIFRestException;
+import com.kii.thingif.core.gateway.EndNode;
+import com.kii.thingif.core.gateway.PendingEndNode;
+import com.kii.thingif.core.internal.GsonRepository;
 
 public class TraitThingIFAPI implements Parcelable{
     private static Context context;
@@ -29,7 +36,8 @@ public class TraitThingIFAPI implements Parcelable{
         private @Nullable final Context context;
         private @NonNull  final KiiApp app;
         private @NonNull  final Owner owner;
-        private @Nullable Target target;
+        private @Nullable
+        Target target;
         private @Nullable String installationID;
         private @Nullable String tag;
 

@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
-import com.kii.thingif.TypedID;
+import com.kii.thingif.core.TypedID;
 
 import org.json.JSONException;
 import org.json.JSONObject;

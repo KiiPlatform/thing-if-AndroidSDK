@@ -7,7 +7,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
-import com.kii.thingif.TypedID;
+import com.kii.thingif.core.TypedID;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
 

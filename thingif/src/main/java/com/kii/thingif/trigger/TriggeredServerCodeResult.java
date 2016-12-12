@@ -2,9 +2,8 @@ package com.kii.thingif.trigger;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.text.TextUtils;
 
-import com.kii.thingif.ServerError;
+import com.kii.thingif.core.ServerError;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -4,7 +4,10 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.kii.thingif.internal.utils._Log;
+import com.kii.thingif.core.KiiApp;
+import com.kii.thingif.core.Owner;
+import com.kii.thingif.core.Target;
+import com.kii.thingif.core.internal.utils._Log;
 import com.kii.thingif.schema.Schema;
 
 import java.text.MessageFormat;
