@@ -20,7 +20,7 @@ import com.kii.thingif.core.exception.ThingIFException;
 import com.kii.thingif.core.exception.ThingIFRestException;
 import com.kii.thingif.core.gateway.EndNode;
 import com.kii.thingif.core.gateway.PendingEndNode;
-import com.kii.thingif.core.internal.GsonRepository;
+import com.kii.thingif.internal.GsonRepository;
 
 public class TraitThingIFAPI implements Parcelable{
     private static Context context;

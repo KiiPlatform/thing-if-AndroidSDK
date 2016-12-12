@@ -15,7 +15,7 @@ import com.kii.thingif.core.KiiApp;
 import com.kii.thingif.core.MediaTypes;
 import com.kii.thingif.core.exception.StoredGatewayAPIInstanceNotFoundException;
 import com.kii.thingif.core.exception.ThingIFException;
-import com.kii.thingif.core.internal.GsonRepository;
+import com.kii.thingif.internal.GsonRepository;
 import com.kii.thingif.core.internal.http.IoTRestClient;
 import com.kii.thingif.core.internal.http.IoTRestRequest;
 import com.kii.thingif.core.internal.utils.Path;
