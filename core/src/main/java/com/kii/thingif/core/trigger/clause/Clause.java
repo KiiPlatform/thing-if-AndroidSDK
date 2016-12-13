@@ -1,4 +1,4 @@
-package com.kii.thingif.trigger.clause;
+package com.kii.thingif.core.trigger.clause;
 
 import android.os.Parcelable;
 

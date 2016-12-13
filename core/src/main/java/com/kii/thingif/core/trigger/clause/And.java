@@ -1,4 +1,4 @@
-package com.kii.thingif.trigger.clause;
+package com.kii.thingif.core.trigger.clause;
 
 import android.os.Parcel;
 
@@ -8,8 +8,8 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 
-public class Or extends ContainerClause {
-    public Or(Clause... clauses) {
+public class And extends ContainerClause {
+    public And(Clause... clauses) {
         super(clauses);
     }
     @Override
@@ -17,7 +17,7 @@ public class Or extends ContainerClause {
         JSONObject ret = new JSONObject();
         JSONArray clauses = new JSONArray();
         try {
-            ret.put("type", "or");
+            ret.put("type", "and");
             for (Clause clause : this.clauses) {
                 clauses.put(clause.toJSONObject());
             }
@@ -33,8 +33,8 @@ public class Or extends ContainerClause {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Or or = (Or) o;
-        return Arrays.equals(this.getClauses(), or.getClauses());
+        And and = (And) o;
+        return Arrays.equals(this.getClauses(), and.getClauses());
 
     }
     @Override
@@ -42,22 +42,24 @@ public class Or extends ContainerClause {
         return Arrays.hashCode(this.getClauses());
     }
 
+
     // Implementation of Parcelable
-    protected Or(Parcel in) {
+    protected And(Parcel in) {
+        super();
         int length = in.readInt();
         for (int i = 0; i < length; i++) {
             this.clauses.add((Clause)in.readParcelable(getClass().getClassLoader()));
         }
     }
-    public static final Creator<Or> CREATOR = new Creator<Or>() {
+    public static final Creator<And> CREATOR = new Creator<And>() {
         @Override
-        public Or createFromParcel(Parcel in) {
-            return new Or(in);
+        public And createFromParcel(Parcel in) {
+            return new And(in);
         }
 
         @Override
-        public Or[] newArray(int size) {
-            return new Or[size];
+        public And[] newArray(int size) {
+            return new And[size];
         }
     };
     @Override

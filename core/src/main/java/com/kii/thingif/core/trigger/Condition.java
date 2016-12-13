@@ -1,10 +1,10 @@
-package com.kii.thingif.trigger;
+package com.kii.thingif.core.trigger;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import com.kii.thingif.trigger.clause.Clause;
+import com.kii.thingif.core.trigger.clause.Clause;
 
 public class Condition implements Parcelable {
     private Clause clause;

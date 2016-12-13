@@ -1,4 +1,4 @@
-package com.kii.thingif.trigger;
+package com.kii.thingif.core.trigger;
 
 import android.os.Parcel;
 
