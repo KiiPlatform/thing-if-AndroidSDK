@@ -1,4 +1,4 @@
-package com.kii.thingif.internal;
+package com.kii.thingif.core.internal;
 
 import android.net.Uri;
 import android.support.annotation.Nullable;
