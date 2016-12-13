@@ -1,1 +1,1 @@
-include ':thingif', ':thingiftest'
+include ':thingif', ':thingiftest', ':core', ':trait', ':nontrait'
