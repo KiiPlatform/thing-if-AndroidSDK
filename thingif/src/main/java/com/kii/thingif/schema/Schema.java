@@ -5,7 +5,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.util.Pair;
 
-import com.kii.thingif.TargetState;
+import com.kii.thingif.core.TargetState;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.ActionResult;
 

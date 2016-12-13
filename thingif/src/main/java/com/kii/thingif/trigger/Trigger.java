@@ -5,7 +5,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.kii.thingif.TypedID;
+import com.kii.thingif.core.TypedID;
 import com.kii.thingif.command.Command;
 
 import org.json.JSONException;

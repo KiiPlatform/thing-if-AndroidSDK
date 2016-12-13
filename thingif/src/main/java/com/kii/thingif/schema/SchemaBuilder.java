@@ -3,7 +3,7 @@ package com.kii.thingif.schema;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.kii.thingif.TargetState;
+import com.kii.thingif.core.TargetState;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.ActionResult;
 

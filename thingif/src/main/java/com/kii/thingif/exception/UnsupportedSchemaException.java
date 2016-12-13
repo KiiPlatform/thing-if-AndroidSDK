@@ -1,5 +1,7 @@
 package com.kii.thingif.exception;
 
+import com.kii.thingif.core.exception.ThingIFException;
+
 /**
  * Thrown when an unsupported schema is detected.
  */
