@@ -1,7 +1,9 @@
-package com.kii.thingif.core.trigger.clause;
+package com.kii.thingif.nontrait.trigger.clause;
 
 import android.os.Parcel;
 import android.support.annotation.NonNull;
+
+import com.kii.thingif.core.trigger.clause.Clause;
 
 import org.json.JSONException;
 import org.json.JSONObject;
