@@ -3,9 +3,12 @@ package com.kii.thingif.command;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Pair;
 
 import com.google.gson.annotations.SerializedName;
+import com.kii.thingif.Alias;
 import com.kii.thingif.TypedID;
 
 import org.json.JSONException;
@@ -14,38 +17,47 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * Represents a command that is executed by the thing
  */
 public class Command implements Parcelable {
 
-    private String commandID;
+    private final @Nullable String commandID;
     @SerializedName("schema")
-    private final String schemaName;
-    private final int schemaVersion;
+    private final @NonNull String schemaName;
+    private final  int schemaVersion;
     @SerializedName("target")
-    private final TypedID targetID;
+    private final @Nullable TypedID targetID;
     @SerializedName("issuer")
-    private final TypedID issuerID;
-    private final List<Action> actions;
-    private List<ActionResult> actionResults;
+    private final @NonNull TypedID issuerID;
+    private final @NonNull List<Pair<Alias, List<Action>>> actions;
+    private final @Nullable List<Pair<Alias,List<ActionResult>>> actionResults;
     @SerializedName("commandState")
-    private CommandState commandState;
-    private String firedByTriggerID;
+    private final @Nullable CommandState commandState;
+    private final @Nullable String firedByTriggerID;
     @SerializedName("createdAt")
-    private Long created;
+    private final @Nullable Long created;
     @SerializedName("modifiedAt")
-    private Long modified;
-    private String title;
-    private String description;
-    private JSONObject metadata;
+    private final @Nullable Long modified;
+    private final @Nullable String title;
+    private final @Nullable String description;
+    private final @Nullable JSONObject metadata;
 
     public Command(@NonNull String schemaName,
                    int schemaVersion,
-                   @NonNull TypedID targetID,
+                   @Nullable TypedID targetID,
                    @NonNull TypedID issuerID,
-                   @NonNull List<Action> actions) {
+                   @NonNull List<Pair<Alias, List<Action>>> actions,
+                   @Nullable List<Pair<Alias,List<ActionResult>>> actonResults,
+                   @Nullable String commandID,
+                   @Nullable CommandState commandState,
+                   @Nullable String firedByTriggerID,
+                   @Nullable Long created,
+                   @Nullable Long modified,
+                   @Nullable String title,
+                   @Nullable String description,
+                   @Nullable JSONObject metadata
+                   ) {
         if (TextUtils.isEmpty(schemaName)) {
             throw new IllegalArgumentException("schemaName is null or empty");
         }
@@ -63,43 +75,15 @@ public class Command implements Parcelable {
         this.targetID = targetID;
         this.issuerID = issuerID;
         this.actions = actions;
-    }
-    public Command(@NonNull String schemaName,
-                   int schemaVersion,
-                   @NonNull TypedID issuerID,
-                   @NonNull List<Action> actions) {
-        if (TextUtils.isEmpty(schemaName)) {
-            throw new IllegalArgumentException("schemaName is null or empty");
-        }
-        if (issuerID == null) {
-            throw new IllegalArgumentException("issuerID is null");
-        }
-        if (actions == null || actions.size() == 0) {
-            throw new IllegalArgumentException("actions is null or empty");
-        }
-        this.schemaName = schemaName;
-        this.schemaVersion = schemaVersion;
-        this.targetID = null;
-        this.issuerID = issuerID;
-        this.actions = actions;
-    }
-    public void addActionResult(@NonNull ActionResult ar) {
-        if (ar == null) {
-            throw new IllegalArgumentException("ActionResult is null");
-        }
-        boolean hasAction = false;
-        for (Action action : this.actions) {
-            if (TextUtils.equals(ar.getActionName(), action.getActionName())) {
-                hasAction = true;
-            }
-        }
-        if (!hasAction) {
-            throw new IllegalArgumentException(ar.getActionName() + " is not contained in this Command");
-        }
-        if (this.actionResults == null) {
-            this.actionResults = new ArrayList<ActionResult>();
-        }
-        this.actionResults.add(ar);
+        this.actionResults = actonResults;
+        this.commandID = commandID;
+        this.commandState = commandState;
+        this.firedByTriggerID = firedByTriggerID;
+        this.created = created;
+        this.modified = modified;
+        this.title = title;
+        this.metadata = metadata;
+        this.description = description;
     }
 
     /** Get ID of the command.
@@ -143,7 +127,7 @@ public class Command implements Parcelable {
      * Get list of actions
      * @return action of this command.
      */
-    public List<Action> getActions() {
+    public List<Pair<Alias, List<Action>>> getActions() {
         return this.actions;
     }
 
@@ -151,27 +135,31 @@ public class Command implements Parcelable {
      * Get list of action result
      * @return action results of this command.
      */
-    public List<ActionResult> getActionResults() {
+    public List<Pair<Alias,List<ActionResult>>> getActionResults() {
         return this.actionResults;
     }
 
     /**
      * Get a action result associated with specified action
      *
+     * @param alias alias to find action.
      * @param action action to specify action result.
      * @return action reuslt specified with parameter's action.
      */
-    public ActionResult getActionResult(@NonNull Action action) {
+    public List<ActionResult> getActionResult(
+            @NonNull Alias alias,
+            @NonNull Action action) {
         if (action == null) {
             throw new IllegalArgumentException("action is null");
         }
-        if (this.getActionResults() != null) {
-            for (ActionResult result : this.getActionResults()) {
-                if (TextUtils.equals(action.getActionName(), result.getActionName())) {
-                    return result;
-                }
-            }
-        }
+        //TODO: // FIXME: 12/14/16
+//        if (this.getActionResults() != null) {
+//            for (ActionResult result : this.getActionResults()) {
+//                if (TextUtils.equals(action.getActionName(), result.getActionName())) {
+//                    return result;
+//                }
+//            }
+//        }
         return null;
     }
 
@@ -228,15 +216,15 @@ public class Command implements Parcelable {
     }
 
     // Implementation of Parcelable
-    protected Command(Parcel in) {
+    protected Command(Parcel in) throws Exception{
         this.commandID = in.readString();
         this.schemaName = in.readString();
         this.schemaVersion = in.readInt();
         this.targetID = in.readParcelable(TypedID.class.getClassLoader());
         this.issuerID = in.readParcelable(TypedID.class.getClassLoader());
-        this.actions = new ArrayList<Action>();
+        this.actions = new ArrayList<Pair<Alias, List<Action>>>();
         in.readList(this.actions, Command.class.getClassLoader());
-        this.actionResults = new ArrayList<ActionResult>();
+        this.actionResults = new ArrayList<Pair<Alias, List<ActionResult>>>();
         in.readList(this.actionResults, Command.class.getClassLoader());
         this.commandState = (CommandState)in.readSerializable();
         this.firedByTriggerID = in.readString();
@@ -246,17 +234,19 @@ public class Command implements Parcelable {
         this.description = in.readString();
         String metadata = in.readString();
         if (!TextUtils.isEmpty(metadata)) {
-            try {
-                this.metadata = new JSONObject(metadata);
-            } catch (JSONException ignore) {
-                // Won’t happen
-            }
+            this.metadata = new JSONObject(metadata);
+        }else{
+            this.metadata = null;
         }
     }
     public static final Creator<Command> CREATOR = new Creator<Command>() {
         @Override
         public Command createFromParcel(Parcel in) {
-            return new Command(in);
+            try {
+                return new Command(in);
+            }catch (Exception ex){
+                return null;
+            }
         }
 
         @Override
