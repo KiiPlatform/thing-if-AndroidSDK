@@ -1,43 +1,9 @@
 #! bin/bash
 
-declare -a uploadhosts=($DOC_HOST1 $DOC_HOST2)
+git clone https://$GH_TOKEN_FOR_HTTPS@github.com/KiiPlatform/thing-if-AndroidSDK.git
+cd thing-if-AndroidSDK
+git checkout gh-pages && git config user.email 'satoshi.kumano@kii.com' && git config user.name 'satoshi kumano'
+git rm -r --ignore-unmatch api-doc && mkdir -p api-doc
+cp -r ../thingif/build/outputs/javadoc/ api-doc
+git add api-doc && git commit -m 'updated doc' && git push origin gh-pages
 
-# path TBD
-basedir="/ext/ebs/references/android/thing-if"
-version=$(grep -o "version.*" sdk-info.txt | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+')
-docFolderPath="thingif/build/outputs/javadoc/"
-
-updir="$basedir/$version"
-latestdir="$basedir/latest"
-echo ""
-for host in "${uploadhosts[@]}"; do
-  uptarget="$host:$updir"
-  echo "Uploading..."
-  rsync -rlptD --chmod=u+rw,g+r,o+r --chmod=Da+x --delete-after "$docFolderPath" "$uptarget"  > /dev/null 2>&1
-
-  # check command exit code
-  exitCode=$?
-  if [ $exitCode -ne 0 ]; then
-    echo "Faild when uploading doc"
-    exit $exitCode
-  fi
-
-  ssh "$host" "rm $latestdir" > /dev/null 2>&1
-  # check command result
-  exitCode=$?
-  if [ $exitCode -ne 0 ]; then
-    echo "Faild when removing older doc"
-    exit $exitCode
-  fi
-
-  ssh "$host" "ln -s $updir $latestdir" > /dev/null 2>&1
-  # check command result
-  exitCode=$?
-  if [ $exitCode -ne 0 ]; then
-    echo "Faild when releasing new doc"
-    exit $exitCode
-  fi
-
-done
-
-echo "All uploads have completed!"
