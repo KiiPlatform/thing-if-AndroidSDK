@@ -5,8 +5,10 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Pair;
 
 import com.google.gson.annotations.SerializedName;
+import com.kii.thingif.Alias;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,9 +30,9 @@ import java.util.List;
  * </ul>
  * Optional data are followings:
  * <ul>
- * <li>Title of a schema</li>
- * <li>Description of a schema</li>
- * <li>meta data of a schema</li>
+ * <li>Title of a command</li>
+ * <li>Description of a command</li>
+ * <li>meta data of a command</li>
  * </ul>
  */
 public final class CommandForm implements Parcelable {
@@ -38,7 +40,7 @@ public final class CommandForm implements Parcelable {
     @SerializedName("schema")
     private final @NonNull String schemaName;
     private final int schemaVersion;
-    private final @NonNull List<Action> actions;
+    private final @NonNull List<Pair<Alias, List<Action>>> actions;
 
     private @Nullable String title;
     private @Nullable String description;
@@ -56,7 +58,7 @@ public final class CommandForm implements Parcelable {
     public CommandForm(
             @NonNull String schemaName,
             int schemaVersion,
-            @NonNull List<Action> actions)
+            @NonNull List<Pair<Alias, List<Action>>> actions)
         throws IllegalArgumentException
     {
         if (TextUtils.isEmpty(schemaName)) {
@@ -140,7 +142,7 @@ public final class CommandForm implements Parcelable {
      * @return actions
      */
     @NonNull
-    public List<Action> getActions() {
+    public List<Pair<Alias, List<Action>>> getActions() {
         return this.actions;
     }
 
@@ -203,7 +205,7 @@ public final class CommandForm implements Parcelable {
     private CommandForm(Parcel in) {
         this.schemaName = in.readString();
         this.schemaVersion = in.readInt();
-        this.actions = new ArrayList<Action>();
+        this.actions = new ArrayList<Pair<Alias, List<Action>>>();
         in.readList(this.actions, null);
         this.title = in.readString();
         this.description = in.readString();
