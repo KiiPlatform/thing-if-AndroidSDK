@@ -649,8 +649,6 @@ public class ThingIFAPI implements Parcelable {
      * Post new command to IoT Cloud.
      * Command will be delivered to specified target and result will be notified
      * through push notification.
-     * @param schemaName name of the schema.
-     * @param schemaVersion version of schema.
      * @param actions Actions to be executed.
      * @return Created Command instance. At this time, Command is delivered to
      * the target Asynchronously and may not finished. Actual Result will be
@@ -662,15 +660,10 @@ public class ThingIFAPI implements Parcelable {
     @NonNull
     @WorkerThread
     public Command postNewCommand(
-            @NonNull String schemaName,
-            int schemaVersion,
-            @NonNull List<Pair<Alias,List<Action>>> actions) throws ThingIFException {
+            @NonNull List<Pair<Alias,List<Action>>> actions
+            ) throws ThingIFException {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
-        }
-        Schema schema = this.getSchema(schemaName, schemaVersion);
-        if (schema == null) {
-            throw new UnsupportedSchemaException(schemaName, schemaVersion);
         }
         if (actions == null || actions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty");
@@ -679,8 +672,8 @@ public class ThingIFAPI implements Parcelable {
         String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/commands", this.app.getAppID(), this.target.getTypedID().toString());
         String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
-        Command command = new Command(schemaName, schemaVersion, this.owner.getTypedID(), actions);
-        JSONObject requestBody = JsonUtils.newJson(GsonRepository.gson(schema).toJson(command));
+        Command command = new Command(this.owner.getTypedID(), actions);
+        JSONObject requestBody = JsonUtils.newJson(GsonRepository.gson().toJson(command));
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MediaTypes.MEDIA_TYPE_JSON, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
 
@@ -707,12 +700,6 @@ public class ThingIFAPI implements Parcelable {
             @NonNull CommandForm form) throws ThingIFException {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
-        }
-        final String schemaName = form.getSchemaName();
-        final int schemaVersion = form.getSchemaVersion();
-        Schema schema = this.getSchema(schemaName, schemaVersion);
-        if (schema == null) {
-            throw new UnsupportedSchemaException(schemaName, schemaVersion);
         }
 
         String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/commands",

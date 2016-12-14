@@ -23,9 +23,6 @@ import java.util.List;
 public class Command implements Parcelable {
 
     private String commandID;
-    @SerializedName("schema")
-    private final String schemaName;
-    private final int schemaVersion;
     @SerializedName("target")
     private final TypedID targetID;
     @SerializedName("issuer")
@@ -43,14 +40,9 @@ public class Command implements Parcelable {
     private String description;
     private JSONObject metadata;
 
-    public Command(@NonNull String schemaName,
-                   int schemaVersion,
-                   @NonNull TypedID targetID,
+    public Command(@NonNull TypedID targetID,
                    @NonNull TypedID issuerID,
                    @NonNull List<Pair<Alias, List<Action>>> actions) {
-        if (TextUtils.isEmpty(schemaName)) {
-            throw new IllegalArgumentException("schemaName is null or empty");
-        }
         if (targetID == null) {
             throw new IllegalArgumentException("targetID is null");
         }
@@ -60,27 +52,18 @@ public class Command implements Parcelable {
         if (actions == null || actions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty");
         }
-        this.schemaName = schemaName;
-        this.schemaVersion = schemaVersion;
         this.targetID = targetID;
         this.issuerID = issuerID;
         this.actions = actions;
     }
-    public Command(@NonNull String schemaName,
-                   int schemaVersion,
-                   @NonNull TypedID issuerID,
+    public Command(@NonNull TypedID issuerID,
                    @NonNull List<Pair<Alias, List<Action>>> actions) {
-        if (TextUtils.isEmpty(schemaName)) {
-            throw new IllegalArgumentException("schemaName is null or empty");
-        }
         if (issuerID == null) {
             throw new IllegalArgumentException("issuerID is null");
         }
         if (actions == null || actions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty");
         }
-        this.schemaName = schemaName;
-        this.schemaVersion = schemaVersion;
         this.targetID = null;
         this.issuerID = issuerID;
         this.actions = actions;
@@ -112,20 +95,6 @@ public class Command implements Parcelable {
      */
     public String getCommandID() {
         return this.commandID;
-    }
-
-    /** Get name of the schema in which command is defined.
-     * @return name of the schema.
-     */
-    public String getSchemaName() {
-        return this.schemaName;
-    }
-
-    /** Get version of the schema in which command is defined.
-     * @return version of the schema.
-     */
-    public int getSchemaVersion() {
-        return this.schemaVersion;
     }
 
     /**
@@ -239,8 +208,6 @@ public class Command implements Parcelable {
     // Implementation of Parcelable
     protected Command(Parcel in) {
         this.commandID = in.readString();
-        this.schemaName = in.readString();
-        this.schemaVersion = in.readInt();
         this.targetID = in.readParcelable(TypedID.class.getClassLoader());
         this.issuerID = in.readParcelable(TypedID.class.getClassLoader());
         this.actions = new ArrayList<Pair<Alias, List<Action>>>();
@@ -280,8 +247,6 @@ public class Command implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.commandID);
-        dest.writeString(this.schemaName);
-        dest.writeInt(this.schemaVersion);
         dest.writeParcelable(this.targetID, flags);
         dest.writeParcelable(this.issuerID, flags);
         dest.writeList(this.actions);
