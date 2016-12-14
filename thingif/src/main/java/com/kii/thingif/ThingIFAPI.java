@@ -664,7 +664,7 @@ public class ThingIFAPI implements Parcelable {
     public Command postNewCommand(
             @NonNull String schemaName,
             int schemaVersion,
-            @NonNull List<Action> actions) throws ThingIFException {
+            @NonNull List<Pair<Alias,List<Action>>> actions) throws ThingIFException {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
