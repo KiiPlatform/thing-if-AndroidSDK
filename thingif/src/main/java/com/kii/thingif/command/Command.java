@@ -22,26 +22,26 @@ import java.util.List;
  */
 public class Command implements Parcelable {
 
-    private String commandID;
+    private final @Nullable String commandID;
     @SerializedName("schema")
-    private final String schemaName;
-    private final int schemaVersion;
+    private final @NonNull String schemaName;
+    private final  int schemaVersion;
     @SerializedName("target")
-    private final TypedID targetID;
+    private final @Nullable TypedID targetID;
     @SerializedName("issuer")
-    private final TypedID issuerID;
-    private final List<Pair<Alias, List<Action>>> actions;
-    private final List<Pair<Alias,List<ActionResult>>> actionResults;
+    private final @NonNull TypedID issuerID;
+    private final @NonNull List<Pair<Alias, List<Action>>> actions;
+    private final @Nullable List<Pair<Alias,List<ActionResult>>> actionResults;
     @SerializedName("commandState")
-    private final CommandState commandState;
-    private final String firedByTriggerID;
+    private final @Nullable CommandState commandState;
+    private final @Nullable String firedByTriggerID;
     @SerializedName("createdAt")
-    private final Long created;
+    private final @Nullable Long created;
     @SerializedName("modifiedAt")
-    private final Long modified;
-    private final String title;
-    private final String description;
-    private final JSONObject metadata;
+    private final @Nullable Long modified;
+    private final @Nullable String title;
+    private final @Nullable String description;
+    private final @Nullable JSONObject metadata;
 
     public Command(@NonNull String schemaName,
                    int schemaVersion,
@@ -49,6 +49,7 @@ public class Command implements Parcelable {
                    @NonNull TypedID issuerID,
                    @NonNull List<Pair<Alias, List<Action>>> actions,
                    @Nullable List<Pair<Alias,List<ActionResult>>> actonResults,
+                   @Nullable String commandID,
                    @Nullable CommandState commandState,
                    @Nullable String firedByTriggerID,
                    @Nullable Long created,
@@ -75,6 +76,7 @@ public class Command implements Parcelable {
         this.issuerID = issuerID;
         this.actions = actions;
         this.actionResults = actonResults;
+        this.commandID = commandID;
         this.commandState = commandState;
         this.firedByTriggerID = firedByTriggerID;
         this.created = created;
