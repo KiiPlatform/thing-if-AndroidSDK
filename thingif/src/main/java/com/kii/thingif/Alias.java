@@ -1,4 +1,6 @@
 package com.kii.thingif;
 
-public abstract class Alias {
+import android.os.Parcelable;
+
+public interface Alias extends Parcelable {
 }
