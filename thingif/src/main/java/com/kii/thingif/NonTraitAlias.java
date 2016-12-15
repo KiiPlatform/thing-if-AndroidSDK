@@ -4,6 +4,9 @@ import android.os.Parcel;
 
 public final class NonTraitAlias implements Alias {
 
+    public NonTraitAlias() {
+    }
+
     private NonTraitAlias(Parcel in) {
     }
 
