@@ -787,54 +787,6 @@ public class ThingIFAPI implements Parcelable {
      * Post new Trigger with commands to IoT Cloud.
      *
      * <p>
-     * Limited version of {@link #postNewTrigger(TriggeredCommandForm,
-     * Predicate, TriggerOptions)}.
-     * </p>
-     *
-     * <p>
-     * This method equals to followings:
-     * </p>
-     * <code>
-     * api.postNewTrigger(
-     *         TriggeredCommandForm.Builder.newBuilder(
-     *             schemaName,
-     *             schemaVersion,
-     *             actions).setTargetID(api.getTarget()).build(),
-     *         predicate, null).
-     * </code>
-     *
-     * @param schemaName name of the schema.
-     * @param schemaVersion version of schema.
-     * @param actions Specify actions included in the Command is fired by the
-     *                trigger.
-     * @param predicate Specify when the Trigger fires command.
-     * @return Instance of the Trigger registered in IoT Cloud.
-     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
-     * @throws ThingIFRestException Thrown when server returns error response.
-     * @see #postNewTrigger(TriggeredCommandForm, Predicate, TriggerOptions)
-     */
-    @NonNull
-    @WorkerThread
-    public Trigger postNewTrigger(
-            @NonNull String schemaName,
-            int schemaVersion,
-            @NonNull List<Action> actions,
-            @NonNull Predicate predicate)
-            throws ThingIFException
-    {
-        return postNewTriggerWithForm(
-            TriggeredCommandForm.Builder.newBuilder(
-                schemaName,
-                schemaVersion,
-                actions).build(),
-            predicate,
-            null);
-    }
-
-    /**
-     * Post new Trigger with commands to IoT Cloud.
-     *
-     * <p>
      * When thing retrieved by {@link #getTarget()} of this ThingIFAPI
      * instance meets condition described by predicate, A command registered
      * by {@link TriggeredCommandForm} sends to thing given by {@link
