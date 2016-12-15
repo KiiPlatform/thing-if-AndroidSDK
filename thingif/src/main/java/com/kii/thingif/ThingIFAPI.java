@@ -787,54 +787,6 @@ public class ThingIFAPI implements Parcelable {
      * Post new Trigger with commands to IoT Cloud.
      *
      * <p>
-     * Limited version of {@link #postNewTrigger(TriggeredCommandForm,
-     * Predicate, TriggerOptions)}.
-     * </p>
-     *
-     * <p>
-     * This method equals to followings:
-     * </p>
-     * <code>
-     * api.postNewTrigger(
-     *         TriggeredCommandForm.Builder.newBuilder(
-     *             schemaName,
-     *             schemaVersion,
-     *             actions).setTargetID(api.getTarget()).build(),
-     *         predicate, null).
-     * </code>
-     *
-     * @param schemaName name of the schema.
-     * @param schemaVersion version of schema.
-     * @param actions Specify actions included in the Command is fired by the
-     *                trigger.
-     * @param predicate Specify when the Trigger fires command.
-     * @return Instance of the Trigger registered in IoT Cloud.
-     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
-     * @throws ThingIFRestException Thrown when server returns error response.
-     * @see #postNewTrigger(TriggeredCommandForm, Predicate, TriggerOptions)
-     */
-    @NonNull
-    @WorkerThread
-    public Trigger postNewTrigger(
-            @NonNull String schemaName,
-            int schemaVersion,
-            @NonNull List<Action> actions,
-            @NonNull Predicate predicate)
-            throws ThingIFException
-    {
-        return postNewTriggerWithForm(
-            TriggeredCommandForm.Builder.newBuilder(
-                schemaName,
-                schemaVersion,
-                actions).build(),
-            predicate,
-            null);
-    }
-
-    /**
-     * Post new Trigger with commands to IoT Cloud.
-     *
-     * <p>
      * When thing retrieved by {@link #getTarget()} of this ThingIFAPI
      * instance meets condition described by predicate, A command registered
      * by {@link TriggeredCommandForm} sends to thing given by {@link
@@ -889,11 +841,10 @@ public class ThingIFAPI implements Parcelable {
             requestBody.put("triggersWhat", TriggersWhat.COMMAND.name());
             requestBody.put("predicate", JsonUtils.newJson(
                         GsonRepository.gson().toJson(predicate)));
+            //TODO: // FIXME: 12/15/16 fix the parse code
             JSONObject command = JsonUtils.newJson(
                 GsonRepository.gson(
-                    this.getSchema(
-                        form.getSchemaName(),
-                        form.getSchemaVersion())).toJson(form));
+                    ).toJson(form));
             command.put("issuer", this.owner.getTypedID());
             if (form.getTargetID() == null) {
                 command.put("target", this.target.getTypedID().toString());
@@ -1065,52 +1016,7 @@ public class ThingIFAPI implements Parcelable {
     {
         return patchTriggerWithForm(triggerID, form, predicate, options);
     }
-
-    /**
-     * Apply Patch to registered Trigger
-     * Modify registered Trigger with specified patch.
-     *
-     * <p>
-     * Limited version of {@link #patchTrigger(String, TriggeredCommandForm,
-     * Predicate, TriggerOptions)}
-     * <p>
-     *
-     * @param triggerID ID ot the Trigger to apply patch
-     * @param schemaName name of the schema. if actions is not null and not
-     * empty, this must be not null. if actions is null or empty, this
-     * argument is ignored.
-     * @param schemaVersion version of schema. if actions is null or empty,
-     * this argument is ignored.
-     * @param actions Modified actions.
-     *                If null or empty, predicate must not be null.
-     * @param predicate Modified predicate.
-     *                  If null, actions must not be null and empty.
-     * @return Updated Trigger instance.
-     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
-     * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws IllegalArgumentException when both actions and predicates are null
-     */
-    @NonNull
-    @WorkerThread
-    public Trigger patchTrigger(
-            @NonNull String triggerID,
-            @Nullable String schemaName,
-            int schemaVersion,
-            @Nullable List<Action> actions,
-            @Nullable Predicate predicate) throws
-            ThingIFException {
-        if ((actions == null || actions.size() == 0) && predicate == null) {
-            throw new IllegalArgumentException(
-                "actions is null or empty and predicate is null.");
-        }
-        TriggeredCommandForm form = null;
-        if (actions != null && actions.size() > 0) {
-            form = TriggeredCommandForm.Builder.newBuilder(
-                schemaName, schemaVersion, actions).build();
-        }
-        return patchTriggerWithForm(triggerID, form, predicate, null);
-    }
-
+    
     @NonNull
     @WorkerThread
     private Trigger patchTriggerWithForm(
@@ -1148,10 +1054,10 @@ public class ThingIFAPI implements Parcelable {
                             GsonRepository.gson().toJson(predicate)));
             }
             if (form != null) {
+                //TODO: // FIXME: 12/15/16 need to fix parse code
                 JSONObject command = JsonUtils.newJson(
                     GsonRepository.gson(
-                        this.getSchema(form.getSchemaName(),
-                                form.getSchemaVersion())).toJson(form));
+                        ).toJson(form));
                 command.put("issuer", this.owner.getTypedID());
                 if (form.getTargetID() == null) {
                     command.put("target", this.target.getTypedID().toString());
