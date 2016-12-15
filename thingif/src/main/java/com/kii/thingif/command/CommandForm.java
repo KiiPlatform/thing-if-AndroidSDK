@@ -33,9 +33,9 @@ import java.util.List;
  * <li>meta data of a command</li>
  * </ul>
  */
-public final class CommandForm implements Parcelable {
+public final class CommandForm <T extends Alias> implements Parcelable {
 
-    private final @NonNull List<Pair<Alias,List<Action>>> actions;
+    private final @NonNull List<Pair<T,List<Action>>> actions;
 
     private @Nullable String title;
     private @Nullable String description;
@@ -49,7 +49,7 @@ public final class CommandForm implements Parcelable {
      * string and/or actions is null or empty.
      */
     public CommandForm(
-            @NonNull List<Pair<Alias, List<Action>>> actions)
+            @NonNull List<Pair<T, List<Action>>> actions)
         throws IllegalArgumentException
     {
         if (actions == null || actions.size() == 0) {
@@ -109,7 +109,7 @@ public final class CommandForm implements Parcelable {
      * @return actions
      */
     @NonNull
-    public List<Pair<Alias, List<Action>>> getActions() {
+    public List<Pair<T, List<Action>>> getActions() {
         return this.actions;
     }
 
