@@ -23,9 +23,6 @@ import java.util.List;
 public class Command implements Parcelable {
 
     private final @Nullable String commandID;
-    @SerializedName("schema")
-    private final @NonNull String schemaName;
-    private final  int schemaVersion;
     @SerializedName("target")
     private final @Nullable TypedID targetID;
     @SerializedName("issuer")
@@ -43,9 +40,7 @@ public class Command implements Parcelable {
     private final @Nullable String description;
     private final @Nullable JSONObject metadata;
 
-    public Command(@NonNull String schemaName,
-                   int schemaVersion,
-                   @Nullable TypedID targetID,
+    public Command(@NonNull TypedID targetID,
                    @NonNull TypedID issuerID,
                    @NonNull List<Pair<Alias, List<Action>>> actions,
                    @Nullable List<Pair<Alias,List<ActionResult>>> actonResults,
@@ -58,9 +53,6 @@ public class Command implements Parcelable {
                    @Nullable String description,
                    @Nullable JSONObject metadata
                    ) {
-        if (TextUtils.isEmpty(schemaName)) {
-            throw new IllegalArgumentException("schemaName is null or empty");
-        }
         if (targetID == null) {
             throw new IllegalArgumentException("targetID is null");
         }
@@ -70,8 +62,6 @@ public class Command implements Parcelable {
         if (actions == null || actions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty");
         }
-        this.schemaName = schemaName;
-        this.schemaVersion = schemaVersion;
         this.targetID = targetID;
         this.issuerID = issuerID;
         this.actions = actions;
@@ -89,28 +79,16 @@ public class Command implements Parcelable {
     /** Get ID of the command.
      * @return ID of the command.
      */
+    @Nullable
     public String getCommandID() {
         return this.commandID;
-    }
-
-    /** Get name of the schema in which command is defined.
-     * @return name of the schema.
-     */
-    public String getSchemaName() {
-        return this.schemaName;
-    }
-
-    /** Get version of the schema in which command is defined.
-     * @return version of the schema.
-     */
-    public int getSchemaVersion() {
-        return this.schemaVersion;
     }
 
     /**
      * Get ID of the target thing.
      * @return target thing ID which is issued this command.
      */
+    @Nullable
     public TypedID getTargetID() {
         return this.targetID;
     }
@@ -119,6 +97,7 @@ public class Command implements Parcelable {
      * Get ID of the issuer user.
      * @return issuer ID by which this command is issued.
      */
+    @NonNull
     public TypedID getIssuerID() {
         return this.issuerID;
     }
@@ -127,6 +106,7 @@ public class Command implements Parcelable {
      * Get list of actions
      * @return action of this command.
      */
+    @NonNull
     public List<Pair<Alias, List<Action>>> getActions() {
         return this.actions;
     }
@@ -135,6 +115,7 @@ public class Command implements Parcelable {
      * Get list of action result
      * @return action results of this command.
      */
+    @Nullable
     public List<Pair<Alias,List<ActionResult>>> getActionResults() {
         return this.actionResults;
     }
@@ -146,6 +127,7 @@ public class Command implements Parcelable {
      * @param action action to specify action result.
      * @return action reuslt specified with parameter's action.
      */
+    @Nullable
     public List<ActionResult> getActionResult(
             @NonNull Alias alias,
             @NonNull Action action) {
@@ -167,6 +149,7 @@ public class Command implements Parcelable {
      * Get status of command
      * @return status of this command.
      */
+    @Nullable
     public CommandState getCommandState() {
         return this.commandState;
     }
@@ -175,6 +158,7 @@ public class Command implements Parcelable {
      * Get ID of trigger which fired this command
      * @return trigger ID which fired this command.
      */
+    @Nullable
     public String getFiredByTriggerID() {
         return this.firedByTriggerID;
     }
@@ -183,6 +167,7 @@ public class Command implements Parcelable {
      * Get creation time
      * @return creation time of this command.
      */
+    @Nullable
     public Long getCreated() {
         return this.created;
     }
@@ -190,6 +175,7 @@ public class Command implements Parcelable {
      * Get modification time
      * @return modification time of this command.
      */
+    @Nullable
     public Long getModified() {
         return this.modified;
     }
@@ -197,6 +183,7 @@ public class Command implements Parcelable {
      * Get title.
      * @return title of this command.
      */
+    @Nullable
     public String getTitle() {
         return this.title;
     }
@@ -204,6 +191,7 @@ public class Command implements Parcelable {
      * Get description.
      * @return description of this command.
      */
+    @Nullable
     public String getDescription() {
         return this.description;
     }
@@ -211,6 +199,7 @@ public class Command implements Parcelable {
      * Get meta data
      * @return meta data of this command.
      */
+    @Nullable
     public JSONObject getMetadata() {
         return this.metadata;
     }
@@ -218,8 +207,6 @@ public class Command implements Parcelable {
     // Implementation of Parcelable
     protected Command(Parcel in) throws Exception{
         this.commandID = in.readString();
-        this.schemaName = in.readString();
-        this.schemaVersion = in.readInt();
         this.targetID = in.readParcelable(TypedID.class.getClassLoader());
         this.issuerID = in.readParcelable(TypedID.class.getClassLoader());
         this.actions = new ArrayList<Pair<Alias, List<Action>>>();
@@ -261,8 +248,6 @@ public class Command implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.commandID);
-        dest.writeString(this.schemaName);
-        dest.writeInt(this.schemaVersion);
         dest.writeParcelable(this.targetID, flags);
         dest.writeParcelable(this.issuerID, flags);
         dest.writeList(this.actions);
