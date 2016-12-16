@@ -81,37 +81,37 @@ public class TriggeredCommandForm<T extends Alias> implements Parcelable {
             return new Builder<>(actions);
         }
 
-        /**
-         * Constructs a {@link TriggeredCommandForm.Builder} instance.
-         *
-         * <p>
-         * This constructor copies following {@link Command} fields:
-         * </p>
-         *
-         * <ul>
-         *   <li>{@link Command#getActions()}</li>
-         *   <li>{@link Command#getTargetID()}</li>
-         *   <li>{@link Command#getTitle()}</li>
-         *   <li>{@link Command#getDescription()}</li>
-         *   <li>{@link Command#getMetadata()}</li>
-         * </ul>
-         *
-         * @param command Souce of this {@link TriggeredCommandForm.Builder}
-         * instance.
-         * @return builder instance.
-         * @throws IllegalArgumentException if command is null.
-         */
-        @NonNull
-        public static <T3 extends Alias> Builder<T3> newBuilderFromCommand(
-                @NonNull Command<T3> command)
-            throws IllegalArgumentException
-        {
-            return (new Builder<>(command.getActions())).
-                    setTargetID(command.getTargetID()).
-                    setTitle(command.getTitle()).
-                    setDescription(command.getDescription()).
-                    setMetadata(command.getMetadata());
-        }
+//        /**
+//         * Constructs a {@link TriggeredCommandForm.Builder} instance.
+//         *
+//         * <p>
+//         * This constructor copies following {@link Command} fields:
+//         * </p>
+//         *
+//         * <ul>
+//         *   <li>{@link Command#getActions()}</li>
+//         *   <li>{@link Command#getTargetID()}</li>
+//         *   <li>{@link Command#getTitle()}</li>
+//         *   <li>{@link Command#getDescription()}</li>
+//         *   <li>{@link Command#getMetadata()}</li>
+//         * </ul>
+//         *
+//         * @param command Souce of this {@link TriggeredCommandForm.Builder}
+//         * instance.
+//         * @return builder instance.
+//         * @throws IllegalArgumentException if command is null.
+//         */
+//        @NonNull
+//        public static <T3 extends Alias> Builder<T3> newBuilderFromCommand(
+//                @NonNull Command<T3> command)
+//            throws IllegalArgumentException
+//        {
+//            return (new Builder<>(command.getActions())).
+//                    setTargetID(command.getTargetID()).
+//                    setTitle(command.getTitle()).
+//                    setDescription(command.getDescription()).
+//                    setMetadata(command.getMetadata());
+//        }
 
         /**
          * Setter of actions.
