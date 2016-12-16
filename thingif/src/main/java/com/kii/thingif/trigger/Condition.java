@@ -4,14 +4,15 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import com.kii.thingif.Alias;
 import com.kii.thingif.trigger.clause.Clause;
 
-public class Condition implements Parcelable {
-    private Clause clause;
-    public Condition(@NonNull Clause clause) {
+public class Condition<T extends Alias> implements Parcelable {
+    private Clause<T> clause;
+    public Condition(@NonNull Clause<T> clause) {
         this.clause = clause;
     }
-    public Clause getClause() {
+    public Clause<T> getClause() {
         return this.clause;
     }
 

@@ -3,12 +3,14 @@ package com.kii.thingif.trigger;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 
-public class StatePredicate extends Predicate {
+import com.kii.thingif.Alias;
 
-    private Condition condition;
+public class StatePredicate<T extends Alias> extends Predicate {
+
+    private Condition<T> condition;
     private TriggersWhen triggersWhen;
 
-    public StatePredicate(@NonNull Condition condition, @NonNull TriggersWhen triggersWhen) {
+    public StatePredicate(@NonNull Condition<T> condition, @NonNull TriggersWhen triggersWhen) {
         if (condition == null) {
             throw new IllegalArgumentException("condition is null");
         }
