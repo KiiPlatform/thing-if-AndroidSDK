@@ -27,8 +27,8 @@ public class Command implements Parcelable {
     private final @Nullable TypedID targetID;
     @SerializedName("issuer")
     private final @NonNull TypedID issuerID;
-    private final @NonNull List<Pair<Alias, List<Action>>> actions;
-    private final @Nullable List<Pair<Alias,List<ActionResult>>> actionResults;
+    private final @NonNull List<Pair<? extends Alias, List<Action>>> actions;
+    private final @Nullable List<Pair<? extends Alias,List<ActionResult>>> actionResults;
     @SerializedName("commandState")
     private final @Nullable CommandState commandState;
     private final @Nullable String firedByTriggerID;
@@ -42,8 +42,8 @@ public class Command implements Parcelable {
 
     public Command(@NonNull TypedID targetID,
                    @NonNull TypedID issuerID,
-                   @NonNull List<Pair<Alias, List<Action>>> actions,
-                   @Nullable List<Pair<Alias,List<ActionResult>>> actonResults,
+                   @NonNull List<Pair<? extends Alias, List<Action>>> actions,
+                   @Nullable List<Pair<? extends Alias,List<ActionResult>>> actonResults,
                    @Nullable String commandID,
                    @Nullable CommandState commandState,
                    @Nullable String firedByTriggerID,
@@ -107,7 +107,7 @@ public class Command implements Parcelable {
      * @return action of this command.
      */
     @NonNull
-    public List<Pair<Alias, List<Action>>> getActions() {
+    public List<Pair<? extends Alias, List<Action>>> getActions() {
         return this.actions;
     }
 
@@ -116,7 +116,7 @@ public class Command implements Parcelable {
      * @return action results of this command.
      */
     @Nullable
-    public List<Pair<Alias,List<ActionResult>>> getActionResults() {
+    public List<Pair<? extends Alias,List<ActionResult>>> getActionResults() {
         return this.actionResults;
     }
 
@@ -209,9 +209,10 @@ public class Command implements Parcelable {
         this.commandID = in.readString();
         this.targetID = in.readParcelable(TypedID.class.getClassLoader());
         this.issuerID = in.readParcelable(TypedID.class.getClassLoader());
-        this.actions = new ArrayList<Pair<Alias, List<Action>>>();
+        //TODO: // FIXME: 12/16/16 fix to adapt to alias
+        this.actions = new ArrayList<>();
         in.readList(this.actions, Command.class.getClassLoader());
-        this.actionResults = new ArrayList<Pair<Alias, List<ActionResult>>>();
+        this.actionResults = new ArrayList<>();
         in.readList(this.actionResults, Command.class.getClassLoader());
         this.commandState = (CommandState)in.readSerializable();
         this.firedByTriggerID = in.readString();
@@ -250,6 +251,7 @@ public class Command implements Parcelable {
         dest.writeString(this.commandID);
         dest.writeParcelable(this.targetID, flags);
         dest.writeParcelable(this.issuerID, flags);
+        //TODO // FIXME: 12/16/16 fix to adapt alias
         dest.writeList(this.actions);
         dest.writeList(this.actionResults);
         dest.writeSerializable(this.commandState);

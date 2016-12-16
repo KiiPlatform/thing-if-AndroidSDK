@@ -9,6 +9,8 @@ import android.util.Pair;
 
 import com.google.gson.annotations.SerializedName;
 import com.kii.thingif.Alias;
+import com.kii.thingif.NonTraitAlias;
+import com.kii.thingif.TraitAlias;
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
@@ -46,14 +48,14 @@ public class TriggeredCommandForm implements Parcelable {
      */
     public static class Builder {
 
-        @NonNull private List<Pair<Alias, List<Action>>> actions;
+        @NonNull private List<Pair<? extends Alias, List<Action>>> actions;
         @Nullable private TypedID targetID;
         @Nullable private String title;
         @Nullable private String description;
         @Nullable private JSONObject metadata;
 
         private Builder(
-                @NonNull List<Pair<Alias, List<Action>>> actions)
+                @NonNull List<Pair<? extends Alias, List<Action>>> actions)
         {
             if (isEmpty(actions)) {
                 throw new IllegalArgumentException("actions is null or empty.");
@@ -75,10 +77,23 @@ public class TriggeredCommandForm implements Parcelable {
          */
         @NonNull
         public static Builder newBuilder(
-                @NonNull List<Pair<Alias, List<Action>>> actions)
-            throws IllegalArgumentException
+                @NonNull List<Pair<TraitAlias, List<Action>>> actions)
         {
-            return new Builder(actions);
+            List<Pair<? extends Alias, List<Action>>> traitActions = new ArrayList<>();
+            for (Pair<TraitAlias, List<Action>> aTraitActions: actions){
+                traitActions.add(aTraitActions);
+            }
+            return new Builder(traitActions);
+        }
+
+        public static Builder newNonTraitBuilder(
+                @NonNull List<Pair<NonTraitAlias, List<Action>>> actions)
+        {
+            List<Pair<? extends Alias, List<Action>>> nonTraitActions = new ArrayList<>();
+            for (Pair<NonTraitAlias, List<Action>> aTraitActions: actions){
+                nonTraitActions.add(aTraitActions);
+            }
+            return new Builder(nonTraitActions);
         }
 
         /**
@@ -89,8 +104,6 @@ public class TriggeredCommandForm implements Parcelable {
          * </p>
          *
          * <ul>
-         *   <li>{@link Command#getSchemaName()}</li>
-         *   <li>{@link Command#getSchemaVersion()}</li>
          *   <li>{@link Command#getActions()}</li>
          *   <li>{@link Command#getTargetID()}</li>
          *   <li>{@link Command#getTitle()}</li>
@@ -130,7 +143,7 @@ public class TriggeredCommandForm implements Parcelable {
          */
         @NonNull
         public Builder setActions(
-                @NonNull List<Pair<Alias, List<Action>>> actions)
+                @NonNull List<Pair<? extends Alias, List<Action>>> actions)
             throws IllegalArgumentException
         {
             if (isEmpty(actions)) {
@@ -146,7 +159,7 @@ public class TriggeredCommandForm implements Parcelable {
          * @return actions
          */
         @NonNull
-        public List<Pair<Alias, List<Action>>> getActions() {
+        public List<Pair<? extends Alias, List<Action>>> getActions() {
             return this.actions;
         }
 
@@ -312,7 +325,7 @@ public class TriggeredCommandForm implements Parcelable {
 
     }
 
-    @NonNull private final List<Pair<Alias, List<Action>>> actions;
+    @NonNull private final List<Pair<? extends Alias, List<Action>>> actions;
     @SerializedName("target")
     @Nullable private TypedID targetID;
     @Nullable private String title;
@@ -320,7 +333,7 @@ public class TriggeredCommandForm implements Parcelable {
     @Nullable private JSONObject metadata;
 
     private TriggeredCommandForm(
-            @NonNull List<Pair<Alias, List<Action>>> actions)
+            @NonNull List<Pair<? extends Alias, List<Action>>> actions)
     {
         this.actions = actions;
     }
@@ -331,7 +344,7 @@ public class TriggeredCommandForm implements Parcelable {
      * @return actions
      */
     @NonNull
-    public List<Pair<Alias, List<Action>>> getActions() {
+    public List<Pair<? extends Alias, List<Action>>> getActions() {
         return this.actions;
     }
 
