@@ -9,6 +9,8 @@ import android.util.Pair;
 
 import com.google.gson.annotations.SerializedName;
 import com.kii.thingif.Alias;
+import com.kii.thingif.NonTraitAlias;
+import com.kii.thingif.TraitAlias;
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
@@ -39,21 +41,21 @@ import java.util.List;
  * <li>meta data of a command</li>
  * </ul>
  */
-public class TriggeredCommandForm implements Parcelable {
+public class TriggeredCommandForm<T extends Alias> implements Parcelable {
 
     /**
      * TriggeredCommandForm builder.
      */
-    public static class Builder {
+    public static class Builder<T1 extends Alias> {
 
-        @NonNull private List<Pair<Alias, List<Action>>> actions;
+        @NonNull private List<Pair<T1, List<Action>>> actions;
         @Nullable private TypedID targetID;
         @Nullable private String title;
         @Nullable private String description;
         @Nullable private JSONObject metadata;
 
         private Builder(
-                @NonNull List<Pair<Alias, List<Action>>> actions)
+                @NonNull List<Pair<T1, List<Action>>> actions)
         {
             if (isEmpty(actions)) {
                 throw new IllegalArgumentException("actions is null or empty.");
@@ -68,17 +70,15 @@ public class TriggeredCommandForm implements Parcelable {
          * @throws IllegalArgumentException This exception is thrown if one or
          * more following conditions are met.
          * <ul>
-         *   <li>schemaName is null or empty string.</li>
          *   <li>actions is null or empty</li>
          * </ul>
          * @return builder instance.
          */
         @NonNull
-        public static Builder newBuilder(
-                @NonNull List<Pair<Alias, List<Action>>> actions)
-            throws IllegalArgumentException
+        public static <T2 extends Alias>Builder<T2> newBuilder(
+                @NonNull List<Pair<T2, List<Action>>> actions)
         {
-            return new Builder(actions);
+            return new Builder<>(actions);
         }
 
         /**
@@ -89,8 +89,6 @@ public class TriggeredCommandForm implements Parcelable {
          * </p>
          *
          * <ul>
-         *   <li>{@link Command#getSchemaName()}</li>
-         *   <li>{@link Command#getSchemaVersion()}</li>
          *   <li>{@link Command#getActions()}</li>
          *   <li>{@link Command#getTargetID()}</li>
          *   <li>{@link Command#getTitle()}</li>
@@ -104,12 +102,11 @@ public class TriggeredCommandForm implements Parcelable {
          * @throws IllegalArgumentException if command is null.
          */
         @NonNull
-        public static Builder newBuilderFromCommand(
-                @NonNull Command command)
+        public static <T3 extends Alias> Builder<T3> newBuilderFromCommand(
+                @NonNull Command<T3> command)
             throws IllegalArgumentException
         {
-            return (new Builder(
-                        command.getActions())).
+            return (new Builder<>(command.getActions())).
                     setTargetID(command.getTargetID()).
                     setTitle(command.getTitle()).
                     setDescription(command.getDescription()).
@@ -129,8 +126,8 @@ public class TriggeredCommandForm implements Parcelable {
          * @throws IllegalArgumentException actions is null or empty list.
          */
         @NonNull
-        public Builder setActions(
-                @NonNull List<Pair<Alias, List<Action>>> actions)
+        public Builder<T1> setActions(
+                @NonNull List<Pair<T1, List<Action>>> actions)
             throws IllegalArgumentException
         {
             if (isEmpty(actions)) {
@@ -146,7 +143,7 @@ public class TriggeredCommandForm implements Parcelable {
          * @return actions
          */
         @NonNull
-        public List<Pair<Alias, List<Action>>> getActions() {
+        public List<Pair<T1, List<Action>>> getActions() {
             return this.actions;
         }
 
@@ -178,7 +175,7 @@ public class TriggeredCommandForm implements Parcelable {
          * TypedID.Types#THING}.
          */
         @NonNull
-        public Builder setTargetID(
+        public Builder<T1> setTargetID(
                 @Nullable TypedID targetID)
             throws IllegalArgumentException
         {
@@ -209,7 +206,7 @@ public class TriggeredCommandForm implements Parcelable {
          * @throws IllegalArgumentException if title is invalid.
          */
         @NonNull
-        public Builder setTitle(
+        public Builder<T1> setTitle(
                 @Nullable String title)
             throws IllegalArgumentException
         {
@@ -240,7 +237,7 @@ public class TriggeredCommandForm implements Parcelable {
          * @throws IllegalArgumentException if description is invalid.
          */
         @NonNull
-        public Builder setDescription(
+        public Builder<T1> setDescription(
                 @Nullable String description)
             throws IllegalArgumentException
         {
@@ -269,7 +266,7 @@ public class TriggeredCommandForm implements Parcelable {
          * @return this instance for method chaining.
          */
         @NonNull
-        public Builder setMetadata(@Nullable JSONObject metadata) {
+        public Builder<T1> setMetadata(@Nullable JSONObject metadata) {
             this.metadata = metadata;
             return this;
         }
@@ -290,9 +287,10 @@ public class TriggeredCommandForm implements Parcelable {
          * @return {@link TriggeredCommandForm} instance.
          */
         @NonNull
-        public TriggeredCommandForm build() {
-            TriggeredCommandForm retval =
-                    new TriggeredCommandForm(this.actions);
+        public TriggeredCommandForm<T1> build() {
+
+            TriggeredCommandForm<T1> retval =
+                    new TriggeredCommandForm<T1>(this.actions);
             retval.targetID = this.targetID;
             retval.title = this.title;
             retval.description = this.description;
@@ -312,7 +310,7 @@ public class TriggeredCommandForm implements Parcelable {
 
     }
 
-    @NonNull private final List<Pair<Alias, List<Action>>> actions;
+    @NonNull private final List<Pair<T, List<Action>>> actions;
     @SerializedName("target")
     @Nullable private TypedID targetID;
     @Nullable private String title;
@@ -320,7 +318,7 @@ public class TriggeredCommandForm implements Parcelable {
     @Nullable private JSONObject metadata;
 
     private TriggeredCommandForm(
-            @NonNull List<Pair<Alias, List<Action>>> actions)
+            @NonNull List<Pair<T, List<Action>>> actions)
     {
         this.actions = actions;
     }
@@ -331,7 +329,7 @@ public class TriggeredCommandForm implements Parcelable {
      * @return actions
      */
     @NonNull
-    public List<Pair<Alias, List<Action>>> getActions() {
+    public List<Pair<T, List<Action>>> getActions() {
         return this.actions;
     }
 
@@ -376,6 +374,7 @@ public class TriggeredCommandForm implements Parcelable {
     }
 
     private TriggeredCommandForm(Parcel in) {
+        //TODO: // FIXME: 12/16/16 should adapt to alias subclasses
         this.actions = new ArrayList<>();
         in.readList(this.actions, TriggeredCommandForm.class.getClassLoader());
         this.targetID = in.readParcelable(TypedID.class.getClassLoader());
@@ -393,6 +392,7 @@ public class TriggeredCommandForm implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        //TODO: // FIXME: 12/16/16 should adapt to alias subclass
         dest.writeList(this.actions);
         dest.writeParcelable(this.getTargetID(), flags);
         dest.writeString(this.title);
