@@ -20,15 +20,15 @@ import java.util.List;
 /**
  * Represents a command that is executed by the thing
  */
-public class Command implements Parcelable {
+public class Command<T extends Alias> implements Parcelable {
 
     private final @Nullable String commandID;
     @SerializedName("target")
     private final @Nullable TypedID targetID;
     @SerializedName("issuer")
     private final @NonNull TypedID issuerID;
-    private final @NonNull List<Pair<? extends Alias, List<Action>>> actions;
-    private final @Nullable List<Pair<? extends Alias,List<ActionResult>>> actionResults;
+    private final @NonNull List<Pair<T, List<Action>>> actions;
+    private final @Nullable List<Pair<T,List<ActionResult>>> actionResults;
     @SerializedName("commandState")
     private final @Nullable CommandState commandState;
     private final @Nullable String firedByTriggerID;
@@ -42,8 +42,8 @@ public class Command implements Parcelable {
 
     public Command(@NonNull TypedID targetID,
                    @NonNull TypedID issuerID,
-                   @NonNull List<Pair<? extends Alias, List<Action>>> actions,
-                   @Nullable List<Pair<? extends Alias,List<ActionResult>>> actonResults,
+                   @NonNull List<Pair<T, List<Action>>> actions,
+                   @Nullable List<Pair<T,List<ActionResult>>> actonResults,
                    @Nullable String commandID,
                    @Nullable CommandState commandState,
                    @Nullable String firedByTriggerID,
@@ -107,7 +107,7 @@ public class Command implements Parcelable {
      * @return action of this command.
      */
     @NonNull
-    public List<Pair<? extends Alias, List<Action>>> getActions() {
+    public List<Pair<T, List<Action>>> getActions() {
         return this.actions;
     }
 
@@ -116,7 +116,7 @@ public class Command implements Parcelable {
      * @return action results of this command.
      */
     @Nullable
-    public List<Pair<? extends Alias,List<ActionResult>>> getActionResults() {
+    public List<Pair<T,List<ActionResult>>> getActionResults() {
         return this.actionResults;
     }
 
