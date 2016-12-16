@@ -2,14 +2,16 @@ package com.kii.thingif.trigger.clause;
 
 import android.os.Parcel;
 
+import com.kii.thingif.Alias;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
 
-public class Or extends ContainerClause {
-    public Or(Clause... clauses) {
+public class Or<T extends Alias> extends ContainerClause<T> {
+    public Or(Clause<T>... clauses) {
         super(clauses);
     }
     @Override

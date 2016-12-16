@@ -2,14 +2,16 @@ package com.kii.thingif.trigger.clause;
 
 import android.os.Parcel;
 
+import com.kii.thingif.Alias;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
 
-public class And extends ContainerClause {
-    public And(Clause... clauses) {
+public class And<T extends Alias> extends ContainerClause<T> {
+    public And(Clause<T>... clauses) {
         super(clauses);
     }
     @Override

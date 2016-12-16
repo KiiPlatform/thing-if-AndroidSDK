@@ -1,28 +1,35 @@
 package com.kii.thingif.trigger.clause;
 
 import android.os.Parcel;
+import android.provider.AlarmClock;
 import android.support.annotation.NonNull;
+
+import com.kii.thingif.Alias;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Equals extends Clause {
+public class Equals<T extends Alias> extends Clause<T> {
 
     private final String field;
     private final Object value;
-    public Equals(@NonNull String field, String value) {
+    private final T alias;
+    public Equals(@NonNull String field, String value, T alias) {
         this.field = field;
         this.value = value;
+        this.alias = alias;
     }
 
-    public Equals(String field, long value) {
+    public Equals(String field, long value, T alias) {
         this.field = field;
         this.value = value;
+        this.alias = alias;
     }
 
-    public Equals(String field, boolean value) {
+    public Equals(String field, boolean value, T alias) {
         this.field = field;
         this.value = value;
+        this.alias = alias;
     }
     public String getField() {
         return this.field;
@@ -33,6 +40,7 @@ public class Equals extends Clause {
 
     @Override
     public JSONObject toJSONObject() {
+        //TODO: // FIXME: 12/15/16 should adapt to alias
         JSONObject ret = new JSONObject();
         try {
             ret.put("type", "eq");
@@ -47,6 +55,7 @@ public class Equals extends Clause {
 
     @Override
     public boolean equals(Object o) {
+        //TODO: // FIXME: 12/15/16 should adapt to alias
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Equals equals = (Equals) o;
@@ -62,6 +71,8 @@ public class Equals extends Clause {
 
     // Implementation of Parcelable
     protected Equals(Parcel in) {
+        //TODO: // FIXME: 12/15/16 should adapt to subclass of Alias, refer http://stackoverflow.com/a/31979348
+        this.alias = in.readParcelable(Alias.class.getClassLoader());
         this.field = in.readString();
         Class<?> clazz = (Class<?>)in.readSerializable();
         if (clazz == String.class) {
@@ -91,6 +102,7 @@ public class Equals extends Clause {
     }
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        //TODO: // FIXME: 12/15/16 shoudl adapt to subclass of Alias
         dest.writeString(this.field);
         dest.writeSerializable(this.value.getClass());
         if (this.value instanceof String) {

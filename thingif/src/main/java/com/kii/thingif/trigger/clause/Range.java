@@ -3,51 +3,65 @@ package com.kii.thingif.trigger.clause;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 
+import com.kii.thingif.Alias;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Range extends Clause {
+public class Range<T extends Alias> extends Clause<T> {
 
     private final String field;
     private final Long upperLimit;
     private final Long lowerLimit;
     private final Boolean upperIncluded;
     private final Boolean lowerIncluded;
+    private final T alias;
 
-    public Range(String field, Long upperLimit, Boolean upperIncluded, Long lowerLimit, Boolean lowerIncluded) {
+    public Range(String field, 
+                 Long upperLimit,
+                 Boolean upperIncluded, 
+                 Long lowerLimit, 
+                 Boolean lowerIncluded, 
+                 T alias) {
         this.field = field;
         this.upperLimit = upperLimit;
         this.upperIncluded = upperIncluded;
         this.lowerLimit = lowerLimit;
         this.lowerIncluded = lowerIncluded;
+        this.alias = alias;
     }
-    public static Range range(
+    public static <T1 extends Alias> Range range(
             @NonNull String field,
             Number upperLimit,
             Boolean upperIncluded,
             Number lowerLimit,
-            Boolean lowerIncluded) {
-        return new Range(field, upperLimit.longValue(), upperIncluded, lowerLimit.longValue(), lowerIncluded);
+            Boolean lowerIncluded, 
+            T1 alias) {
+        return new Range<>(field, upperLimit.longValue(), upperIncluded, lowerLimit.longValue(), lowerIncluded, alias);
     }
-    public static Range greaterThan(
+    public static <T2 extends Alias> Range<T2> greaterThan(
             @NonNull String field,
-            @NonNull Number lowerLimit) {
-        return new Range(field, null, null, lowerLimit.longValue(), Boolean.FALSE);
+            @NonNull Number lowerLimit,
+            @NonNull T2 alias) {
+        return new Range<>(field, null, null, lowerLimit.longValue(), Boolean.FALSE, alias);
     }
-    public static Range greaterThanEquals(
+    public static <T3 extends Alias> Range<T3> greaterThanEquals(
             @NonNull String field,
-            @NonNull Number lowerLimit) {
-        return new Range(field, null, null, lowerLimit.longValue(), Boolean.TRUE);
+            @NonNull Number lowerLimit,
+            @NonNull T3 alias) {
+        return new Range<>(field, null, null, lowerLimit.longValue(), Boolean.TRUE, alias);
     }
-    public static Range lessThan(
+    public static <T4 extends Alias> Range<T4> lessThan(
             @NonNull String field,
-            @NonNull Number upperLimit) {
-        return new Range(field, upperLimit.longValue(), Boolean.FALSE, null, null);
+            @NonNull Number upperLimit,
+            @NonNull T4 alias) {
+        return new Range<>(field, upperLimit.longValue(), Boolean.FALSE, null, null, alias);
     }
-    public static Range lessThanEquals(
+    public static <T5 extends  Alias> Range<T5> lessThanEquals(
             @NonNull String field,
-            @NonNull Number upperLimit) {
-        return new Range(field, upperLimit.longValue(), Boolean.TRUE, null, null);
+            @NonNull Number upperLimit,
+            @NonNull T5 alias) {
+        return new Range<>(field, upperLimit.longValue(), Boolean.TRUE, null, null, alias);
     }
 
     public String getField() {
@@ -65,10 +79,14 @@ public class Range extends Clause {
     public Boolean getLowerIncluded() {
         return this.lowerIncluded;
     }
+    public Alias getAlias() {
+        return alias;
+    }
 
     @Override
     public JSONObject toJSONObject() {
         JSONObject ret = new JSONObject();
+        //TODO: // FIXME: 12/15/16 should adapt to alias
         try {
             ret.put("type", "range");
             ret.put("field", this.field);
@@ -93,6 +111,7 @@ public class Range extends Clause {
 
     @Override
     public boolean equals(Object o) {
+        //TODO: // FIXME: 12/15/16 should adapt to alias
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -119,6 +138,8 @@ public class Range extends Clause {
 
     // Implementation of Parcelable
     protected Range(Parcel in) {
+        //TODO: // FIXME: 12/15/16 should adapt to alias
+        this.alias = in.readParcelable(Alias.class.getClassLoader());
         this.field = in.readString();
         this.upperLimit = (Long)in.readValue(Range.class.getClassLoader());
         this.upperIncluded = (Boolean)in.readValue(Range.class.getClassLoader());
@@ -142,6 +163,7 @@ public class Range extends Clause {
     }
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        //TODO: // FIXME: 12/15/16 shuold adapt to alias
         dest.writeString(this.field);
         dest.writeValue(this.upperLimit);
         dest.writeValue(this.upperIncluded);
