@@ -11,7 +11,6 @@ import com.google.gson.annotations.SerializedName;
 import com.kii.thingif.Alias;
 import com.kii.thingif.TypedID;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -20,15 +19,15 @@ import java.util.List;
 /**
  * Represents a command that is executed by the thing
  */
-public class Command<T extends Alias> implements Parcelable {
+public class Command implements Parcelable {
 
     private final @Nullable String commandID;
     @SerializedName("target")
     private final @Nullable TypedID targetID;
     @SerializedName("issuer")
     private final @NonNull TypedID issuerID;
-    private final @NonNull List<Pair<T, List<Action>>> actions;
-    private final @Nullable List<Pair<T,List<ActionResult>>> actionResults;
+    private final @NonNull List<Pair<? extends Alias, List<Action>>> actions;
+    private final @Nullable List<Pair<? extends Alias,List<ActionResult>>> actionResults;
     @SerializedName("commandState")
     private final @Nullable CommandState commandState;
     private final @Nullable String firedByTriggerID;
@@ -42,8 +41,8 @@ public class Command<T extends Alias> implements Parcelable {
 
     public Command(@NonNull TypedID targetID,
                    @NonNull TypedID issuerID,
-                   @NonNull List<Pair<T, List<Action>>> actions,
-                   @Nullable List<Pair<T,List<ActionResult>>> actonResults,
+                   @NonNull List<Pair<? extends Alias, List<Action>>> actions,
+                   @Nullable List<Pair<? extends Alias, List<ActionResult>>> actonResults,
                    @Nullable String commandID,
                    @Nullable CommandState commandState,
                    @Nullable String firedByTriggerID,
@@ -107,7 +106,7 @@ public class Command<T extends Alias> implements Parcelable {
      * @return action of this command.
      */
     @NonNull
-    public List<Pair<T, List<Action>>> getActions() {
+    public List<Pair<? extends Alias, List<Action>>> getActions() {
         return this.actions;
     }
 
@@ -116,7 +115,7 @@ public class Command<T extends Alias> implements Parcelable {
      * @return action results of this command.
      */
     @Nullable
-    public List<Pair<T,List<ActionResult>>> getActionResults() {
+    public List<Pair<? extends Alias,List<ActionResult>>> getActionResults() {
         return this.actionResults;
     }
 
