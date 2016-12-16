@@ -14,22 +14,16 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * Represents a command that is executed by the thing
  */
-public class Command implements Parcelable {
+public class Command<AT extends CommandActionItem, RT extends CommandActionResultItem> implements Parcelable {
 
     private String commandID;
-    @SerializedName("schema")
-    private final String schemaName;
-    private final int schemaVersion;
     @SerializedName("target")
     private final TypedID targetID;
     @SerializedName("issuer")
     private final TypedID issuerID;
-    private final List<Action> actions;
-    private List<ActionResult> actionResults;
     @SerializedName("commandState")
     private CommandState commandState;
     private String firedByTriggerID;
@@ -40,15 +34,22 @@ public class Command implements Parcelable {
     private String title;
     private String description;
     private JSONObject metadata;
+    private final List<AT> actions;
+    private List<RT> actionResults;
 
-    public Command(@NonNull String schemaName,
-                   int schemaVersion,
-                   @NonNull TypedID targetID,
+    /**
+     * Initialize Command
+     * @param targetID TypedID of target thing.
+     * @param issuerID TypedID of issuer.
+     * @param actions List of actions. Class of action item only accept {@link Action}
+     *                or {@link TraitActions}
+     * @throws IllegalArgumentException Thrown when targetID, issuerID is null.
+     *   Or actions is null or empty. Or if actions is not empty, but the action element
+     *   is not Action or TraitActions.
+     */
+    public Command(@NonNull TypedID targetID,
                    @NonNull TypedID issuerID,
-                   @NonNull List<Action> actions) {
-        if (TextUtils.isEmpty(schemaName)) {
-            throw new IllegalArgumentException("schemaName is null or empty");
-        }
+                   @NonNull List<AT> actions) {
         if (targetID == null) {
             throw new IllegalArgumentException("targetID is null");
         }
@@ -58,48 +59,62 @@ public class Command implements Parcelable {
         if (actions == null || actions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty");
         }
-        this.schemaName = schemaName;
-        this.schemaVersion = schemaVersion;
+        //TODO: check class of element of action
         this.targetID = targetID;
         this.issuerID = issuerID;
         this.actions = actions;
     }
-    public Command(@NonNull String schemaName,
-                   int schemaVersion,
-                   @NonNull TypedID issuerID,
-                   @NonNull List<Action> actions) {
-        if (TextUtils.isEmpty(schemaName)) {
-            throw new IllegalArgumentException("schemaName is null or empty");
-        }
+
+    /**
+     * Initialize Command
+     * @param issuerID TypedID of issuer.
+     * @param actions List of actions. Class of action item only accept {@link Action}
+     *                or {@link TraitActions}
+     * @throws IllegalArgumentException Thrown when targetID, issuerID is null.
+     *   Or actions is null or empty. Or if actions is not empty, but the action element
+     *   is not Action or TraitActions.
+     */
+    public Command(@NonNull TypedID issuerID,
+                   @NonNull List<AT> actions) {
         if (issuerID == null) {
             throw new IllegalArgumentException("issuerID is null");
         }
         if (actions == null || actions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty");
         }
-        this.schemaName = schemaName;
-        this.schemaVersion = schemaVersion;
         this.targetID = null;
         this.issuerID = issuerID;
         this.actions = actions;
     }
-    public void addActionResult(@NonNull ActionResult ar) {
+
+    public void addActionResult(@NonNull String alias, @NonNull ActionResult ar) {
+        // TODO: implement me
+    }
+
+    public void addActionResults(@NonNull String alias, @NonNull List<ActionResult> ars) {
+        // TODO: implement me
+    }
+
+    public void addActionResult(@NonNull ActionResult ar) throws Exception{
         if (ar == null) {
             throw new IllegalArgumentException("ActionResult is null");
         }
         boolean hasAction = false;
-        for (Action action : this.actions) {
-            if (TextUtils.equals(ar.getActionName(), action.getActionName())) {
-                hasAction = true;
-            }
-        }
-        if (!hasAction) {
-            throw new IllegalArgumentException(ar.getActionName() + " is not contained in this Command");
-        }
-        if (this.actionResults == null) {
-            this.actionResults = new ArrayList<ActionResult>();
-        }
-        this.actionResults.add(ar);
+        //TODO: FIXME
+        // first check whether actions is trait format, if yes throw exception
+        // else check whether action name of action result in actions array
+//        for (Action action : this.actions) {
+//            if (TextUtils.equals(ar.getActionName(), action.getActionName())) {
+//                hasAction = true;
+//            }
+//        }
+//        if (!hasAction) {
+//            throw new IllegalArgumentException(ar.getActionName() + " is not contained in this Command");
+//        }
+//        if (this.actionResults == null) {
+//            this.actionResults = new ArrayList<ActionResult>();
+//        }
+//        this.actionResults.add(ar);
     }
 
     /** Get ID of the command.
@@ -107,20 +122,6 @@ public class Command implements Parcelable {
      */
     public String getCommandID() {
         return this.commandID;
-    }
-
-    /** Get name of the schema in which command is defined.
-     * @return name of the schema.
-     */
-    public String getSchemaName() {
-        return this.schemaName;
-    }
-
-    /** Get version of the schema in which command is defined.
-     * @return version of the schema.
-     */
-    public int getSchemaVersion() {
-        return this.schemaVersion;
     }
 
     /**
@@ -140,21 +141,30 @@ public class Command implements Parcelable {
     }
 
     /**
-     * Get list of actions
+     * Get list of Action instances
      * @return action of this command.
      */
-    public List<Action> getActions() {
-        return this.actions;
+    public List<AT> getActions() {
+        return actions;
     }
 
     /**
      * Get list of action result
      * @return action results of this command.
      */
-    public List<ActionResult> getActionResults() {
-        return this.actionResults;
+    public List<RT> getActionResults() {
+        return actionResults;
     }
 
+    public List<ActionResult> getActionResults(@NonNull String alias) {
+        //TODO: implement me
+        return new ArrayList<>();
+    }
+
+    public ActionResult getActionResult(@NonNull String alias, @NonNull Action action) {
+        //TODO: implement me
+        return null;
+    }
     /**
      * Get a action result associated with specified action
      *
@@ -165,13 +175,14 @@ public class Command implements Parcelable {
         if (action == null) {
             throw new IllegalArgumentException("action is null");
         }
-        if (this.getActionResults() != null) {
-            for (ActionResult result : this.getActionResults()) {
-                if (TextUtils.equals(action.getActionName(), result.getActionName())) {
-                    return result;
-                }
-            }
-        }
+        //TODO: fix me
+//        if (this.getActionResults() != null) {
+//            for (ActionResult result : this.getActionResults()) {
+//                if (TextUtils.equals(action.getActionName(), result.getActionName())) {
+//                    return result;
+//                }
+//            }
+//        }
         return null;
     }
 
@@ -230,14 +241,12 @@ public class Command implements Parcelable {
     // Implementation of Parcelable
     protected Command(Parcel in) {
         this.commandID = in.readString();
-        this.schemaName = in.readString();
-        this.schemaVersion = in.readInt();
         this.targetID = in.readParcelable(TypedID.class.getClassLoader());
         this.issuerID = in.readParcelable(TypedID.class.getClassLoader());
-        this.actions = new ArrayList<Action>();
-        in.readList(this.actions, Command.class.getClassLoader());
-        this.actionResults = new ArrayList<ActionResult>();
-        in.readList(this.actionResults, Command.class.getClassLoader());
+        this.actions = new ArrayList();
+        in.readList(this.actions, null);
+        this.actionResults = new ArrayList<>();
+        in.readList(this.actionResults, null);
         this.commandState = (CommandState)in.readSerializable();
         this.firedByTriggerID = in.readString();
         this.created = (Long)in.readValue(Command.class.getClassLoader());
@@ -271,8 +280,6 @@ public class Command implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.commandID);
-        dest.writeString(this.schemaName);
-        dest.writeInt(this.schemaVersion);
         dest.writeParcelable(this.targetID, flags);
         dest.writeParcelable(this.issuerID, flags);
         dest.writeList(this.actions);

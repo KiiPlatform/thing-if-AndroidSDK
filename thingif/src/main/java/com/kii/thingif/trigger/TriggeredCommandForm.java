@@ -4,12 +4,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
+import com.kii.thingif.command.TraitActions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,16 +27,14 @@ import java.util.List;
  * <br><br>
  * Mandatory data are followings:
  * <ul>
- * <li>Name of a schema</li>
- * <li>Version of a schema</li>
  * <li>List of actions</li>
  * </ul>
  * Optional data are followings:
  * <ul>
  * <li>Target thing ID</li>
- * <li>Title of a schema</li>
- * <li>Description of a schema</li>
- * <li>meta data of a schema</li>
+ * <li>Title of a command</li>
+ * <li>Description of a command</li>
+ * <li>meta data of a command</li>
  * </ul>
  */
 public class TriggeredCommandForm implements Parcelable {
@@ -46,53 +44,48 @@ public class TriggeredCommandForm implements Parcelable {
      */
     public static class Builder {
 
-        @NonNull private String schemaName;
-        private int schemaVersion;
-        @NonNull private List<Action> actions;
+        @NonNull private List actions;
         @Nullable private TypedID targetID;
         @Nullable private String title;
         @Nullable private String description;
         @Nullable private JSONObject metadata;
 
         private Builder(
-                @NonNull String schemaName,
-                int schemaVersion,
-                @NonNull List<Action> actions)
+                @NonNull List actions)
         {
-            if (TextUtils.isEmpty(schemaName)) {
-                throw new IllegalArgumentException(
-                    "schemaName is null or empty.");
-            }
-            if (isEmpty(actions)) {
+            if (actions == null || actions.size() == 0) {
                 throw new IllegalArgumentException("actions is null or empty.");
             }
-            this.schemaName = schemaName;
-            this.schemaVersion = schemaVersion;
             this.actions = actions;
         }
 
         /**
          * Constructs a {@link TriggeredCommandForm.Builder} instance.
          *
-         * @param schemaName name of schema. Must not be null or empty string.
-         * @param schemaVersion version of schema.
          * @param actions List of actions. Must not be null or empty.
-         * @throws IllegalArgumentException This exception is thrown if one or
-         * more following conditions are met.
-         * <ul>
-         *   <li>schemaName is null or empty string.</li>
-         *   <li>actions is null or empty</li>
-         * </ul>
+         * @throws IllegalArgumentException This exception is thrown when actions is null or empty
          * @return builder instance.
          */
         @NonNull
         public static Builder newBuilder(
-                @NonNull String schemaName,
-                int schemaVersion,
                 @NonNull List<Action> actions)
             throws IllegalArgumentException
         {
-            return new Builder(schemaName, schemaVersion, actions);
+            return new Builder(actions);
+        }
+
+        /**
+         * Construct a {@link TriggeredCommandForm.Builder} instance.
+         * @param actions List of {@link TraitActions} instances.
+         * @return builder instance
+         * @throws IllegalArgumentException This exception is thrown when actions is null.
+         */
+        public static Builder newBuilderWithTraitActions(
+                    @NonNull List<TraitActions> actions
+        )
+                throws IllegalArgumentException
+        {
+             return new Builder(actions);
         }
 
         /**
@@ -103,8 +96,6 @@ public class TriggeredCommandForm implements Parcelable {
          * </p>
          *
          * <ul>
-         *   <li>{@link Command#getSchemaName()}</li>
-         *   <li>{@link Command#getSchemaVersion()}</li>
          *   <li>{@link Command#getActions()}</li>
          *   <li>{@link Command#getTargetID()}</li>
          *   <li>{@link Command#getTitle()}</li>
@@ -122,70 +113,13 @@ public class TriggeredCommandForm implements Parcelable {
                 @NonNull Command command)
             throws IllegalArgumentException
         {
-            return (new Builder(
-                        command.getSchemaName(),
-                        command.getSchemaVersion(),
-                        command.getActions())).
-                    setTargetID(command.getTargetID()).
-                    setTitle(command.getTitle()).
-                    setDescription(command.getDescription()).
-                    setMetadata(command.getMetadata());
-        }
-
-        /**
-         * Setter of schema name.
-         *
-         * <p>
-         * Schema name is requried field of command, so null and empty string
-         * is not acceptable.
-         * </p>
-         *
-         * @param schemaName schema name.
-         * @return this instance for method chaining.
-         * @throws IllegalArgumentException if schemaName is invalid.
-         */
-        @NonNull
-        public Builder setSchemaName(
-                @NonNull String schemaName)
-            throws IllegalArgumentException
-        {
-            if (TextUtils.isEmpty(schemaName)) {
-                throw new IllegalArgumentException(
-                    "schemaName is null or empty.");
-            }
-            this.schemaName = schemaName;
-            return this;
-        }
-
-        /**
-         * Getter of schema name.
-         *
-         * @return schema name
-         */
-        @NonNull
-        public String getSchemaName() {
-            return this.schemaName;
-        }
-
-        /**
-         * Setter of schema version.
-         *
-         * @param schemaVersion schema version.
-         * @return this instance for method chaining.
-         */
-        @NonNull
-        public Builder setSchemaVersion(int schemaVersion) {
-            this.schemaVersion = schemaVersion;
-            return this;
-        }
-
-        /**
-         *  Getter of schema version.
-         *
-         * @return schema version
-         */
-        public int getSchemaVersion() {
-            return this.schemaVersion;
+            //TODO: // FIXME: 11/30/16 need to check action format whether trait or not
+//            return (new Builder(command.getActions())).
+//                    setTargetID(command.getTargetID()).
+//                    setTitle(command.getTitle()).
+//                    setDescription(command.getDescription()).
+//                    setMetadata(command.getMetadata());
+            return null;
         }
 
         /**
@@ -205,7 +139,7 @@ public class TriggeredCommandForm implements Parcelable {
                 @NonNull List<Action> actions)
             throws IllegalArgumentException
         {
-            if (isEmpty(actions)) {
+            if (actions == null || actions.size() == 0) {
                 throw new IllegalArgumentException("actions is null or empty.");
             }
             this.actions = actions;
@@ -364,8 +298,7 @@ public class TriggeredCommandForm implements Parcelable {
         @NonNull
         public TriggeredCommandForm build() {
             TriggeredCommandForm retval =
-                    new TriggeredCommandForm(
-                        this.schemaName, this.schemaVersion, this.actions);
+                    new TriggeredCommandForm(this.actions);
             retval.targetID = this.targetID;
             retval.title = this.title;
             retval.description = this.description;
@@ -385,10 +318,7 @@ public class TriggeredCommandForm implements Parcelable {
 
     }
 
-    @SerializedName("schema")
-    @NonNull private final String schemaName;
-    private final int schemaVersion;
-    @NonNull private final List<Action> actions;
+    @NonNull private final List actions;
     @SerializedName("target")
     @Nullable private TypedID targetID;
     @Nullable private String title;
@@ -396,32 +326,9 @@ public class TriggeredCommandForm implements Parcelable {
     @Nullable private JSONObject metadata;
 
     private TriggeredCommandForm(
-            @NonNull String schemaName,
-            int schemaVersion,
-            @NonNull List<Action> actions)
+            @NonNull List actions)
     {
-        this.schemaName = schemaName;
-        this.schemaVersion = schemaVersion;
         this.actions = actions;
-    }
-
-    /**
-     * Getter of schema name.
-     *
-     * @return schema name
-     */
-    @NonNull
-    public String getSchemaName() {
-        return this.schemaName;
-    }
-
-    /**
-     *  Getter of schema version.
-     *
-     * @return schema version
-     */
-    public int getSchemaVersion() {
-        return this.schemaVersion;
     }
 
     /**
@@ -475,8 +382,6 @@ public class TriggeredCommandForm implements Parcelable {
     }
 
     private TriggeredCommandForm(Parcel in) {
-        this.schemaName = in.readString();
-        this.schemaVersion = in.readInt();
         this.actions = new ArrayList<>();
         in.readList(this.actions, TriggeredCommandForm.class.getClassLoader());
         this.targetID = in.readParcelable(TypedID.class.getClassLoader());
@@ -494,8 +399,6 @@ public class TriggeredCommandForm implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.schemaName);
-        dest.writeInt(this.schemaVersion);
         dest.writeList(this.actions);
         dest.writeParcelable(this.getTargetID(), flags);
         dest.writeString(this.title);

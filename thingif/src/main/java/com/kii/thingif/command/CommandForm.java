@@ -6,8 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.google.gson.annotations.SerializedName;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,23 +20,18 @@ import java.util.List;
  * <br><br>
  * Mandatory data are followings:
  * <ul>
- * <li>Name of a schema</li>
- * <li>Version of a schema</li>
  * <li>List of actions</li>
  * </ul>
  * Optional data are followings:
  * <ul>
- * <li>Title of a schema</li>
- * <li>Description of a schema</li>
- * <li>meta data of a schema</li>
+ * <li>Title of a command</li>
+ * <li>Description of a command</li>
+ * <li>meta data of a command</li>
  * </ul>
  */
 public final class CommandForm implements Parcelable {
 
-    @SerializedName("schema")
-    private final @NonNull String schemaName;
-    private final int schemaVersion;
-    private final @NonNull List<Action> actions;
+    private final @NonNull List actions;
 
     private @Nullable String title;
     private @Nullable String description;
@@ -47,29 +40,47 @@ public final class CommandForm implements Parcelable {
     /**
      * Constructs a CommandForm instance.
      *
-     * @param schemaName name of schema. Must not be null or empty string.
-     * @param schemaVersion version of schema.
-     * @param actions List of actions. Must not be null or empty.
-     * @throws IllegalArgumentException when schemaName is null or empty
-     * string and/or actions is null or empty.
+     * @param actions List of {@link TraitActions} instances.
+     * @throws IllegalArgumentException when actions is null or empty.
      */
-    public CommandForm(
-            @NonNull String schemaName,
-            int schemaVersion,
-            @NonNull List<Action> actions)
+    public static CommandForm newTraitCommand(
+            @NonNull List<TraitActions> actions)
         throws IllegalArgumentException
     {
-        if (TextUtils.isEmpty(schemaName)) {
-            throw new IllegalArgumentException("schemaName is null or empty.");
-        }
         if (actions == null || actions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty.");
         }
-        this.schemaName = schemaName;
-        this.schemaVersion = schemaVersion;
-        this.actions = actions;
+        CommandForm form = new CommandForm();
+        form.actions.addAll(actions);
+        return form;
     }
 
+    public static CommandForm newCommand(
+            @NonNull List<Action> actions)
+            throws IllegalArgumentException
+    {
+        return new CommandForm(actions);
+    }
+
+    private CommandForm(){
+        this.actions = new ArrayList();
+    }
+
+    /**
+     * Constructs a CommandForm instance.
+     *
+     * @param actions List of actions. Must not be null or empty.
+     * @throws IllegalArgumentException when actions is null or empty.
+     */
+    private CommandForm(
+            @NonNull List<Action> actions)
+            throws IllegalArgumentException
+    {
+        if (actions == null || actions.size() == 0) {
+            throw new IllegalArgumentException("actions is null or empty.");
+        }
+        this.actions = actions;
+    }
     /**
      * Setter of title
      *
@@ -116,31 +127,12 @@ public final class CommandForm implements Parcelable {
     }
 
     /**
-     * Getter of schema name.
-     *
-     * @return schema name
-     */
-    @NonNull
-    public String getSchemaName() {
-        return this.schemaName;
-    }
-
-    /**
-     *  Getter of schema version.
-     *
-     * @return schema version
-     */
-    public int getSchemaVersion() {
-        return this.schemaVersion;
-    }
-
-    /**
      * Getter of actions.
      *
      * @return actions
      */
     @NonNull
-    public List<Action> getActions() {
+    public List getActions() {
         return this.actions;
     }
 
@@ -181,8 +173,6 @@ public final class CommandForm implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.schemaName);
-        dest.writeInt(this.schemaVersion);
         dest.writeList(this.actions);
         dest.writeString(this.title);
         dest.writeString(this.description);
@@ -201,9 +191,7 @@ public final class CommandForm implements Parcelable {
     };
 
     private CommandForm(Parcel in) {
-        this.schemaName = in.readString();
-        this.schemaVersion = in.readInt();
-        this.actions = new ArrayList<Action>();
+        this.actions = new ArrayList();
         in.readList(this.actions, null);
         this.title = in.readString();
         this.description = in.readString();

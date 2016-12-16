@@ -26,7 +26,10 @@ import com.kii.thingif.gateway.PendingEndNode;
 import com.kii.thingif.internal.GsonRepository;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
-import com.kii.thingif.schema.Schema;
+import com.kii.thingif.query.AggregatedHistoryStatesResponse;
+import com.kii.thingif.query.Aggregation;
+import com.kii.thingif.query.HistoryStateQuery;
+import com.kii.thingif.query.HistoryStatesResponse;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.Trigger;
@@ -62,7 +65,6 @@ public class ThingIFAPI implements Parcelable {
     private final KiiApp app;
     private final Owner owner;
     private Target target;
-    private final Map<Pair<String, Integer>, Schema> schemas = new HashMap<Pair<String, Integer>, Schema>();
     private final IoTRestClient restClient;
     private String installationID;
 
@@ -198,7 +200,6 @@ public class ThingIFAPI implements Parcelable {
             @NonNull KiiApp app,
             @NonNull Owner owner,
             @Nullable Target target,
-            @NonNull List<Schema> schemas,
             String installationID) {
         // Parameters are checked by ThingIFAPIBuilder
         if (context != null) {
@@ -208,9 +209,6 @@ public class ThingIFAPI implements Parcelable {
         this.app = app;
         this.owner = owner;
         this.target = target;
-        for (Schema schema : schemas) {
-            this.schemas.put(new Pair<String, Integer>(schema.getSchemaName(), schema.getSchemaVersion()), schema);
-        }
         this.installationID = installationID;
         this.restClient = new IoTRestClient();
     }
@@ -225,7 +223,7 @@ public class ThingIFAPI implements Parcelable {
         if (target == null) {
             throw new IllegalArgumentException("target is null");
         }
-        ThingIFAPI api = new ThingIFAPI(context, tag, this.app, this.owner, target, new ArrayList<Schema>(this.schemas.values()), this.installationID);
+        ThingIFAPI api = new ThingIFAPI(context, tag, this.app, this.owner, target, this.installationID);
         saveInstance(api);
         return api;
     }
@@ -649,8 +647,6 @@ public class ThingIFAPI implements Parcelable {
      * Post new command to IoT Cloud.
      * Command will be delivered to specified target and result will be notified
      * through push notification.
-     * @param schemaName name of the schema.
-     * @param schemaVersion version of schema.
      * @param actions Actions to be executed.
      * @return Created Command instance. At this time, Command is delivered to
      * the target Asynchronously and may not finished. Actual Result will be
@@ -662,15 +658,9 @@ public class ThingIFAPI implements Parcelable {
     @NonNull
     @WorkerThread
     public Command postNewCommand(
-            @NonNull String schemaName,
-            int schemaVersion,
             @NonNull List<Action> actions) throws ThingIFException {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
-        }
-        Schema schema = this.getSchema(schemaName, schemaVersion);
-        if (schema == null) {
-            throw new UnsupportedSchemaException(schemaName, schemaVersion);
         }
         if (actions == null || actions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty");
@@ -679,8 +669,8 @@ public class ThingIFAPI implements Parcelable {
         String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/commands", this.app.getAppID(), this.target.getTypedID().toString());
         String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
-        Command command = new Command(schemaName, schemaVersion, this.owner.getTypedID(), actions);
-        JSONObject requestBody = JsonUtils.newJson(GsonRepository.gson(schema).toJson(command));
+        Command command = new Command(this.owner.getTypedID(), actions);
+        JSONObject requestBody = JsonUtils.newJson(GsonRepository.gson().toJson(command));
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers, MediaTypes.MEDIA_TYPE_JSON, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
 
@@ -707,12 +697,6 @@ public class ThingIFAPI implements Parcelable {
             @NonNull CommandForm form) throws ThingIFException {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
-        }
-        final String schemaName = form.getSchemaName();
-        final int schemaVersion = form.getSchemaVersion();
-        Schema schema = this.getSchema(schemaName, schemaVersion);
-        if (schema == null) {
-            throw new UnsupportedSchemaException(schemaName, schemaVersion);
         }
 
         String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/commands",
@@ -760,11 +744,7 @@ public class ThingIFAPI implements Parcelable {
 
         String schemaName = responseBody.optString("schema", null);
         int schemaVersion = responseBody.optInt("schemaVersion");
-        Schema schema = this.getSchema(schemaName, schemaVersion);
-        if (schema == null) {
-            throw new UnsupportedSchemaException(schemaName, schemaVersion);
-        }
-        return this.deserialize(schema, responseBody, Command.class);
+        return this.deserialize(responseBody, Command.class);
     }
     /**
      * List Commands in the specified Target.<br>
@@ -814,13 +794,7 @@ public class ThingIFAPI implements Parcelable {
         if (commandArray != null) {
             for (int i = 0; i < commandArray.length(); i++) {
                 JSONObject commandJson = commandArray.optJSONObject(i);
-                String schemaName = commandJson.optString("schema", null);
-                int schemaVersion = commandJson.optInt("schemaVersion");
-                Schema schema = this.getSchema(schemaName, schemaVersion);
-                if (schema == null) {
-                    continue;
-                }
-                commands.add(this.deserialize(schema, commandJson, Command.class));
+                commands.add(this.deserialize(commandJson, Command.class));
             }
         }
         return new Pair<List<Command>, String>(commands, nextPaginationKey);
@@ -846,8 +820,6 @@ public class ThingIFAPI implements Parcelable {
      *         predicate, null).
      * </code>
      *
-     * @param schemaName name of the schema.
-     * @param schemaVersion version of schema.
      * @param actions Specify actions included in the Command is fired by the
      *                trigger.
      * @param predicate Specify when the Trigger fires command.
@@ -859,16 +831,12 @@ public class ThingIFAPI implements Parcelable {
     @NonNull
     @WorkerThread
     public Trigger postNewTrigger(
-            @NonNull String schemaName,
-            int schemaVersion,
             @NonNull List<Action> actions,
             @NonNull Predicate predicate)
             throws ThingIFException
     {
         return postNewTriggerWithForm(
             TriggeredCommandForm.Builder.newBuilder(
-                schemaName,
-                schemaVersion,
                 actions).build(),
             predicate,
             null);
@@ -933,10 +901,7 @@ public class ThingIFAPI implements Parcelable {
             requestBody.put("predicate", JsonUtils.newJson(
                         GsonRepository.gson().toJson(predicate)));
             JSONObject command = JsonUtils.newJson(
-                GsonRepository.gson(
-                    this.getSchema(
-                        form.getSchemaName(),
-                        form.getSchemaVersion())).toJson(form));
+                GsonRepository.gson().toJson(form));
             command.put("issuer", this.owner.getTypedID());
             if (form.getTargetID() == null) {
                 command.put("target", this.target.getTypedID().toString());
@@ -1063,18 +1028,7 @@ public class ThingIFAPI implements Parcelable {
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
-
-        Schema schema = null;
-        JSONObject commandObject = responseBody.optJSONObject("command");
-        if (commandObject != null) {
-            String schemaName = commandObject.optString("schema", null);
-            int schemaVersion = commandObject.optInt("schemaVersion");
-            schema = this.getSchema(schemaName, schemaVersion);
-            if (schema == null) {
-                throw new UnsupportedSchemaException(schemaName, schemaVersion);
-            }
-        }
-        return this.deserialize(schema, responseBody, this.target.getTypedID());
+        return this.deserialize(responseBody, this.target.getTypedID());
     }
 
     /**
@@ -1119,11 +1073,6 @@ public class ThingIFAPI implements Parcelable {
      * <p>
      *
      * @param triggerID ID ot the Trigger to apply patch
-     * @param schemaName name of the schema. if actions is not null and not
-     * empty, this must be not null. if actions is null or empty, this
-     * argument is ignored.
-     * @param schemaVersion version of schema. if actions is null or empty,
-     * this argument is ignored.
      * @param actions Modified actions.
      *                If null or empty, predicate must not be null.
      * @param predicate Modified predicate.
@@ -1137,8 +1086,6 @@ public class ThingIFAPI implements Parcelable {
     @WorkerThread
     public Trigger patchTrigger(
             @NonNull String triggerID,
-            @Nullable String schemaName,
-            int schemaVersion,
             @Nullable List<Action> actions,
             @Nullable Predicate predicate) throws
             ThingIFException {
@@ -1149,7 +1096,7 @@ public class ThingIFAPI implements Parcelable {
         TriggeredCommandForm form = null;
         if (actions != null && actions.size() > 0) {
             form = TriggeredCommandForm.Builder.newBuilder(
-                schemaName, schemaVersion, actions).build();
+                actions).build();
         }
         return patchTriggerWithForm(triggerID, form, predicate, null);
     }
@@ -1192,9 +1139,7 @@ public class ThingIFAPI implements Parcelable {
             }
             if (form != null) {
                 JSONObject command = JsonUtils.newJson(
-                    GsonRepository.gson(
-                        this.getSchema(form.getSchemaName(),
-                                form.getSchemaVersion())).toJson(form));
+                    GsonRepository.gson().toJson(form));
                 command.put("issuer", this.owner.getTypedID());
                 if (form.getTargetID() == null) {
                     command.put("target", this.target.getTypedID().toString());
@@ -1485,17 +1430,7 @@ public class ThingIFAPI implements Parcelable {
         if (triggerArray != null) {
             for (int i = 0; i < triggerArray.length(); i++) {
                 JSONObject triggerJson = triggerArray.optJSONObject(i);
-                JSONObject commandJson = triggerJson.optJSONObject("command");
-                Schema schema = null;
-                if (commandJson != null) {
-                    String schemaName = commandJson.optString("schema", null);
-                    int schemaVersion = commandJson.optInt("schemaVersion");
-                    schema = this.getSchema(schemaName, schemaVersion);
-                    if (schema == null) {
-                        continue;
-                    }
-                }
-                triggers.add(this.deserialize(schema, triggerJson, this.target.getTypedID()));
+                triggers.add(this.deserialize(triggerJson, this.target.getTypedID()));
             }
         }
         return new Pair<List<Trigger>, String>(triggers, nextPaginationKey);
@@ -1512,7 +1447,7 @@ public class ThingIFAPI implements Parcelable {
      */
     @NonNull
     @WorkerThread
-    public <S extends TargetState> S getTargetState(
+    public <S extends AbstractState> S getTargetState(
             @NonNull Class<S> classOfS) throws ThingIFException {
 
         if (this.target == null) {
@@ -1532,11 +1467,31 @@ public class ThingIFAPI implements Parcelable {
     }
 
     /**
-     * Get the Vendor Thing ID of specified Target.
-     *
-     * @return Vendor Thing ID
+     * Get the State of specified alias of Target thing.
+     * State will be serialized with Gson library.
+     * @param classOfS Specify class of the State.
+     * @param alias Name of Trait alias to fetch state.
+     * @param <S> State class.
+     * @return Instance of Target State.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
      */
+    @NonNull
+    @WorkerThread
+    public <S extends TargetState> S getTargetState(
+            @NonNull Class<S> classOfS,
+            @NonNull String alias) throws ThingIFException {
+
+        //TODO: implement me
+        return null;
+    }
+
+        /**
+         * Get the Vendor Thing ID of specified Target.
+         *
+         * @return Vendor Thing ID
+         * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+         */
     @NonNull
     @WorkerThread
     public String getVendorThingID() throws ThingIFException {
@@ -1584,6 +1539,70 @@ public class ThingIFAPI implements Parcelable {
         this.restClient.sendRequest(request);
     }
 
+    /**
+     * Update firmwareVersion of the thing
+     * @param newFwVersion
+     * @throws IllegalArgumentException when newFwVersion is null or empty.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     */
+    public void updateFirmwareVersion(@NonNull String newFwVersion) throws ThingIFException{
+        //TODO: implement me
+    }
+
+    /**
+     * Query history state of target thing
+     * @param classOfS Specify class of the State.
+     * @param query instance of {@link HistoryStateQuery}
+     * @param <S> State class.
+     * @return instance of {@link HistoryStatesResponse}
+     * @throws IllegalArgumentException when classOfS or query is null.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     */
+    public <S extends TargetState> HistoryStatesResponse<S> queryHistoryStates(
+            @NonNull Class<S> classOfS,
+            @NonNull HistoryStateQuery query)  throws ThingIFException{
+        //TODO: implement me
+        return null;
+    }
+
+    /**
+     * Aggregate history state of target thing grouped by DataGroupingIntervals.
+     * If target thing is using trait then DataGroupingIntervals of trait is used.
+     * If target thing is not using trait, and specified DataGroupingIntervals during onboarding,
+     *  then the specified grouping intervals is used.
+     * @param classOfS Specify class of the State.
+     * @param query instance of {@link HistoryStateQuery}. An instance of
+     *  {@link com.kii.thingif.trigger.clause.TimeRange} must be included in clause.
+     * @param aggregation instance of {@link Aggregation}
+     * @param <S> State class.
+     * @return instance of {@link AggregatedHistoryStatesResponse}
+     * @throws IllegalArgumentException when classOfS, query or aggregation is null.
+     *  If no TimeRange found in clause of aggregation, this exception is shown too.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     */
+    public  <S extends TargetState> AggregatedHistoryStatesResponse aggregateHistoryStates(
+            @NonNull Class<S> classOfS,
+            @NonNull HistoryStateQuery query,
+            @NonNull Aggregation aggregation
+            ) throws  ThingIFException {
+        //TODO: implement me, need to add grouped=true in request body
+        return null;
+    }
+
+
+    /**
+     * Update thingType of thing. This method must be used to make thing start to use trait.
+     * @param thingType ThingType must be already defined.
+     * @throws IllegalArgumentException Thrown when thingType is empty or null.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     */
+    public void updateThingType( @NonNull String thingType) throws ThingIFException{
+        //TODO: implement me
+    }
     /** Get Kii App
      * @return Kii Cloud Application.
      */
@@ -1616,14 +1635,6 @@ public class ThingIFAPI implements Parcelable {
         return this.app.getBaseUrl();
     }
     /**
-     * Get list of schema.
-     * @return list of schema.
-     */
-    @NonNull
-    public List<Schema> getSchemas() {
-        return new ArrayList<Schema>(this.schemas.values());
-    }
-    /**
      * Get owner who uses the ThingIFAPI.
      * @return owner
      */
@@ -1649,11 +1660,6 @@ public class ThingIFAPI implements Parcelable {
         return this.tag;
     }
 
-    @Nullable
-    private Schema getSchema(String schemaName, int schemaVersion) {
-        return this.schemas.get(new Pair<String, Integer>(schemaName, schemaVersion));
-    }
-
     private Map<String, String> newHeader() {
         Map<String, String> headers = new HashMap<String, String>();
         if (!TextUtils.isEmpty(this.getAppID())) {
@@ -1676,13 +1682,11 @@ public class ThingIFAPI implements Parcelable {
         }
         return ret;
     }
+
     private <T> T deserialize(JSONObject json, Class<T> clazz) throws ThingIFException {
-        return this.deserialize(null, json, clazz);
+        return this.deserialize(json.toString(), clazz);
     }
-    private <T> T deserialize(Schema schema, JSONObject json, Class<T> clazz) throws ThingIFException {
-        return this.deserialize(schema, json.toString(), clazz);
-    }
-    private Trigger deserialize(Schema schema, JSONObject json, TypedID targetID) throws ThingIFException {
+    private Trigger deserialize(JSONObject json, TypedID targetID) throws ThingIFException {
         JSONObject copied = null;
         try {
             copied = new JSONObject(json.toString());
@@ -1690,11 +1694,11 @@ public class ThingIFAPI implements Parcelable {
         } catch (JSONException e) {
             throw new ThingIFException("unexpected error.", e);
         }
-        return this.deserialize(schema, copied.toString(), Trigger.class);
+        return this.deserialize(copied.toString(), Trigger.class);
     }
-    private <T> T deserialize(Schema schema, String json, Class<T> clazz) throws ThingIFException {
+    private <T> T deserialize(String json, Class<T> clazz) throws ThingIFException {
         try {
-            return GsonRepository.gson(schema).fromJson(json, clazz);
+            return GsonRepository.gson().fromJson(json, clazz);
         } catch (JsonParseException e) {
             if (e.getCause() instanceof ThingIFException) {
                 throw (ThingIFException)e.getCause();
@@ -1715,10 +1719,6 @@ public class ThingIFAPI implements Parcelable {
         this.app = in.readParcelable(KiiApp.class.getClassLoader());
         this.owner = in.readParcelable(Owner.class.getClassLoader());
         this.target = in.readParcelable(Target.class.getClassLoader());
-        ArrayList<Schema> schemas = in.createTypedArrayList(Schema.CREATOR);
-        for (Schema schema : schemas) {
-            this.schemas.put(new Pair<String, Integer>(schema.getSchemaName(), schema.getSchemaVersion()), schema);
-        }
         this.restClient = new IoTRestClient();
         this.installationID = in.readString();
     }
@@ -1743,7 +1743,6 @@ public class ThingIFAPI implements Parcelable {
         dest.writeParcelable(this.app, flags);
         dest.writeParcelable(this.owner, flags);
         dest.writeParcelable(this.target, flags);
-        dest.writeTypedList(new ArrayList<Schema>(this.schemas.values()));
         dest.writeString(this.installationID);
     }
 

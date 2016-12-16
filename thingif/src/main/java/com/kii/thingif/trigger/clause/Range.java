@@ -13,6 +13,7 @@ public class Range extends Clause {
     private final Long lowerLimit;
     private final Boolean upperIncluded;
     private final Boolean lowerIncluded;
+    private String alias;
 
     public Range(String field, Long upperLimit, Boolean upperIncluded, Long lowerLimit, Boolean lowerIncluded) {
         this.field = field;
@@ -21,6 +22,16 @@ public class Range extends Clause {
         this.lowerLimit = lowerLimit;
         this.lowerIncluded = lowerIncluded;
     }
+
+    public Range(String field, Long upperLimit, Boolean upperIncluded, Long lowerLimit, Boolean lowerIncluded, String alias) {
+        this.field = field;
+        this.upperLimit = upperLimit;
+        this.upperIncluded = upperIncluded;
+        this.lowerLimit = lowerLimit;
+        this.lowerIncluded = lowerIncluded;
+        this.alias = alias;
+    }
+
     public static Range range(
             @NonNull String field,
             Number upperLimit,
@@ -48,6 +59,40 @@ public class Range extends Clause {
             @NonNull String field,
             @NonNull Number upperLimit) {
         return new Range(field, upperLimit.longValue(), Boolean.TRUE, null, null);
+    }
+
+    public static Range range(
+            @NonNull String field,
+            Number upperLimit,
+            Boolean upperIncluded,
+            Number lowerLimit,
+            Boolean lowerIncluded,
+            String alias) {
+        return new Range(field, upperLimit.longValue(), upperIncluded, lowerLimit.longValue(), lowerIncluded, alias);
+    }
+    public static Range greaterThan(
+            @NonNull String field,
+            @NonNull Number lowerLimit,
+            String alias) {
+        return new Range(field, null, null, lowerLimit.longValue(), Boolean.FALSE, alias);
+    }
+    public static Range greaterThanEquals(
+            @NonNull String field,
+            @NonNull Number lowerLimit,
+            String alias) {
+        return new Range(field, null, null, lowerLimit.longValue(), Boolean.TRUE, alias);
+    }
+    public static Range lessThan(
+            @NonNull String field,
+            @NonNull Number upperLimit,
+            String alias) {
+        return new Range(field, upperLimit.longValue(), Boolean.FALSE, null, null, alias);
+    }
+    public static Range lessThanEquals(
+            @NonNull String field,
+            @NonNull Number upperLimit,
+            String alias) {
+        return new Range(field, upperLimit.longValue(), Boolean.TRUE, null, null, alias);
     }
 
     public String getField() {
@@ -84,6 +129,9 @@ public class Range extends Clause {
             if (this.lowerIncluded != null) {
                 ret.put("lowerIncluded", this.lowerIncluded);
             }
+            if (this.alias != null) {
+                ret.put("alias", this.alias);
+            }
             return ret;
         } catch (JSONException e) {
             // Won't happens.
@@ -99,6 +147,7 @@ public class Range extends Clause {
         Range range = (Range) o;
 
         if (!field.equals(range.field)) return false;
+        if (alias != null && !alias.equals(range.alias)) return false;
         if (upperLimit != null ? !upperLimit.equals(range.upperLimit) : range.upperLimit != null)
             return false;
         if (lowerLimit != null ? !lowerLimit.equals(range.lowerLimit) : range.lowerLimit != null)
@@ -124,6 +173,7 @@ public class Range extends Clause {
         this.upperIncluded = (Boolean)in.readValue(Range.class.getClassLoader());
         this.lowerLimit = (Long)in.readValue(Range.class.getClassLoader());
         this.lowerIncluded = (Boolean)in.readValue(Range.class.getClassLoader());
+        this.alias = in.readString();
     }
     public static final Creator<Range> CREATOR = new Creator<Range>() {
         @Override
@@ -147,5 +197,6 @@ public class Range extends Clause {
         dest.writeValue(this.upperIncluded);
         dest.writeValue(this.lowerLimit);
         dest.writeValue(this.lowerIncluded);
+        dest.writeString(this.alias);
     }
 }

@@ -33,8 +33,6 @@ import com.kii.thingif.command.ActionResult;
 import com.kii.thingif.exception.UnsupportedActionException;
 import com.kii.thingif.gateway.EndNode;
 import com.kii.thingif.gateway.Gateway;
-import com.kii.thingif.schema.Schema;
-import com.kii.thingif.schema.SchemaBuilder;
 import com.kii.thingif.trigger.Condition;
 import com.kii.thingif.trigger.EventSource;
 import com.kii.thingif.trigger.Predicate;
@@ -60,7 +58,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Customize json serialization and deserialization for domain model of ThingIFSDK.
@@ -204,13 +201,17 @@ public class GsonRepository {
             }
             JsonObject json = (JsonObject)jsonElement;
             String type = json.get("type").getAsString();
+            String alias = null;
+            if (json.get("alias") != null) {
+                alias = json.get("alias").getAsString();
+            }
             if (TextUtils.equals("eq", type)) {
                 if (((JsonPrimitive)json.get("value")).isString()) {
-                    return new Equals(json.get("field").getAsString(), json.get("value").getAsString());
+                    return new Equals(json.get("field").getAsString(), json.get("value").getAsString(), alias);
                 } else if (((JsonPrimitive)json.get("value")).isNumber()) {
-                    return new Equals(json.get("field").getAsString(), json.get("value").getAsLong());
+                    return new Equals(json.get("field").getAsString(), json.get("value").getAsLong(), alias);
                 } else if (((JsonPrimitive)json.get("value")).isBoolean()) {
-                    return new Equals(json.get("field").getAsString(), json.get("value").getAsBoolean());
+                    return new Equals(json.get("field").getAsString(), json.get("value").getAsBoolean(), alias);
                 } else {
                     // Won't happens
                     throw new AssertionError("Detected unexpected type of value");
@@ -237,56 +238,6 @@ public class GsonRepository {
         }
     };
 
-    private static final JsonSerializer<Schema> SCHEMA_SERIALIZER = new JsonSerializer<Schema>() {
-        @Override
-        public JsonElement serialize(Schema src, Type typeOfSrc, JsonSerializationContext context) {
-            if (src == null) {
-                return null;
-            }
-            JsonObject json = new JsonObject();
-            json.addProperty("thingType", src.getThingType());
-            json.addProperty("schemaName", src.getSchemaName());
-            json.addProperty("schemaVersion", src.getSchemaVersion());
-            json.addProperty("stateClass", src.getStateClass().getName());
-            JsonArray actionClasses = new JsonArray();
-            for (Class<? extends Action> actionClass : src.getActionClasses()) {
-                actionClasses.add(new JsonPrimitive(actionClass.getName()));
-            }
-            json.add("actionClasses", actionClasses);
-            JsonArray actionResultClasses = new JsonArray();
-            for (Class<? extends ActionResult> actionResultClass : src.getActionResultClasses()) {
-                actionResultClasses.add(new JsonPrimitive(actionResultClass.getName()));
-            }
-            json.add("actionResultClasses", actionResultClasses);
-            return json;
-        }
-    };
-    private static final JsonDeserializer<Schema> SCHEMA_DESERIALIZER = new JsonDeserializer<Schema>() {
-        @Override
-        public Schema deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            if (jsonElement == null) {
-                return null;
-            }
-            try {
-                JsonObject json = (JsonObject)jsonElement;
-                String thingType = json.get("thingType").getAsString();
-                String schemaName = json.get("schemaName").getAsString();
-                int schemaVersion = json.get("schemaVersion").getAsInt();
-                Class<? extends TargetState> stateClass = (Class<? extends TargetState>) Class.forName(json.get("stateClass").getAsString());
-                SchemaBuilder sb = SchemaBuilder.newSchemaBuilder(thingType, schemaName, schemaVersion, stateClass);
-                JsonArray actionClasses = json.getAsJsonArray("actionClasses");
-                JsonArray actionResultClasses = json.getAsJsonArray("actionResultClasses");
-                for (int i = 0; i < actionClasses.size(); i++) {
-                    sb.addActionClass(
-                            (Class<? extends Action>)Class.forName(actionClasses.get(i).getAsString()),
-                            (Class<? extends ActionResult>)Class.forName(actionResultClasses.get(i).getAsString()));
-                }
-                return sb.build();
-            } catch (Exception e) {
-                throw new JsonParseException(e);
-            }
-        }
-    };
 
     private static final JsonSerializer<ThingIFAPI> IOT_CLOUD_API_SERIALIZER = new JsonSerializer<ThingIFAPI>() {
         @Override
@@ -306,11 +257,6 @@ public class GsonRepository {
             } else {
                 json.add("target", JsonNull.INSTANCE);
             }
-            JsonArray schemas = new JsonArray();
-            for (Schema schema : src.getSchemas()) {
-                schemas.add(DEFAULT_GSON.toJsonTree(schema));
-            }
-            json.add("schemas", schemas);
             json.addProperty("installationID", src.getInstallationID());
             return json;
         }
@@ -331,11 +277,6 @@ public class GsonRepository {
             if (json.has("target")) {
                 Target target = DEFAULT_GSON.fromJson(json.getAsJsonObject("target"), Target.class);
                 builder.setTarget(target);
-            }
-            JsonArray schemasArray = json.getAsJsonArray("schemas");
-            for (int i = 0; i < schemasArray.size(); i++) {
-                Schema schema = DEFAULT_GSON.fromJson(schemasArray.get(i), Schema.class);
-                builder.addSchema(schema);
             }
             if (json.has("installationID")) {
                 builder.setInstallationID(json.get("installationID").getAsString());
@@ -512,8 +453,6 @@ public class GsonRepository {
                 .registerTypeAdapter(Condition.class, CONDITION_DESERIALIZER)
                 .registerTypeHierarchyAdapter(Predicate.class, PREDICATE_SERIALIZER)
                 .registerTypeHierarchyAdapter(Predicate.class, PREDICATE_DESERIALIZER)
-                .registerTypeAdapter(Schema.class, SCHEMA_SERIALIZER)
-                .registerTypeAdapter(Schema.class, SCHEMA_DESERIALIZER)
                 .registerTypeAdapter(ThingIFAPI.class, IOT_CLOUD_API_SERIALIZER)
                 .registerTypeAdapter(ThingIFAPI.class, IOT_CLOUD_API_DESERIALIZER)
                 .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_SERIALIZER)
@@ -533,93 +472,9 @@ public class GsonRepository {
      * @return
      */
     public static Gson gson() {
-        return gson(null);
+        return DEFAULT_GSON;
     }
-    /**
-     * Returns the Gson instance that can handle Action class and ActionResult class that are defined specified schema.
-     * Action class and ActionResult class depend on the schema name and version.
-     *
-     * @param schema
-     * @return
-     */
-    public static Gson gson(@Nullable final Schema schema) {
-        if (schema == null) {
-            return DEFAULT_GSON;
-        }
-        Gson gson = REPOSITORY.get(new Pair<String, Integer>(schema.getSchemaName(), schema.getSchemaVersion()));
-        if (gson == null) {
-            JsonDeserializer<Action> ACTION_DESERIALIZER = new JsonDeserializer<Action>() {
-                @Override
-                public Action deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-                    if (json == null) {
-                        return null;
-                    }
-                    // {"actionName":{"actionProperty1":"", "actionProperty2":"" ...}}
-                    Set<Map.Entry<String, JsonElement>> jsonProperties = ((JsonObject) json).entrySet();
-                    if (jsonProperties.size() != 1) {
-                        throw new JsonParseException(json.toString() + " is unexpected format for Action");
-                    }
-                    Map.Entry<String, JsonElement> jsonProperty = jsonProperties.iterator().next();
-                    String actionName = jsonProperty.getKey();
-                    Class<? extends Action> actionClass = schema.getActionClass(actionName);
-                    if (actionClass == null) {
-                        throw new JsonParseException(new UnsupportedActionException(schema.getSchemaName(), schema.getSchemaVersion(), actionName));
-                    }
-                    return context.deserialize(jsonProperty.getValue(), actionClass);
-                }
-            };
-            JsonDeserializer<ActionResult> ACTION_RESULT_DESERIALIZER = new JsonDeserializer<ActionResult>() {
-                @Override
-                public ActionResult deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-                    if (json == null) {
-                        return null;
-                    }
-                    // {"actionResultName":{"actionResultProperty1":"", "actionResultProperty2":"" ...}}
-                    Set<Map.Entry<String, JsonElement>> jsonProperties = ((JsonObject) json).entrySet();
-                    if (jsonProperties.size() != 1) {
-                        throw new JsonParseException(json.toString() + " is unexpected format for ActionResult");
-                    }
-                    Map.Entry<String, JsonElement> jsonProperty = jsonProperties.iterator().next();
-                    String actionName = jsonProperty.getKey();
-                    Class<? extends ActionResult> actionResultClass = schema.getActionResultClass(actionName);
-                    if (actionResultClass == null) {
-                        throw new JsonParseException(new UnsupportedActionException(schema.getSchemaName(), schema.getSchemaVersion(), actionName));
-                    }
-                    return context.deserialize(jsonProperty.getValue(), actionResultClass);
-                }
-            };
-            gson = new GsonBuilder()
-                    .registerTypeAdapter(JSONObject.class, ORG_JSON_OBJECT_SERIALIZER)
-                    .registerTypeAdapter(JSONObject.class, ORG_JSON_OBJECT_DESERIALIZER)
-                    .registerTypeAdapter(TypedID.class, TYPED_ID_SERIALIZER)
-                    .registerTypeAdapter(TypedID.class, TYPED_ID_DESERIALIZER)
-                    .registerTypeHierarchyAdapter(Action.class, ACTION_SERIALIZER)
-                    .registerTypeHierarchyAdapter(ActionResult.class, ACTION_RESULT_SERIALIZER)
-                    .registerTypeHierarchyAdapter(Clause.class, STATEMENT_SERIALIZER)
-                    .registerTypeHierarchyAdapter(Clause.class, STATEMENT_DESERIALIZER)
-                    .registerTypeAdapter(Condition.class, CONDITION_SERIALIZER)
-                    .registerTypeAdapter(Condition.class, CONDITION_DESERIALIZER)
-                    .registerTypeHierarchyAdapter(Predicate.class, PREDICATE_SERIALIZER)
-                    .registerTypeHierarchyAdapter(Predicate.class, PREDICATE_DESERIALIZER)
-                    .registerTypeAdapter(Action.class, ACTION_DESERIALIZER)
-                    .registerTypeAdapter(ActionResult.class, ACTION_RESULT_DESERIALIZER)
-                    .registerTypeAdapter(Schema.class, SCHEMA_SERIALIZER)
-                    .registerTypeAdapter(Schema.class, SCHEMA_DESERIALIZER)
-                    .registerTypeAdapter(ThingIFAPI.class, IOT_CLOUD_API_SERIALIZER)
-                    .registerTypeAdapter(ThingIFAPI.class, IOT_CLOUD_API_DESERIALIZER)
-                    .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_SERIALIZER)
-                    .registerTypeAdapter(TriggeredServerCodeResult.class, TRIGGERED_SERVER_CODE_RESULT_DESERIALIZER)
-                    .registerTypeAdapter(Target.class, TARGET_DESERIALIZER)
-                    .registerTypeAdapter(StandaloneThing.class, TARGET_SERIALIZER)
-                    .registerTypeAdapter(Gateway.class, TARGET_SERIALIZER)
-                    .registerTypeAdapter(EndNode.class, TARGET_SERIALIZER)
-                    .registerTypeAdapter(Uri.class, URI_SERIALIZER)
-                    .registerTypeAdapter(Uri.class, URI_DESERIALIZER)
-                    .create();
-            REPOSITORY.put(new Pair<String, Integer>(schema.getSchemaName(), schema.getSchemaVersion()), gson);
-        }
-        return gson;
-    }
+
     /**
      * This method is for unit tests use only. Do not use it from SDK code.
      */
