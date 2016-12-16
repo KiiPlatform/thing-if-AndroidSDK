@@ -51,7 +51,7 @@ import java.util.Map;
 /**
  * This class operates an IoT device that is specified by {@link #onboard(String, String, String, JSONObject)} method.
  */
-public class ThingIFAPI implements Parcelable {
+public class ThingIFAPI<AliasType extends Alias> implements Parcelable {
 
     private static final String SHARED_PREFERENCES_KEY_INSTANCE = "ThingIFAPI_INSTANCE";
     private static final String SHARED_PREFERENCES_SDK_VERSION_KEY = "ThingIFAPI_VERSION";
@@ -661,7 +661,7 @@ public class ThingIFAPI implements Parcelable {
     @NonNull
     @WorkerThread
     public Command postNewCommand(
-            @NonNull CommandForm form) throws ThingIFException {
+            @NonNull CommandForm<AliasType> form) throws ThingIFException {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
@@ -715,6 +715,7 @@ public class ThingIFAPI implements Parcelable {
         if (schema == null) {
             throw new UnsupportedSchemaException(schemaName, schemaVersion);
         }
+        //TODO: // FIXME: 12/16/16
         return this.deserialize(schema, responseBody, Command.class);
     }
     /**
@@ -805,7 +806,7 @@ public class ThingIFAPI implements Parcelable {
     @NonNull
     @WorkerThread
     public Trigger postNewTrigger(
-            @NonNull TriggeredCommandForm form,
+            @NonNull TriggeredCommandForm<AliasType> form,
             @NonNull Predicate predicate,
             @Nullable TriggerOptions options)
         throws ThingIFException
@@ -814,7 +815,7 @@ public class ThingIFAPI implements Parcelable {
     }
 
     private Trigger postNewTriggerWithForm(
-            @NonNull TriggeredCommandForm form,
+            @NonNull TriggeredCommandForm<AliasType> form,
             @NonNull Predicate predicate,
             @Nullable TriggerOptions options)
         throws ThingIFException
@@ -1003,7 +1004,7 @@ public class ThingIFAPI implements Parcelable {
     @WorkerThread
     public Trigger patchTrigger(
             @NonNull String triggerID,
-            @Nullable TriggeredCommandForm form,
+            @Nullable TriggeredCommandForm<AliasType> form,
             @Nullable Predicate predicate,
             @Nullable TriggerOptions options)
         throws ThingIFException
@@ -1015,7 +1016,7 @@ public class ThingIFAPI implements Parcelable {
     @WorkerThread
     private Trigger patchTriggerWithForm(
             @NonNull String triggerID,
-            @Nullable TriggeredCommandForm form,
+            @Nullable TriggeredCommandForm<AliasType> form,
             @Nullable Predicate predicate,
             @Nullable TriggerOptions options)
         throws ThingIFException
