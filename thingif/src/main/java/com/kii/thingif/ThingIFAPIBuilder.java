@@ -11,7 +11,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ThingIFAPIBuilder {
+public class ThingIFAPIBuilder<T extends Alias> {
 
     private static final String TAG = ThingIFAPIBuilder.class.getSimpleName();
     private final Context context;
@@ -38,7 +38,7 @@ public class ThingIFAPIBuilder {
      * @return ThingIFAPIBuilder instance.
      */
     @NonNull
-    public static ThingIFAPIBuilder newBuilder(
+    public static <T1 extends Alias>  ThingIFAPIBuilder<T1> newBuilder(
             @NonNull Context context,
             @NonNull KiiApp app,
             @NonNull Owner owner) {
@@ -51,7 +51,7 @@ public class ThingIFAPIBuilder {
         if (owner == null) {
             throw new IllegalArgumentException("owner is null");
         }
-        return new ThingIFAPIBuilder(context, app, owner);
+        return new ThingIFAPIBuilder<>(context, app, owner);
     }
 
     /**
@@ -80,7 +80,7 @@ public class ThingIFAPIBuilder {
      * @return ThingIFAPIBuilder instance for method chaining.
      */
     @NonNull
-    public ThingIFAPIBuilder addSchema(
+    public ThingIFAPIBuilder<T> addSchema(
             @NonNull Schema schema) {
         if (schema == null) {
             throw new IllegalArgumentException("schema is null");
@@ -95,7 +95,7 @@ public class ThingIFAPIBuilder {
      * @param target target of {@link ThingIFAPI} instance.
      * @return builder instance for chaining call.
      */
-    public ThingIFAPIBuilder setTarget(Target target) {
+    public ThingIFAPIBuilder<T> setTarget(Target target) {
         this.target = target;
         return this;
     }
@@ -114,7 +114,7 @@ public class ThingIFAPIBuilder {
      * @return builder instance for chaining call.
      */
     @NonNull
-    public ThingIFAPIBuilder setTag(@Nullable String tag) {
+    public ThingIFAPIBuilder<T> setTag(@Nullable String tag) {
         this.tag = tag;
         return this;
     }
@@ -124,7 +124,7 @@ public class ThingIFAPIBuilder {
      * @param installationID installation id
      * @return builder instance for chaining call.
      */
-    public ThingIFAPIBuilder setInstallationID(String installationID) {
+    public ThingIFAPIBuilder<T> setInstallationID(String installationID) {
         this.installationID = installationID;
         return this;
     }
@@ -134,12 +134,12 @@ public class ThingIFAPIBuilder {
      * @throws IllegalStateException when schema is not present.
      */
     @NonNull
-    public ThingIFAPI build() {
+    public ThingIFAPI<T> build() {
         if (this.schemas.size() == 0) {
             throw new IllegalStateException("Builder has no schemas");
         }
         _Log.d(TAG, MessageFormat.format("Initialize ThingIFAPI AppID={0}, AppKey={1}, BaseUrl={2}", app.getAppID(), app.getAppKey(), app.getBaseUrl()));
-        return new ThingIFAPI(this.context, this.tag, app, this.owner, this.target, this.schemas, this.installationID);
+        return new ThingIFAPI<>(this.context, this.tag, app, this.owner, this.target, this.schemas, this.installationID);
     }
 
 }
