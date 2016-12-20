@@ -17,17 +17,17 @@ import java.util.Map;
 public class ThingIFAPIBuilder<T extends Alias> {
 
     private static final String TAG = ThingIFAPIBuilder.class.getSimpleName();
-    private final Context context;
-    private final KiiApp app;
-    private final Owner owner;
-    private Target target;
-    private String installationID;
-    private String tag;
-    private final List<Schema> schemas = new ArrayList<Schema>();
+    private final @NonNull Context context;
+    private final @NonNull KiiApp app;
+    private final @NonNull Owner owner;
+    private @Nullable Target target;
+    private @Nullable String installationID;
+    private @Nullable String tag;
+    private final @NonNull List<Schema> schemas = new ArrayList<Schema>();
 
-    private final Map<T, List<Class<? extends Action>>> actionTypes;
-    private final Map<T, List<Class<? extends ActionResult>>> actionResultTypes;
-    private final Map<T, Class<? extends TargetState>> stateTypes;
+    private final @NonNull Map<T, List<Class<? extends Action>>> actionTypes;
+    private final @NonNull Map<T, List<Class<? extends ActionResult>>> actionResultTypes;
+    private final @NonNull Map<T, Class<? extends TargetState>> stateTypes;
 
     private ThingIFAPIBuilder(
             @Nullable Context context,
@@ -170,7 +170,10 @@ public class ThingIFAPIBuilder<T extends Alias> {
      * @param actionClasses List of Action subclasses
      * @return builder instance for chaining call.
      */
-    public ThingIFAPIBuilder<T> registerActions(T alias, List<Class<? extends Action>> actionClasses){
+    @NonNull
+    public ThingIFAPIBuilder<T> registerActions(
+            @NonNull T alias,
+            @NonNull List<Class<? extends Action>> actionClasses){
         this.actionTypes.put(alias, actionClasses);
         return this;
     }
@@ -183,7 +186,10 @@ public class ThingIFAPIBuilder<T extends Alias> {
      * @param actionResultClasses List of ActionResult subclasses
      * @return builder instance for chaining call.
      */
-    public ThingIFAPIBuilder<T> registerActionResults(T alias, List<Class<? extends ActionResult>> actionResultClasses) {
+    @NonNull
+    public ThingIFAPIBuilder<T> registerActionResults(
+            @NonNull T alias,
+            @NonNull List<Class<? extends ActionResult>> actionResultClasses) {
         this.actionResultTypes.put(alias, actionResultClasses);
         return this;
     }
@@ -196,7 +202,10 @@ public class ThingIFAPIBuilder<T extends Alias> {
      * @param stateClass Class of TargetState subclass.
      * @return builder instance for chaining call.
      */
-    public ThingIFAPIBuilder<T> registerTargetState(T alias, Class<TargetState> stateClass) {
+    @NonNull
+    public ThingIFAPIBuilder<T> registerTargetState(
+            @NonNull T alias,
+            @NonNull Class<TargetState> stateClass) {
         this.stateTypes.put(alias, stateClass);
         return this;
     }
