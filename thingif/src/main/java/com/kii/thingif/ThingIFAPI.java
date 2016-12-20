@@ -1614,4 +1614,44 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
         return SDKVersion.versionString;
     }
 
+    /**
+     * Check the firmware version existing or not
+     * @param thingType Thing type of firmware version.
+     * @param firmwareVersion Firmware version to check.
+     * @return True is the firmware version is existing. Otherwise, false.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws IllegalArgumentException if thingType and/or firmwareVersion is null.
+     */
+    public boolean check(
+            @NonNull String thingType,
+            @NonNull String firmwareVersion) throws ThingIFException{
+        //TODO: // FIXME: 12/20/16 implement the logic
+        return false;
+    }
+
+    /**
+     * Update thingType to using trait for the thing .
+     * @param thingType Name of thing type, which should be already defined.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws IllegalArgumentException if thingType is null.
+     */
+    public void updateThingType(
+            @NonNull String thingType) {
+        //TODO: // FIXME: 12/20/16 implement the logic
+    }
+
+    /**
+     * Update firmware version of the thing
+     * @param firmwareVersion New firmware version.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws IllegalArgumentException if thingType is null.
+     */
+    public void updateFirmwareVersion(
+            @NonNull String firmwareVersion) {
+        //TODO: // FIXME: 12/20/16 implement the logic
+    }
+
 }
