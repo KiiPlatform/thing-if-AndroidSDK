@@ -67,9 +67,9 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
     private final IoTRestClient restClient;
     private String installationID;
 
-    private Map<T, List<Class<? extends Action>>> actionTypes;
-    private Map<T, List<Class<? extends ActionResult>>> actionResultTypes;
-    private Map<T, Class<? extends TargetState>> stateTypes;
+    private final Map<T, List<Class<? extends Action>>> actionTypes;
+    private final Map<T, List<Class<? extends ActionResult>>> actionResultTypes;
+    private final Map<T, Class<? extends TargetState>> stateTypes;
 
     /**
      * Try to load the instance of ThingIFAPI using stored serialized instance.
@@ -204,7 +204,11 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
             @NonNull Owner owner,
             @Nullable Target target,
             @NonNull List<Schema> schemas,
-            String installationID) {
+            @Nullable String installationID,
+            @NonNull Map<T, List<Class<? extends Action>>> actionTypes,
+            @NonNull Map<T, List<Class<? extends ActionResult>>> actionResultTypes,
+            @NonNull Map<T, Class<? extends TargetState>> stateTypes
+            ) {
         // Parameters are checked by ThingIFAPIBuilder
         if (context != null) {
             ThingIFAPI.context = context.getApplicationContext();
@@ -218,6 +222,9 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
         }
         this.installationID = installationID;
         this.restClient = new IoTRestClient();
+        this.actionTypes = actionTypes;
+        this.actionResultTypes = actionResultTypes;
+        this.stateTypes = stateTypes;
     }
     /**
      * Create the clone instance that has specified target and tag.
@@ -230,7 +237,7 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
         if (target == null) {
             throw new IllegalArgumentException("target is null");
         }
-        ThingIFAPI api = new ThingIFAPI(context, tag, this.app, this.owner, target, new ArrayList<Schema>(this.schemas.values()), this.installationID);
+        ThingIFAPI api = new ThingIFAPI(context, tag, this.app, this.owner, target, new ArrayList<Schema>(this.schemas.values()), this.installationID, this.actionTypes, this.actionResultTypes, this.stateTypes);
         saveInstance(api);
         return api;
     }
@@ -1584,6 +1591,17 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
         }
         this.restClient = new IoTRestClient();
         this.installationID = in.readString();
+
+        //TODO: // FIXME: 12/20/16 read the register action classes
+        int size = in.readInt();
+        this.actionTypes = new HashMap<>(size);
+        //TODO: // FIXME: 12/20/16 read the registered actionResult classes
+        int size1 = in.readInt();
+        this.actionResultTypes = new HashMap<>(size1);
+        //TODO: // FIXME: 12/20/16 read the registered targetState classes
+        int size2 = in.readInt();
+        this.stateTypes = new HashMap<>(size2);
+
     }
     public static final Creator<ThingIFAPI> CREATOR = new Creator<ThingIFAPI>() {
         @Override
@@ -1608,6 +1626,7 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
         dest.writeParcelable(this.target, flags);
         dest.writeTypedList(new ArrayList<Schema>(this.schemas.values()));
         dest.writeString(this.installationID);
+        //TODO: // FIXME: 12/20/16 implement write registered action, actionResult, targetState classes
     }
 
     /**
@@ -1617,39 +1636,6 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
     @NonNull
     public static String getSDKVersion() {
         return SDKVersion.versionString;
-    }
-
-    /**
-     * Register list of Action subclasses to specified alias. The registered action classes
-     * will be used for serialization/deserialization the action.
-     * If the same alias already registered, then will be updated
-     * @param alias Alias to register
-     * @param actionClasses List of Action subclasses
-     */
-    public void registerActions(T alias, List<Class<? extends Action>> actionClasses){
-        this.actionTypes.put(alias, actionClasses);
-    }
-
-    /**
-     * Register list of ActionResult subclasses to specified alias. The registered action result classes
-     * will be used for serialization/deserialization the action result.
-     * If the same alias already registered, then will be updated
-     * @param alias Alias to register
-     * @param actionResultClasses List of ActionResult subclasses
-     */
-    public void registerActionResults(T alias, List<Class<? extends ActionResult>> actionResultClasses) {
-        this.actionResultTypes.put(alias, actionResultClasses);
-    }
-
-    /**
-     * Register TargetState to specified alias.
-     * The registered stateClass will be used when deserialization state from server.
-     * If the same alias already registered, then will be updated.
-     * @param alias Alias to register.
-     * @param stateClass Class of TargetState subclass.
-     */
-    public void registerTargetState(T alias, Class<TargetState> stateClass) {
-        this.stateTypes.put(alias, stateClass);
     }
 
 }
