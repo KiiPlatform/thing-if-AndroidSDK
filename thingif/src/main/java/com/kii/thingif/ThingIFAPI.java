@@ -12,6 +12,7 @@ import android.support.annotation.WorkerThread;
 
 import com.google.gson.JsonParseException;
 import com.kii.thingif.command.Action;
+import com.kii.thingif.command.ActionResult;
 import com.kii.thingif.command.Command;
 import com.kii.thingif.command.CommandForm;
 import com.kii.thingif.exception.StoredInstanceNotFoundException;
@@ -65,6 +66,10 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
     private final Map<Pair<String, Integer>, Schema> schemas = new HashMap<Pair<String, Integer>, Schema>();
     private final IoTRestClient restClient;
     private String installationID;
+
+    private Map<T, List<Class<? extends Action>>> actionTypes;
+    private Map<T, List<Class<? extends ActionResult>>> actionResultTypes;
+    private Map<T, Class<? extends TargetState>> stateTypes;
 
     /**
      * Try to load the instance of ThingIFAPI using stored serialized instance.
@@ -1612,6 +1617,39 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
     @NonNull
     public static String getSDKVersion() {
         return SDKVersion.versionString;
+    }
+
+    /**
+     * Register list of Action subclasses to specified alias. The registered action classes
+     * will be used for serialization/deserialization the action.
+     * If the same alias already registered, then will be updated
+     * @param alias Alias to register
+     * @param actionClasses List of Action subclasses
+     */
+    public void registerActions(T alias, List<Class<? extends Action>> actionClasses){
+        this.actionTypes.put(alias, actionClasses);
+    }
+
+    /**
+     * Register list of ActionResult subclasses to specified alias. The registered action result classes
+     * will be used for serialization/deserialization the action result.
+     * If the same alias already registered, then will be updated
+     * @param alias Alias to register
+     * @param actionResultClasses List of ActionResult subclasses
+     */
+    public void registerActionResults(T alias, List<Class<? extends ActionResult>> actionResultClasses) {
+        this.actionResultTypes.put(alias, actionResultClasses);
+    }
+
+    /**
+     * Register TargetState to specified alias.
+     * The registered stateClass will be used when deserialization state from server.
+     * If the same alias already registered, then will be updated.
+     * @param alias Alias to register.
+     * @param stateClass Class of TargetState subclass.
+     */
+    public void registerTargetState(T alias, Class<TargetState> stateClass) {
+        this.stateTypes.put(alias, stateClass);
     }
 
 }
