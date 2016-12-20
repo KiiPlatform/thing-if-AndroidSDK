@@ -1654,4 +1654,24 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
         //TODO: // FIXME: 12/20/16 implement the logic
     }
 
+    /**
+     * Get thing type of the thing.
+     * @return Name of thing type of the thing. If thing type is not set, null is returned.
+     */
+    @Nullable
+    public String getThingType(){
+        //TODO: // FIXME: 12/20/16 implement the logic.
+        return null;
+    }
+
+    /**
+     * Get firmware version of the thing.
+     * @return Firmware version of the thing. If firmware version is not set, null is returned.
+     */
+    @Nullable
+    public String getFirmwareVersion() {
+        //TODO: // FIXME: 12/20/16 implement the logic.
+        return null;
+    }
+
 }
