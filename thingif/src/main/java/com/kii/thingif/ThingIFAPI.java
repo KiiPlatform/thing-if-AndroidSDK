@@ -1372,33 +1372,47 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
     }
 
     /**
-     * Get the State of specified Target.
+     * Get the state of specified target.
+     * @return Map of alias and state instance.
+     *  If state of target had never be updated, empty map is returned.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     */
+    @NonNull
+    @WorkerThread
+    public Map<T, TargetState> getTargetState() throws ThingIFException{
+        //TODO: // FIXME: 12/21/16 implement the logic
+        return new HashMap<>();
+    }
+    /**
+     * Get the State of specified alias.
      * State will be serialized with Gson library.
-     * @param classOfS Specify class of the State.
-     * @param <S> State class.
+     * @param alias Specify alias to get state.
      * @return Instance of Target State.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
      */
     @NonNull
     @WorkerThread
-    public <S extends TargetState> S getTargetState(
-            @NonNull Class<S> classOfS) throws ThingIFException {
+    public TargetState getTargetState(
+            @NonNull TraitAlias alias) throws ThingIFException {
 
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
-        if (classOfS == null) {
-            throw new IllegalArgumentException("classOfS is null");
-        }
-
-        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/states", this.app.getAppID(), this.target.getTypedID().toString());
-        String url = Path.combine(this.app.getBaseUrl(), path);
-        Map<String, String> headers = this.newHeader();
-        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
-        JSONObject responseBody = this.restClient.sendRequest(request);
-        S ret = GsonRepository.gson().fromJson(responseBody.toString(), classOfS);
-        return ret;
+        // TOOD: // FIXME: 12/21/16 implement the logic
+//        if (classOfS == null) {
+//            throw new IllegalArgumentException("classOfS is null");
+//        }
+//
+//        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/states", this.app.getAppID(), this.target.getTypedID().toString());
+//        String url = Path.combine(this.app.getBaseUrl(), path);
+//        Map<String, String> headers = this.newHeader();
+//        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
+//        JSONObject responseBody = this.restClient.sendRequest(request);
+//        S ret = GsonRepository.gson().fromJson(responseBody.toString(), classOfS);
+//        return ret;
+        return null;
     }
 
     /**
