@@ -27,6 +27,10 @@ import com.kii.thingif.gateway.PendingEndNode;
 import com.kii.thingif.internal.GsonRepository;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
+import com.kii.thingif.query.AggregatedResult;
+import com.kii.thingif.query.Aggregation;
+import com.kii.thingif.query.GroupedHistoryStates;
+import com.kii.thingif.query.TimeRange;
 import com.kii.thingif.schema.Schema;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.Predicate;
@@ -37,6 +41,7 @@ import com.kii.thingif.trigger.TriggerOptions;
 import com.kii.thingif.trigger.TriggeredCommandForm;
 import com.kii.thingif.trigger.TriggeredServerCodeResult;
 import com.kii.thingif.trigger.TriggersWhat;
+import com.kii.thingif.trigger.clause.Clause;
 import com.squareup.okhttp.MediaType;
 
 import org.json.JSONArray;
@@ -1717,4 +1722,68 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
         return null;
     }
 
+    /**
+     * Query history states with trait alias.
+     * @param alias TraitAlias instance.
+     * @param clause Clause instance.
+     * @param firmwareVersion Firmware version to query.
+     * @param bestEffortLimit Maximum number of the Commands in the response.
+     *                        if the value is {@literal <}= 0 or value is null,
+     *                        default limit internally defined is applied.
+     *                        Meaning of 'bestEffort' is if the specified limit
+     *                        is greater than default limit, default limit is
+     *                        applied.
+     * @param nextPaginationKey Used to get the next page of previously obtained.
+     *                      If there is further page to obtain, this method
+     *                      returns paginationKey as the 2nd element of pair.
+     *                      Applying this key to the argument results continue
+     *                      to get the result from the next page.
+     * @return Map of trait alias and list of target state.
+     */
+    public Map<TraitAlias, List<TargetState>> queryHistoryStates(
+            @NonNull TraitAlias alias,
+            @NonNull Clause clause,
+            @Nullable String firmwareVersion,
+            @Nullable Integer bestEffortLimit,
+            @Nullable String nextPaginationKey){
+        return new HashMap<>();
+    }
+
+    /**
+     * Group history state
+     * @param alias TraitAlias instance.
+     * @param timeRange Time range for grouping query
+     * @param whereClause Clause instance
+     * @param firmwareVersion Firmware version to query.
+     * @return List of {@link GroupedHistoryStates} instances.
+     */
+    public List<GroupedHistoryStates> groupHistoryStates(
+            @NonNull TraitAlias alias,
+            @NonNull TimeRange timeRange,
+            @NonNull Clause whereClause,
+            @Nullable String firmwareVersion){
+        //TODO: // FIXME: 12/21/16 implement the logic
+        return new ArrayList<>();
+    }
+
+    /**
+     * Aggregate history states
+     * @param alias TraitAlias instance.
+     * @param timeRange Time range for aggregation query
+     * @param whereClause Clause instance.
+     * @param aggregation Aggregation instance.
+     * @param firmwareVersion Specified firmware version to aggregate.
+     * @param <T1> Type of field to aggregate.
+     * @return List of {@link AggregatedResult} instance.
+     */
+    public <T1> List<AggregatedResult<T1>> aggregateHistoryStates(
+            @NonNull TraitAlias alias,
+            @NonNull TimeRange timeRange,
+            @NonNull Clause whereClause,
+            @NonNull Aggregation<T1> aggregation,
+            @Nullable String firmwareVersion){
+        //TODO: // FIXME: 12/21/16 implement the logic
+        return new ArrayList<>();
+    }
+    
 }
