@@ -1661,6 +1661,7 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
      * @throws ThingIFRestException Thrown when server returns error response.
      * @throws IllegalArgumentException if thingType and/or firmwareVersion is null.
      */
+    @WorkerThread
     public boolean check(
             @NonNull String thingType,
             @NonNull String firmwareVersion) throws ThingIFException{
@@ -1675,6 +1676,7 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
      * @throws ThingIFRestException Thrown when server returns error response.
      * @throws IllegalArgumentException if thingType is null.
      */
+    @WorkerThread
     public void updateThingType(
             @NonNull String thingType) {
         //TODO: // FIXME: 12/20/16 implement the logic
@@ -1687,6 +1689,7 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
      * @throws ThingIFRestException Thrown when server returns error response.
      * @throws IllegalArgumentException if thingType is null.
      */
+    @WorkerThread
     public void updateFirmwareVersion(
             @NonNull String firmwareVersion) {
         //TODO: // FIXME: 12/20/16 implement the logic
@@ -1697,6 +1700,7 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
      * @return Name of thing type of the thing. If thing type is not set, null is returned.
      */
     @Nullable
+    @WorkerThread
     public String getThingType(){
         //TODO: // FIXME: 12/20/16 implement the logic.
         return null;
@@ -1707,6 +1711,7 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
      * @return Firmware version of the thing. If firmware version is not set, null is returned.
      */
     @Nullable
+    @WorkerThread
     public String getFirmwareVersion() {
         //TODO: // FIXME: 12/20/16 implement the logic.
         return null;
