@@ -2,6 +2,7 @@ package com.kii.thingif.query;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import com.kii.thingif.trigger.clause.Clause;
 
@@ -12,10 +13,12 @@ import java.util.Date;
 
 public class TimeRange implements Parcelable{
 
-    private Date lowerLimit;
-    private Date upperLimit;
+    private @NonNull Date lowerLimit;
+    private @NonNull Date upperLimit;
 
-    public TimeRange(Date lowerLimit, Date upperLimit) {
+    public TimeRange(
+            @NonNull Date lowerLimit,
+            @NonNull Date upperLimit) {
         this.lowerLimit = lowerLimit;
         this.upperLimit = upperLimit;
     }
