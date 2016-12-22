@@ -4,34 +4,18 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.Date;
 
 public class TimeRange implements Parcelable{
 
-    private @NonNull Date lowerLimit;
-    private @NonNull Date upperLimit;
+    private @NonNull Date from;
+    private @NonNull Date to;
 
     public TimeRange(
-            @NonNull Date lowerLimit,
-            @NonNull Date upperLimit) {
-        this.lowerLimit = lowerLimit;
-        this.upperLimit = upperLimit;
-    }
-
-    public JSONObject toJSONObject() {
-        JSONObject ret = new JSONObject();
-        try {
-            ret.put("type", "withinTimeRange");
-            ret.put("lowerLimit", this.lowerLimit.getTime());
-            ret.put("upperLimit", this.upperLimit.getTime());
-            return ret;
-        } catch (JSONException e) {
-            // Won't happens.
-            throw new RuntimeException(e);
-        }
+            @NonNull Date from,
+            @NonNull Date to) {
+        this.from = from;
+        this.to = to;
     }
 
     @Override
@@ -41,13 +25,13 @@ public class TimeRange implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(this.lowerLimit.getTime());
-        dest.writeLong(this.upperLimit.getTime());
+        dest.writeLong(this.from.getTime());
+        dest.writeLong(this.to.getTime());
     }
 
     public TimeRange(Parcel in) {
-        this.lowerLimit = new Date(in.readLong());
-        this.upperLimit = new Date(in.readLong());
+        this.from = new Date(in.readLong());
+        this.to = new Date(in.readLong());
     }
 
     public static final Creator<TimeRange> CREATOR = new Creator<TimeRange>() {
