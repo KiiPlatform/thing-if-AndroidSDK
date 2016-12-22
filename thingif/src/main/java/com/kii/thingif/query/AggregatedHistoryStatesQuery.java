@@ -2,13 +2,13 @@ package com.kii.thingif.query;
 
 import android.support.annotation.NonNull;
 
-public class AggregatedHistoryStatesQuery<T> {
+public class AggregatedHistoryStatesQuery {
     private final @NonNull GroupedHistoryStatesQuery groupedQuery;
-    private final @NonNull Aggregation<T> aggregation;
+    private final @NonNull Aggregation aggregation;
 
     public AggregatedHistoryStatesQuery(
             @NonNull GroupedHistoryStatesQuery groupedQuery,
-            @NonNull Aggregation<T> aggregation) {
+            @NonNull Aggregation aggregation) {
         this.groupedQuery = groupedQuery;
         this.aggregation = aggregation;
     }
@@ -19,7 +19,7 @@ public class AggregatedHistoryStatesQuery<T> {
     }
 
     @NonNull
-    public Aggregation<T> getAggregation() {
+    public Aggregation getAggregation() {
         return this.aggregation;
     }
 }

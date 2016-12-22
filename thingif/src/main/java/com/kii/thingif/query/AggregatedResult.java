@@ -8,7 +8,7 @@ import com.kii.thingif.TargetState;
 import java.util.Date;
 import java.util.List;
 
-public class AggregatedResult<T> {
+public class AggregatedResult<T extends Number> {
     private @NonNull Date rangeFrom;
     private @NonNull Date rangeTo;
     private @NonNull T aggregatedResult;

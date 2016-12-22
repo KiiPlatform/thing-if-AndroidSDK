@@ -1753,8 +1753,8 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
      * @param <T1> Type of field to aggregate.
      * @return List of {@link AggregatedResult} instance.
      */
-    public <T1> List<AggregatedResult<T1>> aggregateHistoryStates(
-            @NonNull AggregatedHistoryStatesQuery<T1> query){
+    public <T1 extends Number> List<AggregatedResult<T1>> aggregateHistoryStates(
+            @NonNull AggregatedHistoryStatesQuery query){
         //TODO: // FIXME: 12/21/16 implement the logic
         return new ArrayList<>();
     }
