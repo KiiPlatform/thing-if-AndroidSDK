@@ -1729,11 +1729,15 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
      * Query history states with trait alias.
      * @param query Instance of {@link HistoryStatesQuery}.
      *              If clause of query is null, query all history states.
-     * @return Map of trait alias and list of target state.
+     * @return Pair instance. First element is map of trait alias and list of target state.
+     *  Second element is next pagination key.
      */
-    public Map<TraitAlias, List<TargetState>> queryHistoryStates(
+    public Pair<Map<TraitAlias, List<TargetState>>, String> queryHistoryStates(
             @NonNull HistoryStatesQuery query){
-        return new HashMap<>();
+        //TODO: // FIXME: 12/22/16 implement the logic
+        Map<TraitAlias, List<TargetState>> results = new HashMap<>();
+        String nextPaginationKey = "";
+        return new Pair<>(results, nextPaginationKey);
     }
 
     /**
