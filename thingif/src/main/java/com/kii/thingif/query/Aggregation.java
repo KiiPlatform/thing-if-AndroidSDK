@@ -69,7 +69,7 @@ public class Aggregation<T> implements Parcelable{
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeSerializable(this.type);
         dest.writeString(this.field);
-        //TODO: // FIXME: 12/21/16 implement to write fiedType
+        dest.writeSerializable(this.fieldType);
     }
 
     public static final Creator<Aggregation> CREATOR = new Creator<Aggregation>() {

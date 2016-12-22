@@ -4,8 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import com.kii.thingif.trigger.clause.Clause;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 

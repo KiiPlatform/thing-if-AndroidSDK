@@ -11,29 +11,29 @@ import java.util.List;
 public class GroupedHistoryStates {
     private @NonNull Date rangeFrom;
     private @NonNull Date rangeTo;
-    private @NonNull List<TargetState> results;
+    private @NonNull List<TargetState> objects;
 
     public GroupedHistoryStates(
             @NonNull Date rangeFrom,
             @NonNull Date rangeTo,
-            @NonNull List<TargetState> results) {
+            @NonNull List<TargetState> objects) {
         this.rangeFrom = rangeFrom;
         this.rangeTo = rangeTo;
-        this.results = results;
+        this.objects = objects;
     }
 
     @NonNull
     public Date getRangeFrom() {
-        return rangeFrom;
+        return this.rangeFrom;
     }
 
     @NonNull
     public Date getRangeTo() {
-        return rangeTo;
+        return this.rangeTo;
     }
 
     @NonNull
-    public List<TargetState> getResults() {
-        return results;
+    public List<TargetState> getObjects() {
+        return this.objects;
     }
 }

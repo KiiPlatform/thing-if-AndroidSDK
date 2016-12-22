@@ -27,21 +27,21 @@ public class AggregatedResult<T> {
 
     @NonNull
     public Date getRangeFrom() {
-        return rangeFrom;
+        return this.rangeFrom;
     }
 
     @NonNull
     public Date getRangeTo() {
-        return rangeTo;
+        return this.rangeTo;
     }
 
     @NonNull
     public T getAggregatedResult() {
-        return aggregatedResult;
+        return this.aggregatedResult;
     }
 
     @Nullable
     public List<TargetState> getAggregatedObjects() {
-        return aggregatedObjects;
+        return this.aggregatedObjects;
     }
 }
