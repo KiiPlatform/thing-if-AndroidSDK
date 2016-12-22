@@ -1732,7 +1732,7 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
      * @return Pair instance. First element is map of trait alias and list of target state.
      *  Second element is next pagination key.
      */
-    public Pair<Map<TraitAlias, List<TargetState>>, String> queryHistoryStates(
+    public Pair<Map<TraitAlias, List<TargetState>>, String> query(
             @NonNull HistoryStatesQuery query){
         //TODO: // FIXME: 12/22/16 implement the logic
         Map<TraitAlias, List<TargetState>> results = new HashMap<>();
@@ -1745,7 +1745,7 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
      * @param query {@link GroupedHistoryStatesQuery} instance
      * @return List of {@link GroupedHistoryStates} instances.
      */
-    public List<GroupedHistoryStates> groupHistoryStates(
+    public List<GroupedHistoryStates> query(
             @NonNull GroupedHistoryStatesQuery query){
         //TODO: // FIXME: 12/21/16 implement the logic
         return new ArrayList<>();
@@ -1757,7 +1757,7 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
      * @param <T1> Type of field to aggregate.
      * @return List of {@link AggregatedResult} instance.
      */
-    public <T1 extends Number> List<AggregatedResult<T1>> aggregateHistoryStates(
+    public <T1 extends Number> List<AggregatedResult<T1>> query(
             @NonNull AggregatedHistoryStatesQuery query){
         //TODO: // FIXME: 12/21/16 implement the logic
         return new ArrayList<>();
