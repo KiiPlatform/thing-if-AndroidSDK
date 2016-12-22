@@ -34,7 +34,7 @@ public class GroupedHistoryStatesQuery {
                 @NonNull TraitAlias alias,
                 @NonNull TimeRange timeRange) {
             this.alias = alias;
-            this.clause = clause;
+            this.timeRange = timeRange;
         }
 
         public static Builder newBuilder(
@@ -50,6 +50,11 @@ public class GroupedHistoryStatesQuery {
 
         public Builder setClause(@Nullable Clause clause) {
             this.clause = clause;
+            return this;
+        }
+
+        public Builder setFirmwareVersion(@Nullable String firmwareVersion) {
+            this.firmwareVersion = firmwareVersion;
             return this;
         }
 
