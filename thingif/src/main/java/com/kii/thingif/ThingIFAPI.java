@@ -27,13 +27,11 @@ import com.kii.thingif.gateway.PendingEndNode;
 import com.kii.thingif.internal.GsonRepository;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
-import com.kii.thingif.query.AggregatedHistoryStatesQuery;
 import com.kii.thingif.query.AggregatedResult;
 import com.kii.thingif.query.Aggregation;
 import com.kii.thingif.query.GroupedHistoryStates;
 import com.kii.thingif.query.GroupedHistoryStatesQuery;
 import com.kii.thingif.query.HistoryStatesQuery;
-import com.kii.thingif.query.TimeRange;
 import com.kii.thingif.schema.Schema;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.Predicate;
@@ -44,7 +42,6 @@ import com.kii.thingif.trigger.TriggerOptions;
 import com.kii.thingif.trigger.TriggeredCommandForm;
 import com.kii.thingif.trigger.TriggeredServerCodeResult;
 import com.kii.thingif.trigger.TriggersWhat;
-import com.kii.thingif.trigger.clause.Clause;
 import com.squareup.okhttp.MediaType;
 
 import org.json.JSONArray;
@@ -1753,12 +1750,14 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
 
     /**
      * Aggregate history states
-     * @param query {@link AggregatedHistoryStatesQuery} instance.
-     * @param <T1> Type of field to aggregate.
+     * @param groupedQuery {@link GroupedHistoryStatesQuery} instance.
+     * @param aggregation {@link Aggregation} instance.
+     * @param <T1> Type of aggregated result field.
      * @return List of {@link AggregatedResult} instance.
      */
     public <T1 extends Number> List<AggregatedResult<T1>> query(
-            @NonNull AggregatedHistoryStatesQuery query){
+            @NonNull GroupedHistoryStatesQuery groupedQuery,
+            @NonNull Aggregation aggregation){
         //TODO: // FIXME: 12/21/16 implement the logic
         return new ArrayList<>();
     }
