@@ -5,31 +5,22 @@ import android.support.annotation.Nullable;
 
 import com.kii.thingif.TargetState;
 
-import java.util.Date;
 import java.util.List;
 
 public class GroupedHistoryStates {
-    private @NonNull Date rangeFrom;
-    private @NonNull Date rangeTo;
+    private @NonNull TimeRange timeRange;
     private @NonNull List<TargetState> objects;
 
     public GroupedHistoryStates(
-            @NonNull Date rangeFrom,
-            @NonNull Date rangeTo,
+            @NonNull TimeRange timeRange,
             @NonNull List<TargetState> objects) {
-        this.rangeFrom = rangeFrom;
-        this.rangeTo = rangeTo;
+        this.timeRange = timeRange;
         this.objects = objects;
     }
 
     @NonNull
-    public Date getRangeFrom() {
-        return this.rangeFrom;
-    }
-
-    @NonNull
-    public Date getRangeTo() {
-        return this.rangeTo;
+    public TimeRange getTimeRange() {
+        return this.timeRange;
     }
 
     @NonNull
