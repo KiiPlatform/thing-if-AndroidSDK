@@ -7,9 +7,6 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Pair;
 
-import com.google.gson.annotations.SerializedName;
-import com.kii.thingif.Alias;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,9 +30,9 @@ import java.util.List;
  * <li>meta data of a command</li>
  * </ul>
  */
-public final class CommandForm <T extends Alias> implements Parcelable {
+public final class CommandForm implements Parcelable {
 
-    private final @NonNull List<Pair<T,List<Action>>> actions;
+    private final @NonNull List<Pair<String,List<Action>>> actions;
 
     private @Nullable String title;
     private @Nullable String description;
@@ -49,7 +46,7 @@ public final class CommandForm <T extends Alias> implements Parcelable {
      * string and/or actions is null or empty.
      */
     public CommandForm(
-            @NonNull List<Pair<T, List<Action>>> actions)
+            @NonNull List<Pair<String, List<Action>>> actions)
         throws IllegalArgumentException
     {
         if (actions == null || actions.size() == 0) {
@@ -109,7 +106,7 @@ public final class CommandForm <T extends Alias> implements Parcelable {
      * @return actions
      */
     @NonNull
-    public List<Pair<T, List<Action>>> getActions() {
+    public List<Pair<String, List<Action>>> getActions() {
         return this.actions;
     }
 

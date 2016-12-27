@@ -57,7 +57,7 @@ import java.util.Map;
 /**
  * This class operates an IoT device that is specified by {@link #onboard(String, String, String, JSONObject)} method.
  */
-public class ThingIFAPI<T extends Alias> implements Parcelable {
+public class ThingIFAPI implements Parcelable {
 
     private static final String SHARED_PREFERENCES_KEY_INSTANCE = "ThingIFAPI_INSTANCE";
     private static final String SHARED_PREFERENCES_SDK_VERSION_KEY = "ThingIFAPI_VERSION";
@@ -72,9 +72,9 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
     private final IoTRestClient restClient;
     private String installationID;
 
-    private final Map<T, List<Class<? extends Action>>> actionTypes;
-    private final Map<T, List<Class<? extends ActionResult>>> actionResultTypes;
-    private final Map<T, Class<? extends TargetState>> stateTypes;
+    private final Map<String, List<Class<? extends Action>>> actionTypes;
+    private final Map<String, List<Class<? extends ActionResult>>> actionResultTypes;
+    private final Map<String, Class<? extends TargetState>> stateTypes;
 
     /**
      * Try to load the instance of ThingIFAPI using stored serialized instance.
@@ -210,9 +210,9 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
             @Nullable Target target,
             @NonNull List<Schema> schemas,
             @Nullable String installationID,
-            @NonNull Map<T, List<Class<? extends Action>>> actionTypes,
-            @NonNull Map<T, List<Class<? extends ActionResult>>> actionResultTypes,
-            @NonNull Map<T, Class<? extends TargetState>> stateTypes
+            @NonNull Map<String, List<Class<? extends Action>>> actionTypes,
+            @NonNull Map<String, List<Class<? extends ActionResult>>> actionResultTypes,
+            @NonNull Map<String, Class<? extends TargetState>> stateTypes
             ) {
         // Parameters are checked by ThingIFAPIBuilder
         if (context != null) {
@@ -678,7 +678,7 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
     @NonNull
     @WorkerThread
     public Command postNewCommand(
-            @NonNull CommandForm<T> form) throws ThingIFException {
+            @NonNull CommandForm form) throws ThingIFException {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
@@ -823,7 +823,7 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
     @NonNull
     @WorkerThread
     public Trigger postNewTrigger(
-            @NonNull TriggeredCommandForm<T> form,
+            @NonNull TriggeredCommandForm form,
             @NonNull Predicate predicate,
             @Nullable TriggerOptions options)
         throws ThingIFException
@@ -832,7 +832,7 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
     }
 
     private Trigger postNewTriggerWithForm(
-            @NonNull TriggeredCommandForm<T> form,
+            @NonNull TriggeredCommandForm form,
             @NonNull Predicate predicate,
             @Nullable TriggerOptions options)
         throws ThingIFException
@@ -1021,7 +1021,7 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
     @WorkerThread
     public Trigger patchTrigger(
             @NonNull String triggerID,
-            @Nullable TriggeredCommandForm<T> form,
+            @Nullable TriggeredCommandForm form,
             @Nullable Predicate predicate,
             @Nullable TriggerOptions options)
         throws ThingIFException
@@ -1033,7 +1033,7 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
     @WorkerThread
     private Trigger patchTriggerWithForm(
             @NonNull String triggerID,
-            @Nullable TriggeredCommandForm<T> form,
+            @Nullable TriggeredCommandForm form,
             @Nullable Predicate predicate,
             @Nullable TriggerOptions options)
         throws ThingIFException
@@ -1385,7 +1385,7 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
      */
     @NonNull
     @WorkerThread
-    public Map<T, TargetState> getTargetState() throws ThingIFException{
+    public Map<String, TargetState> getTargetState() throws ThingIFException{
         //TODO: // FIXME: 12/21/16 implement the logic
         return new HashMap<>();
     }
@@ -1400,7 +1400,7 @@ public class ThingIFAPI<T extends Alias> implements Parcelable {
     @NonNull
     @WorkerThread
     public TargetState getTargetState(
-            @NonNull TraitAlias alias) throws ThingIFException {
+            @NonNull String alias) throws ThingIFException {
 
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");

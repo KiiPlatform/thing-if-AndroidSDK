@@ -1,16 +1,15 @@
 package com.kii.thingif.trigger.clause;
 
 import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
-
-import com.kii.thingif.Alias;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class NotEquals<T extends Alias> extends Clause {
-    private final Equals<T> equals;
-    public NotEquals(@NonNull Equals<T> equals) {
+public class NotEquals extends Clause {
+    private final Equals equals;
+    public NotEquals(@NonNull Equals equals) {
         this.equals = equals;
     }
     @Override
