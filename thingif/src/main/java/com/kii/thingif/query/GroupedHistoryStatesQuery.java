@@ -42,11 +42,6 @@ public class GroupedHistoryStatesQuery {
             return new Builder(alias, timeRange);
         }
 
-        public Builder setTimeRange(@NonNull TimeRange timeRange) {
-            this.timeRange = timeRange;
-            return this;
-        }
-
         public Builder setClause(@Nullable Clause clause) {
             this.clause = clause;
             return this;

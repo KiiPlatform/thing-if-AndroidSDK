@@ -7,15 +7,15 @@ import com.kii.thingif.TargetState;
 
 import java.util.List;
 
-public class AggregatedResult<T extends Number> {
+public class AggregatedResult<T extends Number, S extends TargetState> {
     private @NonNull TimeRange timeRange;
     private @NonNull T value;
-    private @Nullable List<TargetState> aggregatedObjects;
+    private @Nullable List<S> aggregatedObjects;
 
     public AggregatedResult(
         @NonNull TimeRange timeRange,
         @NonNull T value,
-        @Nullable List<TargetState> aggregatedObjects) {
+        @Nullable List<S> aggregatedObjects) {
         this.timeRange = timeRange;
         this.value = value;
         this.aggregatedObjects = aggregatedObjects;
@@ -32,7 +32,7 @@ public class AggregatedResult<T extends Number> {
     }
 
     @Nullable
-    public List<TargetState> getAggregatedObjects() {
+    public List<S> getAggregatedObjects() {
         return this.aggregatedObjects;
     }
 }

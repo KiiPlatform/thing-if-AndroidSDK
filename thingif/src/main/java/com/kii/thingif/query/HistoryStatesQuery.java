@@ -3,6 +3,7 @@ package com.kii.thingif.query;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.kii.thingif.TargetState;
 import com.kii.thingif.trigger.clause.Clause;
 
 public class HistoryStatesQuery {

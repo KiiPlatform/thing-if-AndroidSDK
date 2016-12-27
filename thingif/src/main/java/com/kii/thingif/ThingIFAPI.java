@@ -1728,28 +1728,28 @@ public class ThingIFAPI implements Parcelable {
      * Query history states with trait alias.
      * @param query Instance of {@link HistoryStatesQuery}.
      *              If clause of query is null, query all history states.
-     * @return Pair instance. First element is map of trait alias and list of target state.
+     * @param <S> Type of subclass of {@link TargetState}.
+     * @return Pair instance. First element is list of target state.
      *  Second element is next pagination key.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
      */
-    public Pair<Map<String, List<TargetState>>, String> query(
-            @NonNull HistoryStatesQuery query){
+    public <S extends TargetState> Pair<List<S>, String> query(
+            @NonNull HistoryStatesQuery query) throws ThingIFException{
         //TODO: // FIXME: 12/22/16 implement the logic
-        Map<String, List<TargetState>> results = new HashMap<>();
-        String nextPaginationKey = "";
-        return new Pair<>(results, nextPaginationKey);
+        return null;
     }
 
     /**
      * Group history state
      * @param query {@link GroupedHistoryStatesQuery} instance
+     * @param <S> Type of subclass of {@link TargetState}.
      * @return List of {@link GroupedHistoryStates} instances.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
      */
-    public List<GroupedHistoryStates> query(
-            @NonNull GroupedHistoryStatesQuery query){
+    public <S extends TargetState> List<GroupedHistoryStates<S>> query(
+            @NonNull GroupedHistoryStatesQuery query) throws ThingIFException{
         //TODO: // FIXME: 12/21/16 implement the logic
         return new ArrayList<>();
     }
@@ -1758,12 +1758,13 @@ public class ThingIFAPI implements Parcelable {
      * Aggregate history states
      * @param groupedQuery {@link GroupedHistoryStatesQuery} instance.
      * @param aggregation {@link Aggregation} instance.
-     * @param <T1> Type of aggregated result field.
+     * @param <T> Type of aggregated result field.
+     * @param <S> Type of subclass of {@link TargetState}.
      * @return List of {@link AggregatedResult} instance.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
      */
-    public <T1 extends Number> List<AggregatedResult<T1>> aggregate(
+    public <T extends Number, S extends TargetState> List<AggregatedResult<T, S>> aggregate(
             @NonNull GroupedHistoryStatesQuery groupedQuery,
             @NonNull Aggregation aggregation) throws ThingIFException {
         //TODO: // FIXME: 12/21/16 implement the logic

@@ -7,13 +7,13 @@ import com.kii.thingif.TargetState;
 
 import java.util.List;
 
-public class GroupedHistoryStates {
+public class GroupedHistoryStates<S extends TargetState> {
     private @NonNull TimeRange timeRange;
-    private @NonNull List<TargetState> objects;
+    private @NonNull List<S> objects;
 
     public GroupedHistoryStates(
             @NonNull TimeRange timeRange,
-            @NonNull List<TargetState> objects) {
+            @NonNull List<S> objects) {
         this.timeRange = timeRange;
         this.objects = objects;
     }
@@ -24,7 +24,7 @@ public class GroupedHistoryStates {
     }
 
     @NonNull
-    public List<TargetState> getObjects() {
+    public List<S> getObjects() {
         return this.objects;
     }
 }
