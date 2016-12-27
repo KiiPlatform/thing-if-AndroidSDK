@@ -1,8 +1,7 @@
 package com.kii.thingif.trigger.clause;
 
 import android.os.Parcel;
-
-import com.kii.thingif.Alias;
+import android.os.Parcelable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,8 +9,8 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 
-public class Or<T extends Alias> extends ContainerClause<T> {
-    public Or(Clause<T>... clauses) {
+public class Or extends ContainerClause {
+    public Or(Clause... clauses) {
         super(clauses);
     }
     @Override

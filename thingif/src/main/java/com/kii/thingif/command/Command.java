@@ -8,7 +8,6 @@ import android.text.TextUtils;
 import android.util.Pair;
 
 import com.google.gson.annotations.SerializedName;
-import com.kii.thingif.Alias;
 import com.kii.thingif.TypedID;
 
 import org.json.JSONObject;
@@ -26,8 +25,8 @@ public class Command implements Parcelable {
     private final @Nullable TypedID targetID;
     @SerializedName("issuer")
     private final @NonNull TypedID issuerID;
-    private final @NonNull List<Pair<? extends Alias, List<Action>>> actions;
-    private final @Nullable List<Pair<? extends Alias,List<ActionResult>>> actionResults;
+    private final @NonNull List<Pair<String, List<Action>>> actions;
+    private final @Nullable List<Pair<String,List<ActionResult>>> actionResults;
     @SerializedName("commandState")
     private final @Nullable CommandState commandState;
     private final @Nullable String firedByTriggerID;
@@ -41,8 +40,8 @@ public class Command implements Parcelable {
 
     public Command(@NonNull TypedID targetID,
                    @NonNull TypedID issuerID,
-                   @NonNull List<Pair<? extends Alias, List<Action>>> actions,
-                   @Nullable List<Pair<? extends Alias, List<ActionResult>>> actonResults,
+                   @NonNull List<Pair<String, List<Action>>> actions,
+                   @Nullable List<Pair<String, List<ActionResult>>> actonResults,
                    @Nullable String commandID,
                    @Nullable CommandState commandState,
                    @Nullable String firedByTriggerID,
@@ -106,7 +105,7 @@ public class Command implements Parcelable {
      * @return action of this command.
      */
     @NonNull
-    public List<Pair<? extends Alias, List<Action>>> getActions() {
+    public List<Pair<String, List<Action>>> getActions() {
         return this.actions;
     }
 
@@ -115,7 +114,7 @@ public class Command implements Parcelable {
      * @return action results of this command.
      */
     @Nullable
-    public List<Pair<? extends Alias,List<ActionResult>>> getActionResults() {
+    public List<Pair<String, List<ActionResult>>> getActionResults() {
         return this.actionResults;
     }
 
@@ -128,7 +127,7 @@ public class Command implements Parcelable {
      */
     @Nullable
     public List<ActionResult> getActionResult(
-            @NonNull Alias alias,
+            @NonNull String alias,
             @NonNull Action action) {
         if (action == null) {
             throw new IllegalArgumentException("action is null");
