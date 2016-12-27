@@ -1,9 +1,11 @@
-package com.kii.thingif.trigger.clause;
+package com.kii.thingif.query.clause;
 
 import org.json.JSONObject;
 
-public class Or extends com.kii.thingif.internal.clause.Or implements Clause{
-    public Or(Clause... clauses) {
+import java.util.Arrays;
+
+public class And extends com.kii.thingif.internal.clause.And implements Clause{
+    public And(Clause... clauses) {
         super(clauses);
     }
     @Override
@@ -14,9 +16,11 @@ public class Or extends com.kii.thingif.internal.clause.Or implements Clause{
     @Override
     public boolean equals(Object o) {
         return super.equals(o);
+
     }
     @Override
     public int hashCode() {
-        return super.hashCode();
+        return Arrays.hashCode(this.getClauses());
     }
+
 }

@@ -1,32 +1,25 @@
 package com.kii.thingif.trigger.clause;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Equals extends Clause {
-
-    private final String field;
-    private final Object value;
+public class Equals extends com.kii.thingif.internal.clause.Equals implements Clause {
     private final String alias;
     public Equals(@NonNull String field, String value, String alias) {
-        this.field = field;
-        this.value = value;
+        super(field, value);
         this.alias = alias;
     }
 
     public Equals(String field, long value, String alias) {
-        this.field = field;
-        this.value = value;
+        super(field, value);
         this.alias = alias;
     }
 
     public Equals(String field, boolean value, String alias) {
-        this.field = field;
-        this.value = value;
+        super(field, value);
         this.alias = alias;
     }
     public String getField() {
@@ -38,50 +31,35 @@ public class Equals extends Clause {
 
     @Override
     public JSONObject toJSONObject() {
-        //TODO: // FIXME: 12/15/16 should adapt to alias
-        JSONObject ret = new JSONObject();
+        JSONObject ret = super.toJSONObject();
         try {
-            ret.put("type", "eq");
-            ret.put("field", this.field);
-            ret.put("value", this.value);
-            return ret;
-        } catch (JSONException e) {
+            ret.put("alias", this.alias);
+        }catch (JSONException e) {
             // Won't happens.
             throw new RuntimeException(e);
         }
+        return  ret;
     }
 
     @Override
     public boolean equals(Object o) {
-        //TODO: // FIXME: 12/15/16 should adapt to alias
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if(!super.equals(o)){
+            return false;
+        }
         Equals equals = (Equals) o;
-        if (!field.equals(equals.field)) return false;
-        return value.equals(equals.value);
+        return alias.equals(equals.alias);
     }
     @Override
     public int hashCode() {
-        int result = field.hashCode();
-        result = 31 * result + value.hashCode();
+        int result = super.hashCode();
+        result = 31 * result + alias.hashCode();
         return result;
     }
 
     // Implementation of Parcelable
     protected Equals(Parcel in) {
+        super(in);
         this.alias = in.readString();
-        this.field = in.readString();
-        Class<?> clazz = (Class<?>)in.readSerializable();
-        if (clazz == String.class) {
-            this.value = in.readString();
-        } else if (clazz == Long.class) {
-            this.value = in.readLong();
-        } else if (clazz == Boolean.class) {
-            this.value = (in.readByte() != 0);
-        } else {
-            // Won't happens.
-            throw new AssertionError("Detected unexpected value.");
-        }
     }
     public static final Creator<Equals> CREATOR = new Creator<Equals>() {
         @Override
@@ -99,15 +77,7 @@ public class Equals extends Clause {
     }
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
         dest.writeString(this.alias);
-        dest.writeString(this.field);
-        dest.writeSerializable(this.value.getClass());
-        if (this.value instanceof String) {
-            dest.writeString((String)this.value);
-        } else if (Long.class.isInstance(this.value)) {
-            dest.writeLong((Long)this.value);
-        } else if (Boolean.class.isInstance(this.value)) {
-            dest.writeByte((byte)((Boolean)this.value ? 1 : 0));
-        }
     }
 }

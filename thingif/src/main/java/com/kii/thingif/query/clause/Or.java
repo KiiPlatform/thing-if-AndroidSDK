@@ -1,4 +1,4 @@
-package com.kii.thingif.trigger.clause;
+package com.kii.thingif.query.clause;
 
 import org.json.JSONObject;
 
