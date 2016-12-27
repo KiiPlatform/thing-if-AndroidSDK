@@ -29,6 +29,8 @@ import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
 import com.kii.thingif.query.AggregatedResult;
 import com.kii.thingif.query.Aggregation;
+import com.kii.thingif.query.CountFieldType;
+import com.kii.thingif.query.CountedResult;
 import com.kii.thingif.query.GroupedHistoryStates;
 import com.kii.thingif.query.GroupedHistoryStatesQuery;
 import com.kii.thingif.query.HistoryStatesQuery;
@@ -1728,11 +1730,13 @@ public class ThingIFAPI implements Parcelable {
      *              If clause of query is null, query all history states.
      * @return Pair instance. First element is map of trait alias and list of target state.
      *  Second element is next pagination key.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
      */
-    public Pair<Map<TraitAlias, List<TargetState>>, String> query(
+    public Pair<Map<String, List<TargetState>>, String> query(
             @NonNull HistoryStatesQuery query){
         //TODO: // FIXME: 12/22/16 implement the logic
-        Map<TraitAlias, List<TargetState>> results = new HashMap<>();
+        Map<String, List<TargetState>> results = new HashMap<>();
         String nextPaginationKey = "";
         return new Pair<>(results, nextPaginationKey);
     }
@@ -1741,6 +1745,8 @@ public class ThingIFAPI implements Parcelable {
      * Group history state
      * @param query {@link GroupedHistoryStatesQuery} instance
      * @return List of {@link GroupedHistoryStates} instances.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
      */
     public List<GroupedHistoryStates> query(
             @NonNull GroupedHistoryStatesQuery query){
@@ -1754,12 +1760,29 @@ public class ThingIFAPI implements Parcelable {
      * @param aggregation {@link Aggregation} instance.
      * @param <T1> Type of aggregated result field.
      * @return List of {@link AggregatedResult} instance.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
      */
-    public <T1 extends Number> List<AggregatedResult<T1>> query(
+    public <T1 extends Number> List<AggregatedResult<T1>> aggregate(
             @NonNull GroupedHistoryStatesQuery groupedQuery,
-            @NonNull Aggregation aggregation){
+            @NonNull Aggregation aggregation) throws ThingIFException {
         //TODO: // FIXME: 12/21/16 implement the logic
         return new ArrayList<>();
     }
 
+    /**
+     * Count query of history states
+     * @param groupedQuery {@link GroupedHistoryStatesQuery} instance.
+     * @param field field of target state to count.
+     * @param fieldType one of {@link CountFieldType}.
+     * @return List of {@link CountedResult} instance.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     */
+    public List<CountedResult> count(
+            @NonNull GroupedHistoryStatesQuery groupedQuery,
+            @NonNull String field,
+            @NonNull CountFieldType fieldType) throws ThingIFException {
+        return new ArrayList<>();
+    }
 }

@@ -9,15 +9,15 @@ import java.util.List;
 
 public class AggregatedResult<T extends Number> {
     private @NonNull TimeRange timeRange;
-    private @NonNull T aggregatedResult;
+    private @NonNull T value;
     private @Nullable List<TargetState> aggregatedObjects;
 
     public AggregatedResult(
         @NonNull TimeRange timeRange,
-        @NonNull T aggregatedResult,
+        @NonNull T value,
         @Nullable List<TargetState> aggregatedObjects) {
         this.timeRange = timeRange;
-        this.aggregatedResult = aggregatedResult;
+        this.value = value;
         this.aggregatedObjects = aggregatedObjects;
     }
 
@@ -27,8 +27,8 @@ public class AggregatedResult<T extends Number> {
     }
 
     @NonNull
-    public T getAggregatedResult() {
-        return this.aggregatedResult;
+    public T getValue() {
+        return this.value;
     }
 
     @Nullable

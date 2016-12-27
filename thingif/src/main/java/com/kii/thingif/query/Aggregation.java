@@ -16,7 +16,6 @@ public class Aggregation implements Parcelable{
     private @NonNull final FieldType fieldType;
 
     public static enum FunctionType{
-        COUNT,
         MAX,
         MIN,
         MEAN,
@@ -26,7 +25,6 @@ public class Aggregation implements Parcelable{
     public static enum FieldType{
         INTEGER,
         DECIMAL
-        //TODO: // FIXME: 12/22/16 confirm other types
     }
 
     /**
@@ -44,37 +42,22 @@ public class Aggregation implements Parcelable{
         this.fieldType = fieldType;
     }
 
-    public static Aggregation newCountAggregation(
-            @NonNull String field,
-            @NonNull FieldType fieldType
-    ) {
-        return new Aggregation(FunctionType.COUNT, field, fieldType);
-    }
 
     public  static Aggregation newMaxAggregation(
             @NonNull String field,
             @NonNull FieldType fieldType) throws IllegalArgumentException{
-        if(fieldType != FieldType.DECIMAL && fieldType != FieldType.INTEGER){
-            throw new IllegalArgumentException("fieldType of MAX aggregation should only be INTEGER or DECIMAL");
-        }
         return new Aggregation(FunctionType.MAX, field, fieldType);
     }
 
     public  static Aggregation newMinAggregation(
             @NonNull String field,
             @NonNull FieldType fieldType) throws IllegalArgumentException{
-        if(fieldType != FieldType.DECIMAL && fieldType != FieldType.INTEGER){
-            throw new IllegalArgumentException("fieldType of MIN aggregation should only be INTEGER or DECIMAL");
-        }
         return new Aggregation(FunctionType.MIN, field, fieldType);
     }
 
     public  static Aggregation newMeanAggregation(
             @NonNull String field,
             @NonNull FieldType fieldType) throws IllegalArgumentException{
-        if(fieldType != FieldType.DECIMAL && fieldType != FieldType.INTEGER){
-            throw new IllegalArgumentException("fieldType of MEAN aggregation should only be INTEGER or DECIMAL");
-        }
         return new Aggregation(FunctionType.MEAN, field, fieldType);
     }
 

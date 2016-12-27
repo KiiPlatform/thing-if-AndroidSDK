@@ -3,19 +3,18 @@ package com.kii.thingif.query;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.kii.thingif.TraitAlias;
 import com.kii.thingif.trigger.clause.Clause;
 
 public class HistoryStatesQuery {
 
-    private @NonNull TraitAlias alias;
+    private @NonNull String alias;
     private @Nullable Clause clause;
     private @Nullable String firmwareVersion;
     private @Nullable Integer bestEffortLimit;
     private @Nullable String nextPaginationKey;
 
     private HistoryStatesQuery(
-            @NonNull  TraitAlias alias,
+            @NonNull  String alias,
             @Nullable Clause clause,
             @Nullable String firmwareVersion,
             @Nullable Integer bestEffortLimit,
@@ -29,16 +28,16 @@ public class HistoryStatesQuery {
 
     public static class Builder {
 
-        private @NonNull TraitAlias alias;
+        private @NonNull String alias;
         private @Nullable Clause clause;
         private @Nullable String firmwareVersion;
         private @Nullable Integer bestEffortLimit;
         private @Nullable String nextPaginationKey;
 
-        public Builder(@NonNull TraitAlias alias){
+        public Builder(@NonNull String alias){
             this.alias = alias;
         }
-        public static Builder newBuilder(@NonNull TraitAlias alias){
+        public static Builder newBuilder(@NonNull String alias){
             return new Builder(alias);
         }
 
@@ -74,7 +73,7 @@ public class HistoryStatesQuery {
     }
 
     @NonNull
-    public TraitAlias getAlias() {
+    public String getAlias() {
         return this.alias;
     }
 
