@@ -1,6 +1,7 @@
 package com.kii.thingif;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ThingIFAPIBuilder<T extends Alias> {
+public class ThingIFAPIBuilder {
 
     private static final String TAG = ThingIFAPIBuilder.class.getSimpleName();
     private final @NonNull Context context;
@@ -25,17 +26,17 @@ public class ThingIFAPIBuilder<T extends Alias> {
     private @Nullable String tag;
     private final @NonNull List<Schema> schemas = new ArrayList<Schema>();
 
-    private final @NonNull Map<T, List<Class<? extends Action>>> actionTypes;
-    private final @NonNull Map<T, List<Class<? extends ActionResult>>> actionResultTypes;
-    private final @NonNull Map<T, Class<? extends TargetState>> stateTypes;
+    private final @NonNull Map<String, List<Class<? extends Action>>> actionTypes;
+    private final @NonNull Map<String, List<Class<? extends ActionResult>>> actionResultTypes;
+    private final @NonNull Map<String, Class<? extends TargetState>> stateTypes;
 
     private ThingIFAPIBuilder(
             @Nullable Context context,
             @NonNull KiiApp app,
             @NonNull Owner owner,
-            @NonNull Map<T, List<Class<? extends Action>>> actionTypes,
-            @NonNull Map<T, List<Class<? extends ActionResult>>> actionResultTypes,
-            @NonNull Map<T, Class<? extends TargetState>> stateTypes
+            @NonNull Map<String, List<Class<? extends Action>>> actionTypes,
+            @NonNull Map<String, List<Class<? extends ActionResult>>> actionResultTypes,
+            @NonNull Map<String, Class<? extends TargetState>> stateTypes
             ) {
         this.context = context;
         this.app = app;
@@ -52,13 +53,13 @@ public class ThingIFAPIBuilder<T extends Alias> {
      * @return ThingIFAPIBuilder instance.
      */
     @NonNull
-    public static <T1 extends Alias>  ThingIFAPIBuilder<T1> newBuilder(
+    public static ThingIFAPIBuilder newBuilder(
             @NonNull Context context,
             @NonNull KiiApp app,
             @NonNull Owner owner,
-            @NonNull Map<T1, List<Class<? extends Action>>> actionTypes,
-            @NonNull Map<T1, List<Class<? extends ActionResult>>> actionResultTypes,
-            @NonNull Map<T1, Class<? extends TargetState>> stateTypes) {
+            @NonNull Map<String, List<Class<? extends Action>>> actionTypes,
+            @NonNull Map<String, List<Class<? extends ActionResult>>> actionResultTypes,
+            @NonNull Map<String, Class<? extends TargetState>> stateTypes) {
         if (context == null) {
             throw new IllegalArgumentException("context is null");
         }
@@ -68,7 +69,7 @@ public class ThingIFAPIBuilder<T extends Alias> {
         if (owner == null) {
             throw new IllegalArgumentException("owner is null");
         }
-        return new ThingIFAPIBuilder<>(context, app, owner, actionTypes, actionResultTypes, stateTypes);
+        return new ThingIFAPIBuilder(context, app, owner, actionTypes, actionResultTypes, stateTypes);
     }
 
     /**
@@ -83,9 +84,9 @@ public class ThingIFAPIBuilder<T extends Alias> {
     public static ThingIFAPIBuilder _newBuilder(
             @NonNull KiiApp app,
             @NonNull Owner owner,
-            @NonNull Map<? extends Alias, List<Class<? extends Action>>> actionTypes,
-            @NonNull Map<? extends Alias, List<Class<? extends ActionResult>>> actionResultTypes,
-            @NonNull Map<? extends Alias, Class<? extends TargetState>> stateTypes) {
+            @NonNull Map<String, List<Class<? extends Action>>> actionTypes,
+            @NonNull Map<String, List<Class<? extends ActionResult>>> actionResultTypes,
+            @NonNull Map<String, Class<? extends TargetState>> stateTypes) {
         if (app == null) {
             throw new IllegalArgumentException("app is null");
         }
@@ -100,7 +101,7 @@ public class ThingIFAPIBuilder<T extends Alias> {
      * @return ThingIFAPIBuilder instance for method chaining.
      */
     @NonNull
-    public ThingIFAPIBuilder<T> addSchema(
+    public ThingIFAPIBuilder addSchema(
             @NonNull Schema schema) {
         if (schema == null) {
             throw new IllegalArgumentException("schema is null");
@@ -115,7 +116,7 @@ public class ThingIFAPIBuilder<T extends Alias> {
      * @param target target of {@link ThingIFAPI} instance.
      * @return builder instance for chaining call.
      */
-    public ThingIFAPIBuilder<T> setTarget(Target target) {
+    public ThingIFAPIBuilder setTarget(Target target) {
         this.target = target;
         return this;
     }
@@ -134,7 +135,7 @@ public class ThingIFAPIBuilder<T extends Alias> {
      * @return builder instance for chaining call.
      */
     @NonNull
-    public ThingIFAPIBuilder<T> setTag(@Nullable String tag) {
+    public ThingIFAPIBuilder setTag(@Nullable String tag) {
         this.tag = tag;
         return this;
     }
@@ -144,7 +145,7 @@ public class ThingIFAPIBuilder<T extends Alias> {
      * @param installationID installation id
      * @return builder instance for chaining call.
      */
-    public ThingIFAPIBuilder<T> setInstallationID(String installationID) {
+    public ThingIFAPIBuilder setInstallationID(String installationID) {
         this.installationID = installationID;
         return this;
     }
@@ -154,12 +155,12 @@ public class ThingIFAPIBuilder<T extends Alias> {
      * @throws IllegalStateException when schema is not present.
      */
     @NonNull
-    public ThingIFAPI<T> build() {
+    public ThingIFAPI build() {
         if (this.schemas.size() == 0) {
             throw new IllegalStateException("Builder has no schemas");
         }
         _Log.d(TAG, MessageFormat.format("Initialize ThingIFAPI AppID={0}, AppKey={1}, BaseUrl={2}", app.getAppID(), app.getAppKey(), app.getBaseUrl()));
-        return new ThingIFAPI<>(this.context, this.tag, app, this.owner, this.target, this.schemas, this.installationID, this.actionTypes, this.actionResultTypes, this.stateTypes);
+        return new ThingIFAPI(this.context, this.tag, app, this.owner, this.target, this.schemas, this.installationID, this.actionTypes, this.actionResultTypes, this.stateTypes);
     }
 
     /**
@@ -171,8 +172,8 @@ public class ThingIFAPIBuilder<T extends Alias> {
      * @return builder instance for chaining call.
      */
     @NonNull
-    public ThingIFAPIBuilder<T> registerActions(
-            @NonNull T alias,
+    public ThingIFAPIBuilder registerActions(
+            @NonNull String alias,
             @NonNull List<Class<? extends Action>> actionClasses){
         this.actionTypes.put(alias, actionClasses);
         return this;
@@ -187,8 +188,8 @@ public class ThingIFAPIBuilder<T extends Alias> {
      * @return builder instance for chaining call.
      */
     @NonNull
-    public ThingIFAPIBuilder<T> registerActionResults(
-            @NonNull T alias,
+    public ThingIFAPIBuilder registerActionResults(
+            @NonNull String alias,
             @NonNull List<Class<? extends ActionResult>> actionResultClasses) {
         this.actionResultTypes.put(alias, actionResultClasses);
         return this;
@@ -203,8 +204,8 @@ public class ThingIFAPIBuilder<T extends Alias> {
      * @return builder instance for chaining call.
      */
     @NonNull
-    public ThingIFAPIBuilder<T> registerTargetState(
-            @NonNull T alias,
+    public ThingIFAPIBuilder registerTargetState(
+            @NonNull String alias,
             @NonNull Class<TargetState> stateClass) {
         this.stateTypes.put(alias, stateClass);
         return this;

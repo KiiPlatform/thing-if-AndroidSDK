@@ -1,32 +1,30 @@
 package com.kii.thingif.trigger.clause;
 
 import android.os.Parcel;
-import android.provider.AlarmClock;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
-
-import com.kii.thingif.Alias;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Equals<T extends Alias> extends Clause<T> {
+public class Equals extends Clause {
 
     private final String field;
     private final Object value;
-    private final T alias;
-    public Equals(@NonNull String field, String value, T alias) {
+    private final String alias;
+    public Equals(@NonNull String field, String value, String alias) {
         this.field = field;
         this.value = value;
         this.alias = alias;
     }
 
-    public Equals(String field, long value, T alias) {
+    public Equals(String field, long value, String alias) {
         this.field = field;
         this.value = value;
         this.alias = alias;
     }
 
-    public Equals(String field, boolean value, T alias) {
+    public Equals(String field, boolean value, String alias) {
         this.field = field;
         this.value = value;
         this.alias = alias;
@@ -71,8 +69,7 @@ public class Equals<T extends Alias> extends Clause<T> {
 
     // Implementation of Parcelable
     protected Equals(Parcel in) {
-        //TODO: // FIXME: 12/15/16 should adapt to subclass of Alias, refer http://stackoverflow.com/a/31979348
-        this.alias = in.readParcelable(Alias.class.getClassLoader());
+        this.alias = in.readString();
         this.field = in.readString();
         Class<?> clazz = (Class<?>)in.readSerializable();
         if (clazz == String.class) {
@@ -102,7 +99,7 @@ public class Equals<T extends Alias> extends Clause<T> {
     }
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        //TODO: // FIXME: 12/15/16 shoudl adapt to subclass of Alias
+        dest.writeString(this.alias);
         dest.writeString(this.field);
         dest.writeSerializable(this.value.getClass());
         if (this.value instanceof String) {

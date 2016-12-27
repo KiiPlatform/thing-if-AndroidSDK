@@ -1,15 +1,15 @@
 package com.kii.thingif.trigger.clause;
 
-import com.kii.thingif.Alias;
+import android.os.Parcelable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ContainerClause<T extends Alias> extends Clause<T> {
-    protected final List<Clause<T>> clauses = new ArrayList<>();
-    public ContainerClause(Clause<T>... clauses) {
+public abstract class ContainerClause  extends Clause {
+    protected final List<Clause> clauses = new ArrayList<>();
+    public ContainerClause(Clause... clauses) {
         if (clauses != null) {
-            for (Clause<T> clause : clauses) {
+            for (Clause clause : clauses) {
                 this.clauses.add(clause);
             }
         }
@@ -17,7 +17,7 @@ public abstract class ContainerClause<T extends Alias> extends Clause<T> {
     public Clause[] getClauses() {
         return this.clauses.toArray(new Clause[this.clauses.size()]);
     }
-    public void addClause(Clause<T> clause) {
+    public void addClause(Clause clause) {
         this.clauses.add(clause);
     }
     public boolean hasClause() {
