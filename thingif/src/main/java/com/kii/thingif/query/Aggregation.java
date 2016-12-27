@@ -29,10 +29,10 @@ public class Aggregation implements Parcelable{
 
     /**
      * Initialize Aggregation
-     * @param function Agrregation function.
+     * @param function Aggregation function.
      * @param field
      */
-    private Aggregation(
+    public Aggregation(
             @NonNull FunctionType function,
             @NonNull String field,
             @NonNull FieldType fieldType
@@ -41,35 +41,6 @@ public class Aggregation implements Parcelable{
         this.field = field;
         this.fieldType = fieldType;
     }
-
-
-    public  static Aggregation newMaxAggregation(
-            @NonNull String field,
-            @NonNull FieldType fieldType) throws IllegalArgumentException{
-        return new Aggregation(FunctionType.MAX, field, fieldType);
-    }
-
-    public  static Aggregation newMinAggregation(
-            @NonNull String field,
-            @NonNull FieldType fieldType) throws IllegalArgumentException{
-        return new Aggregation(FunctionType.MIN, field, fieldType);
-    }
-
-    public  static Aggregation newMeanAggregation(
-            @NonNull String field,
-            @NonNull FieldType fieldType) throws IllegalArgumentException{
-        return new Aggregation(FunctionType.MEAN, field, fieldType);
-    }
-
-    public  static Aggregation newSumAggregation(
-            @NonNull String field,
-            @NonNull FieldType fieldType) throws IllegalArgumentException{
-        if(fieldType != FieldType.DECIMAL && fieldType != FieldType.INTEGER){
-            throw new IllegalArgumentException("fieldType of SUM aggregation should only be INTEGER or DECIMAL");
-        }
-        return new Aggregation(FunctionType.SUM, field, fieldType);
-    }
-
 
     public JSONObject toJSONObject() {
         JSONObject ret = new JSONObject();
