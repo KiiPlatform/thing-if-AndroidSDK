@@ -27,6 +27,11 @@ import com.kii.thingif.gateway.PendingEndNode;
 import com.kii.thingif.internal.GsonRepository;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
+import com.kii.thingif.query.AggregatedResult;
+import com.kii.thingif.query.Aggregation;
+import com.kii.thingif.query.GroupedHistoryStates;
+import com.kii.thingif.query.GroupedHistoryStatesQuery;
+import com.kii.thingif.query.HistoryStatesQuery;
 import com.kii.thingif.schema.Schema;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.Predicate;
@@ -1715,6 +1720,46 @@ public class ThingIFAPI implements Parcelable {
     public String getFirmwareVersion() {
         //TODO: // FIXME: 12/20/16 implement the logic.
         return null;
+    }
+
+    /**
+     * Query history states with trait alias.
+     * @param query Instance of {@link HistoryStatesQuery}.
+     *              If clause of query is null, query all history states.
+     * @return Pair instance. First element is map of trait alias and list of target state.
+     *  Second element is next pagination key.
+     */
+    public Pair<Map<TraitAlias, List<TargetState>>, String> query(
+            @NonNull HistoryStatesQuery query){
+        //TODO: // FIXME: 12/22/16 implement the logic
+        Map<TraitAlias, List<TargetState>> results = new HashMap<>();
+        String nextPaginationKey = "";
+        return new Pair<>(results, nextPaginationKey);
+    }
+
+    /**
+     * Group history state
+     * @param query {@link GroupedHistoryStatesQuery} instance
+     * @return List of {@link GroupedHistoryStates} instances.
+     */
+    public List<GroupedHistoryStates> query(
+            @NonNull GroupedHistoryStatesQuery query){
+        //TODO: // FIXME: 12/21/16 implement the logic
+        return new ArrayList<>();
+    }
+
+    /**
+     * Aggregate history states
+     * @param groupedQuery {@link GroupedHistoryStatesQuery} instance.
+     * @param aggregation {@link Aggregation} instance.
+     * @param <T1> Type of aggregated result field.
+     * @return List of {@link AggregatedResult} instance.
+     */
+    public <T1 extends Number> List<AggregatedResult<T1>> query(
+            @NonNull GroupedHistoryStatesQuery groupedQuery,
+            @NonNull Aggregation aggregation){
+        //TODO: // FIXME: 12/21/16 implement the logic
+        return new ArrayList<>();
     }
 
 }
