@@ -9,11 +9,11 @@ import java.util.List;
 
 public class GroupedHistoryStates<S extends TargetState> {
     private @NonNull TimeRange timeRange;
-    private @NonNull List<S> objects;
+    private @NonNull List<HistoryState<S>> objects;
 
     public GroupedHistoryStates(
             @NonNull TimeRange timeRange,
-            @NonNull List<S> objects) {
+            @NonNull List<HistoryState<S>> objects) {
         this.timeRange = timeRange;
         this.objects = objects;
     }
@@ -24,7 +24,7 @@ public class GroupedHistoryStates<S extends TargetState> {
     }
 
     @NonNull
-    public List<S> getObjects() {
+    public List<HistoryState<S>> getObjects() {
         return this.objects;
     }
 }
