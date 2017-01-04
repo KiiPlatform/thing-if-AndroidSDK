@@ -76,7 +76,7 @@ public class ThingIFAPI implements Parcelable {
 
     private final Map<String, Map<String,List<Class<? extends Action>>>> actionTypes;
     private final Map<String, Map<String,List<Class<? extends ActionResult>>>> actionResultTypes;
-    private final Map<String, Map<String,Class<? extends TargetState>>> stateTypes;
+    private final Map<String, Class<? extends TargetState>> stateTypes;
 
     /**
      * Try to load the instance of ThingIFAPI using stored serialized instance.
@@ -214,7 +214,7 @@ public class ThingIFAPI implements Parcelable {
             @Nullable String installationID,
             @NonNull Map<String, Map<String,List<Class<? extends Action>>>> actionTypes,
             @NonNull Map<String, Map<String,List<Class<? extends ActionResult>>>> actionResultTypes,
-            @NonNull Map<String, Map<String,Class<? extends TargetState>>> stateTypes
+            @NonNull Map<String, Class<? extends TargetState>> stateTypes
             ) {
         // Parameters are checked by ThingIFAPIBuilder
         if (context != null) {
