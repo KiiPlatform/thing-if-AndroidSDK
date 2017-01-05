@@ -1,7 +1,6 @@
 package com.kii.thingif.trigger;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 public class StatePredicate extends Predicate {

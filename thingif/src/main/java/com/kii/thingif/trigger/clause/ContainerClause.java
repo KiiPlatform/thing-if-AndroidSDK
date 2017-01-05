@@ -1,7 +1,5 @@
 package com.kii.thingif.trigger.clause;
 
-import android.os.Parcelable;
-
 import java.util.ArrayList;
 import java.util.List;
 

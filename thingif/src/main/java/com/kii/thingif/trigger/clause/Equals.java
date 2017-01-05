@@ -1,7 +1,6 @@
 package com.kii.thingif.trigger.clause;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import org.json.JSONException;
