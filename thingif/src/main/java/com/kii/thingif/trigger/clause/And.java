@@ -1,6 +1,7 @@
 package com.kii.thingif.trigger.clause;
 
 import android.os.Parcel;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
