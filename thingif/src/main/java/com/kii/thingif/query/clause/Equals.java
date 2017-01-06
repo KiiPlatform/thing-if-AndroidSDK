@@ -1,5 +1,6 @@
 package com.kii.thingif.query.clause;
 
+import android.os.Parcel;
 import android.support.annotation.NonNull;
 
 import org.json.JSONObject;
@@ -37,4 +38,19 @@ public class Equals extends com.kii.thingif.internal.clause.Equals implements Cl
     public int hashCode() {
         return super.hashCode();
     }
+
+    public Equals(Parcel in) {
+        super(in);
+    }
+
+    public static final Creator<Equals> CREATOR = new Creator<Equals>() {
+        @Override
+        public Equals createFromParcel(Parcel in) {
+            return new Equals(in);
+        }
+        @Override
+        public Equals[] newArray(int size) {
+            return new Equals[size];
+        }
+    };
 }

@@ -1,5 +1,6 @@
 package com.kii.thingif.trigger.clause;
 
+import android.os.Parcel;
 import android.support.annotation.NonNull;
 
 import org.json.JSONObject;
@@ -24,4 +25,19 @@ public class NotEquals extends com.kii.thingif.internal.clause.NotEquals impleme
     public int hashCode() {
         return super.hashCode();
     }
+
+    private NotEquals(Parcel in) {
+        super(in);
+    }
+    public static final Creator<NotEquals> CREATOR = new Creator<NotEquals>() {
+        @Override
+        public NotEquals createFromParcel(Parcel in) {
+            return new NotEquals(in);
+        }
+
+        @Override
+        public NotEquals[] newArray(int size) {
+            return new NotEquals[size];
+        }
+    };
 }

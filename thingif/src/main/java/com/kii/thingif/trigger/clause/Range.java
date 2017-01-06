@@ -129,7 +129,7 @@ public class Range extends com.kii.thingif.internal.clause.Range implements Clau
     }
 
     // Implementation of Parcelable
-    protected Range(Parcel in) {
+    private Range(Parcel in) {
         super(in);
         this.alias = in.readString();
     }

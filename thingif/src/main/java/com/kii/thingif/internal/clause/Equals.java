@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Equals implements Clause {
+public abstract class Equals implements Clause {
 
     protected final String field;
     protected final Object value;
@@ -77,16 +77,7 @@ public class Equals implements Clause {
             throw new AssertionError("Detected unexpected value.");
         }
     }
-    public static final Creator<Equals> CREATOR = new Creator<Equals>() {
-        @Override
-        public Equals createFromParcel(Parcel in) {
-            return new Equals(in);
-        }
-        @Override
-        public Equals[] newArray(int size) {
-            return new Equals[size];
-        }
-    };
+
     @Override
     public int describeContents() {
         return 0;

@@ -1,5 +1,7 @@
 package com.kii.thingif.trigger.clause;
 
+import android.os.Parcel;
+
 import org.json.JSONObject;
 
 public class And extends com.kii.thingif.internal.clause.And implements Clause{
@@ -16,6 +18,23 @@ public class And extends com.kii.thingif.internal.clause.And implements Clause{
         return super.equals(o);
 
     }
+
+    // Implementation of Parcelable
+    private And(Parcel in) {
+        super(in);
+    }
+
+    public static final Creator<And> CREATOR = new Creator<And>() {
+        @Override
+        public And createFromParcel(Parcel in) {
+            return new And(in);
+        }
+
+        @Override
+        public And[] newArray(int size) {
+            return new And[size];
+        }
+    };
     @Override
     public int hashCode() {
         return super.hashCode();

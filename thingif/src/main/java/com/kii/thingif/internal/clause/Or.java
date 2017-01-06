@@ -9,7 +9,7 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 
-public class Or extends ContainerClause {
+public abstract class Or extends ContainerClause {
     public Or(Clause... clauses) {
         super(clauses);
     }
@@ -50,17 +50,7 @@ public class Or extends ContainerClause {
             this.clauses.add((Clause)in.readParcelable(getClass().getClassLoader()));
         }
     }
-    public static final Creator<Or> CREATOR = new Creator<Or>() {
-        @Override
-        public Or createFromParcel(Parcel in) {
-            return new Or(in);
-        }
 
-        @Override
-        public Or[] newArray(int size) {
-            return new Or[size];
-        }
-    };
     @Override
     public int describeContents() {
         return 0;

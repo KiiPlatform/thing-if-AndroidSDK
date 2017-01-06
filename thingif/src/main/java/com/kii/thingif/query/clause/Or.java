@@ -1,5 +1,7 @@
 package com.kii.thingif.query.clause;
 
+import android.os.Parcel;
+
 import org.json.JSONObject;
 
 public class Or extends com.kii.thingif.internal.clause.Or implements Clause{
@@ -19,4 +21,20 @@ public class Or extends com.kii.thingif.internal.clause.Or implements Clause{
     public int hashCode() {
         return super.hashCode();
     }
+
+    public Or(Parcel in) {
+        super(in);
+    }
+
+    public static final Creator<Or> CREATOR = new Creator<Or>() {
+        @Override
+        public Or createFromParcel(Parcel in) {
+            return new Or(in);
+        }
+
+        @Override
+        public Or[] newArray(int size) {
+            return new Or[size];
+        }
+    };
 }

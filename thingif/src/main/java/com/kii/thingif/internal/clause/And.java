@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 
-public class And extends ContainerClause {
+public abstract class And extends ContainerClause {
     public And(Clause... clauses) {
         super(clauses);
     }
@@ -42,7 +42,6 @@ public class And extends ContainerClause {
         return Arrays.hashCode(this.getClauses());
     }
 
-
     // Implementation of Parcelable
     protected And(Parcel in) {
         super();
@@ -51,17 +50,7 @@ public class And extends ContainerClause {
             this.clauses.add((Clause)in.readParcelable(getClass().getClassLoader()));
         }
     }
-    public static final Creator<And> CREATOR = new Creator<And>() {
-        @Override
-        public And createFromParcel(Parcel in) {
-            return new And(in);
-        }
 
-        @Override
-        public And[] newArray(int size) {
-            return new And[size];
-        }
-    };
     @Override
     public int describeContents() {
         return 0;

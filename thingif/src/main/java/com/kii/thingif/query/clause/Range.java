@@ -1,5 +1,6 @@
 package com.kii.thingif.query.clause;
 
+import android.os.Parcel;
 import android.support.annotation.NonNull;
 
 import org.json.JSONObject;
@@ -7,7 +8,7 @@ import org.json.JSONObject;
 public class Range extends com.kii.thingif.internal.clause.Range implements Clause{
 
 
-    public Range(String field, 
+    private Range(String field,
                  Long upperLimit,
                  Boolean upperIncluded, 
                  Long lowerLimit, 
@@ -97,4 +98,19 @@ public class Range extends com.kii.thingif.internal.clause.Range implements Clau
     public int hashCode() {
         return super.hashCode();
     }
+
+    private Range(Parcel in) {
+        super(in);
+    }
+    public static final Creator<Range> CREATOR = new Creator<Range>() {
+        @Override
+        public Range createFromParcel(Parcel in) {
+            return new Range(in);
+        }
+
+        @Override
+        public Range[] newArray(int size) {
+            return new Range[size];
+        }
+    };
 }
