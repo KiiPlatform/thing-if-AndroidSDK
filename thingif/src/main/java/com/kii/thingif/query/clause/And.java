@@ -1,5 +1,7 @@
 package com.kii.thingif.query.clause;
 
+import android.os.Parcel;
+
 import org.json.JSONObject;
 
 import java.util.Arrays;
@@ -22,5 +24,22 @@ public class And extends com.kii.thingif.internal.clause.And implements Clause{
     public int hashCode() {
         return Arrays.hashCode(this.getClauses());
     }
+
+    // Implementation of Parcelable
+    private And(Parcel in) {
+        super(in);
+    }
+
+    public static final Creator<And> CREATOR = new Creator<And>() {
+        @Override
+        public And createFromParcel(Parcel in) {
+            return new And(in);
+        }
+
+        @Override
+        public And[] newArray(int size) {
+            return new And[size];
+        }
+    };
 
 }
