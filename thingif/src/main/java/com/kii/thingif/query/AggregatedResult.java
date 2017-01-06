@@ -10,12 +10,12 @@ import java.util.List;
 public class AggregatedResult<T extends Number, S extends TargetState> {
     private @NonNull TimeRange timeRange;
     private @NonNull T value;
-    private @Nullable List<S> aggregatedObjects;
+    private @Nullable List<HistoryState<S>> aggregatedObjects;
 
     public AggregatedResult(
         @NonNull TimeRange timeRange,
         @NonNull T value,
-        @Nullable List<S> aggregatedObjects) {
+        @Nullable List<HistoryState<S>> aggregatedObjects) {
         this.timeRange = timeRange;
         this.value = value;
         this.aggregatedObjects = aggregatedObjects;
@@ -32,7 +32,7 @@ public class AggregatedResult<T extends Number, S extends TargetState> {
     }
 
     @Nullable
-    public List<S> getAggregatedObjects() {
+    public List<HistoryState<S>> getAggregatedObjects() {
         return this.aggregatedObjects;
     }
 }

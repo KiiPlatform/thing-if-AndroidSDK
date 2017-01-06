@@ -1,7 +1,6 @@
 package com.kii.thingif;
 
 import android.content.Context;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -26,16 +25,16 @@ public class ThingIFAPIBuilder {
     private @Nullable String tag;
     private final @NonNull List<Schema> schemas = new ArrayList<Schema>();
 
-    private final @NonNull Map<String, List<Class<? extends Action>>> actionTypes;
-    private final @NonNull Map<String, List<Class<? extends ActionResult>>> actionResultTypes;
+    private final @NonNull Map<String, Map<String, Class<? extends Action>>> actionTypes;
+    private final @NonNull Map<String, Map<String, Class<? extends ActionResult>>> actionResultTypes;
     private final @NonNull Map<String, Class<? extends TargetState>> stateTypes;
 
     private ThingIFAPIBuilder(
             @Nullable Context context,
             @NonNull KiiApp app,
             @NonNull Owner owner,
-            @NonNull Map<String, List<Class<? extends Action>>> actionTypes,
-            @NonNull Map<String, List<Class<? extends ActionResult>>> actionResultTypes,
+            @NonNull Map<String, Map<String,Class<? extends Action>>> actionTypes,
+            @NonNull Map<String, Map<String,Class<? extends ActionResult>>> actionResultTypes,
             @NonNull Map<String, Class<? extends TargetState>> stateTypes
             ) {
         this.context = context;
@@ -57,8 +56,8 @@ public class ThingIFAPIBuilder {
             @NonNull Context context,
             @NonNull KiiApp app,
             @NonNull Owner owner,
-            @NonNull Map<String, List<Class<? extends Action>>> actionTypes,
-            @NonNull Map<String, List<Class<? extends ActionResult>>> actionResultTypes,
+            @NonNull Map<String, Map<String,Class<? extends Action>>> actionTypes,
+            @NonNull Map<String, Map<String,Class<? extends ActionResult>>> actionResultTypes,
             @NonNull Map<String, Class<? extends TargetState>> stateTypes) {
         if (context == null) {
             throw new IllegalArgumentException("context is null");
@@ -84,8 +83,8 @@ public class ThingIFAPIBuilder {
     public static ThingIFAPIBuilder _newBuilder(
             @NonNull KiiApp app,
             @NonNull Owner owner,
-            @NonNull Map<String, List<Class<? extends Action>>> actionTypes,
-            @NonNull Map<String, List<Class<? extends ActionResult>>> actionResultTypes,
+            @NonNull Map<String, Map<String,Class<? extends Action>>> actionTypes,
+            @NonNull Map<String, Map<String,Class<? extends ActionResult>>> actionResultTypes,
             @NonNull Map<String, Class<? extends TargetState>> stateTypes) {
         if (app == null) {
             throw new IllegalArgumentException("app is null");
@@ -174,7 +173,7 @@ public class ThingIFAPIBuilder {
     @NonNull
     public ThingIFAPIBuilder registerActions(
             @NonNull String alias,
-            @NonNull List<Class<? extends Action>> actionClasses){
+            @NonNull Map<String,Class<? extends Action>> actionClasses){
         this.actionTypes.put(alias, actionClasses);
         return this;
     }
@@ -190,7 +189,7 @@ public class ThingIFAPIBuilder {
     @NonNull
     public ThingIFAPIBuilder registerActionResults(
             @NonNull String alias,
-            @NonNull List<Class<? extends ActionResult>> actionResultClasses) {
+            @NonNull Map<String,Class<? extends ActionResult>> actionResultClasses) {
         this.actionResultTypes.put(alias, actionResultClasses);
         return this;
     }
@@ -206,7 +205,7 @@ public class ThingIFAPIBuilder {
     @NonNull
     public ThingIFAPIBuilder registerTargetState(
             @NonNull String alias,
-            @NonNull Class<TargetState> stateClass) {
+            @NonNull Class<? extends TargetState> stateClass) {
         this.stateTypes.put(alias, stateClass);
         return this;
     }

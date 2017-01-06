@@ -1,12 +1,10 @@
 package com.kii.thingif.internal.clause;
 
-import android.os.Parcelable;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ContainerClause implements Clause {
-    protected final List<Clause> clauses = new ArrayList<>();
+    protected final List<Clause> clauses = new ArrayList<Clause>();
     public ContainerClause(Clause... clauses) {
         if (clauses != null) {
             for (Clause clause : clauses) {
