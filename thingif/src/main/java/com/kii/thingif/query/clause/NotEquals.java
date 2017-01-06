@@ -1,11 +1,11 @@
-package com.kii.thingif.trigger.clause;
+package com.kii.thingif.query.clause;
 
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 
 import org.json.JSONObject;
 
-public class NotEquals extends com.kii.thingif.internal.clause.NotEquals implements Clause {
+public class NotEquals extends com.kii.thingif.internal.clause.NotEquals implements Clause{
     public NotEquals(@NonNull Equals equals) {
         super(equals);
     }
@@ -19,16 +19,17 @@ public class NotEquals extends com.kii.thingif.internal.clause.NotEquals impleme
 
     @Override
     public boolean equals(Object o) {
-        return  super.equals(o);
+       return  super.equals(o);
     }
     @Override
     public int hashCode() {
         return super.hashCode();
     }
 
-    private NotEquals(Parcel in) {
+    public NotEquals(Parcel in) {
         super(in);
     }
+
     public static final Creator<NotEquals> CREATOR = new Creator<NotEquals>() {
         @Override
         public NotEquals createFromParcel(Parcel in) {

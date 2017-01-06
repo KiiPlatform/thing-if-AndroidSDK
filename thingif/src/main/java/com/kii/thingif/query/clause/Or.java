@@ -1,4 +1,4 @@
-package com.kii.thingif.trigger.clause;
+package com.kii.thingif.query.clause;
 
 import android.os.Parcel;
 
@@ -22,9 +22,10 @@ public class Or extends com.kii.thingif.internal.clause.Or implements Clause{
         return super.hashCode();
     }
 
-    private Or(Parcel in) {
+    public Or(Parcel in) {
         super(in);
     }
+
     public static final Creator<Or> CREATOR = new Creator<Or>() {
         @Override
         public Or createFromParcel(Parcel in) {
