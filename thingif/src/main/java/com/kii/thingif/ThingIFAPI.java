@@ -33,6 +33,7 @@ import com.kii.thingif.query.CountFieldType;
 import com.kii.thingif.query.CountedResult;
 import com.kii.thingif.query.GroupedHistoryStates;
 import com.kii.thingif.query.GroupedHistoryStatesQuery;
+import com.kii.thingif.query.HistoryState;
 import com.kii.thingif.query.HistoryStatesQuery;
 import com.kii.thingif.schema.Schema;
 import com.kii.thingif.trigger.ServerCode;
@@ -1734,7 +1735,7 @@ public class ThingIFAPI implements Parcelable {
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
      */
-    public <S extends TargetState> Pair<List<S>, String> query(
+    public <S extends TargetState> Pair<List<HistoryState<S>>, String> query(
             @NonNull HistoryStatesQuery query) throws ThingIFException{
         //TODO: // FIXME: 12/22/16 implement the logic
         return null;
