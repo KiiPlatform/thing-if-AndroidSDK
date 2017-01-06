@@ -75,8 +75,8 @@ public class ThingIFAPI implements Parcelable {
     private final IoTRestClient restClient;
     private String installationID;
 
-    private final Map<String, List<Class<? extends Action>>> actionTypes;
-    private final Map<String, List<Class<? extends ActionResult>>> actionResultTypes;
+    private final Map<String, Map<String,Class<? extends Action>>> actionTypes;
+    private final Map<String, Map<String,Class<? extends ActionResult>>> actionResultTypes;
     private final Map<String, Class<? extends TargetState>> stateTypes;
 
     /**
@@ -213,8 +213,8 @@ public class ThingIFAPI implements Parcelable {
             @Nullable Target target,
             @NonNull List<Schema> schemas,
             @Nullable String installationID,
-            @NonNull Map<String, List<Class<? extends Action>>> actionTypes,
-            @NonNull Map<String, List<Class<? extends ActionResult>>> actionResultTypes,
+            @NonNull Map<String, Map<String,Class<? extends Action>>> actionTypes,
+            @NonNull Map<String, Map<String,Class<? extends ActionResult>>> actionResultTypes,
             @NonNull Map<String, Class<? extends TargetState>> stateTypes
             ) {
         // Parameters are checked by ThingIFAPIBuilder
