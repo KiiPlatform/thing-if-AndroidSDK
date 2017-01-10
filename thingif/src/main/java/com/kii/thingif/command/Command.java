@@ -25,7 +25,7 @@ public class Command implements Parcelable {
     private final @Nullable TypedID targetID;
     @SerializedName("issuer")
     private final @NonNull TypedID issuerID;
-    private final @NonNull List<Pair<String, List<Action>>> actions;
+    private final @NonNull List<Pair<String, Object>> actions;
     private final @Nullable List<Pair<String,List<ActionResult>>> actionResults;
     @SerializedName("commandState")
     private final @Nullable CommandState commandState;
@@ -40,7 +40,7 @@ public class Command implements Parcelable {
 
     public Command(@NonNull TypedID targetID,
                    @NonNull TypedID issuerID,
-                   @NonNull List<Pair<String, List<Action>>> actions,
+                   @NonNull List<Pair<String, Object>> actions,
                    @Nullable List<Pair<String, List<ActionResult>>> actonResults,
                    @Nullable String commandID,
                    @Nullable CommandState commandState,
@@ -105,7 +105,7 @@ public class Command implements Parcelable {
      * @return action of this command.
      */
     @NonNull
-    public List<Pair<String, List<Action>>> getActions() {
+    public List<Pair<String, Object>> getActions() {
         return this.actions;
     }
 
