@@ -5,7 +5,6 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Pair;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,7 +31,7 @@ import java.util.List;
  */
 public final class CommandForm implements Parcelable {
 
-    private final @NonNull List<Pair<String, ?>> actions;
+    private final @NonNull List<AliasAction> actions;
 
     private @Nullable String title;
     private @Nullable String description;
@@ -46,7 +45,7 @@ public final class CommandForm implements Parcelable {
      * string and/or actions is null or empty.
      */
     public CommandForm(
-            @NonNull List<Pair<String, ?>> actions)
+            @NonNull List<AliasAction> actions)
         throws IllegalArgumentException
     {
         if (actions == null || actions.size() == 0) {
@@ -106,7 +105,7 @@ public final class CommandForm implements Parcelable {
      * @return actions
      */
     @NonNull
-    public List<Pair<String, Object>> getActions() {
+    public List<AliasAction> getActions() {
         return this.actions;
     }
 

@@ -25,15 +25,15 @@ public class ThingIFAPIBuilder {
     private @Nullable String tag;
     private final @NonNull List<Schema> schemas = new ArrayList<Schema>();
 
-    private final @NonNull Map<String, Class<?>> actionTypes;
-    private final @NonNull Map<String, Class<?>> stateTypes;
+    private final @NonNull Map<String, Class<? extends Action>> actionTypes;
+    private final @NonNull Map<String, Class<? extends TargetState>> stateTypes;
 
     private ThingIFAPIBuilder(
             @Nullable Context context,
             @NonNull KiiApp app,
             @NonNull Owner owner,
-            @NonNull Map<String, Class<?>> actionTypes,
-            @NonNull Map<String, Class<?>> stateTypes
+            @NonNull Map<String, Class<? extends Action>> actionTypes,
+            @NonNull Map<String, Class<? extends TargetState>> stateTypes
             ) {
         this.context = context;
         this.app = app;
@@ -53,8 +53,8 @@ public class ThingIFAPIBuilder {
             @NonNull Context context,
             @NonNull KiiApp app,
             @NonNull Owner owner,
-            @NonNull Map<String, Class<?>> actionTypes,
-            @NonNull Map<String, Class<?>> stateTypes) {
+            @NonNull Map<String, Class<? extends Action>> actionTypes,
+            @NonNull Map<String, Class<? extends TargetState>> stateTypes) {
         if (context == null) {
             throw new IllegalArgumentException("context is null");
         }
@@ -79,8 +79,8 @@ public class ThingIFAPIBuilder {
     public static ThingIFAPIBuilder _newBuilder(
             @NonNull KiiApp app,
             @NonNull Owner owner,
-            @NonNull Map<String, Class<?>> actionTypes,
-            @NonNull Map<String, Class<?>> stateTypes) {
+            @NonNull Map<String, Class<? extends Action>> actionTypes,
+            @NonNull Map<String, Class<? extends TargetState>> stateTypes) {
         if (app == null) {
             throw new IllegalArgumentException("app is null");
         }
@@ -168,7 +168,7 @@ public class ThingIFAPIBuilder {
     @NonNull
     public ThingIFAPIBuilder registerActions(
             @NonNull String alias,
-            @NonNull Class<?> actionClasses){
+            @NonNull Class<? extends Action> actionClasses){
         this.actionTypes.put(alias, actionClasses);
         return this;
     }

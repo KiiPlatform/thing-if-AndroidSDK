@@ -5,7 +5,6 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Pair;
 
 import com.google.gson.annotations.SerializedName;
 import com.kii.thingif.TypedID;
@@ -25,8 +24,8 @@ public class Command implements Parcelable {
     private final @Nullable TypedID targetID;
     @SerializedName("issuer")
     private final @NonNull TypedID issuerID;
-    private final @NonNull List<Pair<String, Object>> actions;
-    private final @Nullable List<Pair<String,List<ActionResult>>> actionResults;
+    private final @NonNull List<AliasAction> actions;
+    private final @Nullable List<AliasActionResult> actionResults;
     @SerializedName("commandState")
     private final @Nullable CommandState commandState;
     private final @Nullable String firedByTriggerID;
@@ -40,8 +39,8 @@ public class Command implements Parcelable {
 
     public Command(@NonNull TypedID targetID,
                    @NonNull TypedID issuerID,
-                   @NonNull List<Pair<String, Object>> actions,
-                   @Nullable List<Pair<String, List<ActionResult>>> actonResults,
+                   @NonNull List<AliasAction> actions,
+                   @Nullable List<AliasActionResult> actonResults,
                    @Nullable String commandID,
                    @Nullable CommandState commandState,
                    @Nullable String firedByTriggerID,
@@ -105,7 +104,7 @@ public class Command implements Parcelable {
      * @return action of this command.
      */
     @NonNull
-    public List<Pair<String, Object>> getActions() {
+    public List<AliasAction> getActions() {
         return this.actions;
     }
 
@@ -114,7 +113,7 @@ public class Command implements Parcelable {
      * @return action results of this command.
      */
     @Nullable
-    public List<Pair<String, List<ActionResult>>> getActionResults() {
+    public List<AliasActionResult> getActionResults() {
         return this.actionResults;
     }
 
