@@ -75,6 +75,14 @@ public class TriggeredCommandForm implements Parcelable {
             return new Builder(actions);
         }
 
+        /**
+         * Constructs a {@link TriggeredCommandForm.Builder} instance with empty actions Array
+         * @return builder instance.
+         */
+        public static Builder newBuilder() {
+            return new Builder(new ArrayList<AliasAction>());
+        }
+
 //        /**
 //         * Constructs a {@link TriggeredCommandForm.Builder} instance.
 //         *
@@ -108,28 +116,19 @@ public class TriggeredCommandForm implements Parcelable {
 //        }
 
         /**
-         * Setter of actions.
-         *
-         * <p>
-         * List of action is required field of command, so null and empty
-         * list is not acceptable.
-         * </p>
-         *
-         * @param actions List of action.
+         * Add action to actions array.
+         * @param action AliasAction instance.
          * @return this instance for method chaining.
-         * @throws IllegalArgumentException actions is null or empty list.
          */
         @NonNull
-        public Builder setActions(
-                @NonNull List<AliasAction> actions)
+        public Builder addAction(
+                @NonNull AliasAction action)
             throws IllegalArgumentException
         {
-            if (isEmpty(actions)) {
-                throw new IllegalArgumentException("actions is null or empty.");
-            }
-            this.actions = actions;
+            this.actions.add(action);
             return this;
         }
+
 
         /**
          * Getter of actions.
