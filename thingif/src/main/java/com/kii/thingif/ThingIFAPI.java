@@ -75,9 +75,8 @@ public class ThingIFAPI implements Parcelable {
     private final IoTRestClient restClient;
     private String installationID;
 
-    private final Map<String, Map<String,Class<? extends Action>>> actionTypes;
-    private final Map<String, Map<String,Class<? extends ActionResult>>> actionResultTypes;
-    private final Map<String, Class<? extends TargetState>> stateTypes;
+    private final Map<String, Class<?>> actionTypes;
+    private final Map<String, Class<?>> stateTypes;
 
     /**
      * Try to load the instance of ThingIFAPI using stored serialized instance.
@@ -213,9 +212,8 @@ public class ThingIFAPI implements Parcelable {
             @Nullable Target target,
             @NonNull List<Schema> schemas,
             @Nullable String installationID,
-            @NonNull Map<String, Map<String,Class<? extends Action>>> actionTypes,
-            @NonNull Map<String, Map<String,Class<? extends ActionResult>>> actionResultTypes,
-            @NonNull Map<String, Class<? extends TargetState>> stateTypes
+            @NonNull Map<String, Class<?>> actionTypes,
+            @NonNull Map<String, Class<?>> stateTypes
             ) {
         // Parameters are checked by ThingIFAPIBuilder
         if (context != null) {
@@ -231,7 +229,6 @@ public class ThingIFAPI implements Parcelable {
         this.installationID = installationID;
         this.restClient = new IoTRestClient();
         this.actionTypes = actionTypes;
-        this.actionResultTypes = actionResultTypes;
         this.stateTypes = stateTypes;
     }
     /**
@@ -245,7 +242,7 @@ public class ThingIFAPI implements Parcelable {
         if (target == null) {
             throw new IllegalArgumentException("target is null");
         }
-        ThingIFAPI api = new ThingIFAPI(context, tag, this.app, this.owner, target, new ArrayList<Schema>(this.schemas.values()), this.installationID, this.actionTypes, this.actionResultTypes, this.stateTypes);
+        ThingIFAPI api = new ThingIFAPI(context, tag, this.app, this.owner, target, new ArrayList<Schema>(this.schemas.values()), this.installationID, this.actionTypes, this.stateTypes);
         saveInstance(api);
         return api;
     }
@@ -1388,7 +1385,7 @@ public class ThingIFAPI implements Parcelable {
      */
     @NonNull
     @WorkerThread
-    public Map<String, TargetState> getTargetState() throws ThingIFException{
+    public Map<String, ?> getTargetState() throws ThingIFException{
         //TODO: // FIXME: 12/21/16 implement the logic
         return new HashMap<>();
     }
@@ -1402,7 +1399,7 @@ public class ThingIFAPI implements Parcelable {
      */
     @NonNull
     @WorkerThread
-    public TargetState getTargetState(
+    public Object getTargetState(
             @NonNull String alias) throws ThingIFException {
 
         if (this.target == null) {
@@ -1617,9 +1614,6 @@ public class ThingIFAPI implements Parcelable {
         //TODO: // FIXME: 12/20/16 read the register action classes
         int size = in.readInt();
         this.actionTypes = new HashMap<>(size);
-        //TODO: // FIXME: 12/20/16 read the registered actionResult classes
-        int size1 = in.readInt();
-        this.actionResultTypes = new HashMap<>(size1);
         //TODO: // FIXME: 12/20/16 read the registered targetState classes
         int size2 = in.readInt();
         this.stateTypes = new HashMap<>(size2);

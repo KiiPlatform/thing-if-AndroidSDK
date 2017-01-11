@@ -25,23 +25,20 @@ public class ThingIFAPIBuilder {
     private @Nullable String tag;
     private final @NonNull List<Schema> schemas = new ArrayList<Schema>();
 
-    private final @NonNull Map<String, Map<String, Class<? extends Action>>> actionTypes;
-    private final @NonNull Map<String, Map<String, Class<? extends ActionResult>>> actionResultTypes;
-    private final @NonNull Map<String, Class<? extends TargetState>> stateTypes;
+    private final @NonNull Map<String, Class<?>> actionTypes;
+    private final @NonNull Map<String, Class<?>> stateTypes;
 
     private ThingIFAPIBuilder(
             @Nullable Context context,
             @NonNull KiiApp app,
             @NonNull Owner owner,
-            @NonNull Map<String, Map<String,Class<? extends Action>>> actionTypes,
-            @NonNull Map<String, Map<String,Class<? extends ActionResult>>> actionResultTypes,
-            @NonNull Map<String, Class<? extends TargetState>> stateTypes
+            @NonNull Map<String, Class<?>> actionTypes,
+            @NonNull Map<String, Class<?>> stateTypes
             ) {
         this.context = context;
         this.app = app;
         this.owner = owner;
         this.actionTypes = actionTypes;
-        this.actionResultTypes = actionResultTypes;
         this.stateTypes = stateTypes;
     }
 
@@ -56,9 +53,8 @@ public class ThingIFAPIBuilder {
             @NonNull Context context,
             @NonNull KiiApp app,
             @NonNull Owner owner,
-            @NonNull Map<String, Map<String,Class<? extends Action>>> actionTypes,
-            @NonNull Map<String, Map<String,Class<? extends ActionResult>>> actionResultTypes,
-            @NonNull Map<String, Class<? extends TargetState>> stateTypes) {
+            @NonNull Map<String, Class<?>> actionTypes,
+            @NonNull Map<String, Class<?>> stateTypes) {
         if (context == null) {
             throw new IllegalArgumentException("context is null");
         }
@@ -68,7 +64,7 @@ public class ThingIFAPIBuilder {
         if (owner == null) {
             throw new IllegalArgumentException("owner is null");
         }
-        return new ThingIFAPIBuilder(context, app, owner, actionTypes, actionResultTypes, stateTypes);
+        return new ThingIFAPIBuilder(context, app, owner, actionTypes, stateTypes);
     }
 
     /**
@@ -83,16 +79,15 @@ public class ThingIFAPIBuilder {
     public static ThingIFAPIBuilder _newBuilder(
             @NonNull KiiApp app,
             @NonNull Owner owner,
-            @NonNull Map<String, Map<String,Class<? extends Action>>> actionTypes,
-            @NonNull Map<String, Map<String,Class<? extends ActionResult>>> actionResultTypes,
-            @NonNull Map<String, Class<? extends TargetState>> stateTypes) {
+            @NonNull Map<String, Class<?>> actionTypes,
+            @NonNull Map<String, Class<?>> stateTypes) {
         if (app == null) {
             throw new IllegalArgumentException("app is null");
         }
         if (owner == null) {
             throw new IllegalArgumentException("owner is null");
         }
-        return new ThingIFAPIBuilder(null, app, owner, actionTypes, actionResultTypes, stateTypes);
+        return new ThingIFAPIBuilder(null, app, owner, actionTypes, stateTypes);
     }
 
     /** Add Schema to the ThingIFAPI.
@@ -159,7 +154,7 @@ public class ThingIFAPIBuilder {
             throw new IllegalStateException("Builder has no schemas");
         }
         _Log.d(TAG, MessageFormat.format("Initialize ThingIFAPI AppID={0}, AppKey={1}, BaseUrl={2}", app.getAppID(), app.getAppKey(), app.getBaseUrl()));
-        return new ThingIFAPI(this.context, this.tag, app, this.owner, this.target, this.schemas, this.installationID, this.actionTypes, this.actionResultTypes, this.stateTypes);
+        return new ThingIFAPI(this.context, this.tag, app, this.owner, this.target, this.schemas, this.installationID, this.actionTypes, this.stateTypes);
     }
 
     /**
@@ -173,24 +168,8 @@ public class ThingIFAPIBuilder {
     @NonNull
     public ThingIFAPIBuilder registerActions(
             @NonNull String alias,
-            @NonNull Map<String,Class<? extends Action>> actionClasses){
+            @NonNull Class<?> actionClasses){
         this.actionTypes.put(alias, actionClasses);
-        return this;
-    }
-
-    /**
-     * Register list of ActionResult subclasses to specified alias. The registered action result classes
-     * will be used for serialization/deserialization the action result.
-     * If the same alias already registered, then will be updated
-     * @param alias Alias to register
-     * @param actionResultClasses List of ActionResult subclasses
-     * @return builder instance for chaining call.
-     */
-    @NonNull
-    public ThingIFAPIBuilder registerActionResults(
-            @NonNull String alias,
-            @NonNull Map<String,Class<? extends ActionResult>> actionResultClasses) {
-        this.actionResultTypes.put(alias, actionResultClasses);
         return this;
     }
 
