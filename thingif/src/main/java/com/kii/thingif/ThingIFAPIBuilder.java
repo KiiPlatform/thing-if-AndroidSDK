@@ -5,12 +5,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.kii.thingif.command.Action;
-import com.kii.thingif.command.ActionResult;
 import com.kii.thingif.internal.utils._Log;
 import com.kii.thingif.schema.Schema;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,6 +46,8 @@ public class ThingIFAPIBuilder {
      * @param context Application context.
      * @param app Kii Cloud Application.
      * @param owner Specify who uses the ThingIFAPI.
+     * @param actionTypes Map of alias and action class.
+     * @param stateTypes Map of alias and target state class.
      * @return ThingIFAPIBuilder instance.
      */
     @NonNull
@@ -65,6 +67,34 @@ public class ThingIFAPIBuilder {
             throw new IllegalArgumentException("owner is null");
         }
         return new ThingIFAPIBuilder(context, app, owner, actionTypes, stateTypes);
+    }
+
+    /** Instantiate new ThingIFAPIBuilder.
+     * @param context Application context.
+     * @param app Kii Cloud Application.
+     * @param owner Specify who uses the ThingIFAPI.
+     * @return ThingIFAPIBuilder instance.
+     */
+    @NonNull
+    public static ThingIFAPIBuilder newBuilder(
+            @NonNull Context context,
+            @NonNull KiiApp app,
+            @NonNull Owner owner) {
+        if (context == null) {
+            throw new IllegalArgumentException("context is null");
+        }
+        if (app == null) {
+            throw new IllegalArgumentException("app is null");
+        }
+        if (owner == null) {
+            throw new IllegalArgumentException("owner is null");
+        }
+        return new ThingIFAPIBuilder(
+                context,
+                app,
+                owner,
+                new HashMap<String, Class<? extends Action>>(),
+                new HashMap<String, Class<? extends TargetState>>());
     }
 
     /**
@@ -162,14 +192,14 @@ public class ThingIFAPIBuilder {
      * will be used for serialization/deserialization the action.
      * If the same alias already registered, then will be updated
      * @param alias Alias to register
-     * @param actionClasses List of Action subclasses
+     * @param actionClass List of Action subclasses
      * @return builder instance for chaining call.
      */
     @NonNull
     public ThingIFAPIBuilder registerActions(
             @NonNull String alias,
-            @NonNull Class<? extends Action> actionClasses){
-        this.actionTypes.put(alias, actionClasses);
+            @NonNull Class<? extends Action> actionClass){
+        this.actionTypes.put(alias, actionClass);
         return this;
     }
 
