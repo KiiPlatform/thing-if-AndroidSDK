@@ -1385,7 +1385,7 @@ public class ThingIFAPI implements Parcelable {
      */
     @NonNull
     @WorkerThread
-    public Map<String, ?> getTargetState() throws ThingIFException{
+    public Map<String, ? extends TargetState> getTargetState() throws ThingIFException{
         //TODO: // FIXME: 12/21/16 implement the logic
         return new HashMap<>();
     }
@@ -1399,7 +1399,7 @@ public class ThingIFAPI implements Parcelable {
      */
     @NonNull
     @WorkerThread
-    public Object getTargetState(
+    public <S extends TargetState> S getTargetState(
             @NonNull String alias) throws ThingIFException {
 
         if (this.target == null) {
