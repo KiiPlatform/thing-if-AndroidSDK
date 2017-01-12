@@ -4,11 +4,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Pair;
 
 import com.google.gson.annotations.SerializedName;
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
+import com.kii.thingif.command.AliasAction;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,14 +43,14 @@ public class TriggeredCommandForm implements Parcelable {
      */
     public static class Builder {
 
-        @NonNull private List<Pair<String, List<Action>>> actions;
+        @NonNull private List<AliasAction<? extends Action>> actions;
         @Nullable private TypedID targetID;
         @Nullable private String title;
         @Nullable private String description;
         @Nullable private JSONObject metadata;
 
         private Builder(
-                @NonNull List<Pair<String, List<Action>>> actions)
+                @NonNull List<AliasAction<? extends Action>> actions)
         {
             if (isEmpty(actions)) {
                 throw new IllegalArgumentException("actions is null or empty.");
@@ -71,9 +71,17 @@ public class TriggeredCommandForm implements Parcelable {
          */
         @NonNull
         public static Builder newBuilder(
-                @NonNull List<Pair<String, List<Action>>> actions)
+                @NonNull List<AliasAction<? extends Action>> actions)
         {
             return new Builder(actions);
+        }
+
+        /**
+         * Constructs a {@link TriggeredCommandForm.Builder} instance with empty actions Array
+         * @return builder instance.
+         */
+        public static Builder newBuilder() {
+            return new Builder(new ArrayList<AliasAction<? extends Action>>());
         }
 
 //        /**
@@ -109,28 +117,19 @@ public class TriggeredCommandForm implements Parcelable {
 //        }
 
         /**
-         * Setter of actions.
-         *
-         * <p>
-         * List of action is required field of command, so null and empty
-         * list is not acceptable.
-         * </p>
-         *
-         * @param actions List of action.
+         * Add action to actions array.
+         * @param action AliasAction instance.
          * @return this instance for method chaining.
-         * @throws IllegalArgumentException actions is null or empty list.
          */
         @NonNull
-        public Builder setActions(
-                @NonNull List<Pair<String, List<Action>>> actions)
+        public Builder addAction(
+                @NonNull AliasAction action)
             throws IllegalArgumentException
         {
-            if (isEmpty(actions)) {
-                throw new IllegalArgumentException("actions is null or empty.");
-            }
-            this.actions = actions;
+            this.actions.add(action);
             return this;
         }
+
 
         /**
          * Getter of actions.
@@ -138,7 +137,7 @@ public class TriggeredCommandForm implements Parcelable {
          * @return actions
          */
         @NonNull
-        public List<Pair<String, List<Action>>> getActions() {
+        public List<AliasAction<? extends Action>> getActions() {
             return this.actions;
         }
 
@@ -305,7 +304,7 @@ public class TriggeredCommandForm implements Parcelable {
 
     }
 
-    @NonNull private final List<Pair<String, List<Action>>> actions;
+    @NonNull private final List<AliasAction<? extends Action>> actions;
     @SerializedName("target")
     @Nullable private TypedID targetID;
     @Nullable private String title;
@@ -313,7 +312,7 @@ public class TriggeredCommandForm implements Parcelable {
     @Nullable private JSONObject metadata;
 
     private TriggeredCommandForm(
-            @NonNull List<Pair<String, List<Action>>> actions)
+            @NonNull List<AliasAction<? extends Action>> actions)
     {
         this.actions = actions;
     }
@@ -324,7 +323,7 @@ public class TriggeredCommandForm implements Parcelable {
      * @return actions
      */
     @NonNull
-    public List<Pair<String, List<Action>>> getActions() {
+    public List<AliasAction<? extends Action>> getActions() {
         return this.actions;
     }
 
