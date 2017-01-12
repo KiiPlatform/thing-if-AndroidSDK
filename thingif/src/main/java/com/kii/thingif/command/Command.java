@@ -24,7 +24,7 @@ public class Command implements Parcelable {
     private final @Nullable TypedID targetID;
     @SerializedName("issuer")
     private final @NonNull TypedID issuerID;
-    private final @NonNull List<AliasAction> actions;
+    private final @NonNull List<AliasAction<? extends Action>> actions;
     private final @Nullable List<AliasActionResult> actionResults;
     @SerializedName("commandState")
     private final @Nullable CommandState commandState;
@@ -39,7 +39,7 @@ public class Command implements Parcelable {
 
     public Command(@NonNull TypedID targetID,
                    @NonNull TypedID issuerID,
-                   @NonNull List<AliasAction> actions,
+                   @NonNull List<AliasAction<? extends Action>> actions,
                    @Nullable List<AliasActionResult> actonResults,
                    @Nullable String commandID,
                    @Nullable CommandState commandState,
@@ -104,8 +104,18 @@ public class Command implements Parcelable {
      * @return action of this command.
      */
     @NonNull
-    public List<AliasAction> getActions() {
+    public List<AliasAction<? extends Action>> getActions() {
         return this.actions;
+    }
+
+    /**
+     * Retrieve specified AliasAction
+     * @param alias alias to retrieve
+     * @param <T> Type of Action
+     * @return list of AliasAction with the specified type.
+     */
+    public <T extends Action> List<AliasAction<T>> getAction(String alias) {
+        return null;
     }
 
     /**

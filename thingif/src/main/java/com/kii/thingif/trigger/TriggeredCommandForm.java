@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 import com.kii.thingif.TypedID;
+import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
 
 import org.json.JSONException;
@@ -42,14 +43,14 @@ public class TriggeredCommandForm implements Parcelable {
      */
     public static class Builder {
 
-        @NonNull private List<AliasAction> actions;
+        @NonNull private List<AliasAction<? extends Action>> actions;
         @Nullable private TypedID targetID;
         @Nullable private String title;
         @Nullable private String description;
         @Nullable private JSONObject metadata;
 
         private Builder(
-                @NonNull List<AliasAction> actions)
+                @NonNull List<AliasAction<? extends Action>> actions)
         {
             if (isEmpty(actions)) {
                 throw new IllegalArgumentException("actions is null or empty.");
@@ -70,7 +71,7 @@ public class TriggeredCommandForm implements Parcelable {
          */
         @NonNull
         public static Builder newBuilder(
-                @NonNull List<AliasAction> actions)
+                @NonNull List<AliasAction<? extends Action>> actions)
         {
             return new Builder(actions);
         }
@@ -80,7 +81,7 @@ public class TriggeredCommandForm implements Parcelable {
          * @return builder instance.
          */
         public static Builder newBuilder() {
-            return new Builder(new ArrayList<AliasAction>());
+            return new Builder(new ArrayList<AliasAction<? extends Action>>());
         }
 
 //        /**
@@ -136,7 +137,7 @@ public class TriggeredCommandForm implements Parcelable {
          * @return actions
          */
         @NonNull
-        public List<AliasAction> getActions() {
+        public List<AliasAction<? extends Action>> getActions() {
             return this.actions;
         }
 
@@ -303,7 +304,7 @@ public class TriggeredCommandForm implements Parcelable {
 
     }
 
-    @NonNull private final List<AliasAction> actions;
+    @NonNull private final List<AliasAction<? extends Action>> actions;
     @SerializedName("target")
     @Nullable private TypedID targetID;
     @Nullable private String title;
@@ -311,7 +312,7 @@ public class TriggeredCommandForm implements Parcelable {
     @Nullable private JSONObject metadata;
 
     private TriggeredCommandForm(
-            @NonNull List<AliasAction> actions)
+            @NonNull List<AliasAction<? extends Action>> actions)
     {
         this.actions = actions;
     }
@@ -322,7 +323,7 @@ public class TriggeredCommandForm implements Parcelable {
      * @return actions
      */
     @NonNull
-    public List<AliasAction> getActions() {
+    public List<AliasAction<? extends Action>> getActions() {
         return this.actions;
     }
 

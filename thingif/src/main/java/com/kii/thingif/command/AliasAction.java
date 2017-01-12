@@ -1,10 +1,10 @@
 package com.kii.thingif.command;
 
-public class AliasAction {
+public class AliasAction<T extends Action> {
     private String alias;
-    private Action action;
+    private T action;
 
-    public AliasAction(String alias, Action action) {
+    public AliasAction(String alias, T action) {
         this.alias = alias;
         this.action = action;
     }
@@ -13,7 +13,7 @@ public class AliasAction {
         return alias;
     }
 
-    public Action getAction() {
+    public T getAction() {
         return action;
     }
 }

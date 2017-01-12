@@ -31,7 +31,7 @@ import java.util.List;
  */
 public final class CommandForm implements Parcelable {
 
-    private final @NonNull List<AliasAction> actions;
+    private final @NonNull List<AliasAction<? extends Action>> actions;
 
     private @Nullable String title;
     private @Nullable String description;
@@ -45,7 +45,7 @@ public final class CommandForm implements Parcelable {
      * string and/or actions is null or empty.
      */
     public CommandForm(
-            @NonNull List<AliasAction> actions)
+            @NonNull List<AliasAction<? extends Action>> actions)
         throws IllegalArgumentException
     {
         if (actions == null || actions.size() == 0) {
@@ -105,7 +105,7 @@ public final class CommandForm implements Parcelable {
      * @return actions
      */
     @NonNull
-    public List<AliasAction> getActions() {
+    public List<AliasAction<? extends Action>> getActions() {
         return this.actions;
     }
 
