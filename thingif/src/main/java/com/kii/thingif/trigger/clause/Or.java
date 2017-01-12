@@ -4,7 +4,7 @@ import android.os.Parcel;
 
 import org.json.JSONObject;
 
-public class Or extends com.kii.thingif.internal.clause.Or implements Clause{
+public class Or extends com.kii.thingif.query.clause.Or implements Clause{
     public Or(Clause... clauses) {
         super(clauses);
     }

@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Equals extends com.kii.thingif.internal.clause.Equals implements Clause {
+public class Equals extends com.kii.thingif.query.clause.Equals implements Clause {
     private final String alias;
     public Equals(@NonNull String field, String value, String alias) {
         super(field, value);

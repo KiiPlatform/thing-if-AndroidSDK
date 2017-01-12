@@ -4,7 +4,7 @@ import android.os.Parcel;
 
 import org.json.JSONObject;
 
-public class And extends com.kii.thingif.internal.clause.And implements Clause{
+public class And extends com.kii.thingif.query.clause.And implements Clause{
     public And(Clause... clauses) {
         super(clauses);
     }

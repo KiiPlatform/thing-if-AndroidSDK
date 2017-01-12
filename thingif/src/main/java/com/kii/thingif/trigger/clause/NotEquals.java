@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 
 import org.json.JSONObject;
 
-public class NotEquals extends com.kii.thingif.internal.clause.NotEquals implements Clause {
+public class NotEquals extends com.kii.thingif.query.clause.NotEquals implements Clause {
     public NotEquals(@NonNull Equals equals) {
         super(equals);
     }

@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Range extends com.kii.thingif.internal.clause.Range implements Clause{
+public class Range extends com.kii.thingif.query.clause.Range implements Clause{
 
     private final String alias;
 
