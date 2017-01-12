@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 
-public abstract class Or extends ContainerClause {
+public class Or extends ContainerClause {
     public Or(Clause... clauses) {
         super(clauses);
     }
@@ -62,4 +62,15 @@ public abstract class Or extends ContainerClause {
             dest.writeParcelable(clause, flags);
         }
     }
+    public static final Creator<Or> CREATOR = new Creator<Or>() {
+        @Override
+        public Or createFromParcel(Parcel in) {
+            return new Or(in);
+        }
+
+        @Override
+        public Or[] newArray(int size) {
+            return new Or[size];
+        }
+    };
 }

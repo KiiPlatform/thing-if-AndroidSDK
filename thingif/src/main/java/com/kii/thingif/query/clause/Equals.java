@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public abstract class Equals implements Clause {
+public class Equals implements Clause {
 
     protected final String field;
     protected final Object value;
@@ -94,4 +94,14 @@ public abstract class Equals implements Clause {
             dest.writeByte((byte)((Boolean)this.value ? 1 : 0));
         }
     }
+    public static final Creator<Equals> CREATOR = new Creator<Equals>() {
+        @Override
+        public Equals createFromParcel(Parcel in) {
+            return new Equals(in);
+        }
+        @Override
+        public Equals[] newArray(int size) {
+            return new Equals[size];
+        }
+    };
 }

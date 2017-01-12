@@ -3,22 +3,24 @@ package com.kii.thingif.trigger.clause;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 
+import com.kii.thingif.query.clause.Equals;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Equals extends com.kii.thingif.query.clause.Equals implements Clause {
+public class AliasEquals extends Equals implements AliasClause {
     private final String alias;
-    public Equals(@NonNull String field, String value, String alias) {
+    public AliasEquals(@NonNull String field, String value, String alias) {
         super(field, value);
         this.alias = alias;
     }
 
-    public Equals(String field, long value, String alias) {
+    public AliasEquals(String field, long value, String alias) {
         super(field, value);
         this.alias = alias;
     }
 
-    public Equals(String field, boolean value, String alias) {
+    public AliasEquals(String field, boolean value, String alias) {
         super(field, value);
         this.alias = alias;
     }
@@ -46,7 +48,7 @@ public class Equals extends com.kii.thingif.query.clause.Equals implements Claus
         if(!super.equals(o)){
             return false;
         }
-        Equals equals = (Equals) o;
+        AliasEquals equals = (AliasEquals) o;
         return alias.equals(equals.alias);
     }
     @Override
@@ -57,18 +59,18 @@ public class Equals extends com.kii.thingif.query.clause.Equals implements Claus
     }
 
     // Implementation of Parcelable
-    protected Equals(Parcel in) {
+    protected AliasEquals(Parcel in) {
         super(in);
         this.alias = in.readString();
     }
-    public static final Creator<Equals> CREATOR = new Creator<Equals>() {
+    public static final Creator<AliasEquals> CREATOR = new Creator<AliasEquals>() {
         @Override
-        public Equals createFromParcel(Parcel in) {
-            return new Equals(in);
+        public AliasEquals createFromParcel(Parcel in) {
+            return new AliasEquals(in);
         }
         @Override
-        public Equals[] newArray(int size) {
-            return new Equals[size];
+        public AliasEquals[] newArray(int size) {
+            return new AliasEquals[size];
         }
     };
     @Override

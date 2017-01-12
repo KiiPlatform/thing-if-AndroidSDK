@@ -1,11 +1,12 @@
 package com.kii.thingif.query.clause;
 
 import android.os.Parcel;
+import android.support.annotation.NonNull;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public abstract class Range implements Clause {
+public class Range implements Clause {
 
     protected final String field;
     protected final Long upperLimit;
@@ -23,6 +24,47 @@ public abstract class Range implements Clause {
         this.upperIncluded = upperIncluded;
         this.lowerLimit = lowerLimit;
         this.lowerIncluded = lowerIncluded;
+    }
+
+    public static Range greaterThan(
+            @NonNull String field,
+            @NonNull Number lowerLimit) {
+        return new Range(
+                field,
+                null,
+                null,
+                lowerLimit.longValue(),
+                Boolean.FALSE);
+    }
+    public static Range greaterThanEquals(
+            @NonNull String field,
+            @NonNull Number lowerLimit) {
+        return new Range(
+                field,
+                null,
+                null,
+                lowerLimit.longValue(),
+                Boolean.TRUE);
+    }
+    public static Range lessThan(
+            @NonNull String field,
+            @NonNull Number upperLimit) {
+        return new Range(
+                field,
+                upperLimit.longValue(),
+                Boolean.FALSE,
+                null,
+                null);
+    }
+    public static Range lessThanEquals(
+            @NonNull String field,
+            @NonNull Number upperLimit) {
+        return new Range(
+                field,
+                upperLimit.longValue(),
+                Boolean.TRUE,
+                null,
+                null);
     }
 
     public String getField() {
@@ -114,4 +156,15 @@ public abstract class Range implements Clause {
         dest.writeValue(this.lowerLimit);
         dest.writeValue(this.lowerIncluded);
     }
+    public static final Creator<Range> CREATOR = new Creator<Range>() {
+        @Override
+        public Range createFromParcel(Parcel in) {
+            return new Range(in);
+        }
+
+        @Override
+        public Range[] newArray(int size) {
+            return new Range[size];
+        }
+    };
 }

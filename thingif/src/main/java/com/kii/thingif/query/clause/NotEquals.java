@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public abstract class NotEquals implements Clause {
+public class NotEquals implements Clause {
     private final Equals equals;
     public NotEquals(@NonNull Equals equals) {
         this.equals = equals;
@@ -53,4 +53,16 @@ public abstract class NotEquals implements Clause {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(this.equals, flags);
     }
+
+    public static final Creator<NotEquals> CREATOR = new Creator<NotEquals>() {
+        @Override
+        public NotEquals createFromParcel(Parcel in) {
+            return new NotEquals(in);
+        }
+
+        @Override
+        public NotEquals[] newArray(int size) {
+            return new NotEquals[size];
+        }
+    };
 }

@@ -4,21 +4,21 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import com.kii.thingif.trigger.clause.Clause;
+import com.kii.thingif.trigger.clause.AliasClause;
 
 public class Condition implements Parcelable {
-    private Clause clause;
-    public Condition(@NonNull Clause clause) {
-        this.clause = clause;
+    private AliasClause aliasClause;
+    public Condition(@NonNull AliasClause aliasClause) {
+        this.aliasClause = aliasClause;
     }
-    public Clause getClause() {
-        return this.clause;
+    public AliasClause getAliasClause() {
+        return this.aliasClause;
     }
 
 
     // Implementation of Parcelable
     protected Condition(Parcel in) {
-        this.clause = in.readParcelable(Clause.class.getClassLoader());
+        this.aliasClause = in.readParcelable(AliasClause.class.getClassLoader());
     }
     public static final Creator<Condition> CREATOR = new Creator<Condition>() {
         @Override
@@ -37,6 +37,6 @@ public class Condition implements Parcelable {
     }
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(this.clause, flags);
+        dest.writeParcelable(this.aliasClause, flags);
     }
 }

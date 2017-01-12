@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 
-public abstract class And extends ContainerClause {
+public class And extends ContainerClause {
     public And(Clause... clauses) {
         super(clauses);
     }
@@ -63,4 +63,16 @@ public abstract class And extends ContainerClause {
             dest.writeParcelable(clause, flags);
         }
     }
+
+    public static final Creator<And> CREATOR = new Creator<And>() {
+        @Override
+        public And createFromParcel(Parcel in) {
+            return new And(in);
+        }
+
+        @Override
+        public And[] newArray(int size) {
+            return new And[size];
+        }
+    };
 }
