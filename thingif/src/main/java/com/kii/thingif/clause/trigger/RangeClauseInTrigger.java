@@ -8,6 +8,7 @@ import com.kii.thingif.clause.base.BaseRange;
 import org.json.JSONObject;
 
 public class RangeClauseInTrigger implements BaseRange, TriggerClause {
+    private @NonNull String alias;
     private @NonNull String field;
     private @Nullable Long upperLimit;
     private @Nullable Long lowerLimit;
@@ -16,11 +17,13 @@ public class RangeClauseInTrigger implements BaseRange, TriggerClause {
 
 
     private RangeClauseInTrigger(
+            @NonNull String alias,
             @NonNull String field,
             @Nullable Long upperLimit,
             @Nullable Boolean upperIncluded,
             @Nullable Long lowerLimit,
             @Nullable Boolean lowerIncluded) {
+        this.alias = alias;
         this.field = field;
         this.upperIncluded = upperIncluded;
         this.upperLimit = upperLimit;
@@ -28,12 +31,14 @@ public class RangeClauseInTrigger implements BaseRange, TriggerClause {
         this.lowerLimit = lowerLimit;
     }
     public static RangeClauseInTrigger range(
+            @NonNull String alias,
             @NonNull String field,
             @NonNull Number upperLimit,
             @NonNull Boolean upperIncluded,
             @NonNull Number lowerLimit,
             @NonNull Boolean lowerIncluded) {
         return new RangeClauseInTrigger(
+                alias,
                 field,
                 upperLimit.longValue(),
                 upperIncluded,
@@ -41,9 +46,11 @@ public class RangeClauseInTrigger implements BaseRange, TriggerClause {
                 lowerIncluded);
     }
     public static RangeClauseInTrigger greaterThan(
+            @NonNull String alias,
             @NonNull String field,
             @NonNull Number lowerLimit) {
         return new RangeClauseInTrigger(
+                alias,
                 field,
                 null,
                 null,
@@ -51,9 +58,11 @@ public class RangeClauseInTrigger implements BaseRange, TriggerClause {
                 Boolean.FALSE);
     }
     public static RangeClauseInTrigger greaterThanEquals(
+            @NonNull String alias,
             @NonNull String field,
             @NonNull Number lowerLimit) {
         return new RangeClauseInTrigger(
+                alias,
                 field,
                 null,
                 null,
@@ -61,9 +70,11 @@ public class RangeClauseInTrigger implements BaseRange, TriggerClause {
                 Boolean.TRUE);
     }
     public static RangeClauseInTrigger lessThan(
+            @NonNull String alias,
             @NonNull String field,
             @NonNull Number upperLimit) {
         return new RangeClauseInTrigger(
+                alias,
                 field,
                 upperLimit.longValue(),
                 Boolean.FALSE,
@@ -71,14 +82,21 @@ public class RangeClauseInTrigger implements BaseRange, TriggerClause {
                 null);
     }
     public static RangeClauseInTrigger lessThanEquals(
+            @NonNull String alias,
             @NonNull String field,
             @NonNull Number upperLimit) {
         return new RangeClauseInTrigger(
+                alias,
                 field,
                 upperLimit.longValue(),
                 Boolean.TRUE,
                 null,
                 null);
+    }
+
+    @NonNull
+    public String getAlias() {
+        return this.alias;
     }
 
     @Override
