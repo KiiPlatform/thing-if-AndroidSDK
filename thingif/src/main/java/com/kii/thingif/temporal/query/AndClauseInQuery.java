@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-class AndClauseInQuery implements BaseAnd<QueryClause>, QueryClause {
+public class AndClauseInQuery implements BaseAnd<QueryClause>, QueryClause {
     public void add(QueryClause clause) {
 
     }
