@@ -1,4 +1,4 @@
-package com.kii.thingif.internal.clause;
+package com.kii.thingif.query.clause;
 
 import java.util.ArrayList;
 import java.util.List;

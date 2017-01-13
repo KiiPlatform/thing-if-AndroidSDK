@@ -3,46 +3,97 @@ package com.kii.thingif.query.clause;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Equals extends com.kii.thingif.internal.clause.Equals implements Clause{
+public class Equals implements Clause {
 
+    protected final String field;
+    protected final Object value;
     public Equals(@NonNull String field, String value) {
-        super(field, value);
+        this.field = field;
+        this.value = value;
     }
 
     public Equals(String field, long value) {
-        super(field, value);
+        this.field = field;
+        this.value = value;
     }
 
     public Equals(String field, boolean value) {
-        super(field,value);
+        this.field = field;
+        this.value = value;
     }
     public String getField() {
-        return super.getField();
+        return this.field;
     }
     public Object getValue() {
-        return super.getValue();
+        return this.value;
     }
 
     @Override
     public JSONObject toJSONObject() {
-        return super.toJSONObject();
+        //TODO: // FIXME: 12/15/16 should adapt to alias
+        JSONObject ret = new JSONObject();
+        try {
+            ret.put("type", "eq");
+            ret.put("field", this.field);
+            ret.put("value", this.value);
+            return ret;
+        } catch (JSONException e) {
+            // Won't happens.
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public boolean equals(Object o) {
-       return super.equals(o);
+        //TODO: // FIXME: 12/15/16 should adapt to alias
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Equals equals = (Equals) o;
+        if (!field.equals(equals.field)) return false;
+        return value.equals(equals.value);
     }
     @Override
     public int hashCode() {
-        return super.hashCode();
+        int result = field.hashCode();
+        result = 31 * result + value.hashCode();
+        return result;
     }
 
-    public Equals(Parcel in) {
-        super(in);
+    // Implementation of Parcelable
+    protected Equals(Parcel in) {
+        this.field = in.readString();
+        Class<?> clazz = (Class<?>)in.readSerializable();
+        if (clazz == String.class) {
+            this.value = in.readString();
+        } else if (clazz == Long.class) {
+            this.value = in.readLong();
+        } else if (clazz == Boolean.class) {
+            this.value = (in.readByte() != 0);
+        } else {
+            // Won't happens.
+            throw new AssertionError("Detected unexpected value.");
+        }
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.field);
+        dest.writeSerializable(this.value.getClass());
+        if (this.value instanceof String) {
+            dest.writeString((String)this.value);
+        } else if (Long.class.isInstance(this.value)) {
+            dest.writeLong((Long)this.value);
+        } else if (Boolean.class.isInstance(this.value)) {
+            dest.writeByte((byte)((Boolean)this.value ? 1 : 0));
+        }
+    }
     public static final Creator<Equals> CREATOR = new Creator<Equals>() {
         @Override
         public Equals createFromParcel(Parcel in) {

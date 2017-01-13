@@ -3,41 +3,43 @@ package com.kii.thingif.trigger.clause;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 
+import com.kii.thingif.query.clause.Range;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Range extends com.kii.thingif.internal.clause.Range implements Clause{
+public class AliasRange extends Range implements AliasClause {
 
     private final String alias;
 
-    public Range(String field, 
-                 Long upperLimit,
-                 Boolean upperIncluded, 
-                 Long lowerLimit, 
-                 Boolean lowerIncluded, 
-                 String alias) {
+    public AliasRange(String field,
+                      Long upperLimit,
+                      Boolean upperIncluded,
+                      Long lowerLimit,
+                      Boolean lowerIncluded,
+                      String alias) {
         super(field, upperLimit, upperIncluded, lowerLimit, lowerIncluded);
         this.alias = alias;
     }
-    public static  Range range(
+    public static AliasRange range(
             @NonNull String field,
             Number upperLimit,
             Boolean upperIncluded,
             Number lowerLimit,
             Boolean lowerIncluded, 
             String alias) {
-        return new Range(
+        return new AliasRange(
                 field,
                 upperLimit.longValue(),
                 upperIncluded, lowerLimit.longValue(),
                 lowerIncluded,
                 alias);
     }
-    public static Range greaterThan(
+    public static AliasRange greaterThan(
             @NonNull String field,
             @NonNull Number lowerLimit,
             @NonNull String alias) {
-        return new Range(
+        return new AliasRange(
                 field,
                 null,
                 null,
@@ -45,11 +47,11 @@ public class Range extends com.kii.thingif.internal.clause.Range implements Clau
                 Boolean.FALSE,
                 alias);
     }
-    public static Range greaterThanEquals(
+    public static AliasRange greaterThanEquals(
             @NonNull String field,
             @NonNull Number lowerLimit,
             @NonNull String alias) {
-        return new Range(
+        return new AliasRange(
                 field,
                 null,
                 null,
@@ -57,11 +59,11 @@ public class Range extends com.kii.thingif.internal.clause.Range implements Clau
                 Boolean.TRUE,
                 alias);
     }
-    public static Range lessThan(
+    public static AliasRange lessThan(
             @NonNull String field,
             @NonNull Number upperLimit,
             @NonNull String alias) {
-        return new Range(
+        return new AliasRange(
                 field,
                 upperLimit.longValue(),
                 Boolean.FALSE,
@@ -69,11 +71,11 @@ public class Range extends com.kii.thingif.internal.clause.Range implements Clau
                 null,
                 alias);
     }
-    public static Range lessThanEquals(
+    public static AliasRange lessThanEquals(
             @NonNull String field,
             @NonNull Number upperLimit,
             @NonNull String alias) {
-        return new Range(
+        return new AliasRange(
                 field,
                 upperLimit.longValue(),
                 Boolean.TRUE,
@@ -118,7 +120,7 @@ public class Range extends com.kii.thingif.internal.clause.Range implements Clau
         if(!super.equals(o)){
             return false;
         }
-        Range range = (Range) o;
+        AliasRange range = (AliasRange) o;
         return this.alias.equals(range.alias);
      }
     @Override
@@ -129,19 +131,19 @@ public class Range extends com.kii.thingif.internal.clause.Range implements Clau
     }
 
     // Implementation of Parcelable
-    private Range(Parcel in) {
+    private AliasRange(Parcel in) {
         super(in);
         this.alias = in.readString();
     }
-    public static final Creator<Range> CREATOR = new Creator<Range>() {
+    public static final Creator<AliasRange> CREATOR = new Creator<AliasRange>() {
         @Override
-        public Range createFromParcel(Parcel in) {
-            return new Range(in);
+        public AliasRange createFromParcel(Parcel in) {
+            return new AliasRange(in);
         }
 
         @Override
-        public Range[] newArray(int size) {
-            return new Range[size];
+        public AliasRange[] newArray(int size) {
+            return new AliasRange[size];
         }
     };
     @Override

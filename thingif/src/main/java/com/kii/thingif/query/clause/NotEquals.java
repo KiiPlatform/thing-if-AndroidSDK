@@ -3,31 +3,55 @@ package com.kii.thingif.query.clause;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
-public class NotEquals extends com.kii.thingif.internal.clause.NotEquals implements Clause{
+public class NotEquals implements Clause {
+    private final Equals equals;
     public NotEquals(@NonNull Equals equals) {
-        super(equals);
+        this.equals = equals;
     }
     @Override
     public JSONObject toJSONObject() {
-        return super.toJSONObject();
+        JSONObject ret = new JSONObject();
+        try {
+            ret.put("type", "not");
+            ret.put("clause", this.equals.toJSONObject());
+            return ret;
+        } catch (JSONException e) {
+            // Won't happens.
+            throw new RuntimeException(e);
+        }
     }
     public Equals getEquals() {
-        return (Equals) super.getEquals();
+        return this.equals;
     }
 
     @Override
     public boolean equals(Object o) {
-       return  super.equals(o);
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NotEquals notEquals = (NotEquals) o;
+        return equals.equals(notEquals.equals);
     }
     @Override
     public int hashCode() {
-        return super.hashCode();
+        return equals.hashCode();
     }
 
-    public NotEquals(Parcel in) {
-        super(in);
+    // Implementation of Parcelable
+    protected NotEquals(Parcel in) {
+        this.equals = in.readParcelable(Equals.class.getClassLoader());
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(this.equals, flags);
     }
 
     public static final Creator<NotEquals> CREATOR = new Creator<NotEquals>() {
