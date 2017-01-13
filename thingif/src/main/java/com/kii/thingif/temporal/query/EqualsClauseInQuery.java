@@ -1,18 +1,19 @@
 package com.kii.thingif.temporal.query;
 
-import android.os.Parcel;
-
 import com.kii.thingif.temporal.base.BaseEquals;
 
 import org.json.JSONObject;
 
-public class EqualsClauseInQuery extends BaseEquals implements QueryClause {
+public class EqualsClauseInQuery implements BaseEquals, QueryClause {
+    private String fieldName;
+    private Object value;
     public EqualsClauseInQuery(String fieldName, Object value) {
-        super(fieldName, value);
+        this.fieldName = fieldName;
+        this.value = value;
     }
 
     @Override
-    public String getField() {
+    public String getFieldName() {
         return null;
     }
 
@@ -25,21 +26,4 @@ public class EqualsClauseInQuery extends BaseEquals implements QueryClause {
     public JSONObject toJSONObject() {
         return null;
     }
-
-    // Implementation of Parcelable
-    private EqualsClauseInQuery(Parcel in) {
-        super(in);
-    }
-
-    public static final Creator<EqualsClauseInQuery> CREATOR = new Creator<EqualsClauseInQuery>() {
-        @Override
-        public EqualsClauseInQuery createFromParcel(Parcel in) {
-            return new EqualsClauseInQuery(in);
-        }
-
-        @Override
-        public EqualsClauseInQuery[] newArray(int size) {
-            return new EqualsClauseInQuery[size];
-        }
-    };
 }
