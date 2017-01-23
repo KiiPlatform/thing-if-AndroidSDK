@@ -3,8 +3,8 @@ package com.kii.thingif.clause.base;
 public interface BaseRange extends BaseClause {
 
     String getField();
-    Long getUpperLimit();
-    Long getLowerLimit();
+    Number getUpperLimit();
+    Number getLowerLimit();
     Boolean getUpperIncluded();
     Boolean getLowerIncluded();
 }

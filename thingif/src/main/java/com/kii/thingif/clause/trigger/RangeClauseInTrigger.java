@@ -10,8 +10,8 @@ import org.json.JSONObject;
 public class RangeClauseInTrigger implements BaseRange, TriggerClause {
     private @NonNull String alias;
     private @NonNull String field;
-    private @Nullable Long upperLimit;
-    private @Nullable Long lowerLimit;
+    private @Nullable Number upperLimit;
+    private @Nullable Number lowerLimit;
     private @Nullable Boolean upperIncluded;
     private @Nullable Boolean lowerIncluded;
 
@@ -19,9 +19,9 @@ public class RangeClauseInTrigger implements BaseRange, TriggerClause {
     private RangeClauseInTrigger(
             @NonNull String alias,
             @NonNull String field,
-            @Nullable Long upperLimit,
+            @Nullable Number upperLimit,
             @Nullable Boolean upperIncluded,
-            @Nullable Long lowerLimit,
+            @Nullable Number lowerLimit,
             @Nullable Boolean lowerIncluded) {
         this.alias = alias;
         this.field = field;
@@ -57,7 +57,7 @@ public class RangeClauseInTrigger implements BaseRange, TriggerClause {
                 lowerLimit.longValue(),
                 Boolean.FALSE);
     }
-    public static RangeClauseInTrigger greaterThanEquals(
+    public static RangeClauseInTrigger greaterThanOrEqualTo(
             @NonNull String alias,
             @NonNull String field,
             @NonNull Number lowerLimit) {
@@ -81,7 +81,7 @@ public class RangeClauseInTrigger implements BaseRange, TriggerClause {
                 null,
                 null);
     }
-    public static RangeClauseInTrigger lessThanEquals(
+    public static RangeClauseInTrigger lessThanOrEqualTo(
             @NonNull String alias,
             @NonNull String field,
             @NonNull Number upperLimit) {
@@ -113,13 +113,13 @@ public class RangeClauseInTrigger implements BaseRange, TriggerClause {
 
     @Override
     @Nullable
-    public Long getUpperLimit() {
+    public Number getUpperLimit() {
         return this.upperLimit;
     }
 
     @Override
     @Nullable
-    public Long getLowerLimit() {
+    public Number getLowerLimit() {
         return this.lowerLimit;
     }
 
