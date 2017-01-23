@@ -35,7 +35,7 @@ public class Aggregation implements Parcelable{
      * @param function Aggregation function.
      * @param field
      */
-    public Aggregation(
+    private Aggregation(
             @NonNull FunctionType function,
             @NonNull String field,
             @NonNull FieldType fieldType
@@ -43,6 +43,26 @@ public class Aggregation implements Parcelable{
         this.function = function;
         this.field = field;
         this.fieldType = fieldType;
+    }
+
+    public static Aggregation NewAggregation(
+            @NonNull FunctionType function,
+            @NonNull String field,
+            @NonNull FieldType fieldType) throws IllegalArgumentException {
+        switch (function) {
+            case COUNT:
+                return Aggregation.NewCountAggregation(field, fieldType);
+            case MAX:
+                return Aggregation.NewMaxAggregation(field, fieldType);
+            case MIN:
+                return Aggregation.NewMinAggregation(field, fieldType);
+            case SUM:
+                return Aggregation.NewSumAggregation(field, fieldType);
+            case MEAN:
+                return Aggregation.NewMeanAggregation(field, fieldType);
+            default:
+                throw new IllegalArgumentException("Unsupport function type");
+        }
     }
 
     /**
