@@ -6,12 +6,9 @@ import android.support.annotation.Nullable;
 
 import com.kii.thingif.command.Action;
 import com.kii.thingif.internal.utils._Log;
-import com.kii.thingif.schema.Schema;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ThingIFAPIBuilder {
@@ -23,7 +20,6 @@ public class ThingIFAPIBuilder {
     private @Nullable Target target;
     private @Nullable String installationID;
     private @Nullable String tag;
-    private final @NonNull List<Schema> schemas = new ArrayList<Schema>();
 
     private final @NonNull Map<String, Class<? extends Action>> actionTypes;
     private final @NonNull Map<String, Class<? extends TargetState>> stateTypes;
@@ -120,21 +116,6 @@ public class ThingIFAPIBuilder {
         return new ThingIFAPIBuilder(null, app, owner, actionTypes, stateTypes);
     }
 
-    /** Add Schema to the ThingIFAPI.
-     * @param schema schema for {@link ThingIFAPI} instance.
-     * @return ThingIFAPIBuilder instance for method chaining.
-     */
-    @NonNull
-    public ThingIFAPIBuilder addSchema(
-            @NonNull Schema schema) {
-        if (schema == null) {
-            throw new IllegalArgumentException("schema is null");
-        }
-        this.schemas.add(schema);
-        _Log.d(TAG, MessageFormat.format("Added new schema SchemaName={0}, SchemaVersion={1}", schema.getSchemaName(), schema.getSchemaVersion()));
-        return this;
-    }
-
     /**
      * Set target thing to the ThingIFAPI.
      * @param target target of {@link ThingIFAPI} instance.
@@ -180,11 +161,9 @@ public class ThingIFAPIBuilder {
      */
     @NonNull
     public ThingIFAPI build() {
-        if (this.schemas.size() == 0) {
-            throw new IllegalStateException("Builder has no schemas");
-        }
+
         _Log.d(TAG, MessageFormat.format("Initialize ThingIFAPI AppID={0}, AppKey={1}, BaseUrl={2}", app.getAppID(), app.getAppKey(), app.getBaseUrl()));
-        return new ThingIFAPI(this.context, this.tag, app, this.owner, this.target, this.schemas, this.installationID, this.actionTypes, this.stateTypes);
+        return new ThingIFAPI(this.context, this.tag, app, this.owner, this.target, this.installationID, this.actionTypes, this.stateTypes);
     }
 
     /**
