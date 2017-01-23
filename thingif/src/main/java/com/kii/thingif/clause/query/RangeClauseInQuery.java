@@ -9,16 +9,16 @@ import org.json.JSONObject;
 
 public class RangeClauseInQuery implements QueryClause, BaseRange {
     private @NonNull String field;
-    private @Nullable Long upperLimit;
-    private @Nullable Long lowerLimit;
+    private @Nullable Number upperLimit;
+    private @Nullable Number lowerLimit;
     private @Nullable Boolean upperIncluded;
     private @Nullable Boolean lowerIncluded;
 
     private RangeClauseInQuery(
             @NonNull String field,
-            @Nullable Long upperLimit,
+            @Nullable Number upperLimit,
             @Nullable Boolean upperIncluded,
-            @Nullable Long lowerLimit,
+            @Nullable Number lowerLimit,
             @Nullable Boolean lowerIncluded) {
         this.field = field;
         this.upperIncluded = upperIncluded;
@@ -49,7 +49,7 @@ public class RangeClauseInQuery implements QueryClause, BaseRange {
                 lowerLimit.longValue(),
                 Boolean.FALSE);
     }
-    public static RangeClauseInQuery greaterThanEquals(
+    public static RangeClauseInQuery greaterThanOrEqualTo(
             @NonNull String field,
             @NonNull Number lowerLimit) {
         return new RangeClauseInQuery(
@@ -69,7 +69,7 @@ public class RangeClauseInQuery implements QueryClause, BaseRange {
                 null,
                 null);
     }
-    public static RangeClauseInQuery lessThanEquals(
+    public static RangeClauseInQuery lessThanOrEqualTo(
             @NonNull String field,
             @NonNull Number upperLimit) {
         return new RangeClauseInQuery(
@@ -94,13 +94,13 @@ public class RangeClauseInQuery implements QueryClause, BaseRange {
 
     @Override
     @Nullable
-    public Long getUpperLimit() {
+    public Number getUpperLimit() {
         return this.upperLimit;
     }
 
     @Override
     @Nullable
-    public Long getLowerLimit() {
+    public Number getLowerLimit() {
         return this.lowerLimit;
     }
 
