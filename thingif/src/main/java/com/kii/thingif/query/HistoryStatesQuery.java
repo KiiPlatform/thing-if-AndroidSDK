@@ -3,19 +3,19 @@ package com.kii.thingif.query;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.kii.thingif.query.clause.Clause;
+import com.kii.thingif.clause.query.QueryClause;
 
 public class HistoryStatesQuery {
 
     private @NonNull String alias;
-    private @Nullable Clause clause;
+    private @Nullable QueryClause clause;
     private @Nullable String firmwareVersion;
     private @Nullable Integer bestEffortLimit;
     private @Nullable String nextPaginationKey;
 
     private HistoryStatesQuery(
             @NonNull  String alias,
-            @Nullable Clause clause,
+            @Nullable QueryClause clause,
             @Nullable String firmwareVersion,
             @Nullable Integer bestEffortLimit,
             @Nullable String nextPaginationKey) {
@@ -29,7 +29,7 @@ public class HistoryStatesQuery {
     public static class Builder {
 
         private @NonNull String alias;
-        private @Nullable Clause clause;
+        private @Nullable QueryClause clause;
         private @Nullable String firmwareVersion;
         private @Nullable Integer bestEffortLimit;
         private @Nullable String nextPaginationKey;
@@ -41,7 +41,7 @@ public class HistoryStatesQuery {
             return new Builder(alias);
         }
 
-        public Builder setClause(@NonNull Clause clause) {
+        public Builder setClause(@NonNull QueryClause clause) {
             this.clause = clause;
             return this;
         }
@@ -78,7 +78,7 @@ public class HistoryStatesQuery {
     }
 
     @Nullable
-    public Clause getClause() {
+    public QueryClause getClause() {
         return this.clause;
     }
 
