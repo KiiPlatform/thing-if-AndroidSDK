@@ -12,7 +12,6 @@ import android.support.annotation.WorkerThread;
 
 import com.google.gson.JsonParseException;
 import com.kii.thingif.command.Action;
-import com.kii.thingif.command.ActionResult;
 import com.kii.thingif.command.Command;
 import com.kii.thingif.command.CommandForm;
 import com.kii.thingif.exception.StoredInstanceNotFoundException;
@@ -29,8 +28,6 @@ import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
 import com.kii.thingif.query.AggregatedResult;
 import com.kii.thingif.query.Aggregation;
-import com.kii.thingif.query.CountFieldType;
-import com.kii.thingif.query.CountedResult;
 import com.kii.thingif.query.GroupedHistoryStates;
 import com.kii.thingif.query.GroupedHistoryStatesQuery;
 import com.kii.thingif.query.HistoryState;
@@ -1765,22 +1762,6 @@ public class ThingIFAPI implements Parcelable {
             @NonNull GroupedHistoryStatesQuery groupedQuery,
             @NonNull Aggregation aggregation) throws ThingIFException {
         //TODO: // FIXME: 12/21/16 implement the logic
-        return new ArrayList<>();
-    }
-
-    /**
-     * Count query of history states
-     * @param groupedQuery {@link GroupedHistoryStatesQuery} instance.
-     * @param field field of target state to count.
-     * @param fieldType one of {@link CountFieldType}.
-     * @return List of {@link CountedResult} instance.
-     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
-     * @throws ThingIFRestException Thrown when server returns error response.
-     */
-    public List<CountedResult> count(
-            @NonNull GroupedHistoryStatesQuery groupedQuery,
-            @NonNull String field,
-            @NonNull CountFieldType fieldType) throws ThingIFException {
         return new ArrayList<>();
     }
 }
