@@ -24,8 +24,9 @@ public class OrClauseInQuery implements BaseOr<QueryClause>, QueryClause {
     }
 
     @Override
-    public void addClause(QueryClause clause) {
+    public OrClauseInQuery addClause(QueryClause clause) {
         this.clauses.add(clause);
+        return this;
     }
 
     @Override

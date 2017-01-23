@@ -24,8 +24,9 @@ public class OrClauseInTrigger implements BaseOr<TriggerClause>, TriggerClause {
     }
 
     @Override
-    public void addClause(TriggerClause clause) {
+    public OrClauseInTrigger addClause(TriggerClause clause) {
         this.clauses.add(clause);
+        return this;
     }
 
     @Override

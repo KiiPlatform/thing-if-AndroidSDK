@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface BaseAnd<T extends BaseClause> extends BaseClause {
     List<T> getClauses();
-    void addClause(T clause);
+    BaseAnd<T> addClause(T clause);
 }

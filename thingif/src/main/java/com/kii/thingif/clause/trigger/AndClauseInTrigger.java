@@ -26,8 +26,9 @@ public class AndClauseInTrigger implements BaseAnd<TriggerClause>, TriggerClause
     }
 
     @Override
-    public void addClause(@NonNull TriggerClause clause) {
+    public AndClauseInTrigger addClause(@NonNull TriggerClause clause) {
         this.clauses.add(clause);
+        return this;
     }
 
     @Override
