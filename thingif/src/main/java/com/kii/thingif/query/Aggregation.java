@@ -45,23 +45,23 @@ public class Aggregation implements Parcelable{
         this.fieldType = fieldType;
     }
 
-    public static Aggregation NewAggregation(
+    public static Aggregation newAggregation(
             @NonNull FunctionType function,
             @NonNull String field,
             @NonNull FieldType fieldType) throws IllegalArgumentException {
         switch (function) {
             case COUNT:
-                return Aggregation.NewCountAggregation(field, fieldType);
+                return Aggregation.newCountAggregation(field, fieldType);
             case MAX:
-                return Aggregation.NewMaxAggregation(field, fieldType);
+                return Aggregation.newMaxAggregation(field, fieldType);
             case MIN:
-                return Aggregation.NewMinAggregation(field, fieldType);
+                return Aggregation.newMinAggregation(field, fieldType);
             case SUM:
-                return Aggregation.NewSumAggregation(field, fieldType);
+                return Aggregation.newSumAggregation(field, fieldType);
             case MEAN:
-                return Aggregation.NewMeanAggregation(field, fieldType);
+                return Aggregation.newMeanAggregation(field, fieldType);
             default:
-                throw new IllegalArgumentException("Unsupport function type");
+                throw new IllegalArgumentException("Unsupported function type");
         }
     }
 
@@ -71,7 +71,7 @@ public class Aggregation implements Parcelable{
      * @param fieldType type of field.
      * @return {@link Aggregation} instance.
      */
-    public static Aggregation NewCountAggregation(
+    public static Aggregation newCountAggregation(
             @NonNull String field,
             @NonNull FieldType fieldType) {
         return new Aggregation(FunctionType.COUNT, field, fieldType);
@@ -84,7 +84,7 @@ public class Aggregation implements Parcelable{
      * @return {@link Aggregation} instance.
      * @throws IllegalArgumentException Thrown when fieldType is neither integer or decimal.
      */
-    public static Aggregation NewMeanAggregation(
+    public static Aggregation newMeanAggregation(
             @NonNull String field,
             @NonNull FieldType fieldType) throws IllegalArgumentException{
         if(fieldType != FieldType.INTEGER && fieldType != FieldType.DECIMAL) {
@@ -100,7 +100,7 @@ public class Aggregation implements Parcelable{
      * @return {@link Aggregation} instance.
      * @throws IllegalArgumentException Thrown when fieldType is neither integer or decimal.
      */
-    public static Aggregation NewMaxAggregation(
+    public static Aggregation newMaxAggregation(
             @NonNull String field,
             @NonNull FieldType fieldType) throws IllegalArgumentException{
         if(fieldType != FieldType.INTEGER && fieldType != FieldType.DECIMAL) {
@@ -116,7 +116,7 @@ public class Aggregation implements Parcelable{
      * @return {@link Aggregation} instance.
      * @throws IllegalArgumentException Thrown when fieldType is neither integer or decimal.
      */
-    public static Aggregation NewMinAggregation(
+    public static Aggregation newMinAggregation(
             @NonNull String field,
             @NonNull FieldType fieldType) throws IllegalArgumentException{
         if(fieldType != FieldType.INTEGER && fieldType != FieldType.DECIMAL) {
@@ -132,7 +132,7 @@ public class Aggregation implements Parcelable{
      * @return {@link Aggregation} instance.
      * @throws IllegalArgumentException Thrown when fieldType is neither integer or decimal.
      */
-    public static Aggregation NewSumAggregation(
+    public static Aggregation newSumAggregation(
             @NonNull String field,
             @NonNull FieldType fieldType) throws IllegalArgumentException{
         if(fieldType != FieldType.INTEGER && fieldType != FieldType.DECIMAL) {
