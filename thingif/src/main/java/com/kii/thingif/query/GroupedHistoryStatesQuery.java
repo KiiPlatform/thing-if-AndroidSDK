@@ -3,12 +3,13 @@ package com.kii.thingif.query;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.kii.thingif.query.clause.Clause;
+import com.kii.thingif.clause.query.QueryClause;
+
 
 public class GroupedHistoryStatesQuery {
 
     private @NonNull String alias;
-    private @Nullable Clause clause;
+    private @Nullable QueryClause clause;
     private @Nullable String firmwareVersion;
     private @NonNull TimeRange timeRange;
 
@@ -16,7 +17,7 @@ public class GroupedHistoryStatesQuery {
             @NonNull String alias,
             @NonNull TimeRange timeRange,
             @Nullable  String firmwareVersion,
-            @Nullable Clause clause) {
+            @Nullable QueryClause clause) {
         this.alias = alias;
         this.clause = clause;
         this.firmwareVersion = firmwareVersion;
@@ -25,7 +26,7 @@ public class GroupedHistoryStatesQuery {
 
     public static class Builder{
         private @NonNull String alias;
-        private @Nullable Clause clause;
+        private @Nullable QueryClause clause;
         private @Nullable String firmwareVersion;
         private @NonNull TimeRange timeRange;
 
@@ -42,7 +43,7 @@ public class GroupedHistoryStatesQuery {
             return new Builder(alias, timeRange);
         }
 
-        public Builder setClause(@Nullable Clause clause) {
+        public Builder setClause(@Nullable QueryClause clause) {
             this.clause = clause;
             return this;
         }
