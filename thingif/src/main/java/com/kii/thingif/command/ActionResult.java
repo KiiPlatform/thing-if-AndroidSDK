@@ -3,18 +3,29 @@ package com.kii.thingif.command;
 import java.io.Serializable;
 
 /**
- * Represents base cass of ActionResult.
- * Subclass must have the default constructor.
+ * Represents ActionResult.
  */
-public abstract class ActionResult implements Serializable {
-    public String errorMessage;
-    public boolean succeeded;
+public final class ActionResult implements Serializable {
+    private String errorMessage;
+    private boolean succeeded;
+    private String actionName;
 
-    public boolean succeeded() {
+    public ActionResult(
+            String actionName,
+            String errorMessage,
+            boolean succeeded) {
+        this.actionName = actionName;
+        this.errorMessage = errorMessage;
+        this.succeeded = succeeded;
+    }
+
+    public boolean isSucceeded() {
         return this.succeeded;
     }
     public String getErrorMessage() {
         return this.errorMessage;
     }
-    public abstract String getActionName();
+    public String getActionName() {
+        return this.actionName;
+    }
 }
