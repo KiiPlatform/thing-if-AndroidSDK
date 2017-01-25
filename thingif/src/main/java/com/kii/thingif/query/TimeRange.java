@@ -11,6 +11,11 @@ public class TimeRange implements Parcelable{
     private @NonNull Date from;
     private @NonNull Date to;
 
+    /**
+     * Initialize time range.
+     * @param from date when the time range starts. It is inclusive.
+     * @param to date when the time range ends. It is inclusive.
+     */
     public TimeRange(
             @NonNull Date from,
             @NonNull Date to) {
