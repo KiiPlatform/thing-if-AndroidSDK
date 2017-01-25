@@ -43,6 +43,78 @@ public class GatewayAPI implements Parcelable {
     private String accessToken;
     private final IoTRestClient restClient;
 
+    public static class Builder {
+
+        private final Context context;
+        private String tag;
+        private final KiiApp app;
+        private final Uri gatewayAddress;
+
+        private Builder(
+                @Nullable Context context,
+                @NonNull KiiApp app,
+                @NonNull Uri gatewayAddress) {
+            this.context = context;
+            this.app = app;
+            this.gatewayAddress = gatewayAddress;
+        }
+
+        /** Set tag to this GatewayAPI instance.
+         * tag is used to distinguish storage area of instance.
+         * <br>
+         * If the api instance is tagged with same string, It will be overwritten.
+         * <br>
+         * If the api instance is tagged with different string, Different key is used to store the
+         * instance.
+         * <br>
+         * <br>
+         * Please refer to {@link GatewayAPI#loadFromStoredInstance(Context, String)} as well.
+         * @param tag if null or empty string is passed, it will be ignored.
+         * @return builder instance for chaining call.
+         */
+        @NonNull
+        public Builder setTag(@Nullable String tag) {
+            this.tag = tag;
+            return this;
+        }
+
+        /**
+         * Instantiate new Builder.
+         *
+         * @param context Application context.
+         * @param app Kii Cloud Application.
+         * @param gatewayAddress address information for the gateway
+         * @return Builder instance.
+         */
+        @NonNull
+        public static Builder newBuilder(
+                @NonNull Context context,
+                @NonNull KiiApp app,
+                @NonNull Uri gatewayAddress) {
+            if (context == null) {
+                throw new IllegalArgumentException("context is null");
+            }
+            if (app == null) {
+                throw new IllegalArgumentException("app is null");
+            }
+            if (gatewayAddress == null) {
+                throw new IllegalArgumentException("gatewayAddress is null");
+            }
+            return new Builder(context, app, gatewayAddress);
+        }
+
+        /**
+         * Instantiate new GatewayAPI instance.
+         * @return GatewayAPI instance.
+         */
+        @WorkerThread
+        @NonNull
+        public GatewayAPI build() {
+            GatewayAPI api = new GatewayAPI(this.context, this.tag, this.app, this.gatewayAddress);
+            return api;
+        }
+    }
+
     GatewayAPI(@Nullable Context context,
                @NonNull KiiApp app,
                @NonNull Uri gatewayAddress) {
