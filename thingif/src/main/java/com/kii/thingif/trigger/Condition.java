@@ -4,21 +4,21 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import com.kii.thingif.trigger.clause.Clause;
+import com.kii.thingif.clause.trigger.TriggerClause;
 
 public class Condition implements Parcelable {
-    private Clause clause;
-    public Condition(@NonNull Clause clause) {
+    private TriggerClause clause;
+    public Condition(@NonNull TriggerClause clause) {
         this.clause = clause;
     }
-    public Clause getClause() {
+    public TriggerClause getClause() {
         return this.clause;
     }
 
 
     // Implementation of Parcelable
     protected Condition(Parcel in) {
-        this.clause = in.readParcelable(Clause.class.getClassLoader());
+        this.clause = in.readParcelable(TriggerClause.class.getClassLoader());
     }
     public static final Creator<Condition> CREATOR = new Creator<Condition>() {
         @Override

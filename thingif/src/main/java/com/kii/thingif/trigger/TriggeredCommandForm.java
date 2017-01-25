@@ -4,12 +4,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Action;
-import com.kii.thingif.command.Command;
+import com.kii.thingif.command.AliasAction;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,16 +26,14 @@ import java.util.List;
  * <br><br>
  * Mandatory data are followings:
  * <ul>
- * <li>Name of a schema</li>
- * <li>Version of a schema</li>
- * <li>List of actions</li>
+ * <li>List of alias actions</li>
  * </ul>
  * Optional data are followings:
  * <ul>
  * <li>Target thing ID</li>
- * <li>Title of a schema</li>
- * <li>Description of a schema</li>
- * <li>meta data of a schema</li>
+ * <li>Title of a command</li>
+ * <li>Description of a command</li>
+ * <li>meta data of a command</li>
  * </ul>
  */
 public class TriggeredCommandForm implements Parcelable {
@@ -46,180 +43,102 @@ public class TriggeredCommandForm implements Parcelable {
      */
     public static class Builder {
 
-        @NonNull private String schemaName;
-        private int schemaVersion;
-        @NonNull private List<Action> actions;
+        @NonNull private List<AliasAction<? extends Action>> aliasActions;
         @Nullable private TypedID targetID;
         @Nullable private String title;
         @Nullable private String description;
         @Nullable private JSONObject metadata;
 
         private Builder(
-                @NonNull String schemaName,
-                int schemaVersion,
-                @NonNull List<Action> actions)
+                @NonNull List<AliasAction<? extends Action>> aliasActions)
         {
-            if (TextUtils.isEmpty(schemaName)) {
-                throw new IllegalArgumentException(
-                    "schemaName is null or empty.");
+            if (isEmpty(aliasActions)) {
+                throw new IllegalArgumentException("aliasActions is null or empty.");
             }
-            if (isEmpty(actions)) {
-                throw new IllegalArgumentException("actions is null or empty.");
-            }
-            this.schemaName = schemaName;
-            this.schemaVersion = schemaVersion;
-            this.actions = actions;
+            this.aliasActions = aliasActions;
         }
 
         /**
          * Constructs a {@link TriggeredCommandForm.Builder} instance.
          *
-         * @param schemaName name of schema. Must not be null or empty string.
-         * @param schemaVersion version of schema.
-         * @param actions List of actions. Must not be null or empty.
+         * @param aliasActions List of alias actions. Must not be null or empty.
          * @throws IllegalArgumentException This exception is thrown if one or
          * more following conditions are met.
          * <ul>
-         *   <li>schemaName is null or empty string.</li>
          *   <li>actions is null or empty</li>
          * </ul>
          * @return builder instance.
          */
         @NonNull
         public static Builder newBuilder(
-                @NonNull String schemaName,
-                int schemaVersion,
-                @NonNull List<Action> actions)
-            throws IllegalArgumentException
+                @NonNull List<AliasAction<? extends Action>> aliasActions)
         {
-            return new Builder(schemaName, schemaVersion, actions);
+            return new Builder(aliasActions);
         }
 
         /**
-         * Constructs a {@link TriggeredCommandForm.Builder} instance.
-         *
-         * <p>
-         * This constructor copies following {@link Command} fields:
-         * </p>
-         *
-         * <ul>
-         *   <li>{@link Command#getSchemaName()}</li>
-         *   <li>{@link Command#getSchemaVersion()}</li>
-         *   <li>{@link Command#getActions()}</li>
-         *   <li>{@link Command#getTargetID()}</li>
-         *   <li>{@link Command#getTitle()}</li>
-         *   <li>{@link Command#getDescription()}</li>
-         *   <li>{@link Command#getMetadata()}</li>
-         * </ul>
-         *
-         * @param command Souce of this {@link TriggeredCommandForm.Builder}
-         * instance.
+         * Constructs a {@link TriggeredCommandForm.Builder} instance with empty actions Array
          * @return builder instance.
-         * @throws IllegalArgumentException if command is null.
          */
-        @NonNull
-        public static Builder newBuilderFromCommand(
-                @NonNull Command command)
-            throws IllegalArgumentException
-        {
-            return (new Builder(
-                        command.getSchemaName(),
-                        command.getSchemaVersion(),
-                        command.getActions())).
-                    setTargetID(command.getTargetID()).
-                    setTitle(command.getTitle()).
-                    setDescription(command.getDescription()).
-                    setMetadata(command.getMetadata());
+        public static Builder newBuilder() {
+            return new Builder(new ArrayList<AliasAction<? extends Action>>());
         }
 
-        /**
-         * Setter of schema name.
-         *
-         * <p>
-         * Schema name is requried field of command, so null and empty string
-         * is not acceptable.
-         * </p>
-         *
-         * @param schemaName schema name.
-         * @return this instance for method chaining.
-         * @throws IllegalArgumentException if schemaName is invalid.
-         */
-        @NonNull
-        public Builder setSchemaName(
-                @NonNull String schemaName)
-            throws IllegalArgumentException
-        {
-            if (TextUtils.isEmpty(schemaName)) {
-                throw new IllegalArgumentException(
-                    "schemaName is null or empty.");
-            }
-            this.schemaName = schemaName;
-            return this;
-        }
+//        /**
+//         * Constructs a {@link TriggeredCommandForm.Builder} instance.
+//         *
+//         * <p>
+//         * This constructor copies following {@link Command} fields:
+//         * </p>
+//         *
+//         * <ul>
+//         *   <li>{@link Command#getActions()}</li>
+//         *   <li>{@link Command#getTargetID()}</li>
+//         *   <li>{@link Command#getTitle()}</li>
+//         *   <li>{@link Command#getDescription()}</li>
+//         *   <li>{@link Command#getMetadata()}</li>
+//         * </ul>
+//         *
+//         * @param command Souce of this {@link TriggeredCommandForm.Builder}
+//         * instance.
+//         * @return builder instance.
+//         * @throws IllegalArgumentException if command is null.
+//         */
+//        @NonNull
+//        public static <T3 extends Alias> Builder<T3> newBuilderFromCommand(
+//                @NonNull Command<T3> command)
+//            throws IllegalArgumentException
+//        {
+//            return (new Builder<>(command.getActions())).
+//                    setTargetID(command.getTargetID()).
+//                    setTitle(command.getTitle()).
+//                    setDescription(command.getDescription()).
+//                    setMetadata(command.getMetadata());
+//        }
 
         /**
-         * Getter of schema name.
-         *
-         * @return schema name
-         */
-        @NonNull
-        public String getSchemaName() {
-            return this.schemaName;
-        }
-
-        /**
-         * Setter of schema version.
-         *
-         * @param schemaVersion schema version.
+         * Add alias action to aliasActions array.
+         * @param aliasAction AliasAction instance.
          * @return this instance for method chaining.
          */
         @NonNull
-        public Builder setSchemaVersion(int schemaVersion) {
-            this.schemaVersion = schemaVersion;
-            return this;
-        }
-
-        /**
-         *  Getter of schema version.
-         *
-         * @return schema version
-         */
-        public int getSchemaVersion() {
-            return this.schemaVersion;
-        }
-
-        /**
-         * Setter of actions.
-         *
-         * <p>
-         * List of action is required field of command, so null and empty
-         * list is not acceptable.
-         * </p>
-         *
-         * @param actions List of action.
-         * @return this instance for method chaining.
-         * @throws IllegalArgumentException actions is null or empty list.
-         */
-        @NonNull
-        public Builder setActions(
-                @NonNull List<Action> actions)
+        public Builder addAliasAction(
+                @NonNull AliasAction aliasAction)
             throws IllegalArgumentException
         {
-            if (isEmpty(actions)) {
-                throw new IllegalArgumentException("actions is null or empty.");
-            }
-            this.actions = actions;
+            this.aliasActions.add(aliasAction);
             return this;
         }
 
+
         /**
-         * Getter of actions.
+         * Getter of aliasActions.
          *
-         * @return actions
+         * @return aliasActions
          */
         @NonNull
-        public List<Action> getActions() {
-            return this.actions;
+        public List<AliasAction<? extends Action>> getAliasActions() {
+            return this.aliasActions;
         }
 
         /**
@@ -363,9 +282,9 @@ public class TriggeredCommandForm implements Parcelable {
          */
         @NonNull
         public TriggeredCommandForm build() {
+
             TriggeredCommandForm retval =
-                    new TriggeredCommandForm(
-                        this.schemaName, this.schemaVersion, this.actions);
+                    new TriggeredCommandForm(this.aliasActions);
             retval.targetID = this.targetID;
             retval.title = this.title;
             retval.description = this.description;
@@ -385,10 +304,7 @@ public class TriggeredCommandForm implements Parcelable {
 
     }
 
-    @SerializedName("schema")
-    @NonNull private final String schemaName;
-    private final int schemaVersion;
-    @NonNull private final List<Action> actions;
+    @NonNull private final List<AliasAction<? extends Action>> aliasActions;
     @SerializedName("target")
     @Nullable private TypedID targetID;
     @Nullable private String title;
@@ -396,42 +312,19 @@ public class TriggeredCommandForm implements Parcelable {
     @Nullable private JSONObject metadata;
 
     private TriggeredCommandForm(
-            @NonNull String schemaName,
-            int schemaVersion,
-            @NonNull List<Action> actions)
+            @NonNull List<AliasAction<? extends Action>> aliasActions)
     {
-        this.schemaName = schemaName;
-        this.schemaVersion = schemaVersion;
-        this.actions = actions;
+        this.aliasActions = aliasActions;
     }
 
     /**
-     * Getter of schema name.
+     * Getter of aliasActions.
      *
-     * @return schema name
+     * @return aliasActions
      */
     @NonNull
-    public String getSchemaName() {
-        return this.schemaName;
-    }
-
-    /**
-     *  Getter of schema version.
-     *
-     * @return schema version
-     */
-    public int getSchemaVersion() {
-        return this.schemaVersion;
-    }
-
-    /**
-     * Getter of actions.
-     *
-     * @return actions
-     */
-    @NonNull
-    public List<Action> getActions() {
-        return this.actions;
+    public List<AliasAction<? extends Action>> getAliasActions() {
+        return this.aliasActions;
     }
 
     /**
@@ -475,10 +368,9 @@ public class TriggeredCommandForm implements Parcelable {
     }
 
     private TriggeredCommandForm(Parcel in) {
-        this.schemaName = in.readString();
-        this.schemaVersion = in.readInt();
-        this.actions = new ArrayList<>();
-        in.readList(this.actions, TriggeredCommandForm.class.getClassLoader());
+        //TODO: // FIXME: 12/16/16 should adapt to alias subclasses
+        this.aliasActions = new ArrayList<>();
+        in.readList(this.aliasActions, TriggeredCommandForm.class.getClassLoader());
         this.targetID = in.readParcelable(TypedID.class.getClassLoader());
         this.title = in.readString();
         this.description = in.readString();
@@ -494,9 +386,8 @@ public class TriggeredCommandForm implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.schemaName);
-        dest.writeInt(this.schemaVersion);
-        dest.writeList(this.actions);
+        //TODO: // FIXME: 12/16/16 should adapt to alias subclass
+        dest.writeList(this.aliasActions);
         dest.writeParcelable(this.getTargetID(), flags);
         dest.writeString(this.title);
         dest.writeString(this.description);

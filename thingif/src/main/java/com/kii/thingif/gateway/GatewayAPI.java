@@ -17,7 +17,6 @@ import com.kii.thingif.SDKVersion;
 import com.kii.thingif.exception.StoredInstanceNotFoundException;
 import com.kii.thingif.exception.ThingIFException;
 import com.kii.thingif.exception.UnloadableInstanceVersionException;
-import com.kii.thingif.internal.GsonRepository;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
 import com.kii.thingif.internal.utils.Path;
@@ -475,7 +474,9 @@ public class GatewayAPI implements Parcelable {
                     MINIMUM_LOADABLE_SDK_VERSION);
         }
 
-        return  GsonRepository.gson().fromJson(serializedJson, GatewayAPI.class);
+        //TODO: // FIXME: 2017/01/23 
+        return null;
+//        return  GsonRepository.gson().fromJson(serializedJson, GatewayAPI.class);
     }
     /**
      * Clear all saved instances in the SharedPreferences.
@@ -503,7 +504,8 @@ public class GatewayAPI implements Parcelable {
         if (preferences != null) {
             SharedPreferences.Editor editor = preferences.edit();
             editor.putString(getStoredSDKVersionKey(instance.tag), SDKVersion.versionString);
-            editor.putString(getStoredInstanceKey(instance.tag), GsonRepository.gson().toJson(instance));
+            //TODO: // FIXME: 2017/01/23 
+//            editor.putString(getStoredInstanceKey(instance.tag), GsonRepository.gson().toJson(instance));
             editor.apply();
         }
     }
