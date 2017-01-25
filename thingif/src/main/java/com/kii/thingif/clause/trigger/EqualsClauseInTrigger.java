@@ -1,5 +1,6 @@
 package com.kii.thingif.clause.trigger;
 
+import android.os.Parcel;
 import android.support.annotation.NonNull;
 
 import com.kii.thingif.clause.base.BaseEquals;
@@ -53,4 +54,34 @@ public class EqualsClauseInTrigger implements BaseEquals, TriggerClause{
         //TODO: implement me
         return null;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.alias);
+        dest.writeString(this.field);
+        dest.writeValue(this.value);
+    }
+
+    private EqualsClauseInTrigger(Parcel in) {
+        this.alias = in.readString();
+        this.field = in.readString();
+        this.value = in.readValue(null);
+    }
+
+    public static final Creator<EqualsClauseInTrigger> CREATOR = new Creator<EqualsClauseInTrigger>() {
+        @Override
+        public EqualsClauseInTrigger createFromParcel(Parcel source) {
+            return new EqualsClauseInTrigger(source);
+        }
+
+        @Override
+        public EqualsClauseInTrigger[] newArray(int size) {
+            return new EqualsClauseInTrigger[size];
+        }
+    };
 }
