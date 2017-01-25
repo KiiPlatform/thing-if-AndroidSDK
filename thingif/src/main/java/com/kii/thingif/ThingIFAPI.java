@@ -13,6 +13,7 @@ import android.support.annotation.WorkerThread;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
 import com.kii.thingif.command.CommandForm;
+import com.kii.thingif.exception.BadRequestException;
 import com.kii.thingif.exception.ConflictException;
 import com.kii.thingif.exception.StoredInstanceNotFoundException;
 import com.kii.thingif.exception.ThingIFException;
@@ -1705,11 +1706,13 @@ public class ThingIFAPI implements Parcelable {
 
     /**
      * Group history state
-     * @param query {@link GroupedHistoryStatesQuery} instance
+     * @param query {@link GroupedHistoryStatesQuery} instance. timeRange in query should less than
+     *                                               60 data grouping intervals.
      * @param <S> Type of subclass of {@link TargetState}.
      * @return List of {@link GroupedHistoryStates} instances.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws BadRequestException Thrown if timeRange of query is over 60 data grouping intervals.
      */
     public <S extends TargetState> List<GroupedHistoryStates<S>> query(
             @NonNull GroupedHistoryStatesQuery query) throws ThingIFException{
@@ -1719,13 +1722,15 @@ public class ThingIFAPI implements Parcelable {
 
     /**
      * Aggregate history states
-     * @param groupedQuery {@link GroupedHistoryStatesQuery} instance.
+     * @param groupedQuery {@link GroupedHistoryStatesQuery} instance. timeRange in query should less than
+     *                                               60 data grouping intervals.
      * @param aggregation {@link Aggregation} instance.
      * @param <T> Type of aggregated result field.
      * @param <S> Type of subclass of {@link TargetState}.
      * @return List of {@link AggregatedResult} instance.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws BadRequestException Thrown if timeRange of query is over 60 data grouping intervals.
      */
     public <T extends Number, S extends TargetState> List<AggregatedResult<T, S>> aggregate(
             @NonNull GroupedHistoryStatesQuery groupedQuery,
