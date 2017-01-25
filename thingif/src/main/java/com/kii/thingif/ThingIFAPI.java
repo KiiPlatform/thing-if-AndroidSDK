@@ -13,6 +13,7 @@ import android.support.annotation.WorkerThread;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
 import com.kii.thingif.command.CommandForm;
+import com.kii.thingif.exception.ConflictException;
 import com.kii.thingif.exception.StoredInstanceNotFoundException;
 import com.kii.thingif.exception.ThingIFException;
 import com.kii.thingif.exception.ThingIFRestException;
@@ -1643,10 +1644,11 @@ public class ThingIFAPI implements Parcelable {
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
      * @throws IllegalArgumentException if thingType is null.
+     * @throws ConflictException Thrown when a thing type was already configured.
      */
     @WorkerThread
     public void updateThingType(
-            @NonNull String thingType) {
+            @NonNull String thingType) throws ThingIFException{
         //TODO: // FIXME: 12/20/16 implement the logic
     }
 
@@ -1659,7 +1661,7 @@ public class ThingIFAPI implements Parcelable {
      */
     @WorkerThread
     public void updateFirmwareVersion(
-            @NonNull String firmwareVersion) {
+            @NonNull String firmwareVersion) throws ThingIFException{
         //TODO: // FIXME: 12/20/16 implement the logic
     }
 
