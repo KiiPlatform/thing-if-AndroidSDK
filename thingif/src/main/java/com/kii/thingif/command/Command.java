@@ -24,8 +24,8 @@ public class Command implements Parcelable {
     private final @Nullable TypedID targetID;
     @SerializedName("issuer")
     private final @NonNull TypedID issuerID;
-    private final @NonNull List<AliasAction<? extends Action>> actions;
-    private final @Nullable List<AliasActionResult> actionResults;
+    private final @NonNull List<AliasAction<? extends Action>> aliasActions;
+    private final @Nullable List<AliasActionResult> aliasActionResults;
     @SerializedName("commandState")
     private final @Nullable CommandState commandState;
     private final @Nullable String firedByTriggerID;
@@ -39,8 +39,8 @@ public class Command implements Parcelable {
 
     public Command(@NonNull TypedID targetID,
                    @NonNull TypedID issuerID,
-                   @NonNull List<AliasAction<? extends Action>> actions,
-                   @Nullable List<AliasActionResult> actonResults,
+                   @NonNull List<AliasAction<? extends Action>> aliasActions,
+                   @Nullable List<AliasActionResult> aliasActionResults,
                    @Nullable String commandID,
                    @Nullable CommandState commandState,
                    @Nullable String firedByTriggerID,
@@ -56,13 +56,13 @@ public class Command implements Parcelable {
         if (issuerID == null) {
             throw new IllegalArgumentException("issuerID is null");
         }
-        if (actions == null || actions.size() == 0) {
+        if (aliasActions == null || aliasActions.size() == 0) {
             throw new IllegalArgumentException("actions is null or empty");
         }
         this.targetID = targetID;
         this.issuerID = issuerID;
-        this.actions = actions;
-        this.actionResults = actonResults;
+        this.aliasActions = aliasActions;
+        this.aliasActionResults = aliasActionResults;
         this.commandID = commandID;
         this.commandState = commandState;
         this.firedByTriggerID = firedByTriggerID;
@@ -104,8 +104,8 @@ public class Command implements Parcelable {
      * @return action of this command.
      */
     @NonNull
-    public List<AliasAction<? extends Action>> getActions() {
-        return this.actions;
+    public List<AliasAction<? extends Action>> getAliasActions() {
+        return this.aliasActions;
     }
 
     /**
@@ -123,8 +123,8 @@ public class Command implements Parcelable {
      * @return action results of this command.
      */
     @Nullable
-    public List<AliasActionResult> getActionResults() {
-        return this.actionResults;
+    public List<AliasActionResult> getAliasActionResults() {
+        return this.aliasActionResults;
     }
 
     /**
@@ -217,10 +217,10 @@ public class Command implements Parcelable {
         this.targetID = in.readParcelable(TypedID.class.getClassLoader());
         this.issuerID = in.readParcelable(TypedID.class.getClassLoader());
         //TODO: // FIXME: 12/16/16 fix to adapt to alias
-        this.actions = new ArrayList<>();
-        in.readList(this.actions, Command.class.getClassLoader());
-        this.actionResults = new ArrayList<>();
-        in.readList(this.actionResults, Command.class.getClassLoader());
+        this.aliasActions = new ArrayList<>();
+        in.readList(this.aliasActions, Command.class.getClassLoader());
+        this.aliasActionResults = new ArrayList<>();
+        in.readList(this.aliasActionResults, Command.class.getClassLoader());
         this.commandState = (CommandState)in.readSerializable();
         this.firedByTriggerID = in.readString();
         this.created = (Long)in.readValue(Command.class.getClassLoader());
@@ -259,8 +259,8 @@ public class Command implements Parcelable {
         dest.writeParcelable(this.targetID, flags);
         dest.writeParcelable(this.issuerID, flags);
         //TODO // FIXME: 12/16/16 fix to adapt alias
-        dest.writeList(this.actions);
-        dest.writeList(this.actionResults);
+        dest.writeList(this.aliasActions);
+        dest.writeList(this.aliasActionResults);
         dest.writeSerializable(this.commandState);
         dest.writeString(this.firedByTriggerID);
         dest.writeValue(this.created);

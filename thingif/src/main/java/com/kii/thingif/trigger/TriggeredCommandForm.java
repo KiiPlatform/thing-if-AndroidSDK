@@ -26,7 +26,7 @@ import java.util.List;
  * <br><br>
  * Mandatory data are followings:
  * <ul>
- * <li>List of actions</li>
+ * <li>List of alias actions</li>
  * </ul>
  * Optional data are followings:
  * <ul>
@@ -43,25 +43,25 @@ public class TriggeredCommandForm implements Parcelable {
      */
     public static class Builder {
 
-        @NonNull private List<AliasAction<? extends Action>> actions;
+        @NonNull private List<AliasAction<? extends Action>> aliasActions;
         @Nullable private TypedID targetID;
         @Nullable private String title;
         @Nullable private String description;
         @Nullable private JSONObject metadata;
 
         private Builder(
-                @NonNull List<AliasAction<? extends Action>> actions)
+                @NonNull List<AliasAction<? extends Action>> aliasActions)
         {
-            if (isEmpty(actions)) {
-                throw new IllegalArgumentException("actions is null or empty.");
+            if (isEmpty(aliasActions)) {
+                throw new IllegalArgumentException("aliasActions is null or empty.");
             }
-            this.actions = actions;
+            this.aliasActions = aliasActions;
         }
 
         /**
          * Constructs a {@link TriggeredCommandForm.Builder} instance.
          *
-         * @param actions List of actions. Must not be null or empty.
+         * @param aliasActions List of alias actions. Must not be null or empty.
          * @throws IllegalArgumentException This exception is thrown if one or
          * more following conditions are met.
          * <ul>
@@ -71,9 +71,9 @@ public class TriggeredCommandForm implements Parcelable {
          */
         @NonNull
         public static Builder newBuilder(
-                @NonNull List<AliasAction<? extends Action>> actions)
+                @NonNull List<AliasAction<? extends Action>> aliasActions)
         {
-            return new Builder(actions);
+            return new Builder(aliasActions);
         }
 
         /**
@@ -117,28 +117,28 @@ public class TriggeredCommandForm implements Parcelable {
 //        }
 
         /**
-         * Add action to actions array.
-         * @param action AliasAction instance.
+         * Add alias action to aliasActions array.
+         * @param aliasAction AliasAction instance.
          * @return this instance for method chaining.
          */
         @NonNull
-        public Builder addAction(
-                @NonNull AliasAction action)
+        public Builder addAliasAction(
+                @NonNull AliasAction aliasAction)
             throws IllegalArgumentException
         {
-            this.actions.add(action);
+            this.aliasActions.add(aliasAction);
             return this;
         }
 
 
         /**
-         * Getter of actions.
+         * Getter of aliasActions.
          *
-         * @return actions
+         * @return aliasActions
          */
         @NonNull
-        public List<AliasAction<? extends Action>> getActions() {
-            return this.actions;
+        public List<AliasAction<? extends Action>> getAliasActions() {
+            return this.aliasActions;
         }
 
         /**
@@ -284,7 +284,7 @@ public class TriggeredCommandForm implements Parcelable {
         public TriggeredCommandForm build() {
 
             TriggeredCommandForm retval =
-                    new TriggeredCommandForm(this.actions);
+                    new TriggeredCommandForm(this.aliasActions);
             retval.targetID = this.targetID;
             retval.title = this.title;
             retval.description = this.description;
@@ -304,7 +304,7 @@ public class TriggeredCommandForm implements Parcelable {
 
     }
 
-    @NonNull private final List<AliasAction<? extends Action>> actions;
+    @NonNull private final List<AliasAction<? extends Action>> aliasActions;
     @SerializedName("target")
     @Nullable private TypedID targetID;
     @Nullable private String title;
@@ -312,19 +312,19 @@ public class TriggeredCommandForm implements Parcelable {
     @Nullable private JSONObject metadata;
 
     private TriggeredCommandForm(
-            @NonNull List<AliasAction<? extends Action>> actions)
+            @NonNull List<AliasAction<? extends Action>> aliasActions)
     {
-        this.actions = actions;
+        this.aliasActions = aliasActions;
     }
 
     /**
-     * Getter of actions.
+     * Getter of aliasActions.
      *
-     * @return actions
+     * @return aliasActions
      */
     @NonNull
-    public List<AliasAction<? extends Action>> getActions() {
-        return this.actions;
+    public List<AliasAction<? extends Action>> getAliasActions() {
+        return this.aliasActions;
     }
 
     /**
@@ -369,8 +369,8 @@ public class TriggeredCommandForm implements Parcelable {
 
     private TriggeredCommandForm(Parcel in) {
         //TODO: // FIXME: 12/16/16 should adapt to alias subclasses
-        this.actions = new ArrayList<>();
-        in.readList(this.actions, TriggeredCommandForm.class.getClassLoader());
+        this.aliasActions = new ArrayList<>();
+        in.readList(this.aliasActions, TriggeredCommandForm.class.getClassLoader());
         this.targetID = in.readParcelable(TypedID.class.getClassLoader());
         this.title = in.readString();
         this.description = in.readString();
@@ -387,7 +387,7 @@ public class TriggeredCommandForm implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         //TODO: // FIXME: 12/16/16 should adapt to alias subclass
-        dest.writeList(this.actions);
+        dest.writeList(this.aliasActions);
         dest.writeParcelable(this.getTargetID(), flags);
         dest.writeString(this.title);
         dest.writeString(this.description);

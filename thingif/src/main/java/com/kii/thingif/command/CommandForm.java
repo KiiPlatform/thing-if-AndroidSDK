@@ -20,7 +20,7 @@ import java.util.List;
  * <br><br>
  * Mandatory data are followings:
  * <ul>
- * <li>List of actions</li>
+ * <li>List of alias actions</li>
  * </ul>
  * Optional data are followings:
  * <ul>
@@ -31,7 +31,7 @@ import java.util.List;
  */
 public final class CommandForm implements Parcelable {
 
-    private final @NonNull List<AliasAction<? extends Action>> actions;
+    private final @NonNull List<AliasAction<? extends Action>> aliasActions;
 
     private @Nullable String title;
     private @Nullable String description;
@@ -39,14 +39,14 @@ public final class CommandForm implements Parcelable {
 
 
     public static class Builder{
-        private @NonNull List<AliasAction<? extends Action>> actions;
+        private @NonNull List<AliasAction<? extends Action>> aliasActions;
         private @Nullable String title;
         private @Nullable String description;
         private @Nullable JSONObject metadata;
 
         private Builder(
-                @NonNull List<AliasAction<? extends Action>> actions) {
-            this.actions = actions;
+                @NonNull List<AliasAction<? extends Action>> aliasActions) {
+            this.aliasActions = aliasActions;
         }
 
         /**
@@ -61,24 +61,24 @@ public final class CommandForm implements Parcelable {
 
         /**
          * Create {@link Builder} with Actions
-         * @param actions list of {@link AliasAction} instances.
+         * @param aliasActions list of {@link AliasAction} instances.
          * @return {@link Builder} instance.
          */
         @NonNull
         public static Builder newBuilder(
-                @NonNull List<AliasAction<? extends Action>> actions) {
-            return new Builder(actions);
+                @NonNull List<AliasAction<? extends Action>> aliasActions) {
+            return new Builder(aliasActions);
         }
 
         /**
          * Add instance of {@link AliasAction} to action list.
-         * @param action Intance of AliasAction
+         * @param aliasAction Instance of AliasAction
          * @return {@link Builder} instance
          */
         @NonNull
-        public Builder addAction(
-                @NonNull AliasAction<? extends Action> action) {
-            this.actions.add(action);
+        public Builder addAliasAction(
+                @NonNull AliasAction<? extends Action> aliasAction) {
+            this.aliasActions.add(aliasAction);
             return this;
         }
 
@@ -137,11 +137,11 @@ public final class CommandForm implements Parcelable {
         @NonNull
         public CommandForm build()
                 throws IllegalStateException{
-            if(this.actions.size() == 0) {
-                throw new IllegalStateException("Actions is empty");
+            if(this.aliasActions.size() == 0) {
+                throw new IllegalStateException("aliasActions is empty");
             }
             return new CommandForm(
-                    this.actions,
+                    this.aliasActions,
                     this.title,
                     this.description,
                     this.metadata);
@@ -149,23 +149,23 @@ public final class CommandForm implements Parcelable {
     }
 
     private CommandForm(
-            @NonNull List<AliasAction<? extends Action>> actions,
+            @NonNull List<AliasAction<? extends Action>> aliasActions,
             @Nullable String title,
             @Nullable String description,
             @Nullable Object metaData)
             throws IllegalArgumentException
     {
-        this.actions = actions;
+        this.aliasActions = aliasActions;
     }
 
     /**
-     * Getter of actions.
+     * Getter of aliasActions.
      *
-     * @return actions
+     * @return aliasActions
      */
     @NonNull
-    public List<AliasAction<? extends Action>> getActions() {
-        return this.actions;
+    public List<AliasAction<? extends Action>> getAliasActions() {
+        return this.aliasActions;
     }
 
     /**
@@ -205,7 +205,7 @@ public final class CommandForm implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeList(this.actions);
+        dest.writeList(this.aliasActions);
         dest.writeString(this.title);
         dest.writeString(this.description);
         dest.writeString(this.metadata == null ? null : this.metadata.toString());
@@ -223,8 +223,8 @@ public final class CommandForm implements Parcelable {
     };
 
     private CommandForm(Parcel in) {
-        this.actions = new ArrayList<>();
-        in.readList(this.actions, null);
+        this.aliasActions = new ArrayList<>();
+        in.readList(this.aliasActions, null);
         this.title = in.readString();
         this.description = in.readString();
         String metadata = in.readString();
