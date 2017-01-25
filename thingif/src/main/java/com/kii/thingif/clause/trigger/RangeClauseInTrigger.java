@@ -1,5 +1,6 @@
 package com.kii.thingif.clause.trigger;
 
+import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -134,4 +135,40 @@ public class RangeClauseInTrigger implements BaseRange, TriggerClause {
         //TODO: implement me
         return null;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.alias);
+        dest.writeString(this.field);
+        dest.writeValue(this.lowerLimit);
+        dest.writeValue(this.upperLimit);
+        dest.writeValue(this.lowerIncluded);
+        dest.writeValue(this.upperIncluded);
+    }
+
+    private RangeClauseInTrigger(Parcel in) {
+        this.alias = in.readString();
+        this.field = in.readString();
+        this.lowerLimit = (Number) in.readValue(Number.class.getClassLoader());
+        this.upperLimit = (Number) in.readValue(Number.class.getClassLoader());
+        this.lowerIncluded = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.upperIncluded = (Boolean) in.readValue(Boolean.class.getClassLoader());
+    }
+
+    public static final Creator<RangeClauseInTrigger> CREATOR = new Creator<RangeClauseInTrigger>() {
+        @Override
+        public RangeClauseInTrigger createFromParcel(Parcel source) {
+            return new RangeClauseInTrigger(source);
+        }
+
+        @Override
+        public RangeClauseInTrigger[] newArray(int size) {
+            return new RangeClauseInTrigger[size];
+        }
+    };
 }
