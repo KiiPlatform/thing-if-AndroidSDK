@@ -12,33 +12,6 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4.class)
 public class ClauseParcelableTest extends SmallTestBase {
     @Test
-    public void stringEqualsTest() throws Exception {
-        Equals clause = new Equals("f", "value");
-        Parcel parcel = Parcel.obtain();
-        clause.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-        Equals deserializedClause = Equals.CREATOR.createFromParcel(parcel);
-        Assert.assertEquals(clause, deserializedClause);
-    }
-    @Test
-    public void numberEqualsTest() throws Exception {
-        Equals clause = new Equals("f", 1);
-        Parcel parcel = Parcel.obtain();
-        clause.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-        Equals deserializedClause = Equals.CREATOR.createFromParcel(parcel);
-        Assert.assertEquals(clause, deserializedClause);
-    }
-    @Test
-    public void booleanEqualsTest() throws Exception {
-        Equals clause = new Equals("f", true);
-        Parcel parcel = Parcel.obtain();
-        clause.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-        Equals deserializedClause = Equals.CREATOR.createFromParcel(parcel);
-        Assert.assertEquals(clause, deserializedClause);
-    }
-    @Test
     public void stringNotEqualsTest() throws Exception {
         NotEquals clause = new NotEquals(new Equals("f", "value"));
         Parcel parcel = Parcel.obtain();
