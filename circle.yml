@@ -2,12 +2,6 @@ machine:
   environment:
     QEMU_AUDIO_DRV: none
 
-dependencies:
-  pre:
-    - echo y | android update sdk --no-ui --filter platform
-    - echo y | android update sdk --no-ui --all --filter android-24
-    - echo y | android update sdk --no-ui --all --filter build-tools-24.0.3
-
 test:
   pre:
     # build sdk
