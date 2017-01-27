@@ -10,7 +10,7 @@ import org.junit.Test;
 public class EqulasClauseTest extends SmallTestBase{
 
     @Test
-    public void testEquals() throws Exception {
+    public void testEquals_HashCode() throws Exception {
         EqualsClauseInTrigger clause = new EqualsClauseInTrigger("alias", "f", "v");
 
         // objects should equals to
@@ -19,7 +19,12 @@ public class EqulasClauseTest extends SmallTestBase{
                 new EqualsClauseInTrigger("alias", "f", "v")
         };
         for (int i= 0; i < sameObjects.length; i++) {
-            Assert.assertTrue("failed on ["+i+"]", clause.equals(sameObjects[i]));
+            Assert.assertTrue(
+                    "failed to test equals on ["+i+"]",
+                    clause.equals(sameObjects[i]));
+            Assert.assertTrue(
+                    "failed to test hashCode on ["+i+"]",
+                    clause.hashCode() == sameObjects[i].hashCode());
         }
 
         // objects should not equals to
@@ -32,7 +37,14 @@ public class EqulasClauseTest extends SmallTestBase{
                 new EqualsClauseInQuery("f", "v")
         };
         for (int j=0; j < diffObjects.length; j++) {
-            Assert.assertFalse("failed on ["+j+"]", clause.equals(diffObjects[j]));
+            Assert.assertFalse(
+                    "failed to test equals on ["+j+"]",
+                    clause.equals(diffObjects[j]));
+            if(diffObjects[j] != null) {
+                Assert.assertFalse(
+                        "failed to test hashCode on [" + j + "]",
+                        clause.hashCode() == diffObjects[j].hashCode());
+            }
         }
     }
 
