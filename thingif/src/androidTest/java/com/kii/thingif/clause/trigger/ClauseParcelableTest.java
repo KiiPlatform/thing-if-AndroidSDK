@@ -71,4 +71,49 @@ public class ClauseParcelableTest extends SmallTestBase{
         NotEqualsClauseInTrigger deserializedClause = NotEqualsClauseInTrigger.CREATOR.createFromParcel(parcel);
         Assert.assertEquals(clause, deserializedClause);
     }
+    @Test
+    public void rangeTest() throws Exception {
+        RangeClauseInTrigger clause = RangeClauseInTrigger.range("alias", "f", 1, true, 10, false);
+        Parcel parcel = Parcel.obtain();
+        clause.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+        RangeClauseInTrigger deserializedClause = RangeClauseInTrigger.CREATOR.createFromParcel(parcel);
+        Assert.assertEquals(clause, deserializedClause);
+    }
+    @Test
+    public void greaterThanTest() throws Exception {
+        RangeClauseInTrigger clause = RangeClauseInTrigger.greaterThan("alias", "f", 1);
+        Parcel parcel = Parcel.obtain();
+        clause.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+        RangeClauseInTrigger deserializedClause = RangeClauseInTrigger.CREATOR.createFromParcel(parcel);
+        Assert.assertEquals(clause, deserializedClause);
+    }
+    @Test
+    public void greaterThanEquals() throws Exception {
+        RangeClauseInTrigger clause = RangeClauseInTrigger.greaterThanOrEqualTo("alias", "f", 1);
+        Parcel parcel = Parcel.obtain();
+        clause.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+        RangeClauseInTrigger deserializedClause = RangeClauseInTrigger.CREATOR.createFromParcel(parcel);
+        Assert.assertEquals(clause, deserializedClause);
+    }
+    @Test
+    public void lessThan() throws Exception {
+        RangeClauseInTrigger clause = RangeClauseInTrigger.lessThan("alias", "f", 1);
+        Parcel parcel = Parcel.obtain();
+        clause.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+        RangeClauseInTrigger deserializedClause = RangeClauseInTrigger.CREATOR.createFromParcel(parcel);
+        Assert.assertEquals(clause, deserializedClause);
+    }
+    @Test
+    public void lessThanEquals() throws Exception {
+        RangeClauseInTrigger clause = RangeClauseInTrigger.lessThanOrEqualTo("alias", "f", 1);
+        Parcel parcel = Parcel.obtain();
+        clause.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+        RangeClauseInTrigger deserializedClause = RangeClauseInTrigger.CREATOR.createFromParcel(parcel);
+        Assert.assertEquals(clause, deserializedClause);
+    }
 }
