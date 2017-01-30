@@ -128,4 +128,16 @@ public class ClauseParcelableTest extends SmallTestBase{
         AndClauseInTrigger deserializedClause = AndClauseInTrigger.CREATOR.createFromParcel(parcel);
         Assert.assertEquals(clause, deserializedClause);
     }
+
+    @Test
+    public void orTest() throws Exception {
+        OrClauseInTrigger clause = new OrClauseInTrigger(
+                new EqualsClauseInTrigger("alias", "f1", "a"),
+                new EqualsClauseInTrigger("alias", "f2", 1));
+        Parcel parcel = Parcel.obtain();
+        clause.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+        OrClauseInTrigger deserializedClause = OrClauseInTrigger.CREATOR.createFromParcel(parcel);
+        Assert.assertEquals(clause, deserializedClause);
+    }
 }

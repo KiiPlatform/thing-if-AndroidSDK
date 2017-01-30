@@ -4,9 +4,12 @@ import android.os.Parcel;
 
 import com.kii.thingif.clause.base.BaseOr;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class OrClauseInTrigger implements BaseOr<TriggerClause>, TriggerClause {
@@ -26,14 +29,25 @@ public class OrClauseInTrigger implements BaseOr<TriggerClause>, TriggerClause {
     }
 
     @Override
-    public void addClause(TriggerClause clause) {
+    public OrClauseInTrigger addClause(TriggerClause clause) {
         this.clauses.add(clause);
+        return this;
     }
 
     @Override
     public JSONObject toJSONObject() {
-        // TODO: implement me
-        return null;
+        JSONObject ret = new JSONObject();
+        JSONArray clauses = new JSONArray();
+        try{
+            ret.put("type", "or");
+            for (TriggerClause clause : this.clauses) {
+                clauses.put(clause.toJSONObject());
+            }
+            ret.put("clauses", clauses);
+            return ret;
+        }catch (JSONException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     @Override
@@ -69,4 +83,16 @@ public class OrClauseInTrigger implements BaseOr<TriggerClause>, TriggerClause {
             return new OrClauseInTrigger[size];
         }
     };
+    @Override
+    public boolean equals(Object o) {
+        if(this == o) return true;
+        if(!(o instanceof OrClauseInTrigger)) return false;
+        OrClauseInTrigger and = (OrClauseInTrigger)o;
+        return Arrays.equals(this.getClauses().toArray(), and.getClauses().toArray());
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(this.getClauses().toArray());
+    }
 }
