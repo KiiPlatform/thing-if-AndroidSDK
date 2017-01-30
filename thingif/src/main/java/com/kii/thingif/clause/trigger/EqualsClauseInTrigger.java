@@ -101,9 +101,9 @@ public class EqualsClauseInTrigger implements BaseEquals, TriggerClause{
         if(this == o) return true;
         if(!(o instanceof EqualsClauseInTrigger)) return false;
         EqualsClauseInTrigger equals = (EqualsClauseInTrigger) o;
-        if(!alias.equals(equals.alias)) return false;
-        if(!field.equals(equals.field)) return false;
-        return value.equals(equals.value);
+        return alias.equals(equals.alias) &&
+                field.equals(equals.field) &&
+                value.equals(equals.value);
     }
 
     @Override

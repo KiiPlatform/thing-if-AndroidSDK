@@ -41,4 +41,34 @@ public class ClauseParcelableTest extends SmallTestBase{
         EqualsClauseInTrigger deserializedClause = EqualsClauseInTrigger.CREATOR.createFromParcel(parcel);
         Assert.assertEquals(clause, deserializedClause);
     }
+    @Test
+    public void stringNotEqualsTest() throws Exception {
+        NotEqualsClauseInTrigger clause = new NotEqualsClauseInTrigger(
+                new EqualsClauseInTrigger("alias", "f", "value"));
+        Parcel parcel = Parcel.obtain();
+        clause.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+        NotEqualsClauseInTrigger deserializedClause = NotEqualsClauseInTrigger.CREATOR.createFromParcel(parcel);
+        Assert.assertEquals(clause, deserializedClause);
+    }
+    @Test
+    public void numberNotEqualsTest() throws Exception {
+        NotEqualsClauseInTrigger clause = new NotEqualsClauseInTrigger(
+                new EqualsClauseInTrigger("alias", "f", 5));
+        Parcel parcel = Parcel.obtain();
+        clause.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+        NotEqualsClauseInTrigger deserializedClause = NotEqualsClauseInTrigger.CREATOR.createFromParcel(parcel);
+        Assert.assertEquals(clause, deserializedClause);
+    }
+    @Test
+    public void booleanNotEqualsTest() throws Exception {
+        NotEqualsClauseInTrigger clause = new NotEqualsClauseInTrigger(
+                new EqualsClauseInTrigger("alias", "f", false));
+        Parcel parcel = Parcel.obtain();
+        clause.writeToParcel(parcel, 0);
+        parcel.setDataPosition(0);
+        NotEqualsClauseInTrigger deserializedClause = NotEqualsClauseInTrigger.CREATOR.createFromParcel(parcel);
+        Assert.assertEquals(clause, deserializedClause);
+    }
 }
