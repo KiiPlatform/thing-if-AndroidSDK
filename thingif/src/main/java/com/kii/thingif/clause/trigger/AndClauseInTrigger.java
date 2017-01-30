@@ -5,9 +5,12 @@ import android.support.annotation.NonNull;
 
 import com.kii.thingif.clause.base.BaseAnd;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class AndClauseInTrigger implements BaseAnd<TriggerClause>, TriggerClause {
@@ -27,14 +30,25 @@ public class AndClauseInTrigger implements BaseAnd<TriggerClause>, TriggerClause
     }
 
     @Override
-    public void addClause(@NonNull TriggerClause clause) {
+    public AndClauseInTrigger addClause(@NonNull TriggerClause clause) {
         this.clauses.add(clause);
+        return this;
     }
 
     @Override
     public JSONObject toJSONObject() {
-        // TODO: implement me
-        return null;
+        JSONObject ret = new JSONObject();
+        JSONArray clauses = new JSONArray();
+        try{
+            ret.put("type", "and");
+            for (TriggerClause clause : this.clauses) {
+                clauses.put(clause.toJSONObject());
+            }
+            ret.put("clauses", clauses);
+            return ret;
+        }catch (JSONException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     @Override
@@ -70,4 +84,17 @@ public class AndClauseInTrigger implements BaseAnd<TriggerClause>, TriggerClause
             return new AndClauseInTrigger[size];
         }
     };
+
+    @Override
+    public boolean equals(Object o) {
+        if(this == o) return true;
+        if(!(o instanceof AndClauseInTrigger)) return false;
+        AndClauseInTrigger and = (AndClauseInTrigger)o;
+        return Arrays.equals(this.getClauses().toArray(), and.getClauses().toArray());
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(this.getClauses().toArray());
+    }
 }

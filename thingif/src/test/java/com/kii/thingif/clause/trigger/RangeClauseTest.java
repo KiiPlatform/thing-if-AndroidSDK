@@ -1,7 +1,5 @@
 package com.kii.thingif.clause.trigger;
 
-import android.util.Range;
-
 import com.kii.thingif.SmallTestBase;
 
 import org.json.JSONException;
