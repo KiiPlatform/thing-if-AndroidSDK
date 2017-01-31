@@ -96,6 +96,8 @@ dependencies {
     // dependencies for unit tests
     testCompile 'junit:junit:4.12'
     testCompile 'org.json:json:20160810'
+    testCompile "org.robolectric:robolectric:3.2.2"
+    testCompile 'com.squareup.okhttp:mockwebserver:2.3.0'
 
     androidTestCompile 'com.crittercism.dexmaker:dexmaker:1.4'
     androidTestCompile 'com.crittercism.dexmaker:dexmaker-mockito:1.4'
