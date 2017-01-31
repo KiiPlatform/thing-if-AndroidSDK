@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface BaseOr<T extends BaseClause> extends BaseClause {
     List<T> getClauses();
-    T addClause(T clause);
+    BaseOr<T> addClause(T clause);
 }
