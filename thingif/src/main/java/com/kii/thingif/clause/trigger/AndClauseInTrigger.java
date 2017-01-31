@@ -10,7 +10,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class AndClauseInTrigger implements BaseAnd<TriggerClause>, TriggerClause {
@@ -26,7 +25,7 @@ public class AndClauseInTrigger implements BaseAnd<TriggerClause>, TriggerClause
 
     @Override
     public List<TriggerClause> getClauses() {
-        return this.clauses;
+        return new ArrayList<>(this.clauses);
     }
 
     @Override
@@ -84,17 +83,4 @@ public class AndClauseInTrigger implements BaseAnd<TriggerClause>, TriggerClause
             return new AndClauseInTrigger[size];
         }
     };
-
-    @Override
-    public boolean equals(Object o) {
-        if(this == o) return true;
-        if(!(o instanceof AndClauseInTrigger)) return false;
-        AndClauseInTrigger and = (AndClauseInTrigger)o;
-        return Arrays.equals(this.getClauses().toArray(), and.getClauses().toArray());
-    }
-
-    @Override
-    public int hashCode() {
-        return Arrays.hashCode(this.getClauses().toArray());
-    }
 }

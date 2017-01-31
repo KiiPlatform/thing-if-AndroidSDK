@@ -10,6 +10,8 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Arrays;
+
 @RunWith(AndroidJUnit4.class)
 public class ClauseParcelableTest extends SmallTestBase{
     @Test
@@ -126,7 +128,9 @@ public class ClauseParcelableTest extends SmallTestBase{
         clause.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
         AndClauseInTrigger deserializedClause = AndClauseInTrigger.CREATOR.createFromParcel(parcel);
-        Assert.assertEquals(clause, deserializedClause);
+        Assert.assertTrue(Arrays.equals(
+                clause.getClauses().toArray(),
+                deserializedClause.getClauses().toArray()));
     }
 
     @Test
@@ -138,6 +142,8 @@ public class ClauseParcelableTest extends SmallTestBase{
         clause.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
         OrClauseInTrigger deserializedClause = OrClauseInTrigger.CREATOR.createFromParcel(parcel);
-        Assert.assertEquals(clause, deserializedClause);
+        Assert.assertTrue(Arrays.equals(
+                clause.getClauses().toArray(),
+                deserializedClause.getClauses().toArray()));
     }
 }
