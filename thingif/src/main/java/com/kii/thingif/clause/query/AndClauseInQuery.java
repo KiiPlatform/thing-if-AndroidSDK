@@ -26,8 +26,9 @@ public class AndClauseInQuery implements BaseAnd<QueryClause>, QueryClause {
     }
 
     @Override
-    public void addClause(@NonNull QueryClause clause) {
+    public AndClauseInQuery addClause(@NonNull QueryClause clause) {
         this.clauses.add(clause);
+        return this;
     }
 
     @Override

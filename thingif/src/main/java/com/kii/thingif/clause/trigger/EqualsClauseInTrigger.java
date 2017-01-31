@@ -5,12 +5,15 @@ import android.support.annotation.NonNull;
 
 import com.kii.thingif.clause.base.BaseEquals;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class EqualsClauseInTrigger implements BaseEquals, TriggerClause{
     private @NonNull String field;
     private @NonNull Object value;
     private @NonNull String alias;
+
+    private volatile int hashCode; // cached hashcode for performance
 
     public EqualsClauseInTrigger(
             @NonNull String alias,
@@ -51,8 +54,16 @@ public class EqualsClauseInTrigger implements BaseEquals, TriggerClause{
 
     @Override
     public JSONObject toJSONObject() {
-        //TODO: implement me
-        return null;
+        JSONObject ret = new JSONObject();
+        try {
+            ret.put("type", "eq");
+            ret.put("alias", alias);
+            ret.put("field", field);
+            ret.put("value", value);
+        }catch (JSONException ex) {
+            throw new RuntimeException(ex);
+        }
+        return ret;
     }
 
     @Override
@@ -70,7 +81,7 @@ public class EqualsClauseInTrigger implements BaseEquals, TriggerClause{
     private EqualsClauseInTrigger(Parcel in) {
         this.alias = in.readString();
         this.field = in.readString();
-        this.value = in.readValue(null);
+        this.value = in.readValue(Object.class.getClassLoader());
     }
 
     public static final Creator<EqualsClauseInTrigger> CREATOR = new Creator<EqualsClauseInTrigger>() {
@@ -84,4 +95,27 @@ public class EqualsClauseInTrigger implements BaseEquals, TriggerClause{
             return new EqualsClauseInTrigger[size];
         }
     };
+
+    @Override
+    public boolean equals(Object o) {
+        if(this == o) return true;
+        if(!(o instanceof EqualsClauseInTrigger)) return false;
+        EqualsClauseInTrigger equals = (EqualsClauseInTrigger) o;
+        return alias.equals(equals.alias) &&
+                field.equals(equals.field) &&
+                value.equals(equals.value);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = this.hashCode;
+        if (result == 0) {
+            result = 17;
+            result = 31 * result + this.alias.hashCode();
+            result = 31 * result + this.field.hashCode();
+            result = 31 * result + this.value.hashCode();
+            this.hashCode = result;
+        }
+        return result;
+    }
 }
