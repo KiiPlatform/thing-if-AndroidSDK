@@ -123,7 +123,11 @@ public class ClauseParcelableTest extends SmallTestBase{
     public void andTest() throws Exception {
         AndClauseInTrigger clause = new AndClauseInTrigger(
                 new EqualsClauseInTrigger("alias", "f1", "a"),
-                new EqualsClauseInTrigger("alias", "f2", 1));
+                new NotEqualsClauseInTrigger(
+                        new EqualsClauseInTrigger("alias", "f2", 1)),
+                RangeClauseInTrigger.greaterThan("alias", "f3", 23),
+                RangeClauseInTrigger.lessThan("alias", "f3", 230),
+                RangeClauseInTrigger.range("alias", "f4", 11, true, 23, false));
         Parcel parcel = Parcel.obtain();
         clause.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
@@ -137,7 +141,11 @@ public class ClauseParcelableTest extends SmallTestBase{
     public void orTest() throws Exception {
         OrClauseInTrigger clause = new OrClauseInTrigger(
                 new EqualsClauseInTrigger("alias", "f1", "a"),
-                new EqualsClauseInTrigger("alias", "f2", 1));
+                new NotEqualsClauseInTrigger(
+                        new EqualsClauseInTrigger("alias", "f2", 1)),
+                RangeClauseInTrigger.greaterThan("alias", "f3", 23),
+                RangeClauseInTrigger.lessThan("alias", "f3", 230),
+                RangeClauseInTrigger.range("alias", "f4", 11, true, 23, false));
         Parcel parcel = Parcel.obtain();
         clause.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
