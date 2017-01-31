@@ -13,6 +13,8 @@ public class EqualsClauseInTrigger implements BaseEquals, TriggerClause{
     private @NonNull Object value;
     private @NonNull String alias;
 
+    private volatile int hashCode; // cached hashcode for performance
+
     public EqualsClauseInTrigger(
             @NonNull String alias,
             @NonNull String field,
@@ -97,10 +99,23 @@ public class EqualsClauseInTrigger implements BaseEquals, TriggerClause{
     @Override
     public boolean equals(Object o) {
         if(this == o) return true;
-        if(o == null || getClass() != o.getClass()) return false;
+        if(!(o instanceof EqualsClauseInTrigger)) return false;
         EqualsClauseInTrigger equals = (EqualsClauseInTrigger) o;
-        if(!alias.equals(equals.alias)) return false;
-        if(!field.equals(equals.field)) return false;
-        return value.equals(equals.value);
+        return alias.equals(equals.alias) &&
+                field.equals(equals.field) &&
+                value.equals(equals.value);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = this.hashCode;
+        if (result == 0) {
+            result = 17;
+            result = 31 * result + this.alias.hashCode();
+            result = 31 * result + this.field.hashCode();
+            result = 31 * result + this.value.hashCode();
+            this.hashCode = result;
+        }
+        return result;
     }
 }

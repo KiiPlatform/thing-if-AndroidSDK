@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 
 import com.kii.thingif.clause.base.BaseRange;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class RangeClauseInTrigger implements BaseRange, TriggerClause {
@@ -16,6 +17,7 @@ public class RangeClauseInTrigger implements BaseRange, TriggerClause {
     private @Nullable Boolean upperIncluded;
     private @Nullable Boolean lowerIncluded;
 
+    private volatile int hashCode; // cached hashcode for performance
 
     private RangeClauseInTrigger(
             @NonNull String alias,
@@ -41,9 +43,9 @@ public class RangeClauseInTrigger implements BaseRange, TriggerClause {
         return new RangeClauseInTrigger(
                 alias,
                 field,
-                upperLimit.longValue(),
+                upperLimit,
                 upperIncluded,
-                lowerLimit.longValue(),
+                lowerLimit,
                 lowerIncluded);
     }
     public static RangeClauseInTrigger greaterThan(
@@ -55,7 +57,7 @@ public class RangeClauseInTrigger implements BaseRange, TriggerClause {
                 field,
                 null,
                 null,
-                lowerLimit.longValue(),
+                lowerLimit,
                 Boolean.FALSE);
     }
     public static RangeClauseInTrigger greaterThanOrEqualTo(
@@ -67,7 +69,7 @@ public class RangeClauseInTrigger implements BaseRange, TriggerClause {
                 field,
                 null,
                 null,
-                lowerLimit.longValue(),
+                lowerLimit,
                 Boolean.TRUE);
     }
     public static RangeClauseInTrigger lessThan(
@@ -77,7 +79,7 @@ public class RangeClauseInTrigger implements BaseRange, TriggerClause {
         return new RangeClauseInTrigger(
                 alias,
                 field,
-                upperLimit.longValue(),
+                upperLimit,
                 Boolean.FALSE,
                 null,
                 null);
@@ -89,7 +91,7 @@ public class RangeClauseInTrigger implements BaseRange, TriggerClause {
         return new RangeClauseInTrigger(
                 alias,
                 field,
-                upperLimit.longValue(),
+                upperLimit,
                 Boolean.TRUE,
                 null,
                 null);
@@ -132,8 +134,27 @@ public class RangeClauseInTrigger implements BaseRange, TriggerClause {
 
     @Override
     public JSONObject toJSONObject() {
-        //TODO: implement me
-        return null;
+        JSONObject ret = new JSONObject();
+        try{
+            ret.put("type", "range");
+            ret.put("alias", this.alias);
+            ret.put("field", this.field);
+            if(this.upperIncluded != null) {
+                ret.put("upperIncluded", this.upperIncluded);
+            }
+            if(this.upperLimit != null) {
+                ret.put("upperLimit", this.upperLimit);
+            }
+            if(this.lowerIncluded != null) {
+                ret.put("lowerIncluded", this.lowerIncluded);
+            }
+            if(this.lowerLimit != null) {
+                ret.put("lowerLimit", this.lowerLimit);
+            }
+            return ret;
+        }catch (JSONException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     @Override
@@ -171,4 +192,60 @@ public class RangeClauseInTrigger implements BaseRange, TriggerClause {
             return new RangeClauseInTrigger[size];
         }
     };
+
+    @Override
+    public boolean equals(Object o) {
+        if(this == o) return true;
+        if(!(o instanceof RangeClauseInTrigger)) return false;
+
+        RangeClauseInTrigger range = (RangeClauseInTrigger) o;
+
+        if(!this.alias.equals(range.alias)) return false;
+
+        if(this.upperLimit != null?
+                !this.upperLimit.equals(range.upperLimit) :
+                range.upperLimit != null) {
+            return false;
+        }
+
+        if(this.upperIncluded != null?
+                !this.upperIncluded.equals(range.upperIncluded) :
+                range.upperIncluded != null) {
+            return false;
+        }
+
+        if(this.lowerLimit != null?
+                !this.lowerLimit.equals(range.lowerLimit) :
+                range.lowerLimit != null) {
+            return false;
+        }
+
+        if(this.lowerIncluded != null?
+                !this.lowerIncluded.equals(range.lowerIncluded) :
+                range.lowerIncluded != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = this.hashCode;
+        if (result == 0) {
+            result = 17;
+            result = 31 * result + this.alias.hashCode();
+            result = 31 * result +
+                    (this.lowerIncluded != null? this.lowerIncluded.hashCode(): 0);
+            result = 31 * result +
+                    (this.lowerLimit != null? this.lowerLimit.hashCode(): 0);
+            result = 31 * result +
+                    (this.upperIncluded != null? this.upperIncluded.hashCode(): 0);
+            result = 31 * result +
+                    (this.upperLimit != null? this.upperLimit.hashCode(): 0);
+
+            this.hashCode = result;
+        }
+        return result;
+    }
 }

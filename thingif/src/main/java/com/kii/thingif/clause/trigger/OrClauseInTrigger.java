@@ -4,6 +4,8 @@ import android.os.Parcel;
 
 import com.kii.thingif.clause.base.BaseOr;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -22,18 +24,29 @@ public class OrClauseInTrigger implements BaseOr<TriggerClause>, TriggerClause {
 
     @Override
     public List<TriggerClause> getClauses() {
-        return this.clauses;
+        return new ArrayList<>(this.clauses);
     }
 
     @Override
-    public void addClause(TriggerClause clause) {
+    public OrClauseInTrigger addClause(TriggerClause clause) {
         this.clauses.add(clause);
+        return this;
     }
 
     @Override
     public JSONObject toJSONObject() {
-        // TODO: implement me
-        return null;
+        JSONObject ret = new JSONObject();
+        JSONArray clauses = new JSONArray();
+        try{
+            ret.put("type", "or");
+            for (TriggerClause clause : this.clauses) {
+                clauses.put(clause.toJSONObject());
+            }
+            ret.put("clauses", clauses);
+            return ret;
+        }catch (JSONException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     @Override
