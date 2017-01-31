@@ -128,19 +128,16 @@ public class Command implements Parcelable {
     }
 
     /**
-     * Get a action result associated with specified action
+     * Get a action result associated with specified alias and action name
      *
      * @param alias alias to find action.
-     * @param action action to specify action result.
-     * @return action reuslt specified with parameter's action.
+     * @param actionName name of action to specify action result.
+     * @return list of {@link ActionResult}.
      */
     @Nullable
     public List<ActionResult> getActionResult(
             @NonNull String alias,
-            @NonNull Action action) {
-        if (action == null) {
-            throw new IllegalArgumentException("action is null");
-        }
+            @NonNull String actionName) {
         //TODO: // FIXME: 12/14/16
 //        if (this.getActionResults() != null) {
 //            for (ActionResult result : this.getActionResults()) {
