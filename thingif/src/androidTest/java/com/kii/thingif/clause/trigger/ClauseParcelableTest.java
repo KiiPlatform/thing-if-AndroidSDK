@@ -92,7 +92,7 @@ public class ClauseParcelableTest extends SmallTestBase{
         Assert.assertEquals(clause, deserializedClause);
     }
     @Test
-    public void greaterThanEquals() throws Exception {
+    public void greaterThanEqualsTest() throws Exception {
         RangeClauseInTrigger clause = RangeClauseInTrigger.greaterThanOrEqualTo("alias", "f", 1);
         Parcel parcel = Parcel.obtain();
         clause.writeToParcel(parcel, 0);
@@ -101,7 +101,7 @@ public class ClauseParcelableTest extends SmallTestBase{
         Assert.assertEquals(clause, deserializedClause);
     }
     @Test
-    public void lessThan() throws Exception {
+    public void lessThanTest() throws Exception {
         RangeClauseInTrigger clause = RangeClauseInTrigger.lessThan("alias", "f", 1);
         Parcel parcel = Parcel.obtain();
         clause.writeToParcel(parcel, 0);
@@ -110,7 +110,7 @@ public class ClauseParcelableTest extends SmallTestBase{
         Assert.assertEquals(clause, deserializedClause);
     }
     @Test
-    public void lessThanEquals() throws Exception {
+    public void lessThanEqualsTest() throws Exception {
         RangeClauseInTrigger clause = RangeClauseInTrigger.lessThanOrEqualTo("alias", "f", 1);
         Parcel parcel = Parcel.obtain();
         clause.writeToParcel(parcel, 0);
