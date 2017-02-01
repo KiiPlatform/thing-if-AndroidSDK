@@ -31,6 +31,8 @@ public final class ThingIFAPIAdapter implements JsonSerializer<ThingIFAPI>, Json
             new TypeToken<Map<String, Class<? extends TargetState>>>(){}.getType();
     private Gson gson = new GsonBuilder()
             .registerTypeAdapter(Target.class, new TargetAdapter())
+            .registerTypeAdapter(actionTypesType, new ActionTypeMapAdapter())
+            .registerTypeAdapter(stateTypesType, new StateTypeMapAdapter())
             .create();
     @Override
     public JsonElement serialize(ThingIFAPI src, Type typeOfSrc, JsonSerializationContext context) {
