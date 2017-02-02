@@ -214,19 +214,26 @@ public class ThingIFAPI implements Parcelable {
          * @param installationID installation id
          * @return builder instance for chaining call.
          */
-        public Builder setInstallationID(String installationID) {
+        public Builder setInstallationID(
+                @NonNull  String installationID) {
             this.installationID = installationID;
             return this;
         }
 
         /** Instantiate new ThingIFAPI instance.
          * @return ThingIFAPI instance.
-         * @throws IllegalStateException when schema is not present.
+         * @throws IllegalStateException when actionTypes or stateTypes is empty.
          */
         @NonNull
         public ThingIFAPI build() {
 
             _Log.d(TAG, MessageFormat.format("Initialize ThingIFAPI AppID={0}, AppKey={1}, BaseUrl={2}", app.getAppID(), app.getAppKey(), app.getBaseUrl()));
+            if (this.actionTypes.size() == 0) {
+                throw new IllegalStateException("actionTypes is empty");
+            }
+            if (this.stateTypes.size() == 0) {
+                throw new IllegalStateException("stateTypes is empty");
+            }
             return new ThingIFAPI(this.context, this.tag, app, this.owner, this.target, this.installationID, this.actionTypes, this.stateTypes);
         }
 
@@ -1724,12 +1731,20 @@ public class ThingIFAPI implements Parcelable {
         return this.tag;
     }
 
+    /**
+     * Get actionTypes of this ThingIFAPI instance.
+     * @return actionTypes.
+     */
     public Map<String, Class<? extends Action>> getActionTypes() {
-        return actionTypes;
+        return this.actionTypes;
     }
 
+    /**
+     * Get stateTypes of this ThingIFAPI instance.
+     * @return stateTypes.
+     */
     public Map<String, Class<? extends TargetState>> getStateTypes() {
-        return stateTypes;
+        return this.stateTypes;
     }
 
     private Map<String, String> newHeader() {
