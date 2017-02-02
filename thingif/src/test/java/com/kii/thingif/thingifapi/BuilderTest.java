@@ -9,8 +9,6 @@ import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.ThingIFAPITestBase;
 import com.kii.thingif.TypedID;
 import com.kii.thingif.actions.AirConditionerActions;
-import com.kii.thingif.actions.HumidityActions;
-import com.kii.thingif.command.Action;
 import com.kii.thingif.states.AirConditionerState;
 
 import org.junit.Assert;
@@ -19,9 +17,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RunWith(RobolectricTestRunner.class)
 public class BuilderTest extends ThingIFAPITestBase{
@@ -33,10 +28,6 @@ public class BuilderTest extends ThingIFAPITestBase{
     }
     @Test
     public void basicTest() throws Exception {
-        Map<String, Class<? extends Action>> actionTypes = new HashMap<>();
-        actionTypes.put("airConditionerAlias", AirConditionerActions.class);
-        actionTypes.put("humidityAlias", HumidityActions.class);
-
         ThingIFAPI.Builder builder = ThingIFAPI.Builder.newBuilder(
                 this.context,
                 new KiiApp("appid", "appkey", Site.JP),
@@ -61,60 +52,21 @@ public class BuilderTest extends ThingIFAPITestBase{
                 new KiiApp("appid", "appkey", Site.JP), 
                 new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
     }
+
     @Test(expected = IllegalArgumentException.class)
-    public void newBuilderWithNullAppIDTest() throws Exception {
+    public void newBuilderWithNullAppTest() throws Exception {
         ThingIFAPI.Builder.newBuilder(
                 this.context,
-                new KiiApp(null, "appkey", Site.JP),
+                null,
                 new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
     }
-    @Test(expected = IllegalArgumentException.class)
-    public void newBuilderWithEmptyAppIDTest() throws Exception {
-        ThingIFAPI.Builder.newBuilder(
-                this.context,
-                new KiiApp("", "appkey", Site.JP),
-                new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
-    }
-    @Test(expected = IllegalArgumentException.class)
-    public void newBuilderWithNullAppKeyTest() throws Exception {
-        ThingIFAPI.Builder.newBuilder(
-                this.context,
-                new KiiApp("appid", null, Site.JP),
-                new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
-    }
-    @Test(expected = IllegalArgumentException.class)
-    public void newBuilderWithEmptyAppKeyTest() throws Exception {
-        ThingIFAPI.Builder.newBuilder(
-                this.context,
-                new KiiApp("appid", "", Site.JP),
-                new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
-    }
-    @Test(expected = IllegalArgumentException.class)
-    public void newBuilderWithNullSiteTest() throws Exception {
-        ThingIFAPI.Builder.newBuilder(
-                this.context,
-                new KiiApp("appid", "appkey", (Site) null),
-                new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
-    }
+
     @Test(expected = IllegalArgumentException.class)
     public void newBuilderWithNullOwnerTest() throws Exception {
         ThingIFAPI.Builder.newBuilder(
                 this.context,
-                new KiiApp("appid", "appkey", Site.JP), null);
-    }
-    @Test(expected = IllegalArgumentException.class)
-    public void newBuilderWithNullBaseUrlTest() throws Exception {
-        ThingIFAPI.Builder.newBuilder(
-                this.context,
-                new KiiApp("appid", "appkey", (String)null),
-                new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
-    }
-    @Test(expected = IllegalArgumentException.class)
-    public void newBuilderWithEmptyBaseUrlTest() throws Exception {
-        ThingIFAPI.Builder.newBuilder(
-                this.context,
-                new KiiApp("appid", "appkey", ""),
-                new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"));
+                new KiiApp("appid", "appkey", Site.JP),
+                null);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -145,5 +97,4 @@ public class BuilderTest extends ThingIFAPITestBase{
                 .registerTargetState("airConditionerAlias", AirConditionerState.class)
                 .build();
     }
-
 }
