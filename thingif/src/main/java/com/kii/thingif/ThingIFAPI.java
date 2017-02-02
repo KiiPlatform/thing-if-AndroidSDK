@@ -10,6 +10,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
 import com.kii.thingif.command.CommandForm;
@@ -24,6 +26,7 @@ import com.kii.thingif.exception.UnsupportedSchemaException;
 import com.kii.thingif.gateway.EndNode;
 import com.kii.thingif.gateway.Gateway;
 import com.kii.thingif.gateway.PendingEndNode;
+import com.kii.thingif.internal.gson.ThingIFAPIAdapter;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
 import com.kii.thingif.internal.utils._Log;
@@ -258,7 +261,6 @@ public class ThingIFAPI implements Parcelable {
             this.stateTypes.put(alias, stateClass);
             return this;
         }
-
     }
 
     /**
@@ -323,10 +325,10 @@ public class ThingIFAPI implements Parcelable {
             throw new UnloadableInstanceVersionException(tag, storedSDKVersion,
                     MINIMUM_LOADABLE_SDK_VERSION);
         }
-
-        //TODO: // FIXME: 2017/01/23 
-        return null;
-//        return  GsonRepository.gson().fromJson(serializedJson, ThingIFAPI.class);
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(ThingIFAPI.class, new ThingIFAPIAdapter())
+                .create();
+        return gson.fromJson(serializedJson, ThingIFAPI.class);
     }
     /**
      * Clear all saved instances in the SharedPreferences.
@@ -354,8 +356,10 @@ public class ThingIFAPI implements Parcelable {
         if (preferences != null) {
             SharedPreferences.Editor editor = preferences.edit();
             editor.putString(getStoredSDKVersionKey(instance.tag), SDKVersion.versionString);
-            //TODO: // FIXME: 2017/01/23 
-//            editor.putString(getStoredInstanceKey(instance.tag), GsonRepository.gson().toJson(instance));
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(ThingIFAPI.class, new ThingIFAPIAdapter())
+                    .create();
+            editor.putString(getStoredInstanceKey(instance.tag), gson.toJson(instance));
             editor.apply();
         }
     }
@@ -1718,6 +1722,14 @@ public class ThingIFAPI implements Parcelable {
     @Nullable
     public String getTag() {
         return this.tag;
+    }
+
+    public Map<String, Class<? extends Action>> getActionTypes() {
+        return actionTypes;
+    }
+
+    public Map<String, Class<? extends TargetState>> getStateTypes() {
+        return stateTypes;
     }
 
     private Map<String, String> newHeader() {
