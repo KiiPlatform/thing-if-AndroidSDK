@@ -46,8 +46,8 @@ public class AliasActionTest {
 
             Assert.assertEquals(
                     "failed to test hashCode for ["+i+"]",
-                    aliasAction,
-                    sameObjects[i]);
+                    aliasAction.hashCode(),
+                    sameObjects[i].hashCode());
         }
 
         Object[] diffObjects = {
