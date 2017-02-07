@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.google.gson.JsonObject;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -63,10 +65,14 @@ public final class CommandForm implements Parcelable {
          * Create {@link Builder} with Actions
          * @param aliasActions list of {@link AliasAction} instances.
          * @return {@link Builder} instance.
+         * @throws IllegalArgumentException Thrown when aliasActions is null or empty.
          */
         @NonNull
         public static Builder newBuilder(
                 @NonNull List<AliasAction<? extends Action>> aliasActions) {
+            if (aliasActions == null || aliasActions.size() == 0) {
+                throw new IllegalArgumentException("aliasActions is null or empty");
+            }
             return new Builder(aliasActions);
         }
 
@@ -74,10 +80,14 @@ public final class CommandForm implements Parcelable {
          * Add instance of {@link AliasAction} to action list.
          * @param aliasAction Instance of AliasAction
          * @return {@link Builder} instance
+         * @throws IllegalArgumentException Thrown when aliasAction is null.
          */
         @NonNull
         public Builder addAliasAction(
-                @NonNull AliasAction<? extends Action> aliasAction) {
+                @Nullable AliasAction<? extends Action> aliasAction) {
+            if (aliasAction == null) {
+                throw new IllegalArgumentException("aliasAction is null");
+            }
             this.aliasActions.add(aliasAction);
             return this;
         }
@@ -93,7 +103,7 @@ public final class CommandForm implements Parcelable {
         public Builder setTitle(@Nullable String title)
                 throws IllegalArgumentException {
             if (title != null && title.length() > 50) {
-                throw new IllegalArgumentException("title is more than 50 charactors.");
+                throw new IllegalArgumentException("title is more than 50 characters.");
             }
             this.title = title;
             return this;
@@ -111,7 +121,7 @@ public final class CommandForm implements Parcelable {
         public Builder setDescription(@Nullable String description)
                 throws IllegalArgumentException{
             if (description != null && description.length() > 200) {
-                throw new IllegalArgumentException("description is more than 200 charactors.");
+                throw new IllegalArgumentException("description is more than 200 characters.");
             }
             this.description = description;
             return this;
@@ -152,10 +162,13 @@ public final class CommandForm implements Parcelable {
             @NonNull List<AliasAction<? extends Action>> aliasActions,
             @Nullable String title,
             @Nullable String description,
-            @Nullable Object metaData)
+            @Nullable JSONObject metaData)
             throws IllegalArgumentException
     {
         this.aliasActions = aliasActions;
+        this.title = title;
+        this.description = description;
+        this.metadata = metaData;
     }
 
     /**
