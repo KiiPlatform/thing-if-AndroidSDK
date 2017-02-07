@@ -1,29 +1,54 @@
-package com.kii.thingif;
+package com.kii.thingif.thingifapi;
 
-import android.support.test.runner.AndroidJUnit4;
-
+import android.content.Context;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.kii.thingif.DataGroupingInterval;
+import com.kii.thingif.LayoutPosition;
+import com.kii.thingif.OnboardWithThingIDOptions;
+import com.kii.thingif.OnboardWithVendorThingIDOptions;
+import com.kii.thingif.Target;
+import com.kii.thingif.ThingIFAPI;
+import com.kii.thingif.ThingIFAPITestBase;
+import com.kii.thingif.TypedID;
 import com.kii.thingif.exception.ForbiddenException;
 import com.kii.thingif.exception.InternalServerErrorException;
 import com.kii.thingif.exception.NotFoundException;
+import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-/**
- * https://github.com/KiiCorp/ThingIF/blob/master/rest_api_spec/onboarding-swagger.yml
- */
-@RunWith(AndroidJUnit4.class)
-public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
+@RunWith(RobolectricTestRunner.class)
+public class OnboardTest extends ThingIFAPITestBase {
+    protected static final String APP_ID = "smalltest";
+    protected static final String APP_KEY = "abcdefghijklmnopqrstuvwxyz123456789";
+    protected static final String BASE_PATH = "/thing-if/apps/" + APP_ID;
+    protected static final String DEMO_THING_TYPE = "LED";
+    private Context context;
 
+    @Before
+    public void before() throws Exception{
+        this.context = RuntimeEnvironment.application.getApplicationContext();
+        this.server = new MockWebServer();
+        this.server.start();
+    }
+
+    @After
+    public void after() throws Exception {
+        this.server.shutdown();
+    }
     @Test
     public void onboardWithVendorThingIDByOwnerTest() throws Exception {
         String vendorThingID = "v1234567890abcde";
@@ -33,8 +58,7 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
         String thingID = "th.1234567890";
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(200, thingID, accessToken);
-
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         Assert.assertFalse(api.onboarded());
         Target target = api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
         Assert.assertTrue(api.onboarded());
@@ -70,7 +94,7 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
         thingProperties.put("manufacturer", "Kii");
         this.addEmptyMockResponse(403);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         try {
             api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
             Assert.fail("ThingIFRestException should be thrown");
@@ -96,6 +120,7 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
         expectedRequestBody.add("thingProperties", new JsonParser().parse(thingProperties.toString()));
         this.assertRequestBody(expectedRequestBody, request);
     }
+
     @Test
     public void onboardWithVendorThingIDByOwner404ErrorTest() throws Exception {
         String vendorThingID = "v1234567890abcde";
@@ -104,7 +129,7 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
         thingProperties.put("manufacturer", "Kii");
         this.addEmptyMockResponse(404);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         try {
             api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
             Assert.fail("ThingIFRestException should be thrown");
@@ -138,7 +163,7 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
         thingProperties.put("manufacturer", "Kii");
         this.addEmptyMockResponse(500);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         try {
             api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
             Assert.fail("ThingIFRestException should be thrown");
@@ -174,7 +199,7 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context,APP_ID, APP_KEY);
         Assert.assertFalse(api.onboarded());
         Target target = api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
         Assert.assertNotNull(target);
@@ -187,22 +212,22 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithVendorThingIDByOwnerWithNullVendorThingIDTest() throws Exception {
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context,APP_ID, APP_KEY);
         Target target = api.onboard(null, "password", DEMO_THING_TYPE, null);
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithVendorThingIDByOwnerWithEmptyVendorThingIDTest() throws Exception {
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context,APP_ID, APP_KEY);
         Target target = api.onboard("", "password", DEMO_THING_TYPE, null);
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithVendorThingIDByOwnerWithNullVendorThingPasswordTest() throws Exception {
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context,APP_ID, APP_KEY);
         Target target = api.onboard("v1234567890abcde", null, DEMO_THING_TYPE, null);
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithVendorThingIDByOwnerWithEmptyVendorThingPasswordTest() throws Exception {
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context,APP_ID, APP_KEY);
         Target target = api.onboard("v1234567890abcde", "", DEMO_THING_TYPE, null);
     }
     @Test
@@ -212,7 +237,7 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context,APP_ID, APP_KEY);
         Assert.assertFalse(api.onboarded());
         Target target = api.onboard(thingID, thingPassword);
         Assert.assertTrue(api.onboarded());
@@ -245,7 +270,7 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(403, null, null);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context,APP_ID, APP_KEY);
         try {
             api.onboard(thingID, thingPassword);
             Assert.fail("ThingIFRestException should be thrown");
@@ -259,7 +284,7 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(404, null, null);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context,APP_ID, APP_KEY);
         try {
             api.onboard(thingID, thingPassword);
             Assert.fail("ThingIFRestException should be thrown");
@@ -273,7 +298,7 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(500, null, null);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context,APP_ID, APP_KEY);
         try {
             api.onboard(thingID, thingPassword);
             Assert.fail("ThingIFRestException should be thrown");
@@ -282,22 +307,22 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithThingIDByOwnerTestWithNullThingIDTest() throws Exception {
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context,APP_ID, APP_KEY);
         Target target = api.onboard(null, "password");
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithThingIDByOwnerTestWithEmptyThingIDTest() throws Exception {
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context,APP_ID, APP_KEY);
         Target target = api.onboard("", "password");
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithThingIDByOwnerTestWithNullPasswordTest() throws Exception {
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context,APP_ID, APP_KEY);
         Target target = api.onboard("th.1234567890", null);
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithThingIDByOwnerTestWithEmptyPasswordTest() throws Exception {
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         Target target = api.onboard("th.1234567890", "");
     }
 
@@ -317,7 +342,7 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
                 .setDataGroupingInterval(DataGroupingInterval.INTERVAL_1_MINUTE);
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         Assert.assertFalse(api.onboarded());
         Target target = api.onboard(vendorThingID, thingPassword, options.build());
         Assert.assertTrue(api.onboarded());
@@ -361,7 +386,7 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
                 .setDataGroupingInterval(DataGroupingInterval.INTERVAL_15_MINUTES);
         this.addEmptyMockResponse(403);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         try {
             api.onboard(vendorThingID, thingPassword, options.build());
             Assert.fail("ThingIFRestException should be thrown");
@@ -402,7 +427,7 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
                 .setDataGroupingInterval(DataGroupingInterval.INTERVAL_30_MINUTES);
         this.addEmptyMockResponse(404);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         try {
             api.onboard(vendorThingID, thingPassword, options.build());
             Assert.fail("ThingIFRestException should be thrown");
@@ -443,7 +468,7 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
                 .setDataGroupingInterval(DataGroupingInterval.INTERVAL_1_HOUR);
         this.addEmptyMockResponse(500);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         try {
             api.onboard(vendorThingID, thingPassword, options.build());
             Assert.fail("ThingIFRestException should be thrown");
@@ -484,7 +509,7 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
                 .setThingProperties(thingProperties);
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         Assert.assertFalse(api.onboarded());
         Target target = api.onboard(vendorThingID, thingPassword, options.build());
         Assert.assertNotNull(target);
@@ -497,22 +522,22 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithVendorThingIDAndOptionsWithNullVendorThingIDTest() throws Exception {
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         Target target = api.onboard(null, "password", (OnboardWithVendorThingIDOptions) null);
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithVendorThingIDAndOptionsWithEmptyVendorThingIDTest() throws Exception {
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         Target target = api.onboard("", "password", (OnboardWithVendorThingIDOptions) null);
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithVendorThingIDAndOptionsWithNullVendorThingPasswordTest() throws Exception {
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         Target target = api.onboard("v1234567890abcde", null, (OnboardWithVendorThingIDOptions) null);
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithVendorThingIDAndOptionsWithEmptyVendorThingPasswordTest() throws Exception {
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         Target target = api.onboard("v1234567890abcde", "", (OnboardWithVendorThingIDOptions) null);
     }
     @Test
@@ -525,7 +550,7 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
                 .setDataGroupingInterval(DataGroupingInterval.INTERVAL_12_HOURS);
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         Assert.assertFalse(api.onboarded());
         Target target = api.onboard(thingID, thingPassword, options.build());
         Assert.assertTrue(api.onboarded());
@@ -556,39 +581,39 @@ public class ThingIFAPI_OnBoardTest extends ThingIFAPITestBase {
     @Test(expected = ForbiddenException.class)
     public void onboardWithThingIDAndOptions403ErrorTest() throws Exception {
         this.addMockResponseForOnBoard(403, null, null);
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         api.onboard("th.1234567890", "password", (OnboardWithThingIDOptions) null);
     }
     @Test(expected = NotFoundException.class)
     public void onboardWithThingIDAndOptions404ErrorTest() throws Exception {
         this.addMockResponseForOnBoard(404, null, null);
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         api.onboard("th.1234567890", "password", (OnboardWithThingIDOptions) null);
     }
     @Test(expected = InternalServerErrorException.class)
     public void onboardWithThingIDAndOptions500ErrorTest() throws Exception {
         this.addMockResponseForOnBoard(500, null, null);
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         api.onboard("th.1234567890", "password", (OnboardWithThingIDOptions) null);
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithThingIDAndOptionsTestWithNullThingIDTest() throws Exception {
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         Target target = api.onboard(null, "password", (OnboardWithThingIDOptions) null);
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithThingIDAndOptionsTestWithEmptyThingIDTest() throws Exception {
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         Target target = api.onboard("", "password", (OnboardWithThingIDOptions) null);
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithThingIDAndOptionsTestWithNullPasswordTest() throws Exception {
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         Target target = api.onboard("th.1234567890", null, (OnboardWithThingIDOptions) null);
     }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithThingIDAndOptionsTestWithEmptyPasswordTest() throws Exception {
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         Target target = api.onboard("th.1234567890", "", (OnboardWithThingIDOptions) null);
     }
 }
