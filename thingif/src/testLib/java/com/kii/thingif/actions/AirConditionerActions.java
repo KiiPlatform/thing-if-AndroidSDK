@@ -24,4 +24,14 @@ public class AirConditionerActions implements Action {
         return this.presetTemperature;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (!(o instanceof AirConditionerActions)) return false;
+        AirConditionerActions action = (AirConditionerActions)o;
+        return this.power == action.power &&
+                this.presetTemperature == null?
+                action.presetTemperature == null :
+                this.presetTemperature.equals(action.presetTemperature);
+    }
 }

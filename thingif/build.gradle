@@ -98,6 +98,7 @@ dependencies {
     testCompile 'org.json:json:20160810'
     testCompile "org.robolectric:robolectric:3.2.2"
     testCompile 'com.squareup.okhttp:mockwebserver:2.3.0'
+    testCompile 'org.apache.commons:commons-lang3:3.4'
 
     androidTestCompile 'com.crittercism.dexmaker:dexmaker:1.4'
     androidTestCompile 'com.crittercism.dexmaker:dexmaker-mockito:1.4'
