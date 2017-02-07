@@ -1,12 +1,12 @@
 package com.kii.thingif.actions;
 
+import com.google.gson.annotations.SerializedName;
 import com.kii.thingif.command.Action;
-import com.kii.thingif.command.ActionAnnotation;
 
 public class AirConditionerActions implements Action {
-    @ActionAnnotation(actionName = "turnPower")
+    @SerializedName("turnPower")
     private Boolean power;
-    @ActionAnnotation(actionName = "setPresetTemperature")
+    @SerializedName("setPresetTemperature")
     private Integer presetTemperature;
 
 
