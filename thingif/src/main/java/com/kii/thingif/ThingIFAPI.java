@@ -275,7 +275,7 @@ public class ThingIFAPI implements Parcelable {
      * <BR>
      * Instance is automatically saved when following methods are called.
      * <BR>
-     * {@link #onboard(String, String, OnboardWithThingIDOptions)}, {@link #onboard(String, String, OnboardWithVendorThingIDOptions)},
+     * {@link #onboardWithThingID(String, String)}, {@link #onboardWithVendorThingID(String, String)},
      * {@link #copyWithTarget(Target, String)}
      * and {@link #installPush} has been successfully completed.
      * <BR>
@@ -293,8 +293,7 @@ public class ThingIFAPI implements Parcelable {
      * You need specify tag to load the instance by the
      * {@link #loadFromStoredInstance(Context, String) api}.
      *
-     * When you catch exceptions, please call {@link #onboard(String, String, OnboardWithThingIDOptions)} or
-     * {@link #onboard(String, String, OnboardWithVendorThingIDOptions)}
+     * When you catch exceptions, please call onboard methods
      * for saving or updating serialized instance.
      *
      * @param context context
@@ -445,7 +444,30 @@ public class ThingIFAPI implements Parcelable {
      * On board IoT Cloud with the specified vendor thing ID.
      * Specified thing will be owned by owner who is specified
      * IoT Cloud prepares communication channel to the target.
-     * If you are using a gateway, you need to use {@link #onboardEndnodeWithGateway(PendingEndNode, String)} instead.
+     * If you are using a gateway, you need to use {@link #onboardEndNodeWithGateway(PendingEndNode, String)} instead.
+     * @param vendorThingID Thing ID given by vendor. Must be specified.
+     * @param thingPassword Thing Password given by vendor. Must be specified.
+     * @return Target instance can be used to operate target, manage resources
+     * of the target.
+     * @throws IllegalStateException Thrown when this instance is already onboarded.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     */
+    @NonNull
+    @WorkerThread
+    public Target onboardWithVendorThingID(
+            @NonNull String vendorThingID,
+            @NonNull String thingPassword)
+            throws ThingIFException {
+        OnboardWithVendorThingIDOptions.Builder builder = new OnboardWithVendorThingIDOptions.Builder();
+        return onboardWithVendorThingID(vendorThingID, thingPassword, builder.build());
+    }
+
+    /**
+     * On board IoT Cloud with the specified vendor thing ID.
+     * Specified thing will be owned by owner who is specified
+     * IoT Cloud prepares communication channel to the target.
+     * If you are using a gateway, you need to use {@link #onboardEndNodeWithGateway(PendingEndNode, String)} instead.
      * @param vendorThingID Thing ID given by vendor. Must be specified.
      * @param thingPassword Thing Password given by vendor. Must be specified.
      * @param options optional parameters inside.
@@ -457,15 +479,7 @@ public class ThingIFAPI implements Parcelable {
      */
     @NonNull
     @WorkerThread
-    public Target onboard(
-            @NonNull String vendorThingID,
-            @NonNull String thingPassword,
-            @Nullable OnboardWithVendorThingIDOptions options)
-            throws ThingIFException {
-        return onboardWithVendorThingID(vendorThingID, thingPassword, options);
-    }
-
-    private Target onboardWithVendorThingID(
+    public Target onboardWithVendorThingID(
             String vendorThingID,
             String thingPassword,
             OnboardWithVendorThingIDOptions options)
@@ -509,13 +523,34 @@ public class ThingIFAPI implements Parcelable {
         return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST, requestBody, vendorThingID, layoutPosition);
     }
 
+    /**
+     * On board IoT Cloud with the specified thing ID.
+     * When you are sure that the on boarding process has been done,
+     * this method is more convenient than
+     * {@link #onboardWithThingID(String, String, OnboardWithThingIDOptions)}.
+     * If you are using a gateway, you need to use {@link #onboardEndNodeWithGateway(PendingEndNode, String)} instead.
+     * @param thingID Thing ID given by IoT Cloud. Must be specified.
+     * @param thingPassword Thing password given by vendor. Must be specified.
+     * @return Target instance can be used to operate target, manage resources
+     * of the target.
+     * @throws IllegalStateException Thrown when this instance is already onboarded.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     */
+    @NonNull
+    @WorkerThread
+    public Target onboardWithThingID(
+            @NonNull String thingID,
+            @NonNull String thingPassword) throws
+            ThingIFException {
+        return onboardWithThingID(thingID, thingPassword, null);
+    }
 
     /**
      * On board IoT Cloud with the specified thing ID.
      * When you are sure that the on boarding process has been done,
      * this method is more convenient than
-     * {@link #onboard(String, String, OnboardWithVendorThingIDOptions)}.
-     * If you are using a gateway, you need to use {@link #onboardEndnodeWithGateway(PendingEndNode, String)} instead.
+     * If you are using a gateway, you need to use {@link #onboardEndNodeWithGateway(PendingEndNode, String)} instead.
      * @param thingID Thing ID given by IoT Cloud. Must be specified.
      * @param thingPassword Thing password given by vendor. Must be specified.
      * @param options optional parameters inside.
@@ -527,15 +562,7 @@ public class ThingIFAPI implements Parcelable {
      */
     @NonNull
     @WorkerThread
-    public Target onboard(
-            @NonNull String thingID,
-            @NonNull String thingPassword,
-            @Nullable OnboardWithThingIDOptions options)
-            throws ThingIFException {
-        return onboardWithThingID(thingID, thingPassword, options);
-    }
-
-    private Target onboardWithThingID(
+    public Target onboardWithThingID(
             String thingID,
             String thingPassword,
             OnboardWithThingIDOptions options)
@@ -599,14 +626,7 @@ public class ThingIFAPI implements Parcelable {
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
      */
-    public EndNode onboardEndnodeWithGateway(
-            @NonNull PendingEndNode pendingEndNode,
-            @NonNull String endnodePassword)
-            throws ThingIFException {
-        return onboardEndNodeWithGateway(pendingEndNode, endnodePassword);
-    }
-
-    private EndNode onboardEndNodeWithGateway(
+    public EndNode onboardEndNodeWithGateway(
             PendingEndNode pendingEndNode,
             String endnodePassword)
             throws ThingIFException {
