@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
+import com.kii.thingif.OnboardWithVendorThingIDOptions;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.ThingIFAPITestBase;
 import com.kii.thingif.exception.StoredInstanceNotFoundException;
@@ -59,7 +60,13 @@ public class StoredInstanceTest extends ThingIFAPITestBase {
 
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         Assert.assertFalse(api.onboarded());
-        api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
+        OnboardWithVendorThingIDOptions options =
+                new OnboardWithVendorThingIDOptions
+                        .Builder()
+                        .setThingType(DEMO_THING_TYPE)
+                        .setThingProperties(thingProperties)
+                        .build();
+        api.onboard(vendorThingID, thingPassword, options);
         Assert.assertTrue(api.onboarded());
 
         ThingIFAPI restoredApi = ThingIFAPI.loadFromStoredInstance(this.context);
@@ -104,7 +111,13 @@ public class StoredInstanceTest extends ThingIFAPITestBase {
                 .setTag("ThingA");
         ThingIFAPI api = builder.build();
         Assert.assertFalse(api.onboarded());
-        api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
+        OnboardWithVendorThingIDOptions options =
+                new OnboardWithVendorThingIDOptions
+                        .Builder()
+                        .setThingType(DEMO_THING_TYPE)
+                        .setThingProperties(thingProperties)
+                        .build();
+        api.onboard(vendorThingID, thingPassword, options);
         Assert.assertTrue(api.onboarded());
 
         ThingIFAPI restoredApi = ThingIFAPI.loadFromStoredInstance(context, "ThingA");
@@ -149,7 +162,13 @@ public class StoredInstanceTest extends ThingIFAPITestBase {
 
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         Assert.assertFalse(api.onboarded());
-        api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
+        OnboardWithVendorThingIDOptions options =
+                new OnboardWithVendorThingIDOptions
+                        .Builder()
+                        .setThingType(DEMO_THING_TYPE)
+                        .setThingProperties(thingProperties)
+                        .build();
+        api.onboard(vendorThingID, thingPassword, options);
         Assert.assertTrue(api.onboarded());
 
         SharedPreferences preferences = context.getSharedPreferences(
@@ -173,7 +192,13 @@ public class StoredInstanceTest extends ThingIFAPITestBase {
 
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         Assert.assertFalse(api.onboarded());
-        api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
+        OnboardWithVendorThingIDOptions options =
+                new OnboardWithVendorThingIDOptions
+                        .Builder()
+                        .setThingType(DEMO_THING_TYPE)
+                        .setThingProperties(thingProperties)
+                        .build();
+        api.onboard(vendorThingID, thingPassword, options);
         Assert.assertTrue(api.onboarded());
 
         SharedPreferences preferences = context.getSharedPreferences(
@@ -197,7 +222,13 @@ public class StoredInstanceTest extends ThingIFAPITestBase {
 
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         Assert.assertFalse(api.onboarded());
-        api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
+        OnboardWithVendorThingIDOptions options =
+                new OnboardWithVendorThingIDOptions
+                        .Builder()
+                        .setThingType(DEMO_THING_TYPE)
+                        .setThingProperties(thingProperties)
+                        .build();
+        api.onboard(vendorThingID, thingPassword, options);
         Assert.assertTrue(api.onboarded());
 
         SharedPreferences preferences = context.getSharedPreferences(
