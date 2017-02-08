@@ -56,7 +56,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class operates an IoT device that is specified by {@link #onboard(String, String, String, JSONObject)} method.
+ * ThingIFAPI represent an API instance to access Thing-IF APIs for a specified target.
  */
 public class ThingIFAPI implements Parcelable {
 
@@ -275,7 +275,7 @@ public class ThingIFAPI implements Parcelable {
      * <BR>
      * Instance is automatically saved when following methods are called.
      * <BR>
-     * {@link #onboard(String, String, String, JSONObject)}, {@link #onboard(String, String)},
+     * {@link #onboard(String, String, OnboardWithThingIDOptions)}, {@link #onboard(String, String, OnboardWithVendorThingIDOptions)},
      * {@link #copyWithTarget(Target, String)}
      * and {@link #installPush} has been successfully completed.
      * <BR>
@@ -293,7 +293,8 @@ public class ThingIFAPI implements Parcelable {
      * You need specify tag to load the instance by the
      * {@link #loadFromStoredInstance(Context, String) api}.
      *
-     * When you catch exceptions, please call {@link #onboard(String, String, String, JSONObject)}
+     * When you catch exceptions, please call {@link #onboard(String, String, OnboardWithThingIDOptions)} or
+     * {@link #onboard(String, String, OnboardWithVendorThingIDOptions)}
      * for saving or updating serialized instance.
      *
      * @param context context
@@ -447,40 +448,6 @@ public class ThingIFAPI implements Parcelable {
      * If you are using a gateway, you need to use {@link #onboardEndnodeWithGateway(PendingEndNode, String)} instead.
      * @param vendorThingID Thing ID given by vendor. Must be specified.
      * @param thingPassword Thing Password given by vendor. Must be specified.
-     * @param thingType Type of the thing given by vendor.
-     *                  If the thing is already registered, this value would be
-     *                  ignored by IoT Cloud.
-     * @param thingProperties Properties of thing.
-     *                        If the thing is already registered, this value
-     *                        would be ignored by IoT Cloud.<br>
-     *                        Refer to the <a href="http://docs.kii.com/rest/#thing_management-register_a_thin">register_a_thing</a>
-     *                        About the format of this Document.
-     * @return Target instance can be used to operate target, manage resources
-     * of the target.
-     * @throws IllegalStateException Thrown when this instance is already onboarded.
-     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
-     * @throws ThingIFRestException Thrown when server returns error response.
-     */
-    @NonNull
-    @WorkerThread
-    public Target onboard(
-            @NonNull String vendorThingID,
-            @NonNull String thingPassword,
-            @Nullable String thingType,
-            @Nullable JSONObject thingProperties)
-            throws ThingIFException {
-        OnboardWithVendorThingIDOptions.Builder builder = new OnboardWithVendorThingIDOptions.Builder();
-        builder.setThingType(thingType).setThingProperties(thingProperties);
-        return onboardWithVendorThingID(vendorThingID, thingPassword, builder.build());
-    }
-
-    /**
-     * On board IoT Cloud with the specified vendor thing ID.
-     * Specified thing will be owned by owner who is specified
-     * IoT Cloud prepares communication channel to the target.
-     * If you are using a gateway, you need to use {@link #onboardEndnodeWithGateway(PendingEndNode, String)} instead.
-     * @param vendorThingID Thing ID given by vendor. Must be specified.
-     * @param thingPassword Thing Password given by vendor. Must be specified.
      * @param options optional parameters inside.
      * @return Target instance can be used to operate target, manage resources
      * of the target.
@@ -522,7 +489,6 @@ public class ThingIFAPI implements Parcelable {
                 String firmwareVersion = options.getFirmwareVersion();
                 JSONObject thingProperties = options.getThingProperties();
                 layoutPosition = options.getLayoutPosition();
-                DataGroupingInterval dataGroupingInterval = options.getDataGroupingInterval();
                 if (thingType != null) {
                     requestBody.put("thingType", thingType);
                 }
@@ -535,9 +501,6 @@ public class ThingIFAPI implements Parcelable {
                 if (layoutPosition != null) {
                     requestBody.put("layoutPosition", layoutPosition.name());
                 }
-                if (dataGroupingInterval != null) {
-                    requestBody.put("dataGroupingInterval", dataGroupingInterval.getInterval());
-                }
             }
             requestBody.put("owner", this.owner.getTypedID().toString());
         } catch (JSONException e) {
@@ -546,28 +509,6 @@ public class ThingIFAPI implements Parcelable {
         return this.onboard(MediaTypes.MEDIA_TYPE_ONBOARDING_WITH_VENDOR_THING_ID_BY_OWNER_REQUEST, requestBody, vendorThingID, layoutPosition);
     }
 
-    /**
-     * On board IoT Cloud with the specified thing ID.
-     * When you are sure that the on boarding process has been done,
-     * this method is more convenient than
-     * {@link #onboard(String, String, String, JSONObject)}.
-     * If you are using a gateway, you need to use {@link #onboardEndnodeWithGateway(PendingEndNode, String)} instead.
-     * @param thingID Thing ID given by IoT Cloud. Must be specified.
-     * @param thingPassword Thing password given by vendor. Must be specified.
-     * @return Target instance can be used to operate target, manage resources
-     * of the target.
-     * @throws IllegalStateException Thrown when this instance is already onboarded.
-     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
-     * @throws ThingIFRestException Thrown when server returns error response.
-     */
-    @NonNull
-    @WorkerThread
-    public Target onboard(
-            @NonNull String thingID,
-            @NonNull String thingPassword) throws
-            ThingIFException {
-        return onboardWithThingID(thingID, thingPassword, null);
-    }
 
     /**
      * On board IoT Cloud with the specified thing ID.
@@ -616,12 +557,8 @@ public class ThingIFAPI implements Parcelable {
             requestBody.put("owner", this.owner.getTypedID().toString());
             if (options != null) {
                 layoutPosition = options.getLayoutPosition();
-                DataGroupingInterval dataGroupingInterval = options.getDataGroupingInterval();
                 if (layoutPosition != null) {
                     requestBody.put("layoutPosition", layoutPosition.name());
-                }
-                if (dataGroupingInterval != null) {
-                    requestBody.put("dataGroupingInterval", dataGroupingInterval.getInterval());
                 }
             }
         } catch (JSONException e) {
@@ -666,33 +603,12 @@ public class ThingIFAPI implements Parcelable {
             @NonNull PendingEndNode pendingEndNode,
             @NonNull String endnodePassword)
             throws ThingIFException {
-        return onboardEndNodeWithGateway(pendingEndNode, endnodePassword, null);
-    }
-
-    /**
-     * Endpoints execute onboarding for the thing and merge MQTT channel to the gateway.
-     * Thing act as Gateway is already registered and marked as Gateway.
-     *
-     * @param pendingEndNode Pending endnode
-     * @param endnodePassword Password of the End Node
-     * @param options optional parameters inside.
-     * @return Target instance can be used to operate target, manage resources of the target.
-     * @throws IllegalStateException Thrown when this instance is already onboarded.
-     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
-     * @throws ThingIFRestException Thrown when server returns error response.
-     */
-    public EndNode onboardEndnodeWithGateway(
-            @NonNull PendingEndNode pendingEndNode,
-            @NonNull String endnodePassword,
-            @Nullable OnboardEndnodeWithGatewayOptions options)
-            throws ThingIFException {
-        return onboardEndNodeWithGateway(pendingEndNode, endnodePassword, options);
+        return onboardEndNodeWithGateway(pendingEndNode, endnodePassword);
     }
 
     private EndNode onboardEndNodeWithGateway(
             PendingEndNode pendingEndNode,
-            String endnodePassword,
-            @Nullable OnboardEndnodeWithGatewayOptions options)
+            String endnodePassword)
             throws ThingIFException {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding the gateway");
@@ -719,12 +635,6 @@ public class ThingIFAPI implements Parcelable {
             }
             if (pendingEndNode.getThingProperties() != null && pendingEndNode.getThingProperties().length() > 0) {
                 requestBody.put("endNodeThingProperties", pendingEndNode.getThingProperties());
-            }
-            if (options != null) {
-                DataGroupingInterval dataGroupingInterval = options.getDataGroupingInterval();
-                if (dataGroupingInterval != null) {
-                    requestBody.put("dataGroupingInterval", dataGroupingInterval.getInterval());
-                }
             }
             requestBody.put("owner", this.owner.getTypedID().toString());
         } catch (JSONException e) {
