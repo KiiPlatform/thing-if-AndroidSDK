@@ -84,7 +84,7 @@ public final class CommandForm implements Parcelable {
          */
         @NonNull
         public Builder addAliasAction(
-                @Nullable AliasAction<? extends Action> aliasAction) {
+                @NonNull AliasAction<? extends Action> aliasAction) {
             if (aliasAction == null) {
                 throw new IllegalArgumentException("aliasAction is null");
             }
