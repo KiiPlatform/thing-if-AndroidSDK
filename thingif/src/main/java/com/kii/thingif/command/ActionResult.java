@@ -67,10 +67,12 @@ public final class ActionResult implements Parcelable {
         }
         this.errorMessage = in.readString();
         this.succeeded = in.readByte() != 0;
-        try {
-            this.data = new JSONObject(in.readString());
-        }catch (JSONException ex) {
-            // never happen
+        if (in.readString() != null) {
+            try {
+                this.data = new JSONObject(in.readString());
+            } catch (JSONException ex) {
+                // never happen
+            }
         }
     }
 
