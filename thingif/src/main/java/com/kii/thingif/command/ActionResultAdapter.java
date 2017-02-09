@@ -1,7 +1,5 @@
 package com.kii.thingif.command;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -10,7 +8,6 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.kii.thingif.command.ActionResult;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,6 +15,10 @@ import org.json.JSONObject;
 import java.lang.reflect.Type;
 import java.util.Map;
 
+/**
+ * SDK uses this class to parse  action result of json format received from server.
+ * It is internal only.
+ */
 public class ActionResultAdapter implements
         JsonSerializer<ActionResult>,
         JsonDeserializer<ActionResult>{
@@ -46,27 +47,37 @@ public class ActionResultAdapter implements
         Map.Entry<String, JsonElement> resultEntry = json.entrySet().iterator().next();
         String actionName = resultEntry.getKey();
         JsonObject resultJson = resultEntry.getValue().getAsJsonObject();
-        resultJson.addProperty("actionName", actionName);
-        JsonDeserializer<JSONObject> metadataDeserializer = new JsonDeserializer<JSONObject>() {
-            @Override
-            public JSONObject deserialize(JsonElement jsonElement1, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-                if (jsonElement1 == null) return null;
-                if (jsonElement1.isJsonPrimitive() &&
-                        ((JsonPrimitive)jsonElement1).isString()){
-                    try {
-                        return new JSONObject(jsonElement1.getAsString());
-                    }catch (JSONException ex) {
-                        throw  new RuntimeException(ex);
-                    }
+        if (!resultJson.has("succeeded")) {
+            throw new JsonParseException("json object does not contain succeeded");
+        }
+        JsonElement succeededJson = resultJson.get("succeeded");
+        if (!succeededJson.isJsonPrimitive() ||
+                !((JsonPrimitive) succeededJson).isBoolean()) {
+            throw new JsonParseException("type of succeeded is not boolean");
+        }
+        boolean succeeded = succeededJson.getAsBoolean();
+
+        String errorMessage = null;
+        if (resultJson.has("errorMessage")) {
+            JsonElement messageJson = resultJson.get("errorMessage");
+            if (messageJson.isJsonPrimitive()) {
+                if (((JsonPrimitive)messageJson).isString()) {
+                    errorMessage = messageJson.getAsString();
                 }
-                return null;
             }
-        };
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(
-                        JSONObject.class,
-                        metadataDeserializer)
-                .create();
-        return gson.fromJson(resultJson, ActionResult.class);
+        }
+
+        JSONObject data = null;
+        if (resultJson.has("data")) {
+            JsonElement dataJson = resultJson.get("data");
+            if (dataJson.isJsonObject()) {
+                try {
+                    data = new JSONObject(dataJson.toString());
+                }catch (JSONException ex) {
+                    throw new JsonParseException(ex);
+                }
+            }
+        }
+        return new ActionResult(actionName, succeeded, errorMessage, data);
     }
 }

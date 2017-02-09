@@ -16,6 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * SDK uses this class to parse alias action result of json format.
+ * It is internal only.
+ */
 public class AliasActionResultAdapter implements
         JsonSerializer<AliasActionResult>,
         JsonDeserializer<AliasActionResult>{
@@ -60,10 +64,6 @@ public class AliasActionResultAdapter implements
             results.add(result);
         }
 
-        JsonObject resultJson = new JsonObject();
-        resultJson.addProperty("alias", alias);
-        Gson originalGson = new Gson();
-        resultJson.add("results", originalGson.toJsonTree(results));
-        return  originalGson.fromJson(resultJson, AliasActionResult.class);
+        return new AliasActionResult(alias, results);
     }
 }
