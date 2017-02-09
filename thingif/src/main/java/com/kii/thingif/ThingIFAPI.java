@@ -480,9 +480,9 @@ public class ThingIFAPI implements Parcelable {
     @NonNull
     @WorkerThread
     public Target onboardWithVendorThingID(
-            String vendorThingID,
-            String thingPassword,
-            OnboardWithVendorThingIDOptions options)
+            @NonNull String vendorThingID,
+            @NonNull String thingPassword,
+            @Nullable OnboardWithVendorThingIDOptions options)
             throws ThingIFException {
         if (this.onboarded()) {
             throw new IllegalStateException("This instance is already onboarded.");
@@ -563,9 +563,9 @@ public class ThingIFAPI implements Parcelable {
     @NonNull
     @WorkerThread
     public Target onboardWithThingID(
-            String thingID,
-            String thingPassword,
-            OnboardWithThingIDOptions options)
+            @NonNull String thingID,
+            @NonNull String thingPassword,
+            @Nullable OnboardWithThingIDOptions options)
             throws ThingIFException {
         if (this.onboarded()) {
             throw new IllegalStateException("This instance is already onboarded.");
