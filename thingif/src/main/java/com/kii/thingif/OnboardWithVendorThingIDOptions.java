@@ -13,19 +13,16 @@ public class OnboardWithVendorThingIDOptions {
     private final String firmwareVersion;
     private final JSONObject thingProperties;
     private final LayoutPosition layoutPosition;
-    private final DataGroupingInterval dataGroupingInterval;
 
     private OnboardWithVendorThingIDOptions(
             @Nullable String thingType,
             @Nullable String firmwareVersion,
             @Nullable JSONObject thingProperties,
-            @Nullable LayoutPosition position,
-            @Nullable DataGroupingInterval interval) {
+            @Nullable LayoutPosition position) {
         this.thingType = thingType;
         this.firmwareVersion = firmwareVersion;
         this.thingProperties = thingProperties;
         this.layoutPosition = position;
-        this.dataGroupingInterval = interval;
     }
 
     @Nullable
@@ -42,17 +39,11 @@ public class OnboardWithVendorThingIDOptions {
         return this.layoutPosition;
     }
 
-    @Nullable
-    public DataGroupingInterval getDataGroupingInterval() {
-        return this.dataGroupingInterval;
-    }
-
     public static class Builder {
         private String thingType;
         private String firmwareVersion;
         private JSONObject thingProperties;
         private LayoutPosition layoutPosition;
-        private DataGroupingInterval dataGroupingInterval;
 
         /**
          * set thing type.
@@ -102,18 +93,6 @@ public class OnboardWithVendorThingIDOptions {
         }
 
         /**
-         * set data grouping interval.
-         * @param dataGroupingInterval INTERVAL_1_MINUTE | INTERVAL_15_MINUTES | INTERVAL_30_MINUTES | INTERVAL_1_HOUR | INTERVAL_12_HOURS.
-         * Will be used to create the bucket to store the state history when the thing is not using traits.
-         * @return this.
-         */
-        @NonNull
-        public Builder setDataGroupingInterval(@Nullable  DataGroupingInterval dataGroupingInterval) {
-            this.dataGroupingInterval = dataGroupingInterval;
-            return this;
-        }
-
-        /**
          * get thing type.
          * @return thing type.
          */
@@ -142,15 +121,6 @@ public class OnboardWithVendorThingIDOptions {
         public LayoutPosition getLayoutPosition() { return this.layoutPosition; }
 
         /**
-         * get data grouping interval.
-         * @return data grouping interval.
-         */
-        @Nullable
-        public DataGroupingInterval getDataGroupingInterval() {
-            return this.dataGroupingInterval;
-        }
-
-        /**
          * build option object.
          * @return OnboardWithVendorThingIDOptions object.
          */
@@ -158,7 +128,7 @@ public class OnboardWithVendorThingIDOptions {
         public OnboardWithVendorThingIDOptions build() {
             return new OnboardWithVendorThingIDOptions(this.thingType,
                     this.firmwareVersion, this.thingProperties,
-                    this.layoutPosition, this.dataGroupingInterval);
+                    this.layoutPosition);
         }
     }
 }
