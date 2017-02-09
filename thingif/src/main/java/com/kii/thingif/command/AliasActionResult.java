@@ -18,26 +18,6 @@ public class AliasActionResult implements Parcelable{
 
     private volatile int hashCode; // cached hashcode for performance
 
-    /**
-     * Initialize AliasActionResult instance.
-     * @param alias name of alias
-     * @param results list of {@link ActionResult} instance
-     * @throws IllegalArgumentException thrown when alias is null/empty or results is null/empty
-     */
-    public AliasActionResult(
-            @NonNull String alias,
-            @NonNull List<ActionResult> results) {
-        if (TextUtils.isEmpty(alias)) {
-            throw new IllegalArgumentException("alias is null or empty");
-        }
-
-        if (results == null || results.size() == 0) {
-            throw new IllegalArgumentException("result is null or empty");
-        }
-        this.alias = alias;
-        this.results = results;
-    }
-
     @NonNull
     public List<ActionResult> getResults() {
         return results;
@@ -59,10 +39,21 @@ public class AliasActionResult implements Parcelable{
         dest.writeList(this.results);
     }
 
+    /**
+     * Initialize AliasActionResult with Parcel instance.
+     * @param in Parcel instance.
+     * @throws IllegalArgumentException thrown when alias is null/empty or results is null/empty
+     */
     public AliasActionResult(Parcel in) {
         this.alias = in.readString();
+        if (TextUtils.isEmpty(alias)) {
+            throw new IllegalArgumentException("alias is null or empty");
+        }
         this.results = new ArrayList<>();
         in.readList(this.results, ActionResult.class.getClassLoader());
+        if (results == null || results.size() == 0) {
+            throw new IllegalArgumentException("result is null or empty");
+        }
     }
 
     public static final Creator<AliasActionResult> CREATOR = new Creator<AliasActionResult>() {

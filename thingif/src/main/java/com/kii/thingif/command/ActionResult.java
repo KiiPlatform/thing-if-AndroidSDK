@@ -16,24 +16,6 @@ public final class ActionResult implements Parcelable {
 
     private volatile int hashCode; // cached hashcode for performance
 
-    /**
-     * Initialize ActionResult instance
-     * @param actionName name of action.
-     * @param errorMessage error message
-     * @param succeeded If true succeeded, otherwise failed.
-     */
-    public ActionResult(
-            @NonNull String actionName,
-            @Nullable String errorMessage,
-            boolean succeeded) {
-        if (TextUtils.isEmpty(actionName)) {
-            throw new IllegalArgumentException("actionName is null or empty");
-        }
-        this.actionName = actionName;
-        this.errorMessage = errorMessage;
-        this.succeeded = succeeded;
-    }
-
     public boolean isSucceeded() {
         return this.succeeded;
     }
@@ -53,8 +35,16 @@ public final class ActionResult implements Parcelable {
         return 0;
     }
 
+    /**
+     * Initialize ActionResult from Parcel.
+     * @param in Parcel instance.
+     * @throws IllegalArgumentException Thrown when actionName is null or empty.
+     */
     public ActionResult(Parcel in) {
         this.actionName = in.readString();
+        if (TextUtils.isEmpty(actionName)) {
+            throw new IllegalArgumentException("actionName is null or empty");
+        }
         this.errorMessage = in.readString();
         this.succeeded = in.readByte() != 0;
     }

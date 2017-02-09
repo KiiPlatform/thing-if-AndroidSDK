@@ -36,43 +36,7 @@ public class Command implements Parcelable {
     private final @Nullable String title;
     private final @Nullable String description;
     private final @Nullable JSONObject metadata;
-
-    public Command(@NonNull TypedID targetID,
-                   @NonNull TypedID issuerID,
-                   @NonNull List<AliasAction<? extends Action>> aliasActions,
-                   @Nullable List<AliasActionResult> aliasActionResults,
-                   @Nullable String commandID,
-                   @Nullable CommandState commandState,
-                   @Nullable String firedByTriggerID,
-                   @Nullable Long created,
-                   @Nullable Long modified,
-                   @Nullable String title,
-                   @Nullable String description,
-                   @Nullable JSONObject metadata
-                   ) {
-        if (targetID == null) {
-            throw new IllegalArgumentException("targetID is null");
-        }
-        if (issuerID == null) {
-            throw new IllegalArgumentException("issuerID is null");
-        }
-        if (aliasActions == null || aliasActions.size() == 0) {
-            throw new IllegalArgumentException("actions is null or empty");
-        }
-        this.targetID = targetID;
-        this.issuerID = issuerID;
-        this.aliasActions = aliasActions;
-        this.aliasActionResults = aliasActionResults;
-        this.commandID = commandID;
-        this.commandState = commandState;
-        this.firedByTriggerID = firedByTriggerID;
-        this.created = created;
-        this.modified = modified;
-        this.title = title;
-        this.metadata = metadata;
-        this.description = description;
-    }
-
+    
     /** Get ID of the command.
      * @return ID of the command.
      */
@@ -209,7 +173,7 @@ public class Command implements Parcelable {
     }
 
     // Implementation of Parcelable
-    protected Command(Parcel in) throws Exception{
+    public Command(Parcel in) throws Exception{
         this.commandID = in.readString();
         this.targetID = in.readParcelable(TypedID.class.getClassLoader());
         this.issuerID = in.readParcelable(TypedID.class.getClassLoader());
@@ -229,6 +193,17 @@ public class Command implements Parcelable {
             this.metadata = new JSONObject(metadata);
         }else{
             this.metadata = null;
+        }
+
+        //TODO: // FIXME: 2017/02/09 validate after deserialized the field 
+        if (this.targetID == null) {
+            throw new IllegalArgumentException("targetID is null");
+        }
+        if (this.issuerID == null) {
+            throw new IllegalArgumentException("issuerID is null");
+        }
+        if (this.aliasActions == null || this.aliasActions.size() == 0) {
+            throw new IllegalArgumentException("actions is null or empty");
         }
     }
     public static final Creator<Command> CREATOR = new Creator<Command>() {
