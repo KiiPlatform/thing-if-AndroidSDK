@@ -626,6 +626,8 @@ public class ThingIFAPI implements Parcelable {
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
      */
+    @NonNull
+    @WorkerThread
     public EndNode onboardEndNodeWithGateway(
             @NonNull PendingEndNode pendingEndNode,
             @NonNull String endnodePassword)
