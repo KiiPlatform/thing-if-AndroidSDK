@@ -25,8 +25,6 @@ import org.robolectric.RuntimeEnvironment;
 @RunWith(RobolectricTestRunner.class)
 public class StoredInstanceTest extends ThingIFAPITestBase {
 
-    private static final String DEMO_THING_TYPE = "LED";
-
     private Context context;
 
     private Gson gson = new GsonBuilder()
@@ -51,15 +49,13 @@ public class StoredInstanceTest extends ThingIFAPITestBase {
 
         String vendorThingID = "v1234567890abcde";
         String thingPassword = "password";
-        JSONObject thingProperties = new JSONObject();
-        thingProperties.put("manufacturer", "Kii");
         String thingID = "th.1234567890";
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         Assert.assertFalse(api.onboarded());
-        api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
+        api.onboardWithVendorThingID(vendorThingID, thingPassword);
         Assert.assertTrue(api.onboarded());
 
         ThingIFAPI restoredApi = ThingIFAPI.loadFromStoredInstance(this.context);
@@ -93,8 +89,6 @@ public class StoredInstanceTest extends ThingIFAPITestBase {
     public void loadFromStoredInstanceWithTagTest() throws Exception {
         String vendorThingID = "v1234567890abcde";
         String thingPassword = "password";
-        JSONObject thingProperties = new JSONObject();
-        thingProperties.put("manufacturer", "Kii");
         String thingID = "th.1234567890";
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(200, thingID, accessToken);
@@ -104,7 +98,7 @@ public class StoredInstanceTest extends ThingIFAPITestBase {
                 .setTag("ThingA");
         ThingIFAPI api = builder.build();
         Assert.assertFalse(api.onboarded());
-        api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
+        api.onboardWithVendorThingID(vendorThingID, thingPassword);
         Assert.assertTrue(api.onboarded());
 
         ThingIFAPI restoredApi = ThingIFAPI.loadFromStoredInstance(context, "ThingA");
@@ -141,15 +135,13 @@ public class StoredInstanceTest extends ThingIFAPITestBase {
     public void loadFromStoredInstanceNoSDKVersionTest() throws Exception {
         String vendorThingID = "v1234567890abcde";
         String thingPassword = "password";
-        JSONObject thingProperties = new JSONObject();
-        thingProperties.put("manufacturer", "Kii");
         String thingID = "th.1234567890";
         String accessToken = "thing-access-token-1234";
         this.addMockResponseForOnBoard(200, thingID, accessToken);
 
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         Assert.assertFalse(api.onboarded());
-        api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
+        api.onboardWithVendorThingID(vendorThingID, thingPassword);
         Assert.assertTrue(api.onboarded());
 
         SharedPreferences preferences = context.getSharedPreferences(
@@ -173,7 +165,7 @@ public class StoredInstanceTest extends ThingIFAPITestBase {
 
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         Assert.assertFalse(api.onboarded());
-        api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
+        api.onboardWithVendorThingID(vendorThingID, thingPassword);
         Assert.assertTrue(api.onboarded());
 
         SharedPreferences preferences = context.getSharedPreferences(
@@ -197,7 +189,7 @@ public class StoredInstanceTest extends ThingIFAPITestBase {
 
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         Assert.assertFalse(api.onboarded());
-        api.onboard(vendorThingID, thingPassword, DEMO_THING_TYPE, thingProperties);
+        api.onboardWithVendorThingID(vendorThingID, thingPassword);
         Assert.assertTrue(api.onboarded());
 
         SharedPreferences preferences = context.getSharedPreferences(
