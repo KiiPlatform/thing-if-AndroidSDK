@@ -627,8 +627,8 @@ public class ThingIFAPI implements Parcelable {
      * @throws ThingIFRestException Thrown when server returns error response.
      */
     public EndNode onboardEndNodeWithGateway(
-            PendingEndNode pendingEndNode,
-            String endnodePassword)
+            @NonNull PendingEndNode pendingEndNode,
+            @NonNull String endnodePassword)
             throws ThingIFException {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding the gateway");
