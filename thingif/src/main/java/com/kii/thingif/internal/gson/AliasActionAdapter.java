@@ -45,7 +45,7 @@ public class AliasActionAdapter implements
             Class<? extends Action> actionClass = entry.getValue();
             if (json.has(alias)) {
                 JsonObject actionJson = json.getAsJsonObject(alias);
-                Action action = new Gson().fromJson(actionJson, this.actionTypes.get(alias));
+                Action action = new Gson().fromJson(actionJson, actionClass);
                 return new AliasAction(alias, action);
             }
         }
