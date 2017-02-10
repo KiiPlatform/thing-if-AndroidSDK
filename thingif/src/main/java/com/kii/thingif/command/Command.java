@@ -24,7 +24,9 @@ public class Command implements Parcelable {
     private final @Nullable TypedID targetID;
     @SerializedName("issuer")
     private final @NonNull TypedID issuerID;
+    @SerializedName("actions")
     private final @NonNull List<AliasAction<? extends Action>> aliasActions;
+    @SerializedName("actionResults")
     private final @Nullable List<AliasActionResult> aliasActionResults;
     @SerializedName("commandState")
     private final @Nullable CommandState commandState;
@@ -36,6 +38,33 @@ public class Command implements Parcelable {
     private final @Nullable String title;
     private final @Nullable String description;
     private final @Nullable JSONObject metadata;
+
+    Command(
+            @NonNull TypedID issuerID,
+            @NonNull List<AliasAction<? extends Action>> aliasActions,
+            @Nullable String commandID,
+            @Nullable TypedID targetID,
+            @Nullable List<AliasActionResult> aliasActionResults,
+            @Nullable CommandState commandState,
+            @Nullable String firedByTriggerID,
+            @Nullable Long created,
+            @Nullable Long modified,
+            @Nullable String title,
+            @Nullable String description,
+            @Nullable JSONObject metadata) {
+        this.issuerID = issuerID;
+        this.aliasActions = aliasActions;
+        this.commandID = commandID;
+        this.targetID = targetID;
+        this.aliasActionResults = aliasActionResults;
+        this.commandState = commandState;
+        this.firedByTriggerID = firedByTriggerID;
+        this.created = created;
+        this.modified = modified;
+        this.title = title;
+        this.description = description;
+        this.metadata = metadata;
+    }
     
     /** Get ID of the command.
      * @return ID of the command.
