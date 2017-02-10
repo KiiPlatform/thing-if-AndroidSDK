@@ -13,36 +13,10 @@ import java.util.List;
 
 @RunWith(RobolectricTestRunner.class)
 public class AliasActionResultTest {
-    @Test(expected = IllegalArgumentException.class)
-    public void createWithNullAliasTest() {
-        List<ActionResult> results = new ArrayList<>();
-        results.add(new ActionResult("turnPower", null, true));
-
-        new AliasActionResult(null, results);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void createWithEmptyAliasTest() {
-        List<ActionResult> results = new ArrayList<>();
-        results.add(new ActionResult("turnPower", null, true));
-
-        new AliasActionResult("", results);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void createWithNullResultsTest() {
-        new AliasActionResult("alias", null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void createWithEmptyResultsTest() {
-        new AliasActionResult("alias", new ArrayList<ActionResult>());
-    }
-
     @Test
     public void baseTest() {
-        ActionResult result1 = new ActionResult("turnPower", null, true);
-        ActionResult result2 = new ActionResult("setPresetTemperature", null, true);
+        ActionResult result1 = new ActionResult("turnPower", true, null, null);
+        ActionResult result2 = new ActionResult("setPresetTemperature", true, null, null);
         List<ActionResult> results = new ArrayList<>();
         results.add(result1);
         results.add(result2);
@@ -57,8 +31,8 @@ public class AliasActionResultTest {
 
     @Test
     public void equals_hashCodeTest() {
-        ActionResult result1 = new ActionResult("turnPower", null, true);
-        ActionResult result2 = new ActionResult("setPresetTemp", "value invalid", false);
+        ActionResult result1 = new ActionResult("turnPower", true, null, null);
+        ActionResult result2 = new ActionResult("setPresetTemp", false, "value invalid", null);
         List<ActionResult> results = new ArrayList<>();
         results.add(result1);
         results.add(result2);
@@ -118,8 +92,8 @@ public class AliasActionResultTest {
 
     @Test
     public void parcelableTest() {
-        ActionResult result1 = new ActionResult("turnPower", null, true);
-        ActionResult result2 = new ActionResult("setPresetTemperature", null, true);
+        ActionResult result1 = new ActionResult("turnPower", true, null, null);
+        ActionResult result2 = new ActionResult("setPresetTemperature", true, null, null);
         List<ActionResult> results = new ArrayList<>();
         results.add(result1);
         results.add(result2);
