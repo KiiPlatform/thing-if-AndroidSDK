@@ -34,7 +34,9 @@ public class ActionResultAdapter implements
         if (src.getData() != null) {
             json.addProperty("data", src.getData().toString());
         }
-        return json;
+        JsonObject ret = new JsonObject();
+        ret.add(src.getActionName(), json);
+        return ret;
     }
 
     @Override
@@ -70,9 +72,10 @@ public class ActionResultAdapter implements
         JSONObject data = null;
         if (resultJson.has("data")) {
             JsonElement dataJson = resultJson.get("data");
-            if (dataJson.isJsonObject()) {
+            if (dataJson.isJsonPrimitive()) {
+                if (((JsonPrimitive)dataJson).isString())
                 try {
-                    data = new JSONObject(dataJson.toString());
+                    data = new JSONObject(dataJson.getAsString());
                 }catch (JSONException ex) {
                     throw new JsonParseException(ex);
                 }

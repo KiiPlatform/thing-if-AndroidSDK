@@ -47,19 +47,18 @@ public class AliasActionResultAdapter implements
     public AliasActionResult deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         if (jsonElement == null) return null;
         JsonObject json = jsonElement.getAsJsonObject();
-        if (json.entrySet().iterator().hasNext()) {
+        if (!json.entrySet().iterator().hasNext()) {
             throw new JsonParseException("json has not entry");
         }
         Map.Entry<String, JsonElement> entry = json.entrySet().iterator().next();
         String alias = entry.getKey();
-        if (!(entry.getValue() instanceof JsonArray)){
+        if (!entry.getValue().isJsonArray()){
             throw new JsonParseException("invalid format: value of alias is not array");
         }
         JsonArray resultJsonArray = (JsonArray) entry.getValue();
         List<ActionResult> results = new ArrayList<>();
         // deserialize actionResult from raw json
-        while (resultJsonArray.iterator().hasNext()) {
-            JsonObject resultJson = resultJsonArray.iterator().next().getAsJsonObject();
+        for (JsonElement resultJson: resultJsonArray) {
             ActionResult result = gson.fromJson(resultJson, ActionResult.class);
             results.add(result);
         }
