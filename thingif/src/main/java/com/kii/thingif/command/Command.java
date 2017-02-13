@@ -203,14 +203,13 @@ public class Command implements Parcelable {
 
     // Implementation of Parcelable
     public Command(Parcel in) throws Exception{
-        this.commandID = in.readString();
+        commandID = in.readString();
         this.targetID = in.readParcelable(TypedID.class.getClassLoader());
         this.issuerID = in.readParcelable(TypedID.class.getClassLoader());
-        //TODO: // FIXME: 12/16/16 fix to adapt to alias
         this.aliasActions = new ArrayList<>();
-        in.readList(this.aliasActions, Command.class.getClassLoader());
+        in.readList(this.aliasActions, AliasAction.class.getClassLoader());
         this.aliasActionResults = new ArrayList<>();
-        in.readList(this.aliasActionResults, Command.class.getClassLoader());
+        in.readList(this.aliasActionResults, AliasActionResult.class.getClassLoader());
         this.commandState = (CommandState)in.readSerializable();
         this.firedByTriggerID = in.readString();
         this.created = (Long)in.readValue(Command.class.getClassLoader());
@@ -224,7 +223,6 @@ public class Command implements Parcelable {
             this.metadata = null;
         }
 
-        //TODO: // FIXME: 2017/02/09 validate after deserialized the field 
         if (this.targetID == null) {
             throw new IllegalArgumentException("targetID is null");
         }
@@ -259,7 +257,6 @@ public class Command implements Parcelable {
         dest.writeString(this.commandID);
         dest.writeParcelable(this.targetID, flags);
         dest.writeParcelable(this.issuerID, flags);
-        //TODO // FIXME: 12/16/16 fix to adapt alias
         dest.writeList(this.aliasActions);
         dest.writeList(this.aliasActionResults);
         dest.writeSerializable(this.commandState);

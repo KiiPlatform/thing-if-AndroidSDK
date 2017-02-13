@@ -16,11 +16,11 @@ public class AirConditionerActions implements Action {
         this.presetTemperature = presetTemperature;
     }
 
-    public boolean isPower() {
+    public Boolean isPower() {
         return this.power;
     }
 
-    public int getPresetTemperature() {
+    public Integer getPresetTemperature() {
         return this.presetTemperature;
     }
 
