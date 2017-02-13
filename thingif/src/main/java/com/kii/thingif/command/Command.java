@@ -104,6 +104,7 @@ public class Command implements Parcelable {
     /**
      * Retrieve specified AliasAction
      * @param alias alias to retrieve
+     * @param clsOfT Class of T.
      * @param <T> Type of Action
      * @return list of AliasAction with the specified type.
      */

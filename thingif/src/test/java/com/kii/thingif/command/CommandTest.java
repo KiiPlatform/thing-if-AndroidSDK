@@ -3,6 +3,7 @@ package com.kii.thingif.command;
 import com.kii.thingif.TypedID;
 import com.kii.thingif.actions.AirConditionerActions;
 import com.kii.thingif.actions.HumidityActions;
+import com.kii.thingif.actions.NewAction;
 
 import junit.framework.Assert;
 
@@ -196,6 +197,10 @@ public class CommandTest {
         Assert.assertEquals(false, foundActions.get(1).getAction().isPower().booleanValue());
         Assert.assertNull(foundActions.get(1).getAction().getPresetTemperature());
 
+        List<AliasAction<NewAction>> foundActions2 =
+                command.getAction("NewAlias", NewAction.class);
+        Assert.assertEquals(0, foundActions2.size());
+
         // test retrieve action result by alias and acton name
         List<ActionResult> foundResults =
                 command.getActionResult(alias1, "turnPower");
@@ -211,5 +216,9 @@ public class CommandTest {
         Assert.assertEquals(
                 new JSONObject().put("k2", "v2").toString(),
                 foundResults.get(1).getData().toString());
+
+        List<ActionResult> foundResults2 =
+                command.getActionResult("NewAlias", "newAction");
+        Assert.assertEquals(0, foundResults2.size());
     }
 }
