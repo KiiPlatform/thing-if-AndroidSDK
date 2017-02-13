@@ -107,8 +107,18 @@ public class Command implements Parcelable {
      * @param <T> Type of Action
      * @return list of AliasAction with the specified type.
      */
-    public <T extends Action> List<AliasAction<T>> getAction(String alias) {
-        return null;
+    @NonNull
+    public <T extends Action> List<AliasAction<T>> getAction(
+            @NonNull String alias,
+            @NonNull Class<T> clsOfT) {
+        List<AliasAction<T>> foundActions = new ArrayList<>();
+        for (AliasAction<? extends Action> aliasAction: this.aliasActions) {
+            if (aliasAction.getAlias().equals(alias) &&
+                    aliasAction.getAction().getClass().equals(clsOfT)){
+                foundActions.add((AliasAction<T>) aliasAction);
+            }
+        }
+        return foundActions;
     }
 
     /**
@@ -127,19 +137,23 @@ public class Command implements Parcelable {
      * @param actionName name of action to specify action result.
      * @return list of {@link ActionResult}.
      */
-    @Nullable
+    @NonNull
     public List<ActionResult> getActionResult(
             @NonNull String alias,
             @NonNull String actionName) {
-        //TODO: // FIXME: 12/14/16
-//        if (this.getActionResults() != null) {
-//            for (ActionResult result : this.getActionResults()) {
-//                if (TextUtils.equals(action.getActionName(), result.getActionName())) {
-//                    return result;
-//                }
-//            }
-//        }
-        return null;
+        List<ActionResult> foundResults = new ArrayList<>();
+        if (this.aliasActionResults != null) {
+            for (AliasActionResult aliasResult : this.aliasActionResults) {
+                if (aliasResult.getAlias().equals(alias)) {
+                    for (ActionResult result : aliasResult.getResults()) {
+                        if (result.getActionName().equals(actionName)) {
+                            foundResults.add(result);
+                        }
+                    }
+                }
+            }
+        }
+        return foundResults;
     }
 
     /**
