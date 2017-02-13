@@ -1,4 +1,4 @@
-package com.kii.thingif.gson;
+package com.kii.thingif.internal.gson;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -7,7 +7,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.kii.thingif.actions.AirConditionerActions;
 import com.kii.thingif.command.Action;
-import com.kii.thingif.internal.gson.ActionAdapter;
 
 import junit.framework.Assert;
 

@@ -1,4 +1,4 @@
-package com.kii.thingif.gson;
+package com.kii.thingif.internal.gson;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -8,7 +8,6 @@ import com.kii.thingif.actions.AirConditionerActions;
 import com.kii.thingif.actions.HumidityActions;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
-import com.kii.thingif.internal.gson.AliasActionAdapter;
 
 import org.junit.Assert;
 import org.junit.Before;
