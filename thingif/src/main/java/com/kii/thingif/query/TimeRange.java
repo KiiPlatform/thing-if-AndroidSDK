@@ -11,6 +11,8 @@ public class TimeRange implements Parcelable{
     private @NonNull Date from;
     private @NonNull Date to;
 
+    private volatile int hashCode; // cached hashcode for performance
+
     /**
      * Initialize time range.
      * @param from date when the time range starts. It is inclusive.
@@ -56,4 +58,28 @@ public class TimeRange implements Parcelable{
             return new TimeRange[size];
         }
     };
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        if (!(o instanceof TimeRange)) {
+            return false;
+        }
+        TimeRange other = (TimeRange)o;
+        return this.from.equals(other.from) && this.to.equals(other.to);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = this.hashCode;
+        if (result == 0) {
+            result = 17;
+            result = 31 * result + this.from.hashCode();
+            result = 31 * result + this.to.hashCode();
+            this.hashCode = result;
+        }
+        return result;
+    }
 }
