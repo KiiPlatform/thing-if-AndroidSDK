@@ -23,6 +23,12 @@ public class TimeRange implements Parcelable{
         this.to = to;
     }
 
+    @NonNull
+    public Date getFrom() { return this.from; }
+
+    @NonNull
+    public Date getTo() { return this.to; }
+
     @Override
     public int describeContents() {
         return 0;
