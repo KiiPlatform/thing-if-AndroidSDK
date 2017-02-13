@@ -1,6 +1,7 @@
 package com.kii.thingif.internal.gson;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -27,10 +28,15 @@ public class AliasActionAdapter implements
     public JsonElement serialize(AliasAction src, Type typeOfSrc, JsonSerializationContext context) {
         if (src == null) return null;
 
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(
+                        Action.class,
+                        new ActionAdapter(this.actionTypes.get(src.getAlias())))
+                .create();
         JsonObject json = new JsonObject();
         json.add(
                 src.getAlias(),
-                new Gson().toJsonTree(src.getAction()));
+                gson.toJsonTree(src.getAction(), Action.class));
         return json;
     }
 
@@ -44,8 +50,13 @@ public class AliasActionAdapter implements
             String alias = entry.getKey();
             Class<? extends Action> actionClass = entry.getValue();
             if (json.has(alias)) {
-                JsonObject actionJson = json.getAsJsonObject(alias);
-                Action action = new Gson().fromJson(actionJson, actionClass);
+                JsonElement actionJson = json.get(alias);
+                Gson gson = new GsonBuilder()
+                        .registerTypeAdapter(
+                                Action.class,
+                                new ActionAdapter(actionClass))
+                        .create();
+                Action action = gson.fromJson(actionJson, Action.class);
                 return new AliasAction(alias, action);
             }
         }

@@ -2,6 +2,7 @@ package com.kii.thingif.gson;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.kii.thingif.actions.AirConditionerActions;
 import com.kii.thingif.actions.HumidityActions;
@@ -46,17 +47,21 @@ public class AliasActionAdapterTest {
         JsonObject expectedAction1 = new JsonObject();
         JsonObject action1Json = new JsonObject();
         action1Json.addProperty("turnPower", true);
-        expectedAction1.add(alias1, action1Json);
+        JsonArray actions = new JsonArray();
+        actions.add(action1Json);
+        expectedAction1.add(alias1, actions);
         Assert.assertEquals(expectedAction1.toString(), actualAction1);
 
         AliasAction<HumidityActions> action2 = new AliasAction<>(
                 alias2,
                 new HumidityActions(34));
-        String actualAction2 = gson.toJson(action2);
+        String actualAction2 = gson.toJson(action2, AliasAction.class);
         JsonObject expectedAction2 = new JsonObject();
         JsonObject action2Json = new JsonObject();
         action2Json.addProperty("setPresetHumidity", 34);
-        expectedAction2.add(alias2, action2Json);
+        actions = new JsonArray();
+        actions.add(action2Json);
+        expectedAction2.add(alias2, actions);
         Assert.assertEquals(expectedAction2.toString(), actualAction2);
     }
 
@@ -67,11 +72,15 @@ public class AliasActionAdapterTest {
         AliasAction<HumidityActions> expectedAction2 = new AliasAction<>(
                 alias2, new HumidityActions(50));
 
-        JsonObject action1Json = new JsonObject();
-        action1Json.addProperty("turnPower", false);
-        action1Json.addProperty("setPresetTemperature", 23);
+        JsonObject action11Json = new JsonObject();
+        action11Json.addProperty("turnPower", false);
+        JsonObject action12Json = new JsonObject();
+        action12Json.addProperty("setPresetTemperature", 23);
+        JsonArray actions1 = new JsonArray();
+        actions1.add(action11Json);
+        actions1.add(action12Json);
         JsonObject json1 = new JsonObject();
-        json1.add(alias1, action1Json);
+        json1.add(alias1, actions1);
 
         AliasAction actualAction1 = gson.fromJson(json1, AliasAction.class);
         Assert.assertEquals(expectedAction1.getAlias(), actualAction1.getAlias());
@@ -87,8 +96,10 @@ public class AliasActionAdapterTest {
 
         JsonObject action2Json = new JsonObject();
         action2Json.addProperty("setPresetHumidity", 50);
+        JsonArray actions2 = new JsonArray();
+        actions2.add(action2Json);
         JsonObject json2 = new JsonObject();
-        json2.add(alias2, action2Json);
+        json2.add(alias2, actions2);
         AliasAction actualAction2 = gson.fromJson(json2, AliasAction.class);
         Assert.assertEquals(expectedAction2.getAlias(), actualAction2.getAlias());
         Assert.assertEquals(

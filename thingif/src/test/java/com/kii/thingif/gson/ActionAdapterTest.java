@@ -55,8 +55,13 @@ public class ActionAdapterTest {
                         new ActionAdapter(AirConditionerActions.class))
                 .create();
 
-        AirConditionerActions deserializedAction = (AirConditionerActions) gson.fromJson(jsonArray.toString(), Action.class);
-        Assert.assertEquals(expectedAction.isPower(), deserializedAction.isPower());
-        Assert.assertEquals(expectedAction.getPresetTemperature(), deserializedAction.getPresetTemperature());
+        AirConditionerActions deserializedAction =
+                (AirConditionerActions) gson.fromJson(jsonArray.toString(), Action.class);
+        Assert.assertEquals(
+                expectedAction.isPower(),
+                deserializedAction.isPower());
+        Assert.assertEquals(
+                expectedAction.getPresetTemperature(),
+                deserializedAction.getPresetTemperature());
     }
 }
