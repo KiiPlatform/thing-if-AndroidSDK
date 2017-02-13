@@ -15,13 +15,13 @@ import com.kii.thingif.command.Action;
 import java.lang.reflect.Type;
 import java.util.Map;
 
-public class ActionAdapter implements
+class ActionAdapter implements
         JsonSerializer<Action>,
         JsonDeserializer<Action> {
 
     private Class<? extends Action> actionClass;
 
-    public ActionAdapter(Class<? extends Action> actionClass) {
+    ActionAdapter(Class<? extends Action> actionClass) {
         this.actionClass = actionClass;
     }
     @Override
