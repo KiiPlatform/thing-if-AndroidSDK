@@ -218,7 +218,7 @@ public class Command implements Parcelable {
 
     // Implementation of Parcelable
     public Command(Parcel in) throws Exception{
-        commandID = in.readString();
+        this.commandID = in.readString();
         this.targetID = in.readParcelable(TypedID.class.getClassLoader());
         this.issuerID = in.readParcelable(TypedID.class.getClassLoader());
         this.aliasActions = new ArrayList<>();
