@@ -16,6 +16,9 @@ import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
 import com.kii.thingif.command.Command;
 import com.kii.thingif.command.CommandForm;
+import com.kii.thingif.exception.BadRequestException;
+import com.kii.thingif.exception.ForbiddenException;
+import com.kii.thingif.exception.ServiceUnavailableException;
 import com.kii.thingif.states.AirConditionerState;
 import com.kii.thingif.states.HumidityState;
 import com.kii.thingif.thingifapi.utils.ThingIFAPIUtils;
@@ -175,7 +178,6 @@ public class PostNewCommandTest extends ThingIFAPITestBase {
                 50,
                 ((HumidityActions)action2).getPresetHumidity().intValue());
 
-
         // verify the 1st request
         RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
         Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/commands", request1.getPath());
@@ -206,5 +208,176 @@ public class PostNewCommandTest extends ThingIFAPITestBase {
         expectedRequestHeaders2.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders2.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
         this.assertRequestHeader(expectedRequestHeaders2, request2);
+    }
+
+    @Test
+    public void postNewCommand400ErrorTest() throws Exception {
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        List<AliasAction<? extends Action>> aliasActions = new ArrayList<>();
+        aliasActions.add(
+                new AliasAction<>(
+                        alias1,
+                        new AirConditionerActions(true, 100)));
+        aliasActions.add(
+                new AliasAction<Action>(
+                        alias2,
+                        new HumidityActions(50)));
+
+        CommandForm form = CommandForm
+                .Builder
+                .newBuilder(aliasActions)
+                .build();
+        this.addEmptyMockResponse(400);
+
+        try {
+            ThingIFAPIUtils.setTarget(api, target);
+            api.postNewCommand(form);
+            Assert.fail("ThingIFRestException should be thrown");
+        } catch (BadRequestException e) {
+        }
+        // verify the request
+        RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/commands", request1.getPath());
+        Assert.assertEquals("POST", request1.getMethod());
+
+        Map<String, String> expectedRequestHeaders1 = new HashMap<String, String>();
+        expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders1.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        expectedRequestHeaders1.put("Content-Type", "application/json");
+        this.assertRequestHeader(expectedRequestHeaders1, request1);
+
+        JSONArray aliasActionsInRequest = new JSONArray();
+        aliasActionsInRequest
+                .put(new JSONObject().put(
+                        alias1,
+                        new JSONArray()
+                                .put(new JSONObject().put("turnPower", true))
+                                .put(new JSONObject().put("setPresetTemperature", 100))))
+                .put(new JSONObject().put(
+                        alias2,
+                        new JSONArray()
+                                .put(new JSONObject().put("setPresetHumidity", 50))));
+        JSONObject expectedRequestBody = new JSONObject();
+        expectedRequestBody.put("issuer", api.getOwner().getTypedID().toString());
+        expectedRequestBody.put("actions", aliasActionsInRequest);
+        this.assertRequestBody(expectedRequestBody, request1);
+    }
+    @Test
+    public void postNewCommand403ErrorTest() throws Exception {
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        List<AliasAction<? extends Action>> aliasActions = new ArrayList<>();
+        aliasActions.add(
+                new AliasAction<>(
+                        alias1,
+                        new AirConditionerActions(true, 100)));
+        aliasActions.add(
+                new AliasAction<Action>(
+                        alias2,
+                        new HumidityActions(50)));
+
+        CommandForm form = CommandForm
+                .Builder
+                .newBuilder(aliasActions)
+                .build();
+
+        this.addEmptyMockResponse(403);
+
+        try {
+            ThingIFAPIUtils.setTarget(api, target);
+            api.postNewCommand(form);
+            Assert.fail("ThingIFRestException should be thrown");
+        } catch (ForbiddenException e) {
+            Assert.assertEquals(403, e.getStatusCode());
+        }
+        // verify the request
+        RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/commands", request1.getPath());
+        Assert.assertEquals("POST", request1.getMethod());
+
+        Map<String, String> expectedRequestHeaders1 = new HashMap<String, String>();
+        expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders1.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        expectedRequestHeaders1.put("Content-Type", "application/json");
+        this.assertRequestHeader(expectedRequestHeaders1, request1);
+
+        JSONArray aliasActionsInRequest = new JSONArray();
+        aliasActionsInRequest
+                .put(new JSONObject().put(
+                        alias1,
+                        new JSONArray()
+                                .put(new JSONObject().put("turnPower", true))
+                                .put(new JSONObject().put("setPresetTemperature", 100))))
+                .put(new JSONObject().put(
+                        alias2,
+                        new JSONArray()
+                                .put(new JSONObject().put("setPresetHumidity", 50))));
+        JSONObject expectedRequestBody = new JSONObject();
+        expectedRequestBody.put("issuer", api.getOwner().getTypedID().toString());
+        expectedRequestBody.put("actions", aliasActionsInRequest);
+        this.assertRequestBody(expectedRequestBody, request1);
+    }
+    @Test
+    public void postNewCommand503ErrorTest() throws Exception {
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        List<AliasAction<? extends Action>> aliasActions = new ArrayList<>();
+        aliasActions.add(
+                new AliasAction<>(
+                        alias1,
+                        new AirConditionerActions(true, 100)));
+        aliasActions.add(
+                new AliasAction<Action>(
+                        alias2,
+                        new HumidityActions(50)));
+
+        CommandForm form = CommandForm
+                .Builder
+                .newBuilder(aliasActions)
+                .build();
+        this.addEmptyMockResponse(503);
+
+        try {
+            ThingIFAPIUtils.setTarget(api, target);
+            api.postNewCommand(form);
+            Assert.fail("ThingIFRestException should be thrown");
+        } catch (ServiceUnavailableException e) {
+        }
+        // verify the request
+        RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/commands", request1.getPath());
+        Assert.assertEquals("POST", request1.getMethod());
+
+        Map<String, String> expectedRequestHeaders1 = new HashMap<String, String>();
+        expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders1.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        expectedRequestHeaders1.put("Content-Type", "application/json");
+        this.assertRequestHeader(expectedRequestHeaders1, request1);
+
+        JSONArray aliasActionsInRequest = new JSONArray();
+        aliasActionsInRequest
+                .put(new JSONObject().put(
+                        alias1,
+                        new JSONArray()
+                                .put(new JSONObject().put("turnPower", true))
+                                .put(new JSONObject().put("setPresetTemperature", 100))))
+                .put(new JSONObject().put(
+                        alias2,
+                        new JSONArray()
+                                .put(new JSONObject().put("setPresetHumidity", 50))));
+        JSONObject expectedRequestBody = new JSONObject();
+        expectedRequestBody.put("issuer", api.getOwner().getTypedID().toString());
+        expectedRequestBody.put("actions", aliasActionsInRequest);
+        this.assertRequestBody(expectedRequestBody, request1);
     }
 }
