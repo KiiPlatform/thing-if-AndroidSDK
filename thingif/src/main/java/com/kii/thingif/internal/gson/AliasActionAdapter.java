@@ -11,6 +11,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
+import com.kii.thingif.exception.UnregisteredAliasException;
 
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -46,20 +47,23 @@ public class AliasActionAdapter implements
 
         JsonObject json = jsonElement.getAsJsonObject();
 
-        for (Map.Entry<String, Class<? extends Action>> entry: this.actionTypes.entrySet()) {
-            String alias = entry.getKey();
-            Class<? extends Action> actionClass = entry.getValue();
-            if (json.has(alias)) {
-                JsonElement actionJson = json.get(alias);
-                Gson gson = new GsonBuilder()
-                        .registerTypeAdapter(
-                                Action.class,
-                                new ActionAdapter(actionClass))
-                        .create();
-                Action action = gson.fromJson(actionJson, Action.class);
-                return new AliasAction(alias, action);
-            }
+        if (!json.entrySet().iterator().hasNext()){
+            return null;
         }
-        return null;
+        Map.Entry<String, JsonElement> firstEntry = json.entrySet().iterator().next();
+        String alias = firstEntry.getKey();
+
+        if (!this.actionTypes.containsKey(firstEntry.getKey())) {
+            throw new JsonParseException(new UnregisteredAliasException(alias, true));
+        }
+        Class<? extends Action> actionClass = this.actionTypes.get(alias);
+        JsonElement actionJson = json.get(alias);
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(
+                        Action.class,
+                        new ActionAdapter(actionClass))
+                .create();
+        Action action = gson.fromJson(actionJson, Action.class);
+        return new AliasAction(alias, action);
     }
 }
