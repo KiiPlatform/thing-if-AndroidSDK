@@ -5,6 +5,7 @@ import android.content.Context;
 import com.kii.thingif.query.GroupedHistoryStatesQuery;
 import com.kii.thingif.query.HistoryStatesQuery;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -25,5 +26,5 @@ import java.util.Map;
  * or {@link com.kii.thingif.ThingIFAPI.Builder#registerTargetState(String, Class)}.
  *
  */
-public interface TargetState {
+public interface TargetState extends Serializable {
 }
