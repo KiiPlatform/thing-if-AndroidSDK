@@ -1,4 +1,4 @@
-package com.kii.thingif.gson;
+package com.kii.thingif.internal.gson;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
