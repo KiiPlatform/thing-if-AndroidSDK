@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.gson.JsonObject;
+import com.google.gson.annotations.SerializedName;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,6 +34,7 @@ import java.util.List;
  */
 public final class CommandForm implements Parcelable {
 
+    @SerializedName("actions")
     private final @NonNull List<AliasAction<? extends Action>> aliasActions;
 
     private @Nullable String title;
