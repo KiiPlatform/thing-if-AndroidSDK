@@ -30,6 +30,7 @@ import com.kii.thingif.gateway.EndNode;
 import com.kii.thingif.gateway.Gateway;
 import com.kii.thingif.gateway.PendingEndNode;
 import com.kii.thingif.internal.gson.AliasActionAdapter;
+import com.kii.thingif.internal.gson.JSONObjectAdapter;
 import com.kii.thingif.internal.gson.ThingIFAPIAdapter;
 import com.kii.thingif.internal.gson.TypedIDAdapter;
 import com.kii.thingif.internal.http.IoTRestClient;
@@ -867,6 +868,9 @@ public class ThingIFAPI implements Parcelable {
                 .registerTypeAdapter(
                         TypedID.class,
                         new TypedIDAdapter())
+                .registerTypeAdapter(
+                        JSONObject.class,
+                        new JSONObjectAdapter())
                 .create();
         return gson.fromJson(responseBody.toString(), Command.class);
     }
@@ -1712,6 +1716,9 @@ public class ThingIFAPI implements Parcelable {
                 .registerTypeAdapter(
                         AliasAction.class,
                         new AliasActionAdapter(this.actionTypes))
+                .registerTypeAdapter(
+                        JSONObject.class,
+                        new JSONObjectAdapter())
                 .create();
         JSONObject ret = JsonUtils.newJson(gson.toJson(src));
         try {

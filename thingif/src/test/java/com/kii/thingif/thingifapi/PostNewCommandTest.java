@@ -2,8 +2,6 @@ package com.kii.thingif.thingifapi;
 
 import android.content.Context;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.kii.thingif.KiiApp;
 import com.kii.thingif.Owner;
 import com.kii.thingif.StandaloneThing;
@@ -18,7 +16,6 @@ import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
 import com.kii.thingif.command.Command;
 import com.kii.thingif.command.CommandForm;
-import com.kii.thingif.gateway.EndNode;
 import com.kii.thingif.states.AirConditionerState;
 import com.kii.thingif.states.HumidityState;
 import com.kii.thingif.thingifapi.utils.ThingIFAPIUtils;
@@ -45,14 +42,13 @@ import java.util.concurrent.TimeUnit;
 
 @RunWith(RobolectricTestRunner.class)
 public class PostNewCommandTest extends ThingIFAPITestBase {
-    private Context context;
     private ThingIFAPI api;
     private final String alias1 = "AirConditionerAlias";
     private final String alias2 = "HumidityAlias";
 
     @Before
     public void before() throws Exception{
-        this.context = RuntimeEnvironment.application.getApplicationContext();
+        Context context = RuntimeEnvironment.application.getApplicationContext();
         this.server = new MockWebServer();
         this.server.start();
 
@@ -89,6 +85,9 @@ public class PostNewCommandTest extends ThingIFAPITestBase {
         Long created = System.currentTimeMillis();
         Long modified = System.currentTimeMillis();
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+        String commandTitle = "title";
+        String commandDescription = "description";
+        JSONObject metaData = new JSONObject().put("k", "v");
 
         // prepare the get command response
         JSONArray aliasActionsInResponse = new JSONArray();
@@ -115,7 +114,13 @@ public class PostNewCommandTest extends ThingIFAPITestBase {
                         alias2,
                         new HumidityActions(50)));
 
-        CommandForm form = CommandForm.Builder.newBuilder(aliasActions).build();
+        CommandForm form = CommandForm
+                .Builder
+                .newBuilder(aliasActions)
+                .setTitle(commandTitle)
+                .setDescription(commandDescription)
+                .setMetadata(metaData)
+                .build();
 
         this.addMockResponseForPostNewCommand(201, commandID);
         this.addMockResponseForGetCommand(
@@ -176,7 +181,7 @@ public class PostNewCommandTest extends ThingIFAPITestBase {
         Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/commands", request1.getPath());
         Assert.assertEquals("POST", request1.getMethod());
 
-        Map<String, String> expectedRequestHeaders1 = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders1 = new HashMap<>();
         expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders1.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
@@ -186,6 +191,9 @@ public class PostNewCommandTest extends ThingIFAPITestBase {
         JSONObject expectedRequestBody = new JSONObject();
         expectedRequestBody.put("issuer", api.getOwner().getTypedID().toString());
         expectedRequestBody.put("actions", aliasActionsInResponse);
+        expectedRequestBody.put("title", commandTitle);
+        expectedRequestBody.put("description", commandDescription);
+        expectedRequestBody.put("metadata", metaData);
         this.assertRequestBody(expectedRequestBody, request1);
 
         // verify the 2nd request
@@ -193,7 +201,7 @@ public class PostNewCommandTest extends ThingIFAPITestBase {
         Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/commands/" + commandID, request2.getPath());
         Assert.assertEquals("GET", request2.getMethod());
 
-        Map<String, String> expectedRequestHeaders2 = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders2 = new HashMap<>();
         expectedRequestHeaders2.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders2.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders2.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
