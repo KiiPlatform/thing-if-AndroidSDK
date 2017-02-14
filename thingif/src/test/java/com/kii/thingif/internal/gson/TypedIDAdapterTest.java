@@ -3,12 +3,9 @@ package com.kii.thingif.internal.gson;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.kii.thingif.TypedID;
-import com.kii.thingif.internal.gson.TypedIDAdapter;
 
-import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
