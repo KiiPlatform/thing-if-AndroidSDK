@@ -24,7 +24,9 @@ public class Command implements Parcelable {
     private final @Nullable TypedID targetID;
     @SerializedName("issuer")
     private final @NonNull TypedID issuerID;
+    @SerializedName("actions")
     private final @NonNull List<AliasAction<? extends Action>> aliasActions;
+    @SerializedName("actionResults")
     private final @Nullable List<AliasActionResult> aliasActionResults;
     @SerializedName("commandState")
     private final @Nullable CommandState commandState;
@@ -36,6 +38,33 @@ public class Command implements Parcelable {
     private final @Nullable String title;
     private final @Nullable String description;
     private final @Nullable JSONObject metadata;
+
+    Command(
+            @NonNull TypedID issuerID,
+            @NonNull List<AliasAction<? extends Action>> aliasActions,
+            @Nullable String commandID,
+            @Nullable TypedID targetID,
+            @Nullable List<AliasActionResult> aliasActionResults,
+            @Nullable CommandState commandState,
+            @Nullable String firedByTriggerID,
+            @Nullable Long created,
+            @Nullable Long modified,
+            @Nullable String title,
+            @Nullable String description,
+            @Nullable JSONObject metadata) {
+        this.issuerID = issuerID;
+        this.aliasActions = aliasActions;
+        this.commandID = commandID;
+        this.targetID = targetID;
+        this.aliasActionResults = aliasActionResults;
+        this.commandState = commandState;
+        this.firedByTriggerID = firedByTriggerID;
+        this.created = created;
+        this.modified = modified;
+        this.title = title;
+        this.description = description;
+        this.metadata = metadata;
+    }
     
     /** Get ID of the command.
      * @return ID of the command.
@@ -75,11 +104,22 @@ public class Command implements Parcelable {
     /**
      * Retrieve specified AliasAction
      * @param alias alias to retrieve
+     * @param clsOfT Class of T.
      * @param <T> Type of Action
      * @return list of AliasAction with the specified type.
      */
-    public <T extends Action> List<AliasAction<T>> getAction(String alias) {
-        return null;
+    @NonNull
+    public <T extends Action> List<AliasAction<T>> getAction(
+            @NonNull String alias,
+            @NonNull Class<T> clsOfT) {
+        List<AliasAction<T>> foundActions = new ArrayList<>();
+        for (AliasAction<? extends Action> aliasAction: this.aliasActions) {
+            if (aliasAction.getAlias().equals(alias) &&
+                    aliasAction.getAction().getClass().equals(clsOfT)){
+                foundActions.add((AliasAction<T>) aliasAction);
+            }
+        }
+        return foundActions;
     }
 
     /**
@@ -98,19 +138,23 @@ public class Command implements Parcelable {
      * @param actionName name of action to specify action result.
      * @return list of {@link ActionResult}.
      */
-    @Nullable
+    @NonNull
     public List<ActionResult> getActionResult(
             @NonNull String alias,
             @NonNull String actionName) {
-        //TODO: // FIXME: 12/14/16
-//        if (this.getActionResults() != null) {
-//            for (ActionResult result : this.getActionResults()) {
-//                if (TextUtils.equals(action.getActionName(), result.getActionName())) {
-//                    return result;
-//                }
-//            }
-//        }
-        return null;
+        List<ActionResult> foundResults = new ArrayList<>();
+        if (this.aliasActionResults != null) {
+            for (AliasActionResult aliasResult : this.aliasActionResults) {
+                if (aliasResult.getAlias().equals(alias)) {
+                    for (ActionResult result : aliasResult.getResults()) {
+                        if (result.getActionName().equals(actionName)) {
+                            foundResults.add(result);
+                        }
+                    }
+                }
+            }
+        }
+        return foundResults;
     }
 
     /**
@@ -177,11 +221,10 @@ public class Command implements Parcelable {
         this.commandID = in.readString();
         this.targetID = in.readParcelable(TypedID.class.getClassLoader());
         this.issuerID = in.readParcelable(TypedID.class.getClassLoader());
-        //TODO: // FIXME: 12/16/16 fix to adapt to alias
         this.aliasActions = new ArrayList<>();
-        in.readList(this.aliasActions, Command.class.getClassLoader());
+        in.readList(this.aliasActions, AliasAction.class.getClassLoader());
         this.aliasActionResults = new ArrayList<>();
-        in.readList(this.aliasActionResults, Command.class.getClassLoader());
+        in.readList(this.aliasActionResults, AliasActionResult.class.getClassLoader());
         this.commandState = (CommandState)in.readSerializable();
         this.firedByTriggerID = in.readString();
         this.created = (Long)in.readValue(Command.class.getClassLoader());
@@ -195,7 +238,6 @@ public class Command implements Parcelable {
             this.metadata = null;
         }
 
-        //TODO: // FIXME: 2017/02/09 validate after deserialized the field 
         if (this.targetID == null) {
             throw new IllegalArgumentException("targetID is null");
         }
@@ -230,7 +272,6 @@ public class Command implements Parcelable {
         dest.writeString(this.commandID);
         dest.writeParcelable(this.targetID, flags);
         dest.writeParcelable(this.issuerID, flags);
-        //TODO // FIXME: 12/16/16 fix to adapt alias
         dest.writeList(this.aliasActions);
         dest.writeList(this.aliasActionResults);
         dest.writeSerializable(this.commandState);

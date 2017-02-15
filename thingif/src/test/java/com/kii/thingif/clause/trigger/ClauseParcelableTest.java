@@ -1,7 +1,6 @@
 package com.kii.thingif.clause.trigger;
 
 import android.os.Parcel;
-import android.support.test.runner.AndroidJUnit4;
 
 import com.kii.thingif.SmallTestBase;
 
@@ -9,10 +8,11 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 import java.util.Arrays;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(RobolectricTestRunner.class)
 public class ClauseParcelableTest extends SmallTestBase{
     @Test
     public void stringEqualsTest() throws Exception {

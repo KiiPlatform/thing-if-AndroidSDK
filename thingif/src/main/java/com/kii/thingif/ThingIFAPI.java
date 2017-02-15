@@ -12,7 +12,11 @@ import android.support.annotation.WorkerThread;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 import com.kii.thingif.command.Action;
+import com.kii.thingif.command.AliasAction;
+import com.kii.thingif.command.AliasActionResult;
+import com.kii.thingif.command.AliasActionResultAdapter;
 import com.kii.thingif.command.Command;
 import com.kii.thingif.command.CommandForm;
 import com.kii.thingif.exception.BadRequestException;
@@ -21,14 +25,19 @@ import com.kii.thingif.exception.StoredInstanceNotFoundException;
 import com.kii.thingif.exception.ThingIFException;
 import com.kii.thingif.exception.ThingIFRestException;
 import com.kii.thingif.exception.UnloadableInstanceVersionException;
+import com.kii.thingif.exception.UnregisteredAliasException;
 import com.kii.thingif.exception.UnsupportedActionException;
 import com.kii.thingif.exception.UnsupportedSchemaException;
 import com.kii.thingif.gateway.EndNode;
 import com.kii.thingif.gateway.Gateway;
 import com.kii.thingif.gateway.PendingEndNode;
+import com.kii.thingif.internal.gson.AliasActionAdapter;
+import com.kii.thingif.internal.gson.JSONObjectAdapter;
 import com.kii.thingif.internal.gson.ThingIFAPIAdapter;
+import com.kii.thingif.internal.gson.TypedIDAdapter;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
+import com.kii.thingif.internal.utils.JsonUtils;
 import com.kii.thingif.internal.utils._Log;
 import com.kii.thingif.query.AggregatedResult;
 import com.kii.thingif.query.Aggregation;
@@ -830,8 +839,7 @@ public class ThingIFAPI implements Parcelable {
      * @return Command instance.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws UnsupportedSchemaException Thrown when the returned response has a schema that cannot handle this instance.
-     * @throws UnsupportedActionException Thrown when the returned response has a action that cannot handle this instance.
+     * @throws UnregisteredAliasException Thrown when the returned response has a alias that cannot handle this instance.
      */
     @NonNull
     @WorkerThread
@@ -851,9 +859,29 @@ public class ThingIFAPI implements Parcelable {
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
 
-        //TODO: // FIXME: 12/16/16
-        return null;
-//        return this.deserialize(schema, responseBody, Command.class);
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(
+                        AliasAction.class,
+                        new AliasActionAdapter(this.actionTypes))
+                .registerTypeAdapter(
+                        AliasActionResult.class,
+                        new AliasActionResultAdapter())
+                .registerTypeAdapter(
+                        TypedID.class,
+                        new TypedIDAdapter())
+                .registerTypeAdapter(
+                        JSONObject.class,
+                        new JSONObjectAdapter())
+                .create();
+        try {
+            return gson.fromJson(responseBody.toString(), Command.class);
+        }catch (JsonParseException ex) {
+            if (ex.getCause() instanceof ThingIFException) {
+                throw (ThingIFException)ex.getCause();
+            }else{
+                throw ex;
+            }
+        }
     }
     /**
      * List Commands in the specified Target.<br>
@@ -1693,15 +1721,21 @@ public class ThingIFAPI implements Parcelable {
         return headers;
     }
     private JSONObject createPostNewCommandRequestBody(CommandForm src) throws ThingIFException {
-        //TODO: // FIXME: 2017/01/23
-        return null;
-//        JSONObject ret = JsonUtils.newJson(GsonRepository.gson().toJson(src));
-//        try {
-//            ret.put("issuer", this.owner.getTypedID().toString());
-//        } catch (JSONException e) {
-//            throw new AssertionError(e);
-//        }
-//        return ret;
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(
+                        AliasAction.class,
+                        new AliasActionAdapter(this.actionTypes))
+                .registerTypeAdapter(
+                        JSONObject.class,
+                        new JSONObjectAdapter())
+                .create();
+        JSONObject ret = JsonUtils.newJson(gson.toJson(src));
+        try {
+            ret.put("issuer", this.owner.getTypedID().toString());
+        } catch (JSONException e) {
+            throw new AssertionError(e);
+        }
+        return ret;
     }
 //    private <T> T deserialize(JSONObject json, Class<T> clazz) throws ThingIFException {
 //        return this.deserialize(null, json, clazz);

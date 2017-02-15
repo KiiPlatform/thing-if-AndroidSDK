@@ -6,6 +6,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Represents ActionResult.
  */
@@ -13,8 +16,20 @@ public final class ActionResult implements Parcelable {
     @Nullable private String errorMessage;
     private boolean succeeded;
     @NonNull private String actionName;
+    @Nullable private JSONObject data;
 
     private volatile int hashCode; // cached hashcode for performance
+
+    ActionResult(
+            @NonNull String actionName,
+            boolean succeeded,
+            @Nullable  String errorMessage,
+            @Nullable JSONObject data) {
+        this.actionName = actionName;
+        this.succeeded = succeeded;
+        this.errorMessage = errorMessage;
+        this.data = data;
+    }
 
     public boolean isSucceeded() {
         return this.succeeded;
@@ -28,6 +43,11 @@ public final class ActionResult implements Parcelable {
     @NonNull
     public String getActionName() {
         return this.actionName;
+    }
+
+    @Nullable
+    public JSONObject getData() {
+        return this.data;
     }
 
     @Override
@@ -47,6 +67,13 @@ public final class ActionResult implements Parcelable {
         }
         this.errorMessage = in.readString();
         this.succeeded = in.readByte() != 0;
+        if (in.readString() != null) {
+            try {
+                this.data = new JSONObject(in.readString());
+            } catch (JSONException ex) {
+                // never happen
+            }
+        }
     }
 
     @Override
@@ -54,6 +81,7 @@ public final class ActionResult implements Parcelable {
         dest.writeString(this.actionName);
         dest.writeString(this.errorMessage);
         dest.writeByte((byte)(this.succeeded? 1: 0));
+        dest.writeString(this.data == null? null: this.data.toString());
     }
 
     public static final Creator<ActionResult> CREATOR = new Creator<ActionResult>() {
@@ -78,7 +106,10 @@ public final class ActionResult implements Parcelable {
                 (this.errorMessage == null?
                         result.getErrorMessage() == null:
                         this.errorMessage.equals(result.getErrorMessage())) &&
-                this.succeeded == result.isSucceeded();
+                this.succeeded == result.isSucceeded() &&
+                (this.data == null?
+                        result.data == null :
+                        this.data.toString().equals(result.data.toString()));
     }
 
     @Override
@@ -91,6 +122,8 @@ public final class ActionResult implements Parcelable {
                     (this.errorMessage == null? 0: this.errorMessage.hashCode());
             result = 31 * result +
                     (this.succeeded? 1: 0);
+            result = 31 * result +
+                    (this.data == null? 0: this.data.hashCode());
             this.hashCode = result;
         }
         return result;
