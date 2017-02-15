@@ -10,7 +10,6 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,16 +25,17 @@ public class GroupedHistoryStatesTest {
         AirConditionerState air = new AirConditionerState();
         HumidityState hum = new HumidityState();
         Date createdAd = new Date(1);
-        HistoryState airHS = new HistoryState<AirConditionerState>(air, createdAd);
-        HistoryState humHS = new HistoryState<HumidityState>(hum, createdAd);
-        List<HistoryState> list1 = new ArrayList<HistoryState>();
+        HistoryState<AirConditionerState> airHS = new HistoryState<>(air, createdAd);
+        HistoryState<HumidityState> humHS = new HistoryState<>(hum, createdAd);
+        List<HistoryState<AirConditionerState>> list1 =
+                new ArrayList<HistoryState<AirConditionerState>>();
         list1.add(airHS);
-        List<HistoryState> list2 = new ArrayList<HistoryState>();
+        List<HistoryState<HumidityState>> list2 = new ArrayList<HistoryState<HumidityState>>();
         list2.add(humHS);
 
-        GroupedHistoryStates target = new GroupedHistoryStates(range, list1);
-        GroupedHistoryStates sameOne = new GroupedHistoryStates(range, list1);
-        GroupedHistoryStates differentOne = new GroupedHistoryStates(range, list2);
+        GroupedHistoryStates<AirConditionerState> target = new GroupedHistoryStates<>(range, list1);
+        GroupedHistoryStates<AirConditionerState> sameOne = new GroupedHistoryStates<>(range, list1);
+        GroupedHistoryStates<HumidityState> differentOne = new GroupedHistoryStates<>(range, list2);
 
         Assert.assertTrue(target.equals(sameOne));
         Assert.assertEquals(target.hashCode(), sameOne.hashCode());
@@ -53,15 +53,16 @@ public class GroupedHistoryStatesTest {
         AirConditionerState air1 = new AirConditionerState();
         air1.currentTemperature = 25;
         air1.power = false;
-        HistoryState state1 = new HistoryState(air1, new Date());
+        HistoryState<AirConditionerState> state1 = new HistoryState<>(air1, new Date());
         AirConditionerState air2 = new AirConditionerState();
         air2.currentTemperature = 10;
         air2.power = true;
-        HistoryState state2 = new HistoryState(air2, new Date());
-        List<HistoryState> list = new ArrayList<HistoryState>();
+        HistoryState<AirConditionerState> state2 = new HistoryState<>(air2, new Date());
+        List<HistoryState<AirConditionerState>> list =
+                new ArrayList<HistoryState<AirConditionerState>>();
         list.add(state1);
         list.add(state2);
-        GroupedHistoryStates src = new GroupedHistoryStates(range, list);
+        GroupedHistoryStates<AirConditionerState> src = new GroupedHistoryStates<AirConditionerState>(range, list);
 
         Assert.assertNotNull(src);
         Assert.assertEquals(range, src.getTimeRange());
