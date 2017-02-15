@@ -171,7 +171,7 @@ public class ThingIFAPITestBase extends SmallTestBase {
             TypedID issuer,
             TypedID target,
             JSONArray aliasActions,
-            JSONObject aliasActionResults,
+            JSONArray aliasActionResults,
             CommandState state,
             Long created,
             Long modified,

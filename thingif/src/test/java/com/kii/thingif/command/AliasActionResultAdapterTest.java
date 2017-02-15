@@ -26,7 +26,9 @@ public class AliasActionResultAdapterTest {
                 subObject.addProperty("errorMessage", result.getErrorMessage());
             }
             if (result.getData() != null) {
-                subObject.addProperty("data", result.getData().toString());
+                JsonObject dataObject = new JsonObject();
+                dataObject.addProperty("k", "v");
+                subObject.add("data", dataObject);
             }
             resultObject.add(result.getActionName(), subObject);
             results.add(resultObject);

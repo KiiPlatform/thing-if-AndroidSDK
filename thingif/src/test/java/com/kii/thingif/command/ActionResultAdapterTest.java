@@ -4,6 +4,7 @@ package com.kii.thingif.command;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 
 import org.json.JSONObject;
@@ -20,7 +21,7 @@ public class ActionResultAdapterTest {
             resultObject.addProperty("errorMessage", result.getErrorMessage());
         }
         if (result.getData() != null) {
-            resultObject.addProperty("data", result.getData().toString());
+            resultObject.add("data", new JsonParser().parse(result.getData().toString()));
         }
         ret.add(result.getActionName(), resultObject);
         return new Gson().toJson(ret);
@@ -96,7 +97,7 @@ public class ActionResultAdapterTest {
                 new JSONObject().put("turnPower",
                         new JSONObject()
                                 .put("succeeded", false)
-                                .put("data", new JSONObject().put("k1", "v1").toString()));
+                                .put("data", new JSONObject().put("k1", "v1")));
         ActionResult result3 = gson.fromJson(json3.toString(), ActionResult.class);
         Assert.assertEquals("turnPower", result3.getActionName());
         Assert.assertEquals(false, result3.isSucceeded());
@@ -111,7 +112,7 @@ public class ActionResultAdapterTest {
                         new JSONObject()
                                 .put("succeeded", false)
                                 .put("errorMessage", "invalid value")
-                                .put("data", new JSONObject().put("k1", "v2").toString()));
+                                .put("data", new JSONObject().put("k1", "v2")));
         ActionResult result4 = gson.fromJson(json4.toString(), ActionResult.class);
         Assert.assertEquals("turnPower", result4.getActionName());
         Assert.assertEquals(false, result4.isSucceeded());

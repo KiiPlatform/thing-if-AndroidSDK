@@ -12,6 +12,7 @@ import android.support.annotation.WorkerThread;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
 import com.kii.thingif.command.AliasActionResult;
@@ -24,6 +25,7 @@ import com.kii.thingif.exception.StoredInstanceNotFoundException;
 import com.kii.thingif.exception.ThingIFException;
 import com.kii.thingif.exception.ThingIFRestException;
 import com.kii.thingif.exception.UnloadableInstanceVersionException;
+import com.kii.thingif.exception.UnregisteredAliasException;
 import com.kii.thingif.exception.UnsupportedActionException;
 import com.kii.thingif.exception.UnsupportedSchemaException;
 import com.kii.thingif.gateway.EndNode;
@@ -837,8 +839,7 @@ public class ThingIFAPI implements Parcelable {
      * @return Command instance.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws UnsupportedSchemaException Thrown when the returned response has a schema that cannot handle this instance.
-     * @throws UnsupportedActionException Thrown when the returned response has a action that cannot handle this instance.
+     * @throws UnregisteredAliasException Thrown when the returned response has a alias that cannot handle this instance.
      */
     @NonNull
     @WorkerThread
@@ -872,7 +873,15 @@ public class ThingIFAPI implements Parcelable {
                         JSONObject.class,
                         new JSONObjectAdapter())
                 .create();
-        return gson.fromJson(responseBody.toString(), Command.class);
+        try {
+            return gson.fromJson(responseBody.toString(), Command.class);
+        }catch (JsonParseException ex) {
+            if (ex.getCause() instanceof ThingIFException) {
+                throw (ThingIFException)ex.getCause();
+            }else{
+                throw ex;
+            }
+        }
     }
     /**
      * List Commands in the specified Target.<br>
