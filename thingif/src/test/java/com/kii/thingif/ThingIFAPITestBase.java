@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.internal.Excluder;
 import com.kii.thingif.actions.AirConditionerActions;
 import com.kii.thingif.actions.HumidityActions;
 import com.kii.thingif.command.Action;
@@ -19,6 +20,7 @@ import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
 
@@ -34,6 +36,8 @@ public class ThingIFAPITestBase extends SmallTestBase {
     protected final String APP_ID = "smalltest";
     protected final String APP_KEY = "abcdefghijklmnopqrstuvwxyz123456789";
     protected static final String BASE_PATH = "/thing-if/apps/smalltest";
+    protected static final String ALIAS1 = "AirConditionerAlias";
+    protected static final String ALIAS2 = "HumidityAlias";
 
 
     private final String SDK_VERSION = "0.13.0";
@@ -42,15 +46,15 @@ public class ThingIFAPITestBase extends SmallTestBase {
 
     protected static Map<String, Class<? extends Action>> getDefaultActionTypes () {
         Map<String, Class<? extends Action>> actionTypes = new HashMap<>();
-        actionTypes.put("airConditionerAlias", AirConditionerActions.class);
-        actionTypes.put("humidityAlias", HumidityActions.class);
+        actionTypes.put(ALIAS1, AirConditionerActions.class);
+        actionTypes.put(ALIAS2, HumidityActions.class);
         return actionTypes;
     }
 
     protected static Map<String, Class<? extends TargetState>> getDefaultStateTypes () {
         Map<String, Class<? extends TargetState>> stateTypes = new HashMap<>();
-        stateTypes.put("airConditionerAlias", AirConditionerState.class);
-        stateTypes.put("humidityAlias", HumidityState.class);
+        stateTypes.put(ALIAS1, AirConditionerState.class);
+        stateTypes.put(ALIAS2, HumidityState.class);
         return stateTypes;
     }
 
@@ -65,7 +69,7 @@ public class ThingIFAPITestBase extends SmallTestBase {
         this.server.enqueue(response);
     }
 
-    protected ThingIFAPI createDefaultThingIFAPI(Context context, String appID, String appKey) throws Exception {
+    protected ThingIFAPI createDefaultThingIFAPI(Context context, String appID, String appKey) {
         String ownerID = UUID.randomUUID().toString();
         Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
         KiiApp app = getApp(appID, appKey);
@@ -182,41 +186,90 @@ public class ThingIFAPITestBase extends SmallTestBase {
 
         MockResponse response = new MockResponse().setResponseCode(httpStatus);
         if (httpStatus == 200) {
-            JsonObject responseBody = new JsonObject();
-            responseBody.addProperty("commandID", commandID);
-            if (issuer != null) {
-                responseBody.addProperty("issuer", issuer.toString());
+            try {
+                response.setBody(
+                        createCommandJson(
+                                commandID,
+                                issuer,
+                                target,
+                                aliasActions,
+                                aliasActionResults,
+                                state,
+                                firedByTriggerID,
+                                created,
+                                modified,
+                                title,
+                                description,
+                                metadata).toString());
+            }catch (JSONException ex) {
+                throw new RuntimeException(ex);
             }
-            if (target != null) {
-                responseBody.addProperty("target", target.toString());
-            }
-            responseBody.add("actions", new JsonParser().parse(aliasActions.toString()));
-            if (aliasActionResults != null) {
-                responseBody.add("actionResults", new JsonParser().parse(aliasActionResults.toString()));
-            }
-            if (state != null) {
-                responseBody.addProperty("commandState", state.name());
-            }
-            if (created != null) {
-                responseBody.addProperty("createdAt", created);
-            }
-            if (modified != null) {
-                responseBody.addProperty("modifiedAt", modified);
-            }
-            if (title != null) {
-                responseBody.addProperty("title", title);
-            }
-            if (description != null) {
-                responseBody.addProperty("description", description);
-            }
-            if (metadata != null) {
-                responseBody.add("metadata", new JsonParser().parse(metadata.toString()));
-            }
-            if (firedByTriggerID != null) {
-                responseBody.addProperty("firedByTriggerID", firedByTriggerID);
+        }
+        this.server.enqueue(response);
+    }
+
+    protected void addMockResponseForListCommands(
+            int httpStatus,
+            JSONArray commands,
+            String paginationKey) throws JSONException{
+        MockResponse response = new MockResponse().setResponseCode(httpStatus);
+        if (commands != null) {
+            JSONObject responseBody = new JSONObject();
+            responseBody.put("commands", commands);
+            if (paginationKey != null) {
+                responseBody.put("nextPaginationKey", paginationKey);
             }
             response.setBody(responseBody.toString());
         }
         this.server.enqueue(response);
+    }
+
+    protected JSONObject createCommandJson(
+            String commandID,
+            TypedID issuer,
+            TypedID target,
+            JSONArray actions,
+            JSONArray results,
+            CommandState state,
+            String firedTriggerID,
+            Long created,
+            Long modified,
+            String title,
+            String description,
+            JSONObject metadata) throws JSONException{
+        JSONObject ret = new JSONObject();
+        ret.put("issuer", issuer.toString());
+        ret.put("actions", actions);
+        if (commandID != null) {
+            ret.put("commandID", commandID);
+        }
+        if (target != null) {
+            ret.put("target", target.toString());
+        }
+        if (results != null) {
+            ret.put("actionResults", results);
+        }
+        if (state != null) {
+            ret.put("commandState", state.name());
+        }
+        if (firedTriggerID != null) {
+            ret.put("firedByTriggerID", firedTriggerID);
+        }
+        if (created != null) {
+            ret.put("createdAt", created);
+        }
+        if (modified != null) {
+            ret.put("modifiedAt", modified);
+        }
+        if (title != null) {
+            ret.put("title", title);
+        }
+        if (description != null) {
+            ret.put("description", description);
+        }
+        if (metadata != null) {
+            ret.put("metadata", metadata);
+        }
+        return ret;
     }
 }

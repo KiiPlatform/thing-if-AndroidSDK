@@ -84,6 +84,8 @@ public class ThingIFAPI implements Parcelable {
     private final Map<String, Class<? extends Action>> actionTypes;
     private final Map<String, Class<? extends TargetState>> stateTypes;
 
+    private Gson gson;
+
     public static class Builder {
 
         private static final String TAG = Builder.class.getSimpleName();
@@ -432,6 +434,21 @@ public class ThingIFAPI implements Parcelable {
         this.restClient = new IoTRestClient();
         this.actionTypes = actionTypes;
         this.stateTypes = stateTypes;
+
+        this.gson = new GsonBuilder()
+                .registerTypeAdapter(
+                        AliasAction.class,
+                        new AliasActionAdapter(this.actionTypes))
+                .registerTypeAdapter(
+                        AliasActionResult.class,
+                        new AliasActionResultAdapter())
+                .registerTypeAdapter(
+                        TypedID.class,
+                        new TypedIDAdapter())
+                .registerTypeAdapter(
+                        JSONObject.class,
+                        new JSONObjectAdapter())
+                .create();
     }
     /**
      * Create the clone instance that has specified target and tag.
@@ -839,7 +856,7 @@ public class ThingIFAPI implements Parcelable {
      * @return Command instance.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws UnregisteredAliasException Thrown when the returned response has a alias that cannot handle this instance.
+     * @throws UnregisteredAliasException Thrown when the returned response contains alias that cannot be handled.
      */
     @NonNull
     @WorkerThread
@@ -859,20 +876,6 @@ public class ThingIFAPI implements Parcelable {
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
 
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(
-                        AliasAction.class,
-                        new AliasActionAdapter(this.actionTypes))
-                .registerTypeAdapter(
-                        AliasActionResult.class,
-                        new AliasActionResultAdapter())
-                .registerTypeAdapter(
-                        TypedID.class,
-                        new TypedIDAdapter())
-                .registerTypeAdapter(
-                        JSONObject.class,
-                        new JSONObjectAdapter())
-                .create();
         try {
             return gson.fromJson(responseBody.toString(), Command.class);
         }catch (JsonParseException ex) {
@@ -885,8 +888,6 @@ public class ThingIFAPI implements Parcelable {
     }
     /**
      * List Commands in the specified Target.<br>
-     * If the Schema of the Command included in the response does not matches with the Schema
-     * registered this ThingIfAPI instance, It won't be included in returned value.
      * @param bestEffortLimit Maximum number of the Commands in the response.
      *                        if the value is {@literal <}= 0, default limit internally
      *                        defined is applied.
@@ -902,7 +903,7 @@ public class ThingIFAPI implements Parcelable {
      * paginationKey if there is next page to be obtained.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws UnsupportedActionException Thrown when the returned response has a action that cannot handle this instance.
+     * @throws UnregisteredAliasException Thrown when the returned response contains alias that cannot be handled.
      */
     @NonNull
     public Pair<List<Command>, String> listCommands (
@@ -927,21 +928,23 @@ public class ThingIFAPI implements Parcelable {
         JSONObject responseBody = this.restClient.sendRequest(request);
         String nextPaginationKey = responseBody.optString("nextPaginationKey", null);
         JSONArray commandArray = responseBody.optJSONArray("commands");
-        List<Command> commands = new ArrayList<Command>();
-        //TODO: // FIXME: 2017/01/23
-//        if (commandArray != null) {
-//            for (int i = 0; i < commandArray.length(); i++) {
-//                JSONObject commandJson = commandArray.optJSONObject(i);
-//                String schemaName = commandJson.optString("schema", null);
-//                int schemaVersion = commandJson.optInt("schemaVersion");
-//                Schema schema = this.getSchema(schemaName, schemaVersion);
-//                if (schema == null) {
-//                    continue;
-//                }
-//                commands.add(this.deserialize(schema, commandJson, Command.class));
-//            }
-//        }
-        return new Pair<List<Command>, String>(commands, nextPaginationKey);
+        List<Command> commands = new ArrayList<>();
+
+        if (commandArray != null) {
+            try {
+                for (int i = 0; i < commandArray.length(); i++) {
+                    JSONObject commandJson = commandArray.optJSONObject(i);
+                    commands.add(this.gson.fromJson(commandJson.toString(), Command.class));
+                }
+            }catch (JsonParseException ex) {
+                if (ex.getCause() instanceof ThingIFException) {
+                    throw (ThingIFException)ex.getCause();
+                }else{
+                    throw ex;
+                }
+            }
+        }
+        return new Pair<>(commands, nextPaginationKey);
     }
 
     /**
@@ -1721,15 +1724,7 @@ public class ThingIFAPI implements Parcelable {
         return headers;
     }
     private JSONObject createPostNewCommandRequestBody(CommandForm src) throws ThingIFException {
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(
-                        AliasAction.class,
-                        new AliasActionAdapter(this.actionTypes))
-                .registerTypeAdapter(
-                        JSONObject.class,
-                        new JSONObjectAdapter())
-                .create();
-        JSONObject ret = JsonUtils.newJson(gson.toJson(src));
+        JSONObject ret = JsonUtils.newJson(this.gson.toJson(src));
         try {
             ret.put("issuer", this.owner.getTypedID().toString());
         } catch (JSONException e) {
