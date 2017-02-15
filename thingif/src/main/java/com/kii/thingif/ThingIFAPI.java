@@ -877,7 +877,7 @@ public class ThingIFAPI implements Parcelable {
         JSONObject responseBody = this.restClient.sendRequest(request);
 
         try {
-            return gson.fromJson(responseBody.toString(), Command.class);
+            return this.gson.fromJson(responseBody.toString(), Command.class);
         }catch (JsonParseException ex) {
             if (ex.getCause() instanceof ThingIFException) {
                 throw (ThingIFException)ex.getCause();
