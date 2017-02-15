@@ -17,7 +17,7 @@ public class AggregatedResult<T extends Number, S extends TargetState> implement
 
     private volatile int hashCode; // cached hashcode for performance
 
-    public AggregatedResult(
+    AggregatedResult(
         @NonNull TimeRange timeRange,
         @NonNull T value,
         @Nullable List<HistoryState<S>> aggregatedObjects) {
