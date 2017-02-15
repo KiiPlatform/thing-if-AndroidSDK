@@ -50,9 +50,6 @@ public class AggregatedResult<T extends Number, S extends TargetState> implement
             return false;
         }
         AggregatedResult other = (AggregatedResult) o;
-        if (!other.value.getClass().equals(this.value.getClass())) {
-            return false;
-        }
         if (this.aggregatedObjects != null) {
             if (other.aggregatedObjects == null || !Arrays.equals(
                     this.aggregatedObjects.toArray(), other.aggregatedObjects.toArray())) {
