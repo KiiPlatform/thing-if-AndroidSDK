@@ -18,6 +18,12 @@ public class AliasActionResult implements Parcelable{
 
     private volatile int hashCode; // cached hashcode for performance
 
+    AliasActionResult(
+            @NonNull String alias,
+            @NonNull List<ActionResult> results) {
+        this.alias = alias;
+        this.results = results;
+    }
     @NonNull
     public List<ActionResult> getResults() {
         return results;

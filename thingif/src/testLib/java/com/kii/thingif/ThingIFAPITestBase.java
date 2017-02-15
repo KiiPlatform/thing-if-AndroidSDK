@@ -9,12 +9,16 @@ import com.google.gson.JsonParser;
 import com.kii.thingif.actions.AirConditionerActions;
 import com.kii.thingif.actions.HumidityActions;
 import com.kii.thingif.command.Action;
+import com.kii.thingif.command.AliasAction;
+import com.kii.thingif.command.AliasActionResult;
+import com.kii.thingif.command.CommandState;
 import com.kii.thingif.states.AirConditionerState;
 import com.kii.thingif.states.HumidityState;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 
@@ -29,6 +33,8 @@ public class ThingIFAPITestBase extends SmallTestBase {
 
     protected final String APP_ID = "smalltest";
     protected final String APP_KEY = "abcdefghijklmnopqrstuvwxyz123456789";
+    protected static final String BASE_PATH = "/thing-if/apps/smalltest";
+
 
     private final String SDK_VERSION = "0.13.0";
 
@@ -147,5 +153,70 @@ public class ThingIFAPITestBase extends SmallTestBase {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
         editor.commit();
+    }
+
+    protected void addMockResponseForPostNewCommand(int httpStatus, String commandID) {
+        MockResponse response = new MockResponse().setResponseCode(httpStatus);
+        if (commandID != null) {
+            JsonObject responseBody = new JsonObject();
+            responseBody.addProperty("commandID", commandID);
+            response.setBody(responseBody.toString());
+        }
+        this.server.enqueue(response);
+    }
+
+    protected void addMockResponseForGetCommand(
+            int httpStatus,
+            String commandID,
+            TypedID issuer,
+            TypedID target,
+            JSONArray aliasActions,
+            JSONObject aliasActionResults,
+            CommandState state,
+            Long created,
+            Long modified,
+            String firedByTriggerID,
+            String title,
+            String description,
+            JSONObject metadata) {
+
+        MockResponse response = new MockResponse().setResponseCode(httpStatus);
+        if (httpStatus == 200) {
+            JsonObject responseBody = new JsonObject();
+            responseBody.addProperty("commandID", commandID);
+            if (issuer != null) {
+                responseBody.addProperty("issuer", issuer.toString());
+            }
+            if (target != null) {
+                responseBody.addProperty("target", target.toString());
+            }
+            responseBody.add("actions", new JsonParser().parse(aliasActions.toString()));
+            if (aliasActionResults != null) {
+                responseBody.add("actionResults", new JsonParser().parse(aliasActionResults.toString()));
+            }
+            if (state != null) {
+                responseBody.addProperty("commandState", state.name());
+            }
+            if (created != null) {
+                responseBody.addProperty("createdAt", created);
+            }
+            if (modified != null) {
+                responseBody.addProperty("modifiedAt", modified);
+            }
+            if (title != null) {
+                responseBody.addProperty("title", title);
+            }
+            if (description != null) {
+                responseBody.addProperty("description", description);
+            }
+            if (metadata != null) {
+                responseBody.add("metadata", new JsonParser().parse(metadata.toString()));
+            }
+            if (firedByTriggerID != null) {
+                responseBody.addProperty("firedByTriggerID", firedByTriggerID);
+            }
+            response.setBody(responseBody.toString());
+        }
+        this.server.enqueue(response);
     }
 }
