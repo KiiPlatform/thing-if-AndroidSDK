@@ -84,6 +84,8 @@ public class ThingIFAPI implements Parcelable {
     private final Map<String, Class<? extends Action>> actionTypes;
     private final Map<String, Class<? extends TargetState>> stateTypes;
 
+    private Gson gson;
+
     public static class Builder {
 
         private static final String TAG = Builder.class.getSimpleName();
@@ -432,6 +434,21 @@ public class ThingIFAPI implements Parcelable {
         this.restClient = new IoTRestClient();
         this.actionTypes = actionTypes;
         this.stateTypes = stateTypes;
+
+        this.gson = new GsonBuilder()
+                .registerTypeAdapter(
+                        AliasAction.class,
+                        new AliasActionAdapter(this.actionTypes))
+                .registerTypeAdapter(
+                        AliasActionResult.class,
+                        new AliasActionResultAdapter())
+                .registerTypeAdapter(
+                        TypedID.class,
+                        new TypedIDAdapter())
+                .registerTypeAdapter(
+                        JSONObject.class,
+                        new JSONObjectAdapter())
+                .create();
     }
     /**
      * Create the clone instance that has specified target and tag.
@@ -859,20 +876,6 @@ public class ThingIFAPI implements Parcelable {
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
 
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(
-                        AliasAction.class,
-                        new AliasActionAdapter(this.actionTypes))
-                .registerTypeAdapter(
-                        AliasActionResult.class,
-                        new AliasActionResultAdapter())
-                .registerTypeAdapter(
-                        TypedID.class,
-                        new TypedIDAdapter())
-                .registerTypeAdapter(
-                        JSONObject.class,
-                        new JSONObjectAdapter())
-                .create();
         try {
             return gson.fromJson(responseBody.toString(), Command.class);
         }catch (JsonParseException ex) {
@@ -927,7 +930,8 @@ public class ThingIFAPI implements Parcelable {
         JSONObject responseBody = this.restClient.sendRequest(request);
         String nextPaginationKey = responseBody.optString("nextPaginationKey", null);
         JSONArray commandArray = responseBody.optJSONArray("commands");
-        List<Command> commands = new ArrayList<Command>();
+        List<Command> commands = new ArrayList<>();
+
         //TODO: // FIXME: 2017/01/23
 //        if (commandArray != null) {
 //            for (int i = 0; i < commandArray.length(); i++) {
@@ -1721,15 +1725,7 @@ public class ThingIFAPI implements Parcelable {
         return headers;
     }
     private JSONObject createPostNewCommandRequestBody(CommandForm src) throws ThingIFException {
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(
-                        AliasAction.class,
-                        new AliasActionAdapter(this.actionTypes))
-                .registerTypeAdapter(
-                        JSONObject.class,
-                        new JSONObjectAdapter())
-                .create();
-        JSONObject ret = JsonUtils.newJson(gson.toJson(src));
+        JSONObject ret = JsonUtils.newJson(this.gson.toJson(src));
         try {
             ret.put("issuer", this.owner.getTypedID().toString());
         } catch (JSONException e) {
