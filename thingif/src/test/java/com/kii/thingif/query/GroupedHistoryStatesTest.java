@@ -71,7 +71,8 @@ public class GroupedHistoryStatesTest {
         Parcel parcel = Parcel.obtain();
         src.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
-        GroupedHistoryStates dest = GroupedHistoryStates.CREATOR.createFromParcel(parcel);
+        GroupedHistoryStates<AirConditionerState> dest =
+                GroupedHistoryStates.CREATOR.createFromParcel(parcel);
 
         Assert.assertNotNull(dest);
         Assert.assertEquals(range, dest.getTimeRange());
