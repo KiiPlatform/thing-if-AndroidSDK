@@ -15,6 +15,8 @@ public class Aggregation implements Parcelable{
     private @NonNull final String field;
     private @NonNull final FieldType fieldType;
 
+    private volatile int hashCode; // cached hashcode for performance
+
     public static enum FunctionType{
         MAX,
         MIN,
@@ -26,7 +28,9 @@ public class Aggregation implements Parcelable{
     public static enum FieldType{
         INTEGER,
         DECIMAL,
-        BOOLEAN
+        BOOLEAN,
+        OBJECT,
+        ARRAY
         //TODO: need to check other field types
     }
 
@@ -34,6 +38,7 @@ public class Aggregation implements Parcelable{
      * Initialize Aggregation
      * @param function Aggregation function.
      * @param field
+     * @param fieldType
      */
     private Aggregation(
             @NonNull FunctionType function,
@@ -140,7 +145,7 @@ public class Aggregation implements Parcelable{
         }
         return new Aggregation(FunctionType.SUM, field, fieldType);
     }
-    
+
     public FunctionType getFunction() {
         return function;
     }
@@ -149,12 +154,41 @@ public class Aggregation implements Parcelable{
         return field;
     }
 
+    public FieldType getFieldType() { return  fieldType; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        if (!(o instanceof Aggregation)) {
+            return false;
+        }
+        Aggregation other = (Aggregation) o;
+        return this.function.equals(other.function) &&
+                this.field.equals(other.field) &&
+                this.fieldType.equals(other.fieldType);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = this.hashCode;
+        if (result == 0) {
+            result = 17;
+            result = 31 * result + this.function.hashCode();
+            result = 31 * result + this.field.hashCode();
+            result = 31 * result + this.fieldType.hashCode();
+            this.hashCode = result;
+        }
+        return result;
+    }
+
     protected Aggregation(Parcel in) {
         //TODO: // FIXME: 12/22/16 check where read serializable for enum
         this.function = (FunctionType) in.readSerializable();
         this.field = in.readString();
         //TODO: // FIXME: 12/21/16 read fieldType
-        this.fieldType = null;
+        this.fieldType = (FieldType) in.readSerializable();
     }
 
     @Override
