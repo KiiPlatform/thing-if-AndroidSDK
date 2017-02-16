@@ -53,20 +53,6 @@ public class EqualsClauseInTrigger implements BaseEquals, TriggerClause{
     }
 
     @Override
-    public JSONObject toJSONObject() {
-        JSONObject ret = new JSONObject();
-        try {
-            ret.put("type", "eq");
-            ret.put("alias", alias);
-            ret.put("field", field);
-            ret.put("value", value);
-        }catch (JSONException ex) {
-            throw new RuntimeException(ex);
-        }
-        return ret;
-    }
-
-    @Override
     public int describeContents() {
         return 0;
     }

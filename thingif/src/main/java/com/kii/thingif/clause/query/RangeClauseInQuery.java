@@ -109,10 +109,4 @@ public class RangeClauseInQuery implements QueryClause, BaseRange {
     public Boolean getUpperIncluded() {
         return this.upperIncluded;
     }
-
-    @Override
-    public JSONObject toJSONObject() {
-        //TODO: implement me
-        return null;
-    }
 }
