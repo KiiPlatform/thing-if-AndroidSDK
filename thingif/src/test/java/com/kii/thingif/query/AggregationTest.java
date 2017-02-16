@@ -7,8 +7,6 @@ import com.kii.thingif.query.Aggregation.FieldType;
 
 import junit.framework.Assert;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -19,14 +17,14 @@ import java.util.List;
 @RunWith(RobolectricTestRunner.class)
 public class AggregationTest {
 
-    private class NewAggregationTestData {
-        public String tag;
-        public boolean succeed;
-        public FunctionType functionType;
-        public String field;
-        public FieldType fieldType;
+    private static class TestData {
+        String tag;
+        boolean succeed;
+        FunctionType functionType;
+        String field;
+        FieldType fieldType;
 
-        public NewAggregationTestData(
+        TestData(
                 String tag,
                 boolean succeed,
                 FunctionType functionType,
@@ -40,7 +38,7 @@ public class AggregationTest {
         }
     }
 
-    private void newAggregationTestCase(NewAggregationTestData data) {
+    private void executeNewAggregationTestCase(TestData data) {
         if (data.succeed) {
             try {
                 Aggregation a = Aggregation.newAggregation(data.functionType, data.field, data.fieldType);
@@ -65,29 +63,39 @@ public class AggregationTest {
 
     @Test
     public void newAggregationTest() {
-        List<NewAggregationTestData> cases = new ArrayList<>();
-        cases.add(new NewAggregationTestData("MAX-BOOLEAN", false, FunctionType.MAX, "dummy", FieldType.BOOLEAN));
-        cases.add(new NewAggregationTestData("MAX-INTEGER", true, FunctionType.MAX, "dummy", FieldType.INTEGER));
-        cases.add(new NewAggregationTestData("MAX-DECIMAL", true, FunctionType.MAX, "dummy", FieldType.DECIMAL));
-        cases.add(new NewAggregationTestData("MIN-BOOLEAN", false, FunctionType.MIN, "dummy", FieldType.BOOLEAN));
-        cases.add(new NewAggregationTestData("MIN-INTEGER", true, FunctionType.MIN, "dummy", FieldType.INTEGER));
-        cases.add(new NewAggregationTestData("MIN-DECIMAL", true, FunctionType.MIN, "dummy", FieldType.DECIMAL));
-        cases.add(new NewAggregationTestData("MEAN-BOOLEAN", false, FunctionType.MEAN, "dummy", FieldType.BOOLEAN));
-        cases.add(new NewAggregationTestData("MEAN-INTEGER", true, FunctionType.MEAN, "dummy", FieldType.INTEGER));
-        cases.add(new NewAggregationTestData("MEAN-DECIMAL", true, FunctionType.MEAN, "dummy", FieldType.DECIMAL));
-        cases.add(new NewAggregationTestData("SUM-BOOLEAN", false, FunctionType.SUM, "dummy", FieldType.BOOLEAN));
-        cases.add(new NewAggregationTestData("SUM-INTEGER", true, FunctionType.SUM, "dummy", FieldType.INTEGER));
-        cases.add(new NewAggregationTestData("SUM-DECIMAL", true, FunctionType.SUM, "dummy", FieldType.DECIMAL));
-        cases.add(new NewAggregationTestData("COUNT-BOOLEAN", true, FunctionType.COUNT, "dummy", FieldType.BOOLEAN));
-        cases.add(new NewAggregationTestData("COUNT-INTEGER", true, FunctionType.COUNT, "dummy", FieldType.INTEGER));
-        cases.add(new NewAggregationTestData("COUNT-DECIMAL", true, FunctionType.COUNT, "dummy", FieldType.DECIMAL));
+        List<TestData> cases = new ArrayList<>();
+        cases.add(new TestData("MAX-BOOLEAN", false, FunctionType.MAX, "dummy", FieldType.BOOLEAN));
+        cases.add(new TestData("MAX-INTEGER", true, FunctionType.MAX, "dummy", FieldType.INTEGER));
+        cases.add(new TestData("MAX-DECIMAL", true, FunctionType.MAX, "dummy", FieldType.DECIMAL));
+        cases.add(new TestData("MAX-OBJECT", false, FunctionType.MAX, "dummy", FieldType.OBJECT));
+        cases.add(new TestData("MAX-ARRAY", false, FunctionType.MAX, "dummy", FieldType.ARRAY));
+        cases.add(new TestData("MIN-BOOLEAN", false, FunctionType.MIN, "dummy", FieldType.BOOLEAN));
+        cases.add(new TestData("MIN-INTEGER", true, FunctionType.MIN, "dummy", FieldType.INTEGER));
+        cases.add(new TestData("MIN-DECIMAL", true, FunctionType.MIN, "dummy", FieldType.DECIMAL));
+        cases.add(new TestData("MIN-OBJECT", false, FunctionType.MIN, "dummy", FieldType.OBJECT));
+        cases.add(new TestData("MIN-ARRAY", false, FunctionType.MIN, "dummy", FieldType.ARRAY));
+        cases.add(new TestData("MEAN-BOOLEAN", false, FunctionType.MEAN, "dummy", FieldType.BOOLEAN));
+        cases.add(new TestData("MEAN-INTEGER", true, FunctionType.MEAN, "dummy", FieldType.INTEGER));
+        cases.add(new TestData("MEAN-DECIMAL", true, FunctionType.MEAN, "dummy", FieldType.DECIMAL));
+        cases.add(new TestData("MEAN-OBJECT", false, FunctionType.MEAN, "dummy", FieldType.OBJECT));
+        cases.add(new TestData("MEAN-ARRAY", false, FunctionType.MEAN, "dummy", FieldType.ARRAY));
+        cases.add(new TestData("SUM-BOOLEAN", false, FunctionType.SUM, "dummy", FieldType.BOOLEAN));
+        cases.add(new TestData("SUM-INTEGER", true, FunctionType.SUM, "dummy", FieldType.INTEGER));
+        cases.add(new TestData("SUM-DECIMAL", true, FunctionType.SUM, "dummy", FieldType.DECIMAL));
+        cases.add(new TestData("SUM-OBJECT", false, FunctionType.SUM, "dummy", FieldType.OBJECT));
+        cases.add(new TestData("SUM-ARRAY", false, FunctionType.SUM, "dummy", FieldType.ARRAY));
+        cases.add(new TestData("COUNT-BOOLEAN", true, FunctionType.COUNT, "dummy", FieldType.BOOLEAN));
+        cases.add(new TestData("COUNT-INTEGER", true, FunctionType.COUNT, "dummy", FieldType.INTEGER));
+        cases.add(new TestData("COUNT-DECIMAL", true, FunctionType.COUNT, "dummy", FieldType.DECIMAL));
+        cases.add(new TestData("COUNT-OBJECT", true, FunctionType.COUNT, "dummy", FieldType.OBJECT));
+        cases.add(new TestData("COUNT-ARRAY", true, FunctionType.COUNT, "dummy", FieldType.ARRAY));
 
-        for (NewAggregationTestData data : cases) {
-            newAggregationTestCase(data);
+        for (TestData data : cases) {
+            executeNewAggregationTestCase(data);
         }
     }
 
-    private void newMaxAggregationTestCase(NewAggregationTestData data) {
+    private void executeNewMaxAggregationTestCase(TestData data) {
         if (data.succeed) {
             try {
                 Aggregation a = Aggregation.newMaxAggregation(data.field, data.fieldType);
@@ -112,17 +120,19 @@ public class AggregationTest {
 
     @Test
     public void newMaxAggregationTest() {
-        List<NewAggregationTestData> cases = new ArrayList<>();
-        cases.add(new NewAggregationTestData("BOOLEAN", false, FunctionType.MAX, "dummy", FieldType.BOOLEAN));
-        cases.add(new NewAggregationTestData("INTEGER", true, FunctionType.MAX, "dummy", FieldType.INTEGER));
-        cases.add(new NewAggregationTestData("DECIMAL", true, FunctionType.MAX, "dummy", FieldType.DECIMAL));
+        List<TestData> cases = new ArrayList<>();
+        cases.add(new TestData("BOOLEAN", false, FunctionType.MAX, "dummy", FieldType.BOOLEAN));
+        cases.add(new TestData("INTEGER", true, FunctionType.MAX, "dummy", FieldType.INTEGER));
+        cases.add(new TestData("DECIMAL", true, FunctionType.MAX, "dummy", FieldType.DECIMAL));
+        cases.add(new TestData("OBJECT", false, FunctionType.COUNT, "dummy", FieldType.OBJECT));
+        cases.add(new TestData("ARRAY", false, FunctionType.COUNT, "dummy", FieldType.ARRAY));
 
-        for (NewAggregationTestData data : cases) {
-            newMaxAggregationTestCase(data);
+        for (TestData data : cases) {
+            executeNewMaxAggregationTestCase(data);
         }
     }
 
-    private void newMinAggregationTestCase(NewAggregationTestData data) {
+    private void executeNewMinAggregationTestCase(TestData data) {
         if (data.succeed) {
             try {
                 Aggregation a = Aggregation.newMinAggregation(data.field, data.fieldType);
@@ -147,17 +157,19 @@ public class AggregationTest {
 
     @Test
     public void newMinAggregationTest() {
-        List<NewAggregationTestData> cases = new ArrayList<>();
-        cases.add(new NewAggregationTestData("BOOLEAN", false, FunctionType.MIN, "dummy", FieldType.BOOLEAN));
-        cases.add(new NewAggregationTestData("INTEGER", true, FunctionType.MIN, "dummy", FieldType.INTEGER));
-        cases.add(new NewAggregationTestData("DECIMAL", true, FunctionType.MIN, "dummy", FieldType.DECIMAL));
+        List<TestData> cases = new ArrayList<>();
+        cases.add(new TestData("BOOLEAN", false, FunctionType.MIN, "dummy", FieldType.BOOLEAN));
+        cases.add(new TestData("INTEGER", true, FunctionType.MIN, "dummy", FieldType.INTEGER));
+        cases.add(new TestData("DECIMAL", true, FunctionType.MIN, "dummy", FieldType.DECIMAL));
+        cases.add(new TestData("OBJECT", false, FunctionType.COUNT, "dummy", FieldType.OBJECT));
+        cases.add(new TestData("ARRAY", false, FunctionType.COUNT, "dummy", FieldType.ARRAY));
 
-        for (NewAggregationTestData data : cases) {
-            newMinAggregationTestCase(data);
+        for (TestData data : cases) {
+            executeNewMinAggregationTestCase(data);
         }
     }
 
-    private void newMeanAggregationTestCase(NewAggregationTestData data) {
+    private void executeNewMeanAggregationTestCase(TestData data) {
         if (data.succeed) {
             try {
                 Aggregation a = Aggregation.newMeanAggregation(data.field, data.fieldType);
@@ -182,17 +194,19 @@ public class AggregationTest {
 
     @Test
     public void newMeanAggregationTest() {
-        List<NewAggregationTestData> cases = new ArrayList<>();
-        cases.add(new NewAggregationTestData("BOOLEAN", false, FunctionType.MEAN, "dummy", FieldType.BOOLEAN));
-        cases.add(new NewAggregationTestData("INTEGER", true, FunctionType.MEAN, "dummy", FieldType.INTEGER));
-        cases.add(new NewAggregationTestData("DECIMAL", true, FunctionType.MEAN, "dummy", FieldType.DECIMAL));
+        List<TestData> cases = new ArrayList<>();
+        cases.add(new TestData("BOOLEAN", false, FunctionType.MEAN, "dummy", FieldType.BOOLEAN));
+        cases.add(new TestData("INTEGER", true, FunctionType.MEAN, "dummy", FieldType.INTEGER));
+        cases.add(new TestData("DECIMAL", true, FunctionType.MEAN, "dummy", FieldType.DECIMAL));
+        cases.add(new TestData("OBJECT", false, FunctionType.COUNT, "dummy", FieldType.OBJECT));
+        cases.add(new TestData("ARRAY", false, FunctionType.COUNT, "dummy", FieldType.ARRAY));
 
-        for (NewAggregationTestData data : cases) {
-            newMeanAggregationTestCase(data);
+        for (TestData data : cases) {
+            executeNewMeanAggregationTestCase(data);
         }
     }
 
-    private void newSumAggregationTestCase(NewAggregationTestData data) {
+    private void executeNewSumAggregationTestCase(TestData data) {
         if (data.succeed) {
             try {
                 Aggregation a = Aggregation.newSumAggregation(data.field, data.fieldType);
@@ -217,17 +231,19 @@ public class AggregationTest {
 
     @Test
     public void newSumAggregationTest() {
-        List<NewAggregationTestData> cases = new ArrayList<>();
-        cases.add(new NewAggregationTestData("BOOLEAN", false, FunctionType.SUM, "dummy", FieldType.BOOLEAN));
-        cases.add(new NewAggregationTestData("INTEGER", true, FunctionType.SUM, "dummy", FieldType.INTEGER));
-        cases.add(new NewAggregationTestData("DECIMAL", true, FunctionType.SUM, "dummy", FieldType.DECIMAL));
+        List<TestData> cases = new ArrayList<>();
+        cases.add(new TestData("BOOLEAN", false, FunctionType.SUM, "dummy", FieldType.BOOLEAN));
+        cases.add(new TestData("INTEGER", true, FunctionType.SUM, "dummy", FieldType.INTEGER));
+        cases.add(new TestData("DECIMAL", true, FunctionType.SUM, "dummy", FieldType.DECIMAL));
+        cases.add(new TestData("OBJECT", false, FunctionType.COUNT, "dummy", FieldType.OBJECT));
+        cases.add(new TestData("ARRAY", false, FunctionType.COUNT, "dummy", FieldType.ARRAY));
 
-        for (NewAggregationTestData data : cases) {
-            newSumAggregationTestCase(data);
+        for (TestData data : cases) {
+            executeNewSumAggregationTestCase(data);
         }
     }
 
-    private void newCountAggregationTestCase(NewAggregationTestData data) {
+    private void executeNewCountAggregationTestCase(TestData data) {
         if (data.succeed) {
             try {
                 Aggregation a = Aggregation.newCountAggregation(data.field, data.fieldType);
@@ -252,32 +268,16 @@ public class AggregationTest {
 
     @Test
     public void newCountAggregationTest() {
-        List<NewAggregationTestData> cases = new ArrayList<>();
-        cases.add(new NewAggregationTestData("BOOLEAN", true, FunctionType.COUNT, "dummy", FieldType.BOOLEAN));
-        cases.add(new NewAggregationTestData("INTEGER", true, FunctionType.COUNT, "dummy", FieldType.INTEGER));
-        cases.add(new NewAggregationTestData("DECIMAL", true, FunctionType.COUNT, "dummy", FieldType.DECIMAL));
+        List<TestData> cases = new ArrayList<>();
+        cases.add(new TestData("BOOLEAN", true, FunctionType.COUNT, "dummy", FieldType.BOOLEAN));
+        cases.add(new TestData("INTEGER", true, FunctionType.COUNT, "dummy", FieldType.INTEGER));
+        cases.add(new TestData("DECIMAL", true, FunctionType.COUNT, "dummy", FieldType.DECIMAL));
+        cases.add(new TestData("OBJECT", true, FunctionType.COUNT, "dummy", FieldType.OBJECT));
+        cases.add(new TestData("ARRAY", true, FunctionType.COUNT, "dummy", FieldType.ARRAY));
 
-        for (NewAggregationTestData data : cases) {
-            newCountAggregationTestCase(data);
+        for (TestData data : cases) {
+            executeNewCountAggregationTestCase(data);
         }
-    }
-
-    @Test
-    public void toJSONObjectTest() {
-        Aggregation target = Aggregation.newAggregation(FunctionType.COUNT, "dummy", FieldType.INTEGER);
-        JSONObject actual = target.toJSONObject();
-        JSONObject expect = new JSONObject();
-        try {
-            expect.put("type", FunctionType.COUNT);
-            expect.put("responseField", FunctionType.COUNT.toString().toLowerCase());
-            expect.put("field", "dummy");
-            expect.put("fieldType", FieldType.INTEGER);
-        } catch (JSONException e) {
-            // no thrown.
-        }
-
-        Assert.assertNotNull(actual);
-        Assert.assertEquals(expect.toString(), actual.toString());
     }
 
     @Test

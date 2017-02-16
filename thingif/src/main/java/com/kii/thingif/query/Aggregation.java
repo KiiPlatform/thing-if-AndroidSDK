@@ -28,7 +28,9 @@ public class Aggregation implements Parcelable{
     public static enum FieldType{
         INTEGER,
         DECIMAL,
-        BOOLEAN
+        BOOLEAN,
+        OBJECT,
+        ARRAY
         //TODO: need to check other field types
     }
 
@@ -142,21 +144,6 @@ public class Aggregation implements Parcelable{
             throw new IllegalArgumentException("Unsupported field type for sum aggregation");
         }
         return new Aggregation(FunctionType.SUM, field, fieldType);
-    }
-
-    public JSONObject toJSONObject() {
-        JSONObject ret = new JSONObject();
-        try {
-            ret.put("type", this.function);
-            ret.put("responseField", function.toString().toLowerCase());
-            ret.put("field", this.field);
-            //TODO: // FIXME: 12/21/16 get string name of field type
-            ret.put("fieldType", this.fieldType);
-            return ret;
-        } catch (JSONException e) {
-            // Won't happens.
-            throw new RuntimeException(e);
-        }
     }
 
     public FunctionType getFunction() {
