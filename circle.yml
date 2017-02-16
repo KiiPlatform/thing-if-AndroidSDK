@@ -25,7 +25,7 @@ test:
     - circle-android wait-for-boot
 
   override:
-    # run local unit tests, all small tests are all local unit tests
+    # run small tests, all small tests are all local unit tests
     - ./gradlew :thingif:test
     - mkdir $CIRCLE_TEST_REPORTS/local_ut_reports; cp -r thingif/build/test-results/debug/* $CIRCLE_TEST_REPORTS/local_ut_reports/
 
@@ -34,16 +34,11 @@ test:
     - mv logcat.txt $CIRCLE_ARTIFACTS/logcat_small_test.txt
 
     # run largetests
-    - >
-      if [ "$RUN_LTEST" == "true" ]; then
-        ./gradlew :thingiftest:connectedAndroidTest
-        mkdir $CIRCLE_TEST_REPORTS/largetests
-        cp -r thingiftest/build/outputs/androidTest-results/connected/*.xml $CIRCLE_TEST_REPORTS/largetests/
-        # copy the logcat file to test results directory.
-        adb logcat -d > logcat.txt
-        mv logcat.txt $CIRCLE_ARTIFACTS/logcat_large_test.txt
-      fi
-    - >
+    - ./gradlew :thingiftest:connectedAndroidTest
+    - mkdir $CIRCLE_TEST_REPORTS/largetests; cp -r thingiftest/build/outputs/androidTest-results/connected/*.xml $CIRCLE_TEST_REPORTS/largetests/
+    # copy the logcat file to test results directory.
+    - adb logcat -d > logcat.txt
+    - mv logcat.txt $CIRCLE_ARTIFACTS/logcat_large_test.txt
 
 deployment:
   production:

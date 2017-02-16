@@ -840,7 +840,7 @@ public class ThingIFAPI implements Parcelable {
         Map<String, String> headers = this.newHeader();
         JSONObject requestBody = createPostNewCommandRequestBody(form);
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers,
-                MediaTypes.MEDIA_TYPE_JSON, requestBody);
+                MediaTypes.MEDIA_TYPE_POST_NEW_COMMAND_TRAIT, requestBody);
         JSONObject responseBody = this.restClient.sendRequest(request);
 
         String commandID = responseBody.optString("commandID", null);
