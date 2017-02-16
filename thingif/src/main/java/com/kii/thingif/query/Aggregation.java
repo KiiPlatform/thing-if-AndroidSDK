@@ -140,22 +140,7 @@ public class Aggregation implements Parcelable{
         }
         return new Aggregation(FunctionType.SUM, field, fieldType);
     }
-
-    public JSONObject toJSONObject() {
-        JSONObject ret = new JSONObject();
-        try {
-            ret.put("type", this.function);
-            ret.put("responseField", function.toString().toLowerCase());
-            ret.put("field", this.field);
-            //TODO: // FIXME: 12/21/16 get string name of field type
-            ret.put("fieldType", this.fieldType);
-            return ret;
-        } catch (JSONException e) {
-            // Won't happens.
-            throw new RuntimeException(e);
-        }
-    }
-
+    
     public FunctionType getFunction() {
         return function;
     }

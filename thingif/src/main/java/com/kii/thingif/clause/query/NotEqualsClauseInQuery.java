@@ -17,9 +17,4 @@ public class NotEqualsClauseInQuery implements BaseNotEquals, QueryClause {
         return this.equals;
     }
 
-    @Override
-    public JSONObject toJSONObject() {
-        //TODO: implement me
-        return null;
-    }
 }

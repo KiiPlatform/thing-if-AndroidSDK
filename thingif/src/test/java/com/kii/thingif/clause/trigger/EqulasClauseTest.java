@@ -47,41 +47,4 @@ public class EqulasClauseTest extends SmallTestBase{
             }
         }
     }
-
-    @Test
-    public void testToJSONObject() {
-        String alias = "alias";
-        String field = "f";
-        try {
-            JSONObject[] expectedJsons = {
-                    new JSONObject()
-                            .put("type", "eq")
-                            .put("alias", alias)
-                            .put("field", field)
-                            .put("value", "v"),
-                    new JSONObject()
-                            .put("type", "eq")
-                            .put("alias", alias)
-                            .put("field", field)
-                            .put("value", 1),
-                    new JSONObject()
-                            .put("type", "eq")
-                            .put("alias", alias)
-                            .put("field", field)
-                            .put("value", true)
-            };
-
-            EqualsClauseInTrigger[] clauses = {
-                    new EqualsClauseInTrigger(alias, field, "v"),
-                    new EqualsClauseInTrigger(alias, field, 1),
-                    new EqualsClauseInTrigger(alias, field, true)
-            };
-
-            for (int i=0; i < clauses.length; i++) {
-                assertJSONObject("failed on ["+i+"]", expectedJsons[i], clauses[i].toJSONObject());
-            }
-        }catch (Exception ex) {
-            Assert.fail("failed caused by exception:"+ex.toString());
-        }
-    }
 }

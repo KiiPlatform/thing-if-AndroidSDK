@@ -23,18 +23,6 @@ public class NotEqualsClauseInTrigger implements BaseNotEquals, TriggerClause {
     }
 
     @Override
-    public JSONObject toJSONObject() {
-        JSONObject ret = new JSONObject();
-        try{
-            ret.put("type", "not");
-            ret.put("clause", this.equals.toJSONObject());
-        }catch (JSONException ex) {
-            throw new RuntimeException(ex);
-        }
-        return ret;
-    }
-
-    @Override
     public int describeContents() {
         return 0;
     }

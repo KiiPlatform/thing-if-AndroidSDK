@@ -28,10 +28,4 @@ public class OrClauseInQuery implements BaseOr<QueryClause>, QueryClause {
         this.clauses.add(clause);
         return this;
     }
-
-    @Override
-    public JSONObject toJSONObject() {
-        // TODO: implement me
-        return null;
-    }
 }

@@ -36,10 +36,4 @@ public class EqualsClauseInQuery implements BaseEquals, QueryClause {
     public Object getValue() {
         return this.value;
     }
-
-    @Override
-    public JSONObject toJSONObject() {
-        //TODO: implement me
-        return null;
-    }
 }
