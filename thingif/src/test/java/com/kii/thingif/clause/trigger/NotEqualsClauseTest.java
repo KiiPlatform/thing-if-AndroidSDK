@@ -47,30 +47,4 @@ public class NotEqualsClauseTest extends SmallTestBase {
             }
         }
     }
-
-    @Test
-    public void testToJSONObject() throws JSONException{
-        JSONObject [] expectedJsons = {
-                new JSONObject()
-                        .put("type", "not")
-                        .put("clause", new EqualsClauseInTrigger("alias", "f", "v").toJSONObject()),
-                new JSONObject()
-                        .put("type", "not")
-                        .put("clause", new EqualsClauseInTrigger("alias", "f", 1).toJSONObject())
-        };
-
-        NotEqualsClauseInTrigger[] actualObjs = {
-                new NotEqualsClauseInTrigger(
-                        new EqualsClauseInTrigger("alias", "f", "v")
-                ),
-                new NotEqualsClauseInTrigger(
-                        new EqualsClauseInTrigger("alias", "f", 1)
-                )
-        };
-
-        Assert.assertEquals(expectedJsons.length, actualObjs.length);
-        for (int i = 0; i < expectedJsons.length; i++) {
-            assertJSONObject(expectedJsons[i], actualObjs[i].toJSONObject());
-        }
-    }
 }
