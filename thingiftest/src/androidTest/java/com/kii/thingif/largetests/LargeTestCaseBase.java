@@ -23,13 +23,14 @@ import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-@RunWith(AndroidJUnit4.class)
+@Ignore
 public class LargeTestCaseBase {
 
     public static final String DEFAULT_THING_TYPE = "MyAirConditioner";
