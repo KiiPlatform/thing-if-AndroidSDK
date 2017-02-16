@@ -133,31 +133,6 @@ public class RangeClauseInTrigger implements BaseRange, TriggerClause {
     }
 
     @Override
-    public JSONObject toJSONObject() {
-        JSONObject ret = new JSONObject();
-        try{
-            ret.put("type", "range");
-            ret.put("alias", this.alias);
-            ret.put("field", this.field);
-            if(this.upperIncluded != null) {
-                ret.put("upperIncluded", this.upperIncluded);
-            }
-            if(this.upperLimit != null) {
-                ret.put("upperLimit", this.upperLimit);
-            }
-            if(this.lowerIncluded != null) {
-                ret.put("lowerIncluded", this.lowerIncluded);
-            }
-            if(this.lowerLimit != null) {
-                ret.put("lowerLimit", this.lowerLimit);
-            }
-            return ret;
-        }catch (JSONException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    @Override
     public int describeContents() {
         return 0;
     }

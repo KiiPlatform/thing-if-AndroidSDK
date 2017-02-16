@@ -34,22 +34,6 @@ public class OrClauseInTrigger implements BaseOr<TriggerClause>, TriggerClause {
     }
 
     @Override
-    public JSONObject toJSONObject() {
-        JSONObject ret = new JSONObject();
-        JSONArray clauses = new JSONArray();
-        try{
-            ret.put("type", "or");
-            for (TriggerClause clause : this.clauses) {
-                clauses.put(clause.toJSONObject());
-            }
-            ret.put("clauses", clauses);
-            return ret;
-        }catch (JSONException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    @Override
     public int describeContents() {
         return 0;
     }
