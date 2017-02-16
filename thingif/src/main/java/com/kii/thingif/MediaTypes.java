@@ -10,4 +10,5 @@ public class MediaTypes {
     public static final MediaType MEDIA_TYPE_ONBOARDING_ENDNODE_WITH_GATEWAY_THING_ID_REQUEST = MediaType.parse("application/vnd.kii.OnboardingEndNodeWithGatewayThingID+json");
     public static final MediaType MEDIA_TYPE_ONBOARDING_ENDNODE_WITH_GATEWAY_VENDOR_THING_ID_REQUEST = MediaType.parse("application/vnd.kii.OnboardingEndNodeWithGatewayVendorThingID+json");
     public static final MediaType MEDIA_TYPE_VENDOR_THING_ID_UPDATE_REQUEST = MediaType.parse("application/vnd.kii.VendorThingIDUpdateRequest+json");
+    public static final MediaType MEDIA_TYPE_POST_NEW_COMMAND_TRAIT = MediaType.parse("application/vnd.kii.CommandCreationRequest+json");
 }

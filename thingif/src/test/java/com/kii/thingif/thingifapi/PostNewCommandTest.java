@@ -187,7 +187,7 @@ public class PostNewCommandTest extends ThingIFAPITestBase {
         expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders1.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
-        expectedRequestHeaders1.put("Content-Type", "application/json");
+        expectedRequestHeaders1.put("Content-Type", "application/vnd.kii.CommandCreationRequest+json");
         this.assertRequestHeader(expectedRequestHeaders1, request1);
 
         JSONObject expectedRequestBody = new JSONObject();
@@ -247,7 +247,7 @@ public class PostNewCommandTest extends ThingIFAPITestBase {
         expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders1.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
-        expectedRequestHeaders1.put("Content-Type", "application/json");
+        expectedRequestHeaders1.put("Content-Type", "application/vnd.kii.CommandCreationRequest+json");
         this.assertRequestHeader(expectedRequestHeaders1, request1);
 
         JSONArray aliasActionsInRequest = new JSONArray();
@@ -305,7 +305,7 @@ public class PostNewCommandTest extends ThingIFAPITestBase {
         expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders1.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
-        expectedRequestHeaders1.put("Content-Type", "application/json");
+        expectedRequestHeaders1.put("Content-Type", "application/vnd.kii.CommandCreationRequest+json");
         this.assertRequestHeader(expectedRequestHeaders1, request1);
 
         JSONArray aliasActionsInRequest = new JSONArray();
@@ -361,7 +361,7 @@ public class PostNewCommandTest extends ThingIFAPITestBase {
         expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders1.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
-        expectedRequestHeaders1.put("Content-Type", "application/json");
+        expectedRequestHeaders1.put("Content-Type", "application/vnd.kii.CommandCreationRequest+json");
         this.assertRequestHeader(expectedRequestHeaders1, request1);
 
         JSONArray aliasActionsInRequest = new JSONArray();
