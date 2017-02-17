@@ -26,6 +26,7 @@ public class RangeClauseTest extends SmallTestBase{
 
         Object[] diffObjs = {
                 null,
+                RangeClauseInQuery.greaterThan("e", 23),
                 RangeClauseInQuery.greaterThan("f", 23.0),
                 RangeClauseInQuery.lessThan("f", 23),
                 RangeClauseInQuery.greaterThanOrEqualTo("f", 23),
@@ -71,6 +72,7 @@ public class RangeClauseTest extends SmallTestBase{
 
         Object[] diffObjs1 = {
                 null,
+                RangeClauseInQuery.range("e", 230, true, 23, true),
                 RangeClauseInQuery.greaterThan("f", 23.0),
                 RangeClauseInQuery.lessThan("f", 23),
                 RangeClauseInQuery.greaterThanOrEqualTo("f", 23),

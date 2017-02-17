@@ -26,6 +26,7 @@ public class RangeClauseTest extends SmallTestBase{
 
         Object[] diffObjs = {
                 null,
+                RangeClauseInTrigger.greaterThan("alias", "e", 23),
                 RangeClauseInTrigger.greaterThan("alias", "f", 23.0),
                 RangeClauseInTrigger.lessThan("alias", "f", 23),
                 RangeClauseInTrigger.greaterThanOrEqualTo("alias", "f", 23),
@@ -73,6 +74,7 @@ public class RangeClauseTest extends SmallTestBase{
 
         Object[] diffObjs1 = {
                 null,
+                RangeClauseInTrigger.range("alias", "e", 230, true, 23, true),
                 RangeClauseInTrigger.greaterThan("alias", "f", 23.0),
                 RangeClauseInTrigger.lessThan("alias", "f", 23),
                 RangeClauseInTrigger.greaterThanOrEqualTo("alias", "f", 23),

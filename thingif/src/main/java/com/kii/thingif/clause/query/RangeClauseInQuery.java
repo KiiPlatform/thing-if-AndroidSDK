@@ -178,7 +178,7 @@ public class RangeClauseInQuery implements QueryClause, BaseRange {
             return false;
         }
 
-        return true;
+        return this.field.equals(range.field);
     }
 
     @Override
@@ -186,6 +186,7 @@ public class RangeClauseInQuery implements QueryClause, BaseRange {
         int result = this.hashCode;
         if (result == 0) {
             result = 17;
+            result = 31 * result + this.field.hashCode();
             result = 31 * result +
                     (this.lowerIncluded != null? this.lowerIncluded.hashCode(): 0);
             result = 31 * result +
