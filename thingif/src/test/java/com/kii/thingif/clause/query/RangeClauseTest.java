@@ -1,4 +1,4 @@
-package com.kii.thingif.clause.trigger;
+package com.kii.thingif.clause.query;
 
 import com.kii.thingif.SmallTestBase;
 
@@ -12,12 +12,12 @@ public class RangeClauseTest extends SmallTestBase{
     public void testEquals_hashCode() {
 
         // test half open range
-        RangeClauseInTrigger clause =
-                RangeClauseInTrigger.greaterThan("alias", "f", 23);
+        RangeClauseInQuery clause =
+                RangeClauseInQuery.greaterThan("f", 23);
 
         Object[] sameObjs = {
                 clause,
-                RangeClauseInTrigger.greaterThan("alias", "f", 23)};
+                RangeClauseInQuery.greaterThan("f", 23)};
         for (Object obj: sameObjs) {
             Assert.assertEquals(obj, clause);
             Assert.assertTrue("should equals", obj.equals(clause));
@@ -26,12 +26,12 @@ public class RangeClauseTest extends SmallTestBase{
 
         Object[] diffObjs = {
                 null,
-                RangeClauseInTrigger.greaterThan("alias", "e", 23),
-                RangeClauseInTrigger.greaterThan("alias", "f", 23.0),
-                RangeClauseInTrigger.lessThan("alias", "f", 23),
-                RangeClauseInTrigger.greaterThanOrEqualTo("alias", "f", 23),
-                RangeClauseInTrigger.lessThanOrEqualTo("alias", "f", 23),
-                RangeClauseInTrigger.range("alias", "f", 230, false, 23, false)
+                RangeClauseInQuery.greaterThan("e", 23),
+                RangeClauseInQuery.greaterThan("f", 23.0),
+                RangeClauseInQuery.lessThan("f", 23),
+                RangeClauseInQuery.greaterThanOrEqualTo("f", 23),
+                RangeClauseInQuery.lessThanOrEqualTo("f", 23),
+                RangeClauseInQuery.range("f", 230, false, 23, false)
         };
 
         for (int i=0; i < diffObjs.length; i++) {
@@ -46,8 +46,7 @@ public class RangeClauseTest extends SmallTestBase{
         }
 
         // test close range
-        RangeClauseInTrigger clause1 = RangeClauseInTrigger.range(
-                "alias",
+        RangeClauseInQuery clause1 = RangeClauseInQuery.range(
                 "f",
                 230,
                 true,
@@ -57,8 +56,7 @@ public class RangeClauseTest extends SmallTestBase{
 
         Object[] sameObjs1 = {
                 clause1,
-                RangeClauseInTrigger.range(
-                        "alias",
+                RangeClauseInQuery.range(
                         "f",
                         230,
                         true,
@@ -74,12 +72,12 @@ public class RangeClauseTest extends SmallTestBase{
 
         Object[] diffObjs1 = {
                 null,
-                RangeClauseInTrigger.range("alias", "e", 230, true, 23, true),
-                RangeClauseInTrigger.greaterThan("alias", "f", 23.0),
-                RangeClauseInTrigger.lessThan("alias", "f", 23),
-                RangeClauseInTrigger.greaterThanOrEqualTo("alias", "f", 23),
-                RangeClauseInTrigger.lessThanOrEqualTo("alias", "f", 23),
-                RangeClauseInTrigger.range("alias", "f", 230, true, 23, true)
+                RangeClauseInQuery.range("e", 230, true, 23, true),
+                RangeClauseInQuery.greaterThan("f", 23.0),
+                RangeClauseInQuery.lessThan("f", 23),
+                RangeClauseInQuery.greaterThanOrEqualTo("f", 23),
+                RangeClauseInQuery.lessThanOrEqualTo("f", 23),
+                RangeClauseInQuery.range("f", 230, true, 23, true)
         };
         for (int i=0; i < diffObjs1.length; i++) {
             Assert.assertNotEquals("failed to test equals on ["+i+"]", diffObjs1[i], clause1);

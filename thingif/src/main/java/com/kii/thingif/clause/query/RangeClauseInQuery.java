@@ -1,5 +1,6 @@
 package com.kii.thingif.clause.query;
 
+import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -13,6 +14,8 @@ public class RangeClauseInQuery implements QueryClause, BaseRange {
     private @Nullable Number lowerLimit;
     private @Nullable Boolean upperIncluded;
     private @Nullable Boolean lowerIncluded;
+
+    private volatile int hashCode; // cached hashcode for performance
 
     private RangeClauseInQuery(
             @NonNull String field,
@@ -34,9 +37,9 @@ public class RangeClauseInQuery implements QueryClause, BaseRange {
             @NonNull Boolean lowerIncluded) {
         return new RangeClauseInQuery(
                 field,
-                upperLimit.longValue(),
+                upperLimit,
                 upperIncluded,
-                lowerLimit.longValue(),
+                lowerLimit,
                 lowerIncluded);
     }
     public static RangeClauseInQuery greaterThan(
@@ -46,7 +49,7 @@ public class RangeClauseInQuery implements QueryClause, BaseRange {
                 field,
                 null,
                 null,
-                lowerLimit.longValue(),
+                lowerLimit,
                 Boolean.FALSE);
     }
     public static RangeClauseInQuery greaterThanOrEqualTo(
@@ -56,7 +59,7 @@ public class RangeClauseInQuery implements QueryClause, BaseRange {
                 field,
                 null,
                 null,
-                lowerLimit.longValue(),
+                lowerLimit,
                 Boolean.TRUE);
     }
     public static RangeClauseInQuery lessThan(
@@ -64,7 +67,7 @@ public class RangeClauseInQuery implements QueryClause, BaseRange {
             @NonNull Number upperLimit) {
         return new RangeClauseInQuery(
                 field,
-                upperLimit.longValue(),
+                upperLimit,
                 Boolean.FALSE,
                 null,
                 null);
@@ -74,7 +77,7 @@ public class RangeClauseInQuery implements QueryClause, BaseRange {
             @NonNull Number upperLimit) {
         return new RangeClauseInQuery(
                 field,
-                upperLimit.longValue(),
+                upperLimit,
                 Boolean.TRUE,
                 null,
                 null);
@@ -108,5 +111,93 @@ public class RangeClauseInQuery implements QueryClause, BaseRange {
     @Nullable
     public Boolean getUpperIncluded() {
         return this.upperIncluded;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.field);
+        dest.writeValue(this.lowerLimit);
+        dest.writeValue(this.upperLimit);
+        dest.writeValue(this.lowerIncluded);
+        dest.writeValue(this.upperIncluded);
+    }
+
+    private RangeClauseInQuery(Parcel in) {
+        this.field = in.readString();
+        this.lowerLimit = (Number) in.readValue(Number.class.getClassLoader());
+        this.upperLimit = (Number) in.readValue(Number.class.getClassLoader());
+        this.lowerIncluded = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.upperIncluded = (Boolean) in.readValue(Boolean.class.getClassLoader());
+    }
+
+    public static final Creator<RangeClauseInQuery> CREATOR = new Creator<RangeClauseInQuery>() {
+        @Override
+        public RangeClauseInQuery createFromParcel(Parcel source) {
+            return new RangeClauseInQuery(source);
+        }
+
+        @Override
+        public RangeClauseInQuery[] newArray(int size) {
+            return new RangeClauseInQuery[size];
+        }
+    };
+
+    @Override
+    public boolean equals(Object o) {
+        if(this == o) return true;
+        if(!(o instanceof RangeClauseInQuery)) return false;
+
+        RangeClauseInQuery range = (RangeClauseInQuery) o;
+
+        if(this.upperLimit != null?
+                !this.upperLimit.equals(range.upperLimit) :
+                range.upperLimit != null) {
+            return false;
+        }
+
+        if(this.upperIncluded != null?
+                !this.upperIncluded.equals(range.upperIncluded) :
+                range.upperIncluded != null) {
+            return false;
+        }
+
+        if(this.lowerLimit != null?
+                !this.lowerLimit.equals(range.lowerLimit) :
+                range.lowerLimit != null) {
+            return false;
+        }
+
+        if(this.lowerIncluded != null?
+                !this.lowerIncluded.equals(range.lowerIncluded) :
+                range.lowerIncluded != null) {
+            return false;
+        }
+
+        return this.field.equals(range.field);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = this.hashCode;
+        if (result == 0) {
+            result = 17;
+            result = 31 * result + this.field.hashCode();
+            result = 31 * result +
+                    (this.lowerIncluded != null? this.lowerIncluded.hashCode(): 0);
+            result = 31 * result +
+                    (this.lowerLimit != null? this.lowerLimit.hashCode(): 0);
+            result = 31 * result +
+                    (this.upperIncluded != null? this.upperIncluded.hashCode(): 0);
+            result = 31 * result +
+                    (this.upperLimit != null? this.upperLimit.hashCode(): 0);
+
+            this.hashCode = result;
+        }
+        return result;
     }
 }

@@ -201,7 +201,7 @@ public class RangeClauseInTrigger implements BaseRange, TriggerClause {
             return false;
         }
 
-        return true;
+        return this.field.equals(range.field);
     }
 
     @Override
@@ -210,6 +210,7 @@ public class RangeClauseInTrigger implements BaseRange, TriggerClause {
         if (result == 0) {
             result = 17;
             result = 31 * result + this.alias.hashCode();
+            result = 31 * result + this.field.hashCode();
             result = 31 * result +
                     (this.lowerIncluded != null? this.lowerIncluded.hashCode(): 0);
             result = 31 * result +
