@@ -1,17 +1,21 @@
 package com.kii.thingif.query;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.kii.thingif.clause.query.QueryClause;
 
-public class HistoryStatesQuery {
+public class HistoryStatesQuery implements Parcelable {
 
     private @NonNull String alias;
     private @Nullable QueryClause clause;
     private @Nullable String firmwareVersion;
     private @Nullable Integer bestEffortLimit;
     private @Nullable String nextPaginationKey;
+
+    private volatile int hashCode; // cached hashcode for performance
 
     private HistoryStatesQuery(
             @NonNull  String alias,
@@ -96,4 +100,98 @@ public class HistoryStatesQuery {
     public String getNextPaginationKey() {
         return this.nextPaginationKey;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        if (!(o instanceof HistoryStatesQuery)) {
+            return false;
+        }
+        HistoryStatesQuery other = (HistoryStatesQuery) o;
+
+        if (this.clause != null) {
+            if (!this.clause.equals(other.clause)) {
+                return false;
+            }
+        } else if (other.clause != null) {
+            return false;
+        }
+
+        if (this.firmwareVersion != null) {
+            if (!this.firmwareVersion.equals(other.firmwareVersion)) {
+                return false;
+            }
+        } else if (other.firmwareVersion != null) {
+            return false;
+        }
+
+        if (this.bestEffortLimit != null) {
+            if (!this.bestEffortLimit.equals(other.bestEffortLimit)) {
+                return false;
+            }
+        } else if (other.bestEffortLimit != null) {
+            return false;
+        }
+
+        if (this.nextPaginationKey != null) {
+            if (!this.nextPaginationKey.equals(other.nextPaginationKey)) {
+                return false;
+            }
+        } else if (other.nextPaginationKey != null) {
+            return false;
+        }
+
+        return this.alias.equals(other.alias);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = this.hashCode;
+        if (result == 0) {
+            result = 17;
+            result = 31 * result + this.alias.hashCode();
+            result = 31 * result + (this.clause != null ? this.clause.hashCode() : 0);
+            result = 31 * result + (this.firmwareVersion != null ? this.firmwareVersion.hashCode() : 0);
+            result = 31 * result + (this.bestEffortLimit != null ? this.bestEffortLimit.hashCode() : 0);
+            result = 31 * result + (this.nextPaginationKey != null ? this.nextPaginationKey.hashCode() : 0);
+            this.hashCode = result;
+        }
+        return result;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.alias);
+        dest.writeParcelable(this.clause, flags);
+        dest.writeString(this.firmwareVersion);
+        dest.writeSerializable(this.bestEffortLimit);
+        dest.writeString(this.nextPaginationKey);
+    }
+
+    public HistoryStatesQuery(Parcel in) {
+        this.alias = in.readString();
+        this.clause = in.readParcelable(QueryClause.class.getClassLoader());
+        this.firmwareVersion = in.readString();
+        this.bestEffortLimit = (Integer) in.readSerializable();
+        this.nextPaginationKey = in.readString();
+    }
+
+    public static final Creator<HistoryStatesQuery> CREATOR = new Creator<HistoryStatesQuery>() {
+        @Override
+        public HistoryStatesQuery createFromParcel(Parcel source) {
+            return new HistoryStatesQuery(source);
+        }
+
+        @Override
+        public HistoryStatesQuery[] newArray(int size) {
+            return new HistoryStatesQuery[size];
+        }
+    };
 }
