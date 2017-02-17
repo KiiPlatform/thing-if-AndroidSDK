@@ -201,7 +201,7 @@ public class RangeClauseInTrigger implements BaseRange, TriggerClause {
             return false;
         }
 
-        return  this.field.equals(range.field);
+        return this.field.equals(range.field);
     }
 
     @Override
