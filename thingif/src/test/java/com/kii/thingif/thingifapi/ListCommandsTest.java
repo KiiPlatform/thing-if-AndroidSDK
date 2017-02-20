@@ -44,7 +44,6 @@ public class ListCommandsTest extends ThingIFAPITestBase{
         this.context = RuntimeEnvironment.application.getApplicationContext();
         this.server = new MockWebServer();
         this.server.start();
-
     }
     @After
     public void after() throws Exception {
