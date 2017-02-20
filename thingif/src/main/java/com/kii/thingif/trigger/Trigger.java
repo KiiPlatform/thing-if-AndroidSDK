@@ -3,6 +3,7 @@ package com.kii.thingif.trigger;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.kii.thingif.TypedID;
@@ -16,37 +17,37 @@ import org.json.JSONObject;
  */
 public class Trigger implements Parcelable {
 
-    private String triggerID;
-    private TypedID targetID;
-    private final Predicate predicate;
-    private final Command command;
-    private final ServerCode serverCode;
+    @NonNull private String triggerID;
+    @NonNull private TypedID targetID;
+    @NonNull private final Predicate predicate;
+    @Nullable private final Command command;
+    @Nullable private final ServerCode serverCode;
     private boolean disabled;
-    private String disabledReason;
-    private String title;
-    private String description;
-    private JSONObject metadata;
+    @Nullable private String disabledReason;
+    @Nullable private String title;
+    @Nullable private String description;
+    @Nullable private JSONObject metadata;
 
-    public Trigger(@NonNull Predicate predicate, @NonNull Command command) {
-        if (predicate == null) {
-            throw new IllegalArgumentException("predicate is null");
-        }
-        if (command == null) {
-            throw new IllegalArgumentException("command is null");
-        }
+    Trigger(
+            @NonNull String triggerID,
+            @NonNull TypedID targetID,
+            @NonNull Predicate predicate,
+            @Nullable Command command,
+            @Nullable ServerCode serverCode,
+            boolean disabled,
+            @Nullable String disabledReason,
+            @Nullable String title,
+            @Nullable String description,
+            @Nullable JSONObject metadata) {
+        this.triggerID = triggerID;
+        this.targetID = targetID;
         this.predicate = predicate;
         this.command = command;
-        this.serverCode = null;
-    }
-    public Trigger(@NonNull Predicate predicate, @NonNull ServerCode serverCode) {
-        if (predicate == null) {
-            throw new IllegalArgumentException("predicate is null");
-        }
-        if (serverCode == null) {
-            throw new IllegalArgumentException("serverCode is null");
-        }
-        this.predicate = predicate;
-        this.command = null;
+        this.disabled = disabled;
+        this.disabledReason = disabledReason;
+        this.title = title;
+        this.description = description;
+        this.metadata = metadata;
         this.serverCode = serverCode;
     }
 
@@ -54,6 +55,7 @@ public class Trigger implements Parcelable {
      * Get ID of the Trigger.
      * @return ID of the Trigger
      */
+    @NonNull
     public String getTriggerID() {
         return this.triggerID;
     }
@@ -64,6 +66,7 @@ public class Trigger implements Parcelable {
      * Target ID is determined by target bound to ThingIFAPI.
      * @return Target ID of Trigger.
      */
+    @NonNull
     public TypedID getTargetID() {
         return this.targetID;
     }
@@ -80,6 +83,7 @@ public class Trigger implements Parcelable {
      * Get Predicate of the Trigger.
      * @return Predicate of the Trigger
      */
+    @NonNull
     public Predicate getPredicate() {
         return this.predicate;
     }
@@ -88,6 +92,7 @@ public class Trigger implements Parcelable {
      * Get Command bounds to the Trigger.
      * @return Command  bounds to the Trigger.
      */
+    @Nullable
     public Command getCommand() {
         return this.command;
     }
@@ -96,6 +101,7 @@ public class Trigger implements Parcelable {
      * Get Server Code bounds to the Trigger.
      * @return Server Code bounds to the Trigger.
      */
+    @Nullable
     public ServerCode getServerCode() {
         return this.serverCode;
     }
@@ -117,6 +123,7 @@ public class Trigger implements Parcelable {
      * If #disabled is false, It returns null.
      * @return Reason of the Trigger has been disabled.
      */
+    @Nullable
     public String getDisabledReason() {
         return this.disabledReason;
     }
@@ -125,6 +132,7 @@ public class Trigger implements Parcelable {
      * Get title.
      * @return title of this trigger.
      */
+    @Nullable
     public String getTitle() {
         return this.title;
     }
@@ -132,6 +140,7 @@ public class Trigger implements Parcelable {
      * Get description.
      * @return description of this trigger.
      */
+    @Nullable
     public String getDescription() {
         return this.description;
     }
@@ -139,6 +148,7 @@ public class Trigger implements Parcelable {
      * Get meta data
      * @return meta data of this trigger.
      */
+    @Nullable
     public JSONObject getMetadata() {
         return this.metadata;
     }

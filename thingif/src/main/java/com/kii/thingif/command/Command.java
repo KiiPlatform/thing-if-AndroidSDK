@@ -27,7 +27,7 @@ public class Command implements Parcelable {
     @SerializedName("actions")
     private final @NonNull List<AliasAction<? extends Action>> aliasActions;
     @SerializedName("actionResults")
-    private final @Nullable List<AliasActionResult> aliasActionResults;
+    private final @NonNull List<AliasActionResult> aliasActionResults;
     @SerializedName("commandState")
     private final @Nullable CommandState commandState;
     private final @Nullable String firedByTriggerID;
@@ -56,7 +56,11 @@ public class Command implements Parcelable {
         this.aliasActions = aliasActions;
         this.commandID = commandID;
         this.targetID = targetID;
-        this.aliasActionResults = aliasActionResults;
+        if (aliasActionResults != null) {
+            this.aliasActionResults = aliasActionResults;
+        }else {
+            this.aliasActionResults = new ArrayList<>();
+        }
         this.commandState = commandState;
         this.firedByTriggerID = firedByTriggerID;
         this.created = created;
@@ -126,7 +130,7 @@ public class Command implements Parcelable {
      * Get list of action result
      * @return action results of this command.
      */
-    @Nullable
+    @NonNull
     public List<AliasActionResult> getAliasActionResults() {
         return this.aliasActionResults;
     }
@@ -143,13 +147,11 @@ public class Command implements Parcelable {
             @NonNull String alias,
             @NonNull String actionName) {
         List<ActionResult> foundResults = new ArrayList<>();
-        if (this.aliasActionResults != null) {
-            for (AliasActionResult aliasResult : this.aliasActionResults) {
-                if (aliasResult.getAlias().equals(alias)) {
-                    for (ActionResult result : aliasResult.getResults()) {
-                        if (result.getActionName().equals(actionName)) {
-                            foundResults.add(result);
-                        }
+        for (AliasActionResult aliasResult : this.aliasActionResults) {
+            if (aliasResult.getAlias().equals(alias)) {
+                for (ActionResult result : aliasResult.getResults()) {
+                    if (result.getActionName().equals(actionName)) {
+                        foundResults.add(result);
                     }
                 }
             }
@@ -243,9 +245,6 @@ public class Command implements Parcelable {
         }
         if (this.issuerID == null) {
             throw new IllegalArgumentException("issuerID is null");
-        }
-        if (this.aliasActions == null || this.aliasActions.size() == 0) {
-            throw new IllegalArgumentException("actions is null or empty");
         }
     }
     public static final Creator<Command> CREATOR = new Creator<Command>() {
