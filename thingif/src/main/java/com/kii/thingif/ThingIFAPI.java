@@ -38,6 +38,7 @@ import com.kii.thingif.internal.gson.TypedIDAdapter;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
 import com.kii.thingif.internal.utils.JsonUtils;
+import com.kii.thingif.internal.utils.TriggerUtils;
 import com.kii.thingif.internal.utils._Log;
 import com.kii.thingif.query.AggregatedResult;
 import com.kii.thingif.query.Aggregation;
@@ -1118,8 +1119,7 @@ public class ThingIFAPI implements Parcelable {
      * @return Trigger instance.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws UnsupportedSchemaException Thrown when the returned response has a schema that cannot handle this instance.
-     * @throws UnsupportedActionException Thrown when the returned response has a action that cannot handle this instance.
+     * @throws UnregisteredAliasException Thrown when the returned response contains alias that cannot be handled.
      */
     @NonNull
     @WorkerThread
@@ -1140,19 +1140,17 @@ public class ThingIFAPI implements Parcelable {
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
 
-        //TODO: // FIXME: 2017/01/23
-        return null;
-//        Schema schema = null;
-//        JSONObject commandObject = responseBody.optJSONObject("command");
-//        if (commandObject != null) {
-//            String schemaName = commandObject.optString("schema", null);
-//            int schemaVersion = commandObject.optInt("schemaVersion");
-//            schema = this.getSchema(schemaName, schemaVersion);
-//            if (schema == null) {
-//                throw new UnsupportedSchemaException(schemaName, schemaVersion);
-//            }
-//        }
-//        return this.deserialize(schema, responseBody, this.target.getTypedID());
+        try {
+            Trigger trigger =  this.gson.fromJson(responseBody.toString(), Trigger.class);
+            TriggerUtils.setTargetID(trigger, this.target.getTypedID());
+            return trigger;
+        }catch (JsonParseException ex) {
+            if (ex.getCause() instanceof ThingIFException) {
+                throw (ThingIFException) ex.getCause();
+            } else {
+                throw ex;
+            }
+        }
     }
 
     /**

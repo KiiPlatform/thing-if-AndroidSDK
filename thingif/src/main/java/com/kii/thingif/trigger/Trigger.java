@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.google.gson.annotations.Expose;
 import com.kii.thingif.TypedID;
 import com.kii.thingif.command.Command;
 
@@ -18,7 +19,7 @@ import org.json.JSONObject;
 public class Trigger implements Parcelable {
 
     @NonNull private String triggerID;
-    @NonNull private TypedID targetID;
+    @Expose @NonNull private TypedID targetID;
     @NonNull private final Predicate predicate;
     @Nullable private final Command command;
     @Nullable private final ServerCode serverCode;
