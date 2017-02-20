@@ -223,8 +223,14 @@ public class Command implements Parcelable {
         this.issuerID = in.readParcelable(TypedID.class.getClassLoader());
         this.aliasActions = new ArrayList<>();
         in.readList(this.aliasActions, AliasAction.class.getClassLoader());
-        this.aliasActionResults = new ArrayList<>();
-        in.readList(this.aliasActionResults, AliasActionResult.class.getClassLoader());
+        List<AliasActionResult> tempResults = new ArrayList<>();
+        in.readList(tempResults, null);
+        if (tempResults.size() == 0) {
+            this.aliasActionResults = null;
+        }else{
+            this.aliasActionResults = tempResults;
+        }
+
         this.commandState = (CommandState)in.readSerializable();
         this.firedByTriggerID = in.readString();
         this.created = (Long)in.readValue(Command.class.getClassLoader());

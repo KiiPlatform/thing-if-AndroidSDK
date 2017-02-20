@@ -14,4 +14,11 @@ public class HumidityActions implements Action {
     public Integer getPresetHumidity() {
         return presetHumidity;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (!(o instanceof HumidityActions)) return false;
+        return this.presetHumidity.equals(((HumidityActions) o).getPresetHumidity());
+    }
 }

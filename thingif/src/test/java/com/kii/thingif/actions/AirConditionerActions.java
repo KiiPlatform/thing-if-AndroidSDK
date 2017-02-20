@@ -30,8 +30,8 @@ public class AirConditionerActions implements Action {
         if (!(o instanceof AirConditionerActions)) return false;
         AirConditionerActions action = (AirConditionerActions)o;
         return this.power == action.power &&
-                this.presetTemperature == null?
+                (this.presetTemperature == null?
                 action.presetTemperature == null :
-                this.presetTemperature.equals(action.presetTemperature);
+                this.presetTemperature.equals(action.presetTemperature));
     }
 }
