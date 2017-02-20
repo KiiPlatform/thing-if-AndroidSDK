@@ -59,9 +59,13 @@ public class SmallTestBase {
         Assert.assertTrue(Arrays.equals(
                 expected.getAliasActions().toArray(),
                 actual.getAliasActions().toArray()));
-
-        Assert.assertTrue(Arrays.equals(
-                expected.getAliasActionResults().toArray(),
-                actual.getAliasActionResults().toArray()));
+        Assert.assertFalse(
+                expected.getAliasActionResults() != null ^
+                actual.getAliasActionResults() != null );
+        if (expected.getAliasActionResults() != null && actual.getAliasActionResults() != null) {
+            Assert.assertTrue(Arrays.equals(
+                    expected.getAliasActionResults().toArray(),
+                    actual.getAliasActionResults().toArray()));
+        }
     }
 }
