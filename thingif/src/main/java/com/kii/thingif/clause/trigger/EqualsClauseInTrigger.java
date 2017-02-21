@@ -52,6 +52,11 @@ public class EqualsClauseInTrigger implements BaseEquals, TriggerClause{
         return this.value;
     }
 
+    @NonNull
+    public String getAlias() {
+        return alias;
+    }
+
     @Override
     public int describeContents() {
         return 0;
