@@ -6,7 +6,6 @@ import com.kii.thingif.SmallTestBase;
 import com.kii.thingif.clause.trigger.AndClauseInTrigger;
 import com.kii.thingif.clause.trigger.EqualsClauseInTrigger;
 import com.kii.thingif.clause.trigger.RangeClauseInTrigger;
-import com.kii.thingif.clause.trigger.TriggerClause;
 import com.kii.thingif.trigger.Condition;
 import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.ScheduleOncePredicate;
@@ -55,6 +54,38 @@ public class PredicateAdapterTest extends SmallTestBase{
             assertJSONObject("failed on ["+i+"]",
                     JsonUtil.predicateToJson(expectedPredicate),
                     new JSONObject(jsonString));
+        }
+    }
+
+    @Test
+    public void deserializationTest() {
+        Long scheduleDate = new Date().getTime();
+
+        Predicate[] expectedPredicates = {
+                new StatePredicate(
+                        new Condition(new EqualsClauseInTrigger(alias1, "power", true)),
+                        TriggersWhen.CONDITION_CHANGED),
+                new StatePredicate(
+                        new Condition(RangeClauseInTrigger.greaterThan(alias2, "humidity", 56)),
+                        TriggersWhen.CONDITION_FALSE_TO_TRUE),
+                new StatePredicate(
+                        new Condition(new AndClauseInTrigger()
+                                .addClause(new EqualsClauseInTrigger(alias1, "power", true))
+                                .addClause(RangeClauseInTrigger.lessThan(alias2, "humidity", 45))),
+                        TriggersWhen.CONDITION_TRUE),
+                new SchedulePredicate("1 * * * *"),
+                new ScheduleOncePredicate(scheduleDate)
+        };
+
+        for (int i=0; i<expectedPredicates.length; i++) {
+            Predicate expectedPredicate = expectedPredicates[i];
+            Predicate deserializedPredicate = gson.fromJson(
+                    JsonUtil.predicateToJson(expectedPredicate).toString(),
+                    Predicate.class);
+            assertSamePredicate(
+                    "failed on ["+i+"]",
+                    expectedPredicate,
+                    deserializedPredicate);
         }
     }
 }

@@ -85,7 +85,13 @@ public class SmallTestBase {
                 JsonUtil.triggerClauseToJson(actual).toString());
     }
 
-    protected void assertSamePredicate(Predicate expected, Predicate actual) {
+    protected void assertSamePredicate(String message, Predicate expected, Predicate actual) {
+        assertJSONObject(
+                message,
+                JsonUtil.predicateToJson(expected),
+                JsonUtil.predicateToJson(actual));
+    }
+        protected void assertSamePredicate(Predicate expected, Predicate actual) {
         Assert.assertEquals(
                 JsonUtil.predicateToJson(expected).toString(),
                 JsonUtil.predicateToJson(actual).toString());
