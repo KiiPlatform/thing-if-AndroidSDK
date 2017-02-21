@@ -38,10 +38,14 @@ public class TriggerClauseAdapterTest extends SmallTestBase{
                 new OrClauseInTrigger().addClause(new EqualsClauseInTrigger(alias2, "humidity", 45))
                         .addClause(RangeClauseInTrigger.greaterThan(alias1, "temperature", 23))
         };
-        for (TriggerClause clause: clauses) {
+        for (int i=0; i<clauses.length; i++) {
+            TriggerClause clause = clauses[i];
             String jsonString = gson.toJson(clause, TriggerClause.class);
             JSONObject deserializedJson = new JSONObject(jsonString);
-            assertJSONObject(JsonUtil.triggerClauseToJson(clause), deserializedJson);
+            assertJSONObject(
+                    "failed on ["+i+"]",
+                    JsonUtil.triggerClauseToJson(clause),
+                    deserializedJson);
         }
     }
 
@@ -62,7 +66,10 @@ public class TriggerClauseAdapterTest extends SmallTestBase{
             TriggerClause expectedClause = expectedClauses[i];
             String jsonString = JsonUtil.triggerClauseToJson(expectedClause).toString();
             TriggerClause deserializedClause = gson.fromJson(jsonString, TriggerClause.class);
-            assertSameTriggerClauses("failed on ["+i+"]", expectedClause, deserializedClause);
+            assertSameTriggerClauses(
+                    "failed on ["+i+"]",
+                    expectedClause,
+                    deserializedClause);
         }
     }
 }
