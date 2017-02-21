@@ -40,7 +40,7 @@ public class GroupedHistoryStatesQuery implements Parcelable {
          * @param timeRange time range of grouped query. The range should less
          *                  than 60 data grouping intervals.
          */
-        public Builder(
+        private Builder(
                 @NonNull String alias,
                 @NonNull TimeRange timeRange) {
             this.alias = alias;
@@ -170,7 +170,7 @@ public class GroupedHistoryStatesQuery implements Parcelable {
         dest.writeParcelable(this.timeRange, flags);
     }
 
-    public GroupedHistoryStatesQuery(Parcel in) {
+    private GroupedHistoryStatesQuery(Parcel in) {
         this.alias = in.readString();
         this.clause = in.readParcelable(QueryClause.class.getClassLoader());
         this.firmwareVersion = in.readString();
