@@ -122,7 +122,7 @@ public class GetTriggerTest extends ThingIFAPITestBase{
         Assert.assertEquals(true, trigger.disabled());
         Assert.assertEquals("COMMAND_EXECUTION_REJECTED", trigger.getDisabledReason());
         Assert.assertNull(trigger.getServerCode());
-//        this.assertPredicate(predicate, trigger.getPredicate());
+        assertSamePredicate(predicate, trigger.getPredicate());
         assertSameCommands(expectedCommand, trigger.getCommand());
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
