@@ -3,7 +3,10 @@ package com.kii.thingif;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
+import com.kii.thingif.clause.trigger.TriggerClause;
 import com.kii.thingif.command.Command;
+import com.kii.thingif.trigger.Predicate;
+import com.kii.thingif.utils.JsonUtil;
 
 import junit.framework.Assert;
 
@@ -63,5 +66,17 @@ public class SmallTestBase {
         Assert.assertTrue(Arrays.equals(
                 expected.getAliasActionResults().toArray(),
                 actual.getAliasActionResults().toArray()));
+    }
+
+    protected void assertSameTriggerClauses(TriggerClause expected, TriggerClause actual) {
+        Assert.assertEquals(
+                JsonUtil.triggerClauseToJson(expected).toString(),
+                JsonUtil.triggerClauseToJson(actual).toString());
+    }
+
+    protected void assertSamePredicate(Predicate expected, Predicate actual) {
+        Assert.assertEquals(
+                JsonUtil.predicateToJson(expected).toString(),
+                JsonUtil.predicateToJson(actual).toString());
     }
 }
