@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import com.kii.thingif.clause.trigger.TriggerClause;
 import com.kii.thingif.command.Command;
 import com.kii.thingif.trigger.Predicate;
+import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.utils.JsonUtil;
 
 import junit.framework.Assert;
@@ -82,5 +83,11 @@ public class SmallTestBase {
         Assert.assertEquals(
                 JsonUtil.predicateToJson(expected).toString(),
                 JsonUtil.predicateToJson(actual).toString());
+    }
+
+    protected void assertServerCode(ServerCode expected, ServerCode actual) {
+        Assert.assertEquals(
+                JsonUtil.serverCodeToJson(expected).toString(),
+                JsonUtil.serverCodeToJson(actual).toString());
     }
 }

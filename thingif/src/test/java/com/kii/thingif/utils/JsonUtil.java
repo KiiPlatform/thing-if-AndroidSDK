@@ -9,6 +9,7 @@ import com.kii.thingif.clause.trigger.TriggerClause;
 import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.ScheduleOncePredicate;
 import com.kii.thingif.trigger.SchedulePredicate;
+import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.StatePredicate;
 
 import org.json.JSONArray;
@@ -86,6 +87,19 @@ public class JsonUtil {
             } else {
                 throw new RuntimeException("not support predicate");
             }
+        }catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static JSONObject serverCodeToJson(ServerCode serverCode) {
+        JSONObject ret = new JSONObject();
+        try {
+            ret.put("endPoint", serverCode.getEndpoint());
+            ret.putOpt("executorAccessToken", serverCode.getExecutorAccessToken());
+            ret.putOpt("targetAppID", serverCode.getTargetAppID());
+            ret.putOpt("parameters", serverCode.getParameters());
+            return ret;
         }catch (JSONException e) {
             throw new RuntimeException(e);
         }
