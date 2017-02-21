@@ -32,6 +32,7 @@ import com.kii.thingif.gateway.Gateway;
 import com.kii.thingif.gateway.PendingEndNode;
 import com.kii.thingif.internal.gson.AliasActionAdapter;
 import com.kii.thingif.internal.gson.JSONObjectAdapter;
+import com.kii.thingif.internal.gson.PredicateAdapter;
 import com.kii.thingif.internal.gson.ThingIFAPIAdapter;
 import com.kii.thingif.internal.gson.TypedIDAdapter;
 import com.kii.thingif.internal.http.IoTRestClient;
@@ -448,6 +449,9 @@ public class ThingIFAPI implements Parcelable {
                 .registerTypeAdapter(
                         JSONObject.class,
                         new JSONObjectAdapter())
+                .registerTypeAdapter(
+                        Predicate.class,
+                        new PredicateAdapter())
                 .create();
     }
     /**
