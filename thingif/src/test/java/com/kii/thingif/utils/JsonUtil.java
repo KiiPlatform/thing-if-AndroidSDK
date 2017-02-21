@@ -19,7 +19,7 @@ import org.json.JSONObject;
 public class JsonUtil {
     public static JSONObject triggerClauseToJson(TriggerClause clause) {
         try {
-            if (clause instanceof EqualsClauseInTrigger) {
+            if (clause.getClass().equals(EqualsClauseInTrigger.class)) {
                 JSONObject json = new JSONObject();
                 EqualsClauseInTrigger eq = (EqualsClauseInTrigger)clause;
                 json.put("type", "eq");
@@ -27,13 +27,14 @@ public class JsonUtil {
                 json.put("field", eq.getField());
                 json.put("value", eq.getValue());
                 return json;
-            } else if(clause instanceof NotEqualsClauseInTrigger) {
+            } else if(clause.getClass().equals(NotEqualsClauseInTrigger.class)) {
                 return new JSONObject()
                         .put("type", "not")
                         .put("clause", triggerClauseToJson(((NotEqualsClauseInTrigger) clause).getEquals()));
-            } else if (clause instanceof RangeClauseInTrigger) {
+            } else if (clause.getClass().equals(RangeClauseInTrigger.class)) {
                 JSONObject rangeJson = new JSONObject();
                 RangeClauseInTrigger range = (RangeClauseInTrigger) clause;
+                rangeJson.put("type", "range");
                 rangeJson.put("alias", range.getAlias());
                 rangeJson.put("field", range.getField());
                 rangeJson.putOpt("lowerIncluded", range.getLowerIncluded());
@@ -41,7 +42,7 @@ public class JsonUtil {
                 rangeJson.putOpt("upperIncluded", range.getUpperIncluded());
                 rangeJson.putOpt("upperLimit", range.getUpperLimit());
                 return rangeJson;
-            } else if (clause instanceof AndClauseInTrigger) {
+            } else if (clause.getClass().equals(AndClauseInTrigger.class)) {
                 JSONArray clauses = new JSONArray();
                 for (TriggerClause subClause : ((AndClauseInTrigger)clause).getClauses()) {
                     clauses.put(triggerClauseToJson(subClause));
@@ -49,7 +50,7 @@ public class JsonUtil {
                 return new JSONObject()
                         .put("type", "and")
                         .put("clauses", clauses);
-            } else if (clause instanceof OrClauseInTrigger) {
+            } else if (clause.getClass().equals(OrClauseInTrigger.class)) {
 
                 JSONArray clauses = new JSONArray();
                 for (TriggerClause subClause : ((OrClauseInTrigger) clause).getClauses()) {

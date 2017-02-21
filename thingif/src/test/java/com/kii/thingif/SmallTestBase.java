@@ -73,6 +73,12 @@ public class SmallTestBase {
         }
     }
 
+    protected void assertSameTriggerClauses(String message, TriggerClause expected, TriggerClause actual) {
+        assertJSONObject(
+                message,
+                JsonUtil.triggerClauseToJson(expected),
+                JsonUtil.triggerClauseToJson(actual));
+    }
     protected void assertSameTriggerClauses(TriggerClause expected, TriggerClause actual) {
         Assert.assertEquals(
                 JsonUtil.triggerClauseToJson(expected).toString(),
