@@ -5,15 +5,12 @@ import android.support.annotation.NonNull;
 
 import com.kii.thingif.clause.base.BaseEquals;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 public class EqualsClauseInTrigger implements BaseEquals, TriggerClause{
     private @NonNull String field;
     private @NonNull Object value;
     private @NonNull String alias;
 
-    private volatile int hashCode; // cached hashcode for performance
+    private transient volatile int hashCode; // cached hashcode for performance
 
     public EqualsClauseInTrigger(
             @NonNull String alias,
