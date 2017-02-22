@@ -16,6 +16,7 @@ import com.kii.thingif.trigger.ScheduleOncePredicate;
 import com.kii.thingif.trigger.SchedulePredicate;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.StatePredicate;
+import com.kii.thingif.trigger.Trigger;
 import com.kii.thingif.trigger.TriggerOptions;
 
 import org.json.JSONArray;
@@ -166,6 +167,20 @@ public class JsonUtil {
         }catch (JSONException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    public static JSONObject triggerToJson (Trigger trigger) {
+        return createTriggerJson(trigger.getTriggerID(),
+                trigger.getCommand(),
+                trigger.getServerCode(),
+                trigger.getPredicate(),
+                TriggerOptions.Builder.newBuilder()
+                        .setMetadata(trigger.getMetadata())
+                        .setTitle(trigger.getTitle())
+                        .setDescription(trigger.getDescription())
+                        .build(),
+                trigger.disabled(),
+                trigger.getDisabledReason());
     }
 
     public static JSONObject createTriggerJson(

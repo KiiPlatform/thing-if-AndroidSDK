@@ -1,12 +1,12 @@
 package com.kii.thingif;
 
 
-import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import com.kii.thingif.clause.trigger.TriggerClause;
 import com.kii.thingif.command.Command;
 import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.ServerCode;
+import com.kii.thingif.trigger.Trigger;
 import com.kii.thingif.utils.JsonUtil;
 
 import junit.framework.Assert;
@@ -14,8 +14,6 @@ import junit.framework.Assert;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.Arrays;
 
 public class SmallTestBase {
 
@@ -90,5 +88,18 @@ public class SmallTestBase {
         Assert.assertEquals(
                 JsonUtil.serverCodeToJson(expected).toString(),
                 JsonUtil.serverCodeToJson(actual).toString());
+    }
+
+    protected void assertSameTrigger(Trigger expected, Trigger actual) {
+        assertJSONObject(
+                JsonUtil.triggerToJson(expected),
+                JsonUtil.triggerToJson(actual));
+    }
+
+    protected void assertSameTrigger(String message, Trigger expected, Trigger actual) {
+        assertJSONObject(
+                message,
+                JsonUtil.triggerToJson(expected),
+                JsonUtil.triggerToJson(actual));
     }
 }
