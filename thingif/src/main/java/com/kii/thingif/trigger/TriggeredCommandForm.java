@@ -52,9 +52,6 @@ public class TriggeredCommandForm implements Parcelable {
         private Builder(
                 @NonNull List<AliasAction<? extends Action>> aliasActions)
         {
-            if (isEmpty(aliasActions)) {
-                throw new IllegalArgumentException("aliasActions is null or empty.");
-            }
             this.aliasActions = aliasActions;
         }
 
@@ -282,6 +279,9 @@ public class TriggeredCommandForm implements Parcelable {
          */
         @NonNull
         public TriggeredCommandForm build() {
+            if (isEmpty(this.aliasActions)) {
+                throw new IllegalArgumentException("aliasActions is empty.");
+            }
 
             TriggeredCommandForm retval =
                     new TriggeredCommandForm(this.aliasActions);
