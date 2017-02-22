@@ -15,7 +15,7 @@ public class RangeClauseInQuery implements QueryClause, BaseRange {
     private @Nullable Boolean upperIncluded;
     private @Nullable Boolean lowerIncluded;
 
-    private volatile int hashCode; // cached hashcode for performance
+    private transient volatile int hashCode; // cached hashcode for performance
 
     private RangeClauseInQuery(
             @NonNull String field,

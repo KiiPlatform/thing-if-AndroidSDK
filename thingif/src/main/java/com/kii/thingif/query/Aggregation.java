@@ -15,7 +15,7 @@ public class Aggregation implements Parcelable{
     private @NonNull final String field;
     private @NonNull final FieldType fieldType;
 
-    private volatile int hashCode; // cached hashcode for performance
+    private transient volatile int hashCode; // cached hashcode for performance
 
     public static enum FunctionType{
         MAX,

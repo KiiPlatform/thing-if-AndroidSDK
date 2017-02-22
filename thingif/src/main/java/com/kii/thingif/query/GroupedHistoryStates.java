@@ -14,7 +14,7 @@ public class GroupedHistoryStates<S extends TargetState> implements Parcelable {
     private @NonNull TimeRange timeRange;
     private @NonNull List<HistoryState<S>> objects;
 
-    private volatile int hashCode; // cached hashcode for performance
+    private transient volatile int hashCode; // cached hashcode for performance
 
     public GroupedHistoryStates(
             @NonNull TimeRange timeRange,

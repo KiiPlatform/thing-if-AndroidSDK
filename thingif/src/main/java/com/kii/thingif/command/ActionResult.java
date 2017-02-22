@@ -18,7 +18,7 @@ public final class ActionResult implements Parcelable {
     @NonNull private String actionName;
     @Nullable private JSONObject data;
 
-    private volatile int hashCode; // cached hashcode for performance
+    private transient volatile int hashCode; // cached hashcode for performance
 
     ActionResult(
             @NonNull String actionName,

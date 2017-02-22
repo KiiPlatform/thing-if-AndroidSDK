@@ -11,7 +11,7 @@ public class TimeRange implements Parcelable{
     private @NonNull Date from;
     private @NonNull Date to;
 
-    private volatile int hashCode; // cached hashcode for performance
+    private transient volatile int hashCode; // cached hashcode for performance
 
     /**
      * Initialize time range.

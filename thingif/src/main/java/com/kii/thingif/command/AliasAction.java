@@ -15,7 +15,7 @@ public class AliasAction<T extends Action> implements Parcelable{
     @NonNull private String alias;
     @NonNull private T action;
 
-    private volatile int hashCode; // cached hashcode for performance
+    private transient volatile int hashCode; // cached hashcode for performance
 
     /**
      * Initialize AliasAction instance.

@@ -15,7 +15,7 @@ public class GroupedHistoryStatesQuery implements Parcelable {
     private @Nullable String firmwareVersion;
     private @NonNull TimeRange timeRange;
 
-    private volatile int hashCode; // cached hashcode for performance
+    private transient volatile int hashCode; // cached hashcode for performance
 
     private GroupedHistoryStatesQuery(
             @NonNull String alias,
