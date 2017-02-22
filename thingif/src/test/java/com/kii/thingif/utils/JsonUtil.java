@@ -34,6 +34,7 @@ public class JsonUtil {
             } else if (clause instanceof RangeClauseInTrigger) {
                 JSONObject rangeJson = new JSONObject();
                 RangeClauseInTrigger range = (RangeClauseInTrigger) clause;
+                rangeJson.put("type", "range");
                 rangeJson.put("alias", range.getAlias());
                 rangeJson.put("field", range.getField());
                 rangeJson.putOpt("lowerIncluded", range.getLowerIncluded());
