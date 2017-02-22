@@ -12,7 +12,9 @@ import android.support.annotation.WorkerThread;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
 import com.kii.thingif.command.AliasActionResult;
@@ -27,12 +29,12 @@ import com.kii.thingif.exception.ThingIFRestException;
 import com.kii.thingif.exception.UnloadableInstanceVersionException;
 import com.kii.thingif.exception.UnregisteredAliasException;
 import com.kii.thingif.exception.UnsupportedActionException;
-import com.kii.thingif.exception.UnsupportedSchemaException;
 import com.kii.thingif.gateway.EndNode;
 import com.kii.thingif.gateway.Gateway;
 import com.kii.thingif.gateway.PendingEndNode;
 import com.kii.thingif.internal.gson.AliasActionAdapter;
 import com.kii.thingif.internal.gson.JSONObjectAdapter;
+import com.kii.thingif.internal.gson.PredicateAdapter;
 import com.kii.thingif.internal.gson.ThingIFAPIAdapter;
 import com.kii.thingif.internal.gson.TypedIDAdapter;
 import com.kii.thingif.internal.http.IoTRestClient;
@@ -448,6 +450,9 @@ public class ThingIFAPI implements Parcelable {
                 .registerTypeAdapter(
                         JSONObject.class,
                         new JSONObjectAdapter())
+                .registerTypeAdapter(
+                        Predicate.class,
+                        new PredicateAdapter())
                 .create();
     }
     /**
@@ -1118,8 +1123,7 @@ public class ThingIFAPI implements Parcelable {
      * @return Trigger instance.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws UnsupportedSchemaException Thrown when the returned response has a schema that cannot handle this instance.
-     * @throws UnsupportedActionException Thrown when the returned response has a action that cannot handle this instance.
+     * @throws UnregisteredAliasException Thrown when the returned response contains alias that cannot be handled.
      */
     @NonNull
     @WorkerThread
@@ -1140,19 +1144,17 @@ public class ThingIFAPI implements Parcelable {
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
 
-        //TODO: // FIXME: 2017/01/23
-        return null;
-//        Schema schema = null;
-//        JSONObject commandObject = responseBody.optJSONObject("command");
-//        if (commandObject != null) {
-//            String schemaName = commandObject.optString("schema", null);
-//            int schemaVersion = commandObject.optInt("schemaVersion");
-//            schema = this.getSchema(schemaName, schemaVersion);
-//            if (schema == null) {
-//                throw new UnsupportedSchemaException(schemaName, schemaVersion);
-//            }
-//        }
-//        return this.deserialize(schema, responseBody, this.target.getTypedID());
+        JsonObject triggerJson = new JsonParser().parse(responseBody.toString()).getAsJsonObject();
+        triggerJson.add("targetID", gson.toJsonTree(this.target.getTypedID()));
+        try {
+            return this.gson.fromJson(triggerJson, Trigger.class);
+        }catch (JsonParseException ex) {
+            if (ex.getCause() instanceof ThingIFException) {
+                throw (ThingIFException) ex.getCause();
+            } else {
+                throw ex;
+            }
+        }
     }
 
     /**

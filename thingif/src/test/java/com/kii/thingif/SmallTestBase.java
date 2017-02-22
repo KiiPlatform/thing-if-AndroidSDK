@@ -57,20 +57,9 @@ public class SmallTestBase {
     }
 
     protected void assertSameCommands(Command expected, Command actual) {
-        Gson gson = new Gson();
-        Assert.assertEquals(gson.toJson(expected), gson.toJson(actual));
-
-        Assert.assertTrue(Arrays.equals(
-                expected.getAliasActions().toArray(),
-                actual.getAliasActions().toArray()));
-        Assert.assertTrue(
-                expected.getAliasActionResults() != null && actual.getAliasActionResults() != null ||
-                        expected.getAliasActionResults() == null && actual.getAliasActionResults() == null);
-        if (expected.getAliasActionResults() != null && actual.getAliasActionResults() != null) {
-            Assert.assertTrue(Arrays.equals(
-                    expected.getAliasActionResults().toArray(),
-                    actual.getAliasActionResults().toArray()));
-        }
+        Assert.assertEquals(
+                JsonUtil.commandToJson(expected).toString(),
+                JsonUtil.commandToJson(actual).toString());
     }
 
     protected void assertSameTriggerClauses(String message, TriggerClause expected, TriggerClause actual) {
