@@ -70,7 +70,6 @@ public class GetTriggerTest extends ThingIFAPITestBase{
         getTriggerWithCommandTest(predicate);
     }
 
-
     private void getTriggerWithCommandTest(Predicate predicate) throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
@@ -105,7 +104,6 @@ public class GetTriggerTest extends ThingIFAPITestBase{
                 commandDescription,
                 commandMetaData);
 
-
         this.addMockResponseForGetTriggerWithCommand(
                 200,
                 triggerID,
@@ -124,6 +122,46 @@ public class GetTriggerTest extends ThingIFAPITestBase{
         Assert.assertNull(trigger.getServerCode());
         assertSamePredicate(predicate, trigger.getPredicate());
         assertSameCommands(expectedCommand, trigger.getCommand());
+        // verify the request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers/" + triggerID, request.getPath());
+        Assert.assertEquals("GET", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        this.assertRequestHeader(expectedRequestHeaders, request);
+    }
+
+    @Test
+    public void getTriggerWithServerCodeTest() throws Exception {
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        String triggerID = "trigger-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        StatePredicate predicate = new StatePredicate(
+                new Condition(new EqualsClauseInTrigger("power", true)), TriggersWhen.CONDITION_CHANGED);
+
+        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+
+        String endpoint = "function_name";
+        String executorAccessToken = UUID.randomUUID().toString();
+        String targetAppID = UUID.randomUUID().toString().substring(0, 8);
+        JSONObject parameters = new JSONObject("{\"name\":\"kii\", \"age\":30, \"enabled\":true}");
+        ServerCode expectedServerCode = new ServerCode(endpoint, executorAccessToken, targetAppID, parameters);
+        this.addMockResponseForGetTriggerWithServerCode(200, triggerID, expectedServerCode, predicate, true, "COMMAND_EXECUTION_REJECTED", schema);
+
+        ThingIFAPIUtils.setTarget(api, target);
+        Trigger trigger = api.getTrigger(triggerID);
+        // verify the result
+        Assert.assertEquals(triggerID, trigger.getTriggerID());
+        Assert.assertEquals(true, trigger.disabled());
+        Assert.assertEquals("COMMAND_EXECUTION_REJECTED", trigger.getDisabledReason());
+        Assert.assertNull(trigger.getCommand());
+        this.assertPredicate(predicate, trigger.getPredicate());
+        this.assertServerCode(expectedServerCode, trigger.getServerCode());
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
         Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers/" + triggerID, request.getPath());
