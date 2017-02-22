@@ -18,6 +18,7 @@ import com.kii.thingif.thingifapi.utils.ThingIFAPIUtils;
 import com.kii.thingif.trigger.Condition;
 import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.ScheduleOncePredicate;
+import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.StatePredicate;
 import com.kii.thingif.trigger.Trigger;
 import com.kii.thingif.trigger.TriggersWhen;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(RobolectricTestRunner.class)
@@ -127,7 +129,7 @@ public class GetTriggerTest extends ThingIFAPITestBase{
         Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers/" + triggerID, request.getPath());
         Assert.assertEquals("GET", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
@@ -142,16 +144,23 @@ public class GetTriggerTest extends ThingIFAPITestBase{
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         StatePredicate predicate = new StatePredicate(
-                new Condition(new EqualsClauseInTrigger("power", true)), TriggersWhen.CONDITION_CHANGED);
+                new Condition(new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
 
         String endpoint = "function_name";
         String executorAccessToken = UUID.randomUUID().toString();
         String targetAppID = UUID.randomUUID().toString().substring(0, 8);
         JSONObject parameters = new JSONObject("{\"name\":\"kii\", \"age\":30, \"enabled\":true}");
         ServerCode expectedServerCode = new ServerCode(endpoint, executorAccessToken, targetAppID, parameters);
-        this.addMockResponseForGetTriggerWithServerCode(200, triggerID, expectedServerCode, predicate, true, "COMMAND_EXECUTION_REJECTED", schema);
+        this.addMockResponseForGetTriggerWithServerCode(
+                200,
+                triggerID,
+                expectedServerCode,
+                predicate,
+                null,
+                true,
+                "COMMAND_EXECUTION_REJECTED");
 
         ThingIFAPIUtils.setTarget(api, target);
         Trigger trigger = api.getTrigger(triggerID);
@@ -160,14 +169,14 @@ public class GetTriggerTest extends ThingIFAPITestBase{
         Assert.assertEquals(true, trigger.disabled());
         Assert.assertEquals("COMMAND_EXECUTION_REJECTED", trigger.getDisabledReason());
         Assert.assertNull(trigger.getCommand());
-        this.assertPredicate(predicate, trigger.getPredicate());
-        this.assertServerCode(expectedServerCode, trigger.getServerCode());
+        assertSamePredicate(predicate, trigger.getPredicate());
+        assertServerCode(expectedServerCode, trigger.getServerCode());
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
         Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers/" + triggerID, request.getPath());
         Assert.assertEquals("GET", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());

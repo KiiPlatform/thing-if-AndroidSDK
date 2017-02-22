@@ -14,6 +14,7 @@ import com.kii.thingif.command.CommandState;
 import com.kii.thingif.states.AirConditionerState;
 import com.kii.thingif.states.HumidityState;
 import com.kii.thingif.trigger.Predicate;
+import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.TriggerOptions;
 import com.kii.thingif.utils.JsonUtil;
 import com.squareup.okhttp.mockwebserver.MockResponse;
@@ -283,41 +284,42 @@ public class ThingIFAPITestBase extends SmallTestBase {
             Boolean disabled,
             String disabledReason)
     {
-        try {
-            MockResponse response = new MockResponse().setResponseCode(httpStatus);
-            if (httpStatus == 200) {
-                JSONObject responseBody = new JSONObject();
-                if (options != null) {
-                    if (options.getTitle() != null) {
-                        responseBody.put("title", options.getTitle());
-                    }
-                    if (options.getDescription() != null) {
-                        responseBody.put("description", options.getDescription());
-                    }
-                    if (options.getMetadata() != null) {
-                        responseBody.put("metadata", options.getMetadata());
-                    }
-                }
-                if (triggerID != null) {
-                    responseBody.put("triggerID", triggerID);
-                }
-                if (command != null) {
-                    responseBody.put("command", JsonUtil.commandToJson(command));
-                }
-                if (predicate != null) {
-                    responseBody.put("predicate", JsonUtil.predicateToJson(predicate));
-                }
-                if (disabled != null) {
-                    responseBody.put("disabled", disabled);
-                }
-                if (disabledReason != null) {
-                    responseBody.put("disabledReason", disabledReason);
-                }
-                response.setBody(responseBody.toString());
-            }
-            this.server.enqueue(response);
-        }catch (JSONException e){
-            throw new RuntimeException(e);
+        MockResponse response = new MockResponse().setResponseCode(httpStatus);
+        if (httpStatus == 200) {
+            JSONObject responseBody = JsonUtil.createTriggerJson(
+                    triggerID,
+                    command,
+                    null,
+                    predicate,
+                    options,
+                    disabled,
+                    disabledReason);
+            response.setBody(responseBody.toString());
         }
+        this.server.enqueue(response);
+    }
+
+    protected void addMockResponseForGetTriggerWithServerCode(
+            int httpStatus,
+            String triggerID,
+            ServerCode serverCode,
+            Predicate predicate,
+            TriggerOptions options,
+            Boolean disabled,
+            String disabledReason) throws Exception
+    {
+        MockResponse response = new MockResponse().setResponseCode(httpStatus);
+        if (httpStatus == 200) {
+            JSONObject responseBody = JsonUtil.createTriggerJson(
+                    triggerID,
+                    null,
+                    serverCode,
+                    predicate,
+                    options,
+                    disabled,
+                    disabledReason);
+            response.setBody(responseBody.toString());
+        }
+        this.server.enqueue(response);
     }
 }

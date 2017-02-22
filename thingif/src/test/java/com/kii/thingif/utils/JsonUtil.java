@@ -16,6 +16,7 @@ import com.kii.thingif.trigger.ScheduleOncePredicate;
 import com.kii.thingif.trigger.SchedulePredicate;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.StatePredicate;
+import com.kii.thingif.trigger.TriggerOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -102,7 +103,7 @@ public class JsonUtil {
     public static JSONObject serverCodeToJson(ServerCode serverCode) {
         JSONObject ret = new JSONObject();
         try {
-            ret.put("endPoint", serverCode.getEndpoint());
+            ret.put("endpoint", serverCode.getEndpoint());
             ret.putOpt("executorAccessToken", serverCode.getExecutorAccessToken());
             ret.putOpt("targetAppID", serverCode.getTargetAppID());
             ret.putOpt("parameters", serverCode.getParameters());
@@ -164,6 +165,39 @@ public class JsonUtil {
 
         }catch (JSONException ex) {
             throw new RuntimeException(ex);
+        }
+    }
+
+    public static JSONObject createTriggerJson(
+            String triggerID,
+            Command command,
+            ServerCode serverCode,
+            Predicate predicate,
+            TriggerOptions options,
+            Boolean disabled,
+            String disabledReason) {
+        JSONObject ret = new JSONObject();
+        try {
+            if (options != null) {
+                ret.putOpt("title", options.getTitle());
+                ret.putOpt("description", options.getDescription());
+                ret.putOpt("metadata", options.getMetadata());
+            }
+                ret.put("triggerID", triggerID);
+            if (command != null) {
+                ret.put("command", JsonUtil.commandToJson(command));
+            }
+            if (serverCode != null) {
+                ret.put("serverCode", JsonUtil.serverCodeToJson(serverCode));
+            }
+            if (predicate != null) {
+                ret.put("predicate", JsonUtil.predicateToJson(predicate));
+            }
+            ret.putOpt("disabled", disabled);
+            ret.putOpt("disabledReason", disabledReason);
+            return ret;
+        }catch (JSONException e) {
+            throw new RuntimeException(e);
         }
     }
 }
