@@ -11,7 +11,7 @@ public class EqualsClauseInQuery implements BaseEquals, QueryClause {
     private @NonNull String field;
     private @NonNull Object value;
 
-    private volatile int hashCode; // cached hashcode for performance
+    private transient volatile int hashCode; // cached hashcode for performance
 
     public EqualsClauseInQuery(
             @NonNull String field,

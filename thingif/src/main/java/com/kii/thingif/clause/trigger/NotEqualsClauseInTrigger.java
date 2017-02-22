@@ -11,7 +11,7 @@ import org.json.JSONObject;
 public class NotEqualsClauseInTrigger implements BaseNotEquals, TriggerClause {
     private EqualsClauseInTrigger equals;
 
-    private volatile int hashCode; // cached hashcode for performance
+    private transient volatile int hashCode; // cached hashcode for performance
 
     public NotEqualsClauseInTrigger(EqualsClauseInTrigger equals) {
         this.equals = equals;

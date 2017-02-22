@@ -16,7 +16,7 @@ public class AliasActionResult implements Parcelable{
     @NonNull private String alias;
     @NonNull private List<ActionResult> results;
 
-    private volatile int hashCode; // cached hashcode for performance
+    private transient volatile int hashCode; // cached hashcode for performance
 
     AliasActionResult(
             @NonNull String alias,

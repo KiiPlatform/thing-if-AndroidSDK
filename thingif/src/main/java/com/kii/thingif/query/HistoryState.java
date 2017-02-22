@@ -12,7 +12,7 @@ public class HistoryState<T extends TargetState> implements Parcelable {
     private @NonNull T state;
     private @NonNull Date createdAt;
 
-    private volatile int hashCode; // cached hashcode for performance
+    private transient volatile int hashCode; // cached hashcode for performance
 
     public HistoryState(
             @NonNull T state,

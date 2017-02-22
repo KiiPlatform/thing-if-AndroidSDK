@@ -15,7 +15,7 @@ public class HistoryStatesQuery implements Parcelable {
     private @Nullable Integer bestEffortLimit;
     private @Nullable String nextPaginationKey;
 
-    private volatile int hashCode; // cached hashcode for performance
+    private transient volatile int hashCode; // cached hashcode for performance
 
     private HistoryStatesQuery(
             @NonNull  String alias,

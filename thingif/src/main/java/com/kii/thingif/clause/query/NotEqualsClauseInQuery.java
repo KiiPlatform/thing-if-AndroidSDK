@@ -10,7 +10,7 @@ public class NotEqualsClauseInQuery implements BaseNotEquals, QueryClause {
 
     private EqualsClauseInQuery equals;
 
-    private volatile int hashCode; // cached hashcode for performance
+    private transient volatile int hashCode; // cached hashcode for performance
 
     public NotEqualsClauseInQuery(EqualsClauseInQuery equals) {
         this.equals = equals;
