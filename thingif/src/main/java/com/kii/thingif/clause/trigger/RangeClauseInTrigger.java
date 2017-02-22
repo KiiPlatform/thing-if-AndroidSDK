@@ -6,9 +6,6 @@ import android.support.annotation.Nullable;
 
 import com.kii.thingif.clause.base.BaseRange;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 public class RangeClauseInTrigger implements BaseRange, TriggerClause {
     private @NonNull String alias;
     private @NonNull String field;
@@ -17,7 +14,7 @@ public class RangeClauseInTrigger implements BaseRange, TriggerClause {
     private @Nullable Boolean upperIncluded;
     private @Nullable Boolean lowerIncluded;
 
-    private volatile int hashCode; // cached hashcode for performance
+    private transient volatile int hashCode; // cached hashcode for performance
 
     private RangeClauseInTrigger(
             @NonNull String alias,

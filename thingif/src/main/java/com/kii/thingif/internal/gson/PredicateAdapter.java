@@ -33,12 +33,12 @@ public class PredicateAdapter implements
             JsonElement clause = gson.toJsonTree(
                     ((StatePredicate) src).getCondition().getClause(),
                     TriggerClause.class);
-            JsonObject json = new JsonObject();
-            json.add("condition", clause);
-            json.addProperty("triggersWhen", ((StatePredicate) src).getTriggersWhen().name());
-            json.addProperty("eventSource", src.getEventSource().name());
-            return json;
-        }else {
+            JsonObject ret = new JsonObject();
+            ret.add("condition", clause);
+            ret.addProperty("triggersWhen", ((StatePredicate) src).getTriggersWhen().name());
+            ret.addProperty("eventSource", src.getEventSource().name());
+            return ret;
+        } else {
             JsonObject ret = gson.toJsonTree(src).getAsJsonObject();
             ret.addProperty("eventSource", src.getEventSource().name());
             return ret;
