@@ -2,13 +2,12 @@ package com.kii.thingif.trigger;
 
 import com.kii.thingif.TypedID;
 import com.kii.thingif.actions.AirConditionerActions;
-import com.kii.thingif.actions.HumidityActions;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
 
 import junit.framework.Assert;
 
-import org.json.JSONException;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,227 +20,121 @@ import java.util.List;
 public class TriggeredCommandFormTest {
 
     @Test
-    public void equals_hashCode_AliasActionsTest() {
+    public void minValueTest() {
         AliasAction<AirConditionerActions> airAlias =
                 new AliasAction<>("alias", new AirConditionerActions(false, 10));
-        AliasAction<HumidityActions> humAlias =
-                new AliasAction<>("alias", new HumidityActions(10));
         List<AliasAction<? extends Action>> aliasActions = new ArrayList<>();
         aliasActions.add(airAlias);
 
-        TriggeredCommandForm target = TriggeredCommandForm.Builder.newBuilder(aliasActions).build();
-        TriggeredCommandForm sameOne = TriggeredCommandForm.Builder.newBuilder()
-                .addAliasAction(airAlias)
+        TriggeredCommandForm target = TriggeredCommandForm.Builder
+                .newBuilder(aliasActions)
                 .build();
-        TriggeredCommandForm differentOne = TriggeredCommandForm.Builder.newBuilder()
-                .addAliasAction(humAlias)
-                .build();
-        try {
-            TriggeredCommandForm.Builder.newBuilder().build();
-            Assert.fail("IllegalArgumentException must be thrown.");
-        } catch (IllegalArgumentException e) {
-            // expected.
-        } catch (Exception e) {
-            Assert.fail("Unknown exception must not be thrown.");
-        }
 
-        Assert.assertTrue(target.equals(target));
-        Assert.assertEquals(target.hashCode(), target.hashCode());
-        Assert.assertTrue(target.equals(sameOne));
-        Assert.assertEquals(target.hashCode(), sameOne.hashCode());
-
-        Assert.assertFalse(target.equals(differentOne));
-        Assert.assertNotSame(target.hashCode(), differentOne.hashCode());
-
-        Assert.assertFalse(target.equals(null));
-        Assert.assertFalse(target.equals((Object)airAlias));
+        Assert.assertNotNull(target);
+        Assert.assertEquals(aliasActions, target.getAliasActions());
+        Assert.assertNull(target.getTargetID());
+        Assert.assertNull(target.getTitle());
+        Assert.assertNull(target.getDescription());
+        Assert.assertNull(target.getMetadata());
     }
 
     @Test
-    public void equals_hashCode_TargetIDTest() {
-        TypedID typedID1 = new TypedID(TypedID.Types.THING, "dummy");
-        TypedID typedID2 = new TypedID(TypedID.Types.THING, "differ");
+    public void maxValueTest() {
         AliasAction<AirConditionerActions> airAlias =
                 new AliasAction<>("alias", new AirConditionerActions(false, 10));
         List<AliasAction<? extends Action>> aliasActions = new ArrayList<>();
         aliasActions.add(airAlias);
+        TypedID targetID = new TypedID(TypedID.Types.THING, "id");
+        JSONObject metadata = new JSONObject();
 
-        TriggeredCommandForm target = TriggeredCommandForm.Builder.newBuilder()
-                .addAliasAction(airAlias)
-                .setTargetID(typedID1)
-                .build();
-        TriggeredCommandForm sameOne = TriggeredCommandForm.Builder.newBuilder()
-                .addAliasAction(airAlias)
-                .setTargetID(typedID1)
-                .build();
-        TriggeredCommandForm differentOne = TriggeredCommandForm.Builder.newBuilder()
-                .addAliasAction(airAlias)
-                .setTargetID(typedID2)
-                .build();
-        TriggeredCommandForm differentNull = TriggeredCommandForm.Builder.newBuilder()
-                .addAliasAction(airAlias)
-                .build();
-
-        Assert.assertTrue(target.equals(target));
-        Assert.assertEquals(target.hashCode(), target.hashCode());
-        Assert.assertTrue(target.equals(sameOne));
-        Assert.assertEquals(target.hashCode(), sameOne.hashCode());
-
-        Assert.assertFalse(target.equals(differentOne));
-        Assert.assertNotSame(target.hashCode(), differentOne.hashCode());
-        Assert.assertFalse(target.equals(differentNull));
-        Assert.assertNotSame(target.hashCode(), differentNull.hashCode());
-
-        Assert.assertFalse(target.equals(null));
-        Assert.assertFalse(target.equals((Object)typedID1));
-    }
-
-    @Test
-    public void equals_hashCode_TitleTest() {
-        String title = "dummyTitle";
-        TypedID typedID = new TypedID(TypedID.Types.THING, "dummy");
-        AliasAction<AirConditionerActions> airAlias =
-                new AliasAction<>("alias", new AirConditionerActions(false, 10));
-        List<AliasAction<? extends Action>> aliasActions = new ArrayList<>();
-        aliasActions.add(airAlias);
-
-        TriggeredCommandForm target = TriggeredCommandForm.Builder.newBuilder()
-                .addAliasAction(airAlias)
-                .setTargetID(typedID)
-                .setTitle(title)
-                .build();
-        TriggeredCommandForm sameOne = TriggeredCommandForm.Builder.newBuilder()
-                .addAliasAction(airAlias)
-                .setTargetID(typedID)
-                .setTitle(title)
-                .build();
-        TriggeredCommandForm differentOne = TriggeredCommandForm.Builder.newBuilder()
-                .addAliasAction(airAlias)
-                .setTargetID(typedID)
-                .setTitle("differentTitle")
-                .build();
-        TriggeredCommandForm differentNull = TriggeredCommandForm.Builder.newBuilder()
-                .addAliasAction(airAlias)
-                .setTargetID(typedID)
-                .build();
-
-        Assert.assertTrue(target.equals(target));
-        Assert.assertEquals(target.hashCode(), target.hashCode());
-        Assert.assertTrue(target.equals(sameOne));
-        Assert.assertEquals(target.hashCode(), sameOne.hashCode());
-
-        Assert.assertFalse(target.equals(differentOne));
-        Assert.assertNotSame(target.hashCode(), differentOne.hashCode());
-        Assert.assertFalse(target.equals(differentNull));
-        Assert.assertNotSame(target.hashCode(), differentNull.hashCode());
-
-        Assert.assertFalse(target.equals(null));
-        Assert.assertFalse(target.equals((Object)title));
-    }
-
-    @Test
-    public void equals_hashCode_DescriptionTest() {
-        String description = "dummyDescription";
-        String title = "dummyTitle";
-        TypedID typedID = new TypedID(TypedID.Types.THING, "dummy");
-        AliasAction<AirConditionerActions> airAlias =
-                new AliasAction<>("alias", new AirConditionerActions(false, 10));
-        List<AliasAction<? extends Action>> aliasActions = new ArrayList<>();
-        aliasActions.add(airAlias);
-
-        TriggeredCommandForm target = TriggeredCommandForm.Builder.newBuilder()
-                .addAliasAction(airAlias)
-                .setTargetID(typedID)
-                .setTitle(title)
-                .setDescription(description)
-                .build();
-        TriggeredCommandForm sameOne = TriggeredCommandForm.Builder.newBuilder()
-                .addAliasAction(airAlias)
-                .setTargetID(typedID)
-                .setTitle(title)
-                .setDescription(description)
-                .build();
-        TriggeredCommandForm differentOne = TriggeredCommandForm.Builder.newBuilder()
-                .addAliasAction(airAlias)
-                .setTargetID(typedID)
-                .setTitle(title)
-                .setDescription("differentDescrition")
-                .build();
-        TriggeredCommandForm differentNull = TriggeredCommandForm.Builder.newBuilder()
-                .addAliasAction(airAlias)
-                .setTargetID(typedID)
-                .setTitle(title)
-                .build();
-
-        Assert.assertTrue(target.equals(target));
-        Assert.assertEquals(target.hashCode(), target.hashCode());
-        Assert.assertTrue(target.equals(sameOne));
-        Assert.assertEquals(target.hashCode(), sameOne.hashCode());
-
-        Assert.assertFalse(target.equals(differentOne));
-        Assert.assertNotSame(target.hashCode(), differentOne.hashCode());
-        Assert.assertFalse(target.equals(differentNull));
-        Assert.assertNotSame(target.hashCode(), differentNull.hashCode());
-
-        Assert.assertFalse(target.equals(null));
-        Assert.assertFalse(target.equals((Object)description));
-    }
-
-    @Test
-    public void equals_hashCode_MetadataTest() {
-        JSONObject metadata = null;
-        try {
-            metadata = new JSONObject("{ \"key\" : \"value\" }");
-        } catch (JSONException e) {
-            Assert.fail("JSONException must not be thrown.");
-        }
-        String description = "dummyDescription";
-        String title = "dummyTitle";
-        TypedID typedID = new TypedID(TypedID.Types.THING, "dummy");
-        AliasAction<AirConditionerActions> airAlias =
-                new AliasAction<>("alias", new AirConditionerActions(false, 10));
-        List<AliasAction<? extends Action>> aliasActions = new ArrayList<>();
-        aliasActions.add(airAlias);
-
-        TriggeredCommandForm target = TriggeredCommandForm.Builder.newBuilder()
-                .addAliasAction(airAlias)
-                .setTargetID(typedID)
-                .setTitle(title)
-                .setDescription(description)
+        TriggeredCommandForm target = TriggeredCommandForm.Builder
+                .newBuilder(aliasActions)
+                .setTargetID(targetID)
+                .setTitle("title")
+                .setDescription("description")
                 .setMetadata(metadata)
                 .build();
-        TriggeredCommandForm sameOne = TriggeredCommandForm.Builder.newBuilder()
-                .addAliasAction(airAlias)
-                .setTargetID(typedID)
-                .setTitle(title)
-                .setDescription(description)
-                .setMetadata(metadata)
-                .build();
-        TriggeredCommandForm differentOne = TriggeredCommandForm.Builder.newBuilder()
-                .addAliasAction(airAlias)
-                .setTargetID(typedID)
-                .setTitle(title)
-                .setDescription(description)
-                .setMetadata(new JSONObject())
-                .build();
-        TriggeredCommandForm differentNull = TriggeredCommandForm.Builder.newBuilder()
-                .addAliasAction(airAlias)
-                .setTargetID(typedID)
-                .setTitle(title)
-                .setDescription(description)
+
+        Assert.assertNotNull(target);
+        Assert.assertEquals(aliasActions, target.getAliasActions());
+        Assert.assertEquals(targetID, target.getTargetID());
+        Assert.assertEquals("title", target.getTitle());
+        Assert.assertEquals("description", target.getDescription());
+        Assert.assertNotNull(target.getMetadata());
+        Assert.assertEquals(metadata.toString(), target.getMetadata().toString());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void emptyAliasActionsTest() {
+        TriggeredCommandForm.Builder.newBuilder().build();
+    }
+
+    @Test
+    public void addAliasActionTest() {
+        AliasAction<AirConditionerActions> airAlias1 =
+                new AliasAction<>("alias", new AirConditionerActions(false, 10));
+        AliasAction<AirConditionerActions> airAlias2 =
+                new AliasAction<>("alias", new AirConditionerActions(true, 25));
+
+        TriggeredCommandForm target = TriggeredCommandForm.Builder.newBuilder()
+                .addAliasAction(airAlias1)
+                .addAliasAction(airAlias2)
                 .build();
 
-        Assert.assertTrue(target.equals(target));
-        Assert.assertEquals(target.hashCode(), target.hashCode());
-        Assert.assertTrue(target.equals(sameOne));
-        Assert.assertEquals(target.hashCode(), sameOne.hashCode());
+        Assert.assertNotNull(target);
+        List<AliasAction<? extends Action>> aliasActions = target.getAliasActions();
+        Assert.assertNotNull(aliasActions);
+        Assert.assertEquals(2, aliasActions.size());
+        Assert.assertEquals(airAlias1, aliasActions.get(0));
+        Assert.assertEquals(airAlias2, aliasActions.get(1));
+        Assert.assertNull(target.getTargetID());
+        Assert.assertNull(target.getTitle());
+        Assert.assertNull(target.getDescription());
+        Assert.assertNull(target.getMetadata());
+    }
 
-        Assert.assertFalse(target.equals(differentOne));
-        Assert.assertNotSame(target.hashCode(), differentOne.hashCode());
-        Assert.assertFalse(target.equals(differentNull));
-        Assert.assertNotSame(target.hashCode(), differentNull.hashCode());
+    @Test
+    public void nullableValueTest() {
+        AliasAction<AirConditionerActions> airAlias =
+                new AliasAction<>("alias", new AirConditionerActions(false, 10));
+        List<AliasAction<? extends Action>> aliasActions = new ArrayList<>();
+        aliasActions.add(airAlias);
 
-        Assert.assertFalse(target.equals(null));
-        Assert.assertFalse(target.equals((Object)metadata));
+        TriggeredCommandForm target = TriggeredCommandForm.Builder
+                .newBuilder(aliasActions)
+                .setTargetID(null)
+                .setTitle(null)
+                .setDescription(null)
+                .setMetadata(null)
+                .build();
+
+        Assert.assertNotNull(target);
+        Assert.assertEquals(aliasActions, target.getAliasActions());
+        Assert.assertNull(target.getTargetID());
+        Assert.assertNull(target.getTitle());
+        Assert.assertNull(target.getDescription());
+        Assert.assertNull(target.getMetadata());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void targetIDTypeIsUserTest() {
+        TypedID targetID = new TypedID(TypedID.Types.USER, "id");
+        TriggeredCommandForm.Builder.newBuilder().setTargetID(targetID);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void targetIDTypeIsGroupTest() {
+        TypedID targetID = new TypedID(TypedID.Types.GROUP, "id");
+        TriggeredCommandForm.Builder.newBuilder().setTargetID(targetID);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void tooLongerTitleTest() throws Exception {
+        TriggeredCommandForm.Builder.newBuilder().setTitle(RandomStringUtils.randomAlphabetic(51));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void tooLongerDescriptionTest() throws Exception {
+        TriggeredCommandForm.Builder.newBuilder().setDescription(RandomStringUtils.randomAlphabetic(201));
     }
 }

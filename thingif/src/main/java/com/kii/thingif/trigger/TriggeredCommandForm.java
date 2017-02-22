@@ -14,7 +14,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -312,8 +311,6 @@ public class TriggeredCommandForm implements Parcelable {
     @Nullable private String description;
     @Nullable private JSONObject metadata;
 
-    private volatile int hashCode; // cached hashcode for performance
-
     private TriggeredCommandForm(
             @NonNull List<AliasAction<? extends Action>> aliasActions)
     {
@@ -415,68 +412,4 @@ public class TriggeredCommandForm implements Parcelable {
             return new TriggeredCommandForm[size];
         }
     };
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null) {
-            return false;
-        }
-        if (!(o instanceof TriggeredCommandForm)) {
-            return false;
-        }
-        TriggeredCommandForm other = (TriggeredCommandForm) o;
-
-        if (this.targetID != null) {
-            if (!this.targetID.equals(other.targetID)) {
-                return false;
-            }
-        } else if (other.targetID != null) {
-            return false;
-        }
-
-        if (this.title != null) {
-            if (!this.title.equals(other.title)) {
-                return false;
-            }
-        } else if (other.title != null) {
-            return false;
-        }
-
-        if (this.description != null) {
-            if (!this.description.equals(other.description)) {
-                return false;
-            }
-        } else if (other.description != null) {
-            return false;
-        }
-
-        if (this.metadata != null) {
-            if (other.metadata != null) {
-                if (!this.metadata.toString().equals(other.metadata.toString())) {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        } else if (other.metadata != null) {
-            return false;
-        }
-
-        return Arrays.equals(this.aliasActions.toArray(), other.aliasActions.toArray());
-    }
-
-    @Override
-    public int hashCode() {
-        int result = this.hashCode;
-        if (result == 0) {
-            result = 17;
-            result = 31 * result + this.aliasActions.hashCode();
-            result = 31 * result + (this.targetID != null ? this.targetID.hashCode() : 0);
-            result = 31 * result + (this.title != null ? this.title.hashCode() : 0);
-            result = 31 * result + (this.description != null ? this.description.hashCode() : 0);
-            result = 31 * result + (this.metadata != null ? this.metadata.toString().hashCode() : 0);
-            this.hashCode = result;
-        }
-        return result;
-    }
 }
