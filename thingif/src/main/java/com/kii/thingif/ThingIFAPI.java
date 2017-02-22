@@ -12,7 +12,9 @@ import android.support.annotation.WorkerThread;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
 import com.kii.thingif.command.AliasActionResult;
@@ -38,7 +40,6 @@ import com.kii.thingif.internal.gson.TypedIDAdapter;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
 import com.kii.thingif.internal.utils.JsonUtils;
-import com.kii.thingif.internal.utils.TriggerUtils;
 import com.kii.thingif.internal.utils._Log;
 import com.kii.thingif.query.AggregatedResult;
 import com.kii.thingif.query.Aggregation;
@@ -1143,10 +1144,10 @@ public class ThingIFAPI implements Parcelable {
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
 
+        JsonObject triggerJson = new JsonParser().parse(responseBody.toString()).getAsJsonObject();
+        triggerJson.add("targetID", gson.toJsonTree(this.target.getTypedID()));
         try {
-            Trigger trigger =  this.gson.fromJson(responseBody.toString(), Trigger.class);
-            TriggerUtils.setTargetID(trigger, this.target.getTypedID());
-            return trigger;
+            return this.gson.fromJson(triggerJson, Trigger.class);
         }catch (JsonParseException ex) {
             if (ex.getCause() instanceof ThingIFException) {
                 throw (ThingIFException) ex.getCause();
