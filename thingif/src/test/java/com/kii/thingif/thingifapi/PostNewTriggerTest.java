@@ -116,7 +116,7 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
         Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers", request1.getPath());
         Assert.assertEquals("POST", request1.getMethod());
 
-        Map<String, String> expectedRequestHeaders1 = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders1 = new HashMap<>();
         expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders1.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
@@ -139,7 +139,7 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
         Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers/" + triggerID, request2.getPath());
         Assert.assertEquals("GET", request2.getMethod());
 
-        Map<String, String> expectedRequestHeaders2 = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders2 = new HashMap<>();
         expectedRequestHeaders2.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders2.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders2.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
@@ -265,7 +265,7 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
         Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers", request.getPath());
         Assert.assertEquals("POST", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders1 = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders1 = new HashMap<>();
         expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders1.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
@@ -324,7 +324,7 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
         Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers", request.getPath());
         Assert.assertEquals("POST", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders1 = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders1 = new HashMap<>();
         expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders1.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
@@ -384,7 +384,7 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
         Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers", request.getPath());
         Assert.assertEquals("POST", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders1 = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders1 = new HashMap<>();
         expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders1.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
@@ -450,5 +450,281 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         ThingIFAPIUtils.setTarget(api, target);
         api.postNewTrigger(form, null, null);
+    }
+
+    private void postNewTriggerWithServerCode(ServerCode expectedServerCode, Predicate predicate, TriggerOptions options) throws Exception {
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        String triggerID = "trigger-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
+
+        this.addMockResponseForPostNewTrigger(201, triggerID);
+        this.addMockResponseForGetTriggerWithServerCode(200, triggerID, expectedServerCode, predicate, options, false, null);
+
+        ThingIFAPIUtils.setTarget(api, target);
+        Trigger trigger;
+        if (options != null) {
+            trigger = api.postNewTrigger(expectedServerCode, predicate, options);
+        } else {
+            trigger = api.postNewTrigger(expectedServerCode, predicate);
+        }
+        // verify the result
+        Assert.assertEquals(triggerID, trigger.getTriggerID());
+        Assert.assertEquals(false, trigger.disabled());
+        Assert.assertNull(trigger.getDisabledReason());
+        Assert.assertNull(trigger.getCommand());
+        assertSamePredicate(predicate, trigger.getPredicate());
+        this.assertServerCode(expectedServerCode, trigger.getServerCode());
+        // verify the 1st request
+        RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers", request1.getPath());
+        Assert.assertEquals("POST", request1.getMethod());
+
+        Map<String, String> expectedRequestHeaders1 = new HashMap<>();
+        expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders1.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        expectedRequestHeaders1.put("Content-Type", "application/json");
+        this.assertRequestHeader(expectedRequestHeaders1, request1);
+
+        JSONObject expectedRequestBody = new JSONObject();
+        expectedRequestBody.put("serverCode", JsonUtil.serverCodeToJson(expectedServerCode));
+        expectedRequestBody.put("predicate", JsonUtil.predicateToJson(predicate));
+        expectedRequestBody.put("triggersWhat","SERVER_CODE");
+        if (options != null) {
+            expectedRequestBody.putOpt("title", options.getTitle());
+            expectedRequestBody.putOpt("description", options.getDescription());
+            expectedRequestBody.putOpt("metadata", options.getMetadata());
+        }
+        this.assertRequestBody(expectedRequestBody, request1);
+
+        // verify the 2nd request
+        RecordedRequest request2 = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers/" + triggerID, request2.getPath());
+        Assert.assertEquals("GET", request2.getMethod());
+
+        Map<String, String> expectedRequestHeaders2 = new HashMap<>();
+        expectedRequestHeaders2.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders2.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders2.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        this.assertRequestHeader(expectedRequestHeaders2, request2);
+    }
+
+    @Test
+    public void postNewServerCodeTrigger_NonNullOptions_ServerCodeWithFullParams_StatePredicate_Test() throws Exception {
+        SchedulePredicate predicate = new SchedulePredicate("1 * * * *");
+        TriggerOptions options = TriggerOptions.Builder.newBuilder()
+                .setTitle("trigger title")
+                .setDescription("trigger description")
+                .setMetadata(new JSONObject().put("key1", "value1"))
+                .build();
+        ServerCode serverCode = new ServerCode("function_name", "token12345", "app0001", new JSONObject("{\"param\":\"p0001\"}"));
+        this.postNewTriggerWithServerCode(serverCode, predicate, options);
+    }
+    @Test
+    public void postNewServerCodeTrigger_NonNullOptions_ServerCodeWithEndPointAndToken_SchedulePredicate_Test() throws Exception {
+        StatePredicate predicate = new StatePredicate(new Condition(
+                new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
+        TriggerOptions options = TriggerOptions.Builder.newBuilder()
+                .setTitle("trigger title")
+                .setDescription("trigger description")
+                .setMetadata(new JSONObject().put("key1", "value1"))
+                .build();
+        ServerCode serverCode = new ServerCode("function_name", "token12345");
+        this.postNewTriggerWithServerCode(serverCode, predicate, options);
+    }
+    @Test
+    public void postNewServerCodeTrigger_NonNullOptions_ServerCodeWithEndPointAndNullToken_ScheduleOncePredicate_Test() throws Exception {
+        ScheduleOncePredicate predicate = new ScheduleOncePredicate(System.currentTimeMillis());
+        TriggerOptions options = TriggerOptions.Builder.newBuilder()
+                .setTitle("trigger title")
+                .setDescription("trigger description")
+                .setMetadata(new JSONObject().put("key1", "value1"))
+                .build();
+        ServerCode serverCode = new ServerCode("function_name", null);
+        this.postNewTriggerWithServerCode(serverCode, predicate, options);
+    }
+    @Test
+    public void postNewServerCodeTrigger_NonNullOptions_ServerCodeWithEndPointAndToken_StatePredicate_Test() throws Exception {
+        StatePredicate predicate = new StatePredicate(new Condition(
+                new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
+        TriggerOptions options = TriggerOptions.Builder.newBuilder()
+                .setTitle("trigger title")
+                .setDescription("trigger description")
+                .setMetadata(new JSONObject().put("key1", "value1"))
+                .build();
+        ServerCode serverCode = new ServerCode("function_name", "token12345");
+        this.postNewTriggerWithServerCode(serverCode, predicate, options);
+    }
+
+    @Test
+    public void postNewServerCodeTrigger_NullOptions_ServerCodeWithFullParams_StatePredicate_Test() throws Exception {
+        SchedulePredicate predicate = new SchedulePredicate("1 * * * *");
+        ServerCode serverCode = new ServerCode("function_name", "token12345", "app0001", new JSONObject("{\"param\":\"p0001\"}"));
+        this.postNewTriggerWithServerCode(serverCode, predicate, null);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void postNewServerCodeTrigger_NullOptions_WithNullTargetTest() throws Exception {
+        ServerCode serverCode = new ServerCode("function_name", "token12345", "app0001", new JSONObject("{\"param\":\"p0001\"}"));
+
+        StatePredicate predicate = new StatePredicate(new Condition(
+                new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
+
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
+        api.postNewTrigger(serverCode, predicate);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void postNewServerCodeTrigger_NonNullOptions_WithNullTargetTest() throws Exception {
+        TriggerOptions options = TriggerOptions.Builder.newBuilder()
+                .setTitle("trigger title")
+                .setDescription("trigger description")
+                .setMetadata(new JSONObject().put("k", "v")).build();
+        ServerCode serverCode = new ServerCode("function_name", null);
+        StatePredicate predicate = new StatePredicate(new Condition(
+                new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
+
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
+        api.postNewTrigger(serverCode, predicate, options);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void postNewServerCodeTrigger_NullOptions_NullServerCode_Test() throws Exception{
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        StatePredicate predicate = new StatePredicate(new Condition(
+                new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
+        ThingIFAPIUtils.setTarget(api, target);
+        api.postNewTrigger(null, predicate);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void postNewServerCodeTrigger_NonNullOptions_NullServerCode_Test() throws Exception{
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        StatePredicate predicate = new StatePredicate(new Condition(
+                new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
+        TriggerOptions options = TriggerOptions.Builder.newBuilder()
+                .setTitle("trigger title")
+                .setDescription("trigger description")
+                .setMetadata(new JSONObject().put("k", "v")).build();
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
+        ThingIFAPIUtils.setTarget(api, target);
+        api.postNewTrigger((ServerCode) null, predicate, options);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void postNewServerCodeTrigger_NullOptions_NullPredicate_Test() throws Exception{
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        ServerCode serverCode = new ServerCode("function_name", "token12345");
+
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
+        ThingIFAPIUtils.setTarget(api, target);
+        api.postNewTrigger(serverCode, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void postNewServerCodeTrigger_NonNullOptions_NullPredicate_Test() throws Exception{
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        ServerCode serverCode = new ServerCode("function_name", "token12345");
+        TriggerOptions options = TriggerOptions.Builder.newBuilder()
+                .setTitle("trigger title")
+                .setDescription("trigger description")
+                .setMetadata(new JSONObject().put("k", "v")).build();
+
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
+        ThingIFAPIUtils.setTarget(api, target);
+        api.postNewTrigger(serverCode, null, options);
+    }
+
+    @Test
+    public void postNewServerCodeTrigger404ErrorTest() throws Exception {
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+        ServerCode expectedServerCode = new ServerCode("function_name", "token12345");
+        StatePredicate predicate = new StatePredicate(new Condition(
+                new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
+
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
+
+        this.addEmptyMockResponse(404);
+
+        try {
+            ThingIFAPIUtils.setTarget(api, target);
+            api.postNewTrigger(expectedServerCode, predicate);
+            Assert.fail("ThingIFRestException should be thrown");
+        } catch (NotFoundException e) {
+        }
+        // verify the request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers", request.getPath());
+        Assert.assertEquals("POST", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders1 = new HashMap<>();
+        expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders1.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        expectedRequestHeaders1.put("Content-Type", "application/json");
+        this.assertRequestHeader(expectedRequestHeaders1, request);
+
+        JSONObject expectedRequestBody = new JSONObject();
+        expectedRequestBody.put("serverCode", JsonUtil.serverCodeToJson(expectedServerCode));
+        expectedRequestBody.put("predicate",JsonUtil.predicateToJson(predicate));
+        expectedRequestBody.put("triggersWhat","SERVER_CODE");
+        this.assertRequestBody(expectedRequestBody, request);
+    }
+    @Test
+    public void postNewServerCodeTrigger503ErrorTest() throws Exception {
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+        ServerCode expectedServerCode = new ServerCode("function_name", "token12345");
+        StatePredicate predicate = new StatePredicate(new Condition(
+                new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
+
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
+        this.addEmptyMockResponse(503);
+
+        try {
+            ThingIFAPIUtils.setTarget(api, target);
+            api.postNewTrigger(expectedServerCode, predicate);
+            Assert.fail("ThingIFRestException should be thrown");
+        } catch (ServiceUnavailableException e) {
+        }
+        // verify the request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers", request.getPath());
+        Assert.assertEquals("POST", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders1 = new HashMap<>();
+        expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders1.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        expectedRequestHeaders1.put("Content-Type", "application/json");
+        this.assertRequestHeader(expectedRequestHeaders1, request);
+
+        JSONObject expectedRequestBody = new JSONObject();
+        expectedRequestBody.put("serverCode", JsonUtil.serverCodeToJson(expectedServerCode));
+        expectedRequestBody.put("predicate",JsonUtil.predicateToJson(predicate));
+        expectedRequestBody.put("triggersWhat","SERVER_CODE");
+        this.assertRequestBody(expectedRequestBody, request);
     }
 }

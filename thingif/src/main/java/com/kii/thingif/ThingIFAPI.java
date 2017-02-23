@@ -1088,19 +1088,17 @@ public class ThingIFAPI implements Parcelable {
         if (predicate == null) {
             throw new IllegalArgumentException("predicate is null");
         }
-        //TODO: // FIXME: 2017/01/23
-        return null;
-//        JSONObject requestBody = options != null ?
-//                JsonUtils.newJson(GsonRepository.gson().toJson(options)) :
-//                new JSONObject();
-//        try {
-//            requestBody.put("predicate", JsonUtils.newJson(GsonRepository.gson().toJson(predicate)));
-//            requestBody.put("triggersWhat", TriggersWhat.SERVER_CODE.name());
-//            requestBody.put("serverCode", JsonUtils.newJson(GsonRepository.gson().toJson(serverCode)));
-//        } catch (JSONException e) {
-//            // Won't happen
-//        }
-//        return this.postNewTrigger(requestBody);
+        JSONObject requestBody = options != null ?
+                JsonUtils.newJson(this.gson.toJson(options)) :
+                new JSONObject();
+        try {
+            requestBody.put("predicate", JsonUtils.newJson(this.gson.toJson(predicate, Predicate.class)));
+            requestBody.put("triggersWhat", TriggersWhat.SERVER_CODE.name());
+            requestBody.put("serverCode", JsonUtils.newJson(this.gson.toJson(serverCode)));
+        } catch (JSONException e) {
+            // Won't happen
+        }
+        return this.postNewTrigger(requestBody);
     }
     private Trigger postNewTrigger(@NonNull JSONObject requestBody) throws ThingIFException {
         String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers", this.app.getAppID(), this.target.getTypedID().toString());
