@@ -1545,6 +1545,7 @@ public class ThingIFAPI implements Parcelable {
      *  If state of target had never be updated, empty map is returned.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws UnregisteredAliasException Thrown when the returned response contains alias that cannot be handled.
      */
     @NonNull
     @WorkerThread
@@ -1586,6 +1587,7 @@ public class ThingIFAPI implements Parcelable {
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
      * @throws ClassCastException Thrown when S is not registered.
+     * @throws UnregisteredAliasException Thrown when alias cannot be handled.
      */
     @NonNull
     @WorkerThread
