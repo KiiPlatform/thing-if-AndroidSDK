@@ -1097,6 +1097,7 @@ public class ThingIFAPI implements Parcelable {
             requestBody.put("serverCode", JsonUtils.newJson(this.gson.toJson(serverCode)));
         } catch (JSONException e) {
             // Won't happen
+            throw new RuntimeException(e);
         }
         return this.postNewTrigger(requestBody);
     }
