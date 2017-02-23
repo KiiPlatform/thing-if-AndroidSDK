@@ -53,6 +53,7 @@ import com.kii.thingif.internal.utils.Path;
 import com.kii.thingif.trigger.TriggerOptions;
 import com.kii.thingif.trigger.TriggeredCommandForm;
 import com.kii.thingif.trigger.TriggeredServerCodeResult;
+import com.kii.thingif.trigger.TriggersWhat;
 import com.squareup.okhttp.MediaType;
 
 import org.json.JSONArray;
@@ -1002,30 +1003,26 @@ public class ThingIFAPI implements Parcelable {
         if (predicate == null) {
             throw new IllegalArgumentException("predicate is null.");
         }
-        //TODO: // FIXME: 2017/01/23
-        return null;
-//        JSONObject requestBody = options != null ?
-//                JsonUtils.newJson(GsonRepository.gson().toJson(options)) :
-//                new JSONObject();
-//        try {
-//            requestBody.put("triggersWhat", TriggersWhat.COMMAND.name());
-//            requestBody.put("predicate", JsonUtils.newJson(
-//                        GsonRepository.gson().toJson(predicate)));
-//            //TODO: // FIXME: 12/15/16 fix the parse code
-//            JSONObject command = JsonUtils.newJson(
-//                GsonRepository.gson(
-//                    ).toJson(form));
-//            command.put("issuer", this.owner.getTypedID());
-//            if (form.getTargetID() == null) {
-//                command.put("target", this.target.getTypedID().toString());
-//            }
-//            requestBody.put("command", command);
-//        } catch (JSONException e) {
-//            // Won't happen.
-//            // TODO: remove this after test finished.
-//            throw new RuntimeException(e);
-//        }
-//        return postNewTrigger(requestBody);
+        JSONObject requestBody = options != null ?
+                JsonUtils.newJson(this.gson.toJson(options)) :
+                new JSONObject();
+        try {
+            requestBody.put("triggersWhat", TriggersWhat.COMMAND.name());
+            requestBody.put("predicate", JsonUtils.newJson(
+                        this.gson.toJson(predicate, Predicate.class)));
+            JSONObject command = JsonUtils.newJson(
+                this.gson.toJson(form));
+            command.put("issuer", this.owner.getTypedID());
+            if (form.getTargetID() == null) {
+                command.put("target", this.target.getTypedID().toString());
+            }
+            requestBody.put("command", command);
+        } catch (JSONException e) {
+            // Won't happen.
+            // TODO: remove this after test finished.
+            throw new RuntimeException(e);
+        }
+        return postNewTrigger(requestBody);
     }
 
     /**
