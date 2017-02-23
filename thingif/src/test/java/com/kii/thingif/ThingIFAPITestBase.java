@@ -338,4 +338,13 @@ public class ThingIFAPITestBase extends SmallTestBase {
         }
         this.server.enqueue(response);
     }
+    protected void addMockResponseForPostNewTrigger(int httpStatus, String triggerID) {
+        MockResponse response = new MockResponse().setResponseCode(httpStatus);
+        if (triggerID != null) {
+            JsonObject responseBody = new JsonObject();
+            responseBody.addProperty("triggerID", triggerID);
+            response.setBody(responseBody.toString());
+        }
+        this.server.enqueue(response);
+    }
 }

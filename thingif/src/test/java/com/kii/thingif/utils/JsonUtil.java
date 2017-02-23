@@ -117,6 +117,8 @@ public class JsonUtil {
     public static JSONObject commandToJson(Command cmd) {
         try{
             JSONObject ret = new JSONObject();
+
+            ret.putOpt("issuer", cmd.getIssuerID().toString());
             ret.putOpt("title", cmd.getTitle());
             ret.putOpt("description", cmd.getDescription());
             ret.putOpt("metadata", cmd.getMetadata());
@@ -125,6 +127,9 @@ public class JsonUtil {
             ret.putOpt("modifiedAt", cmd.getModified());
             if (cmd.getCommandState() != null) {
                 ret.putOpt("commandState", cmd.getCommandState().name());
+            }
+            if (cmd.getTargetID() != null) {
+                ret.put("target", cmd.getTargetID().toString());
             }
             ret.putOpt("firedByTriggerID", cmd.getFiredByTriggerID());
 

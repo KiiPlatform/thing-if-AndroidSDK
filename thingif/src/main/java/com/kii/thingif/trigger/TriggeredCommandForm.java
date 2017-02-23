@@ -304,6 +304,7 @@ public class TriggeredCommandForm implements Parcelable {
 
     }
 
+    @SerializedName("actions")
     @NonNull private final List<AliasAction<? extends Action>> aliasActions;
     @SerializedName("target")
     @Nullable private TypedID targetID;
