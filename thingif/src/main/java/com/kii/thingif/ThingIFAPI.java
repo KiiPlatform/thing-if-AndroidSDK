@@ -1586,7 +1586,7 @@ public class ThingIFAPI implements Parcelable {
      * @return Instance of Target State.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws ClassCastException Thrown when S is not registered.
+     * @throws ClassCastException Thrown when S is different with registered class for this alias.
      * @throws UnregisteredAliasException Thrown when alias cannot be handled.
      */
     @NonNull
