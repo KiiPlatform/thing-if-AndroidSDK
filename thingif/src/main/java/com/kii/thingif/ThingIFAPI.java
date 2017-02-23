@@ -62,6 +62,7 @@ import org.json.JSONObject;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -1548,8 +1549,30 @@ public class ThingIFAPI implements Parcelable {
     @NonNull
     @WorkerThread
     public Map<String, ? extends TargetState> getTargetState() throws ThingIFException{
-        //TODO: // FIXME: 12/21/16 implement the logic
-        return new HashMap<>();
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
+        }
+
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/states",
+                this.app.getAppID(), this.target.getTypedID().toString());
+        String url = Path.combine(this.app.getBaseUrl(), path);
+        Map<String, String> headers = this.newHeader();
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
+
+        JSONObject responseBody = this.restClient.sendRequest(request);
+        Map retMap = new HashMap<>();
+        Iterator it = responseBody.keys();
+        while (it.hasNext()) {
+            String key = (String)it.next();
+            try {
+                JsonObject object = new JsonParser()
+                        .parse(responseBody.getJSONObject(key).toString()).getAsJsonObject();
+                retMap.put(key, this.gson.fromJson(object, this.stateTypes.get(key)));
+            } catch (JSONException e) {
+                throw new IllegalStateException("Unknown target state class: " + key);
+            }
+        }
+        return retMap;
     }
     /**
      * Get the State of specified alias.
@@ -1569,19 +1592,19 @@ public class ThingIFAPI implements Parcelable {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
-        // TOOD: // FIXME: 12/21/16 implement the logic
-//        if (classOfS == null) {
-//            throw new IllegalArgumentException("classOfS is null");
-//        }
-//
-//        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/states", this.app.getAppID(), this.target.getTypedID().toString());
-//        String url = Path.combine(this.app.getBaseUrl(), path);
-//        Map<String, String> headers = this.newHeader();
-//        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
-//        JSONObject responseBody = this.restClient.sendRequest(request);
-//        S ret = GsonRepository.gson().fromJson(responseBody.toString(), classOfS);
-//        return ret;
-        return null;
+        if (!this.stateTypes.containsKey(alias)) {
+            throw new IllegalArgumentException("Unknown alias: " + alias);
+        }
+
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/states/aliases/{2}",
+                this.app.getAppID(), this.target.getTypedID().toString(), alias);
+        String url = Path.combine(this.app.getBaseUrl(), path);
+        Map<String, String> headers = this.newHeader();
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
+
+        JSONObject responseBody = this.restClient.sendRequest(request);
+        JsonObject object = new JsonParser().parse(responseBody.toString()).getAsJsonObject();
+        return (S)this.gson.fromJson(object, this.stateTypes.get(alias));
     }
 
     /**
