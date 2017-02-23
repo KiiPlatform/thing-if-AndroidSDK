@@ -160,7 +160,7 @@ public class EnableTriggerTest extends ThingIFAPITestBase{
         this.addMockResponseForGetTriggerWithCommand(200, triggerID, expectedCommand, predicate, null, true, null);
 
         ThingIFAPIUtils.setTarget(api, target);
-        Trigger trigger = api.enableTrigger(triggerID, true);
+        Trigger trigger = api.enableTrigger(triggerID, false);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(true, trigger.disabled());
@@ -170,7 +170,7 @@ public class EnableTriggerTest extends ThingIFAPITestBase{
         assertSameCommands(expectedCommand, trigger.getCommand());
         // verify the 1st request
         RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers/" + triggerID + "/enable", request1.getPath());
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers/" + triggerID + "/disable", request1.getPath());
         Assert.assertEquals("PUT", request1.getMethod());
         // verify the 2nd request
         RecordedRequest request2 = this.server.takeRequest(1, TimeUnit.SECONDS);
