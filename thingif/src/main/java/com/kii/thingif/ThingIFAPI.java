@@ -1564,12 +1564,15 @@ public class ThingIFAPI implements Parcelable {
         Iterator it = responseBody.keys();
         while (it.hasNext()) {
             String key = (String)it.next();
+            if (!this.stateTypes.containsKey(key)) {
+                throw new UnregisteredAliasException(key, false);
+            }
             try {
                 JsonObject object = new JsonParser()
                         .parse(responseBody.getJSONObject(key).toString()).getAsJsonObject();
                 retMap.put(key, this.gson.fromJson(object, this.stateTypes.get(key)));
             } catch (JSONException e) {
-                throw new IllegalStateException("Unknown target state class: " + key);
+                throw new ThingIFException("Unexpected exception.");
             }
         }
         return retMap;
@@ -1593,7 +1596,7 @@ public class ThingIFAPI implements Parcelable {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
         if (!this.stateTypes.containsKey(alias)) {
-            throw new IllegalArgumentException("Unknown alias: " + alias);
+            throw new UnregisteredAliasException(alias, false);
         }
 
         String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/states/aliases/{2}",

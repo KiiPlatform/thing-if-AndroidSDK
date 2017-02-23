@@ -2,6 +2,7 @@ package com.kii.thingif;
 
 import android.content.Context;
 
+import com.kii.thingif.exception.UnregisteredAliasException;
 import com.kii.thingif.states.AirConditionerState;
 import com.kii.thingif.states.HumidityState;
 import com.squareup.okhttp.mockwebserver.MockResponse;
@@ -20,9 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-/**
- * https://github.com/KiiCorp/ThingIF/blob/master/rest_api_spec/states-endpoint.yaml
- */
 @RunWith(RobolectricTestRunner.class)
 public class ThingIFAPI_TargetStateTest extends ThingIFAPITestBase {
     private Context context;
@@ -95,6 +93,27 @@ public class ThingIFAPI_TargetStateTest extends ThingIFAPITestBase {
         api.getTargetState();
     }
 
+    @Test(expected = UnregisteredAliasException.class)
+    public void getTargetState_UnknownAliasTest() throws Exception {
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        String triggerID = "trigger-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        String responseBody =
+                "{" +
+                        "\"unknown\":{}" +
+                "}";
+        MockResponse response = new MockResponse().setResponseCode(200);
+        response.setBody(responseBody);
+        this.server.enqueue(response);
+
+        ThingIFAPI api = createDefaultThingIFAPIBuilder(this.context, APP_ID, APP_KEY)
+                .setTarget(target)
+                .build();
+        api.getTargetState();
+    }
+
     @Test
     public void getTargetStateWithAliasTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
@@ -140,7 +159,7 @@ public class ThingIFAPI_TargetStateTest extends ThingIFAPITestBase {
         api.getTargetState(ALIAS1);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = UnregisteredAliasException.class)
     public void getTargetStateWithAlias_UnknownAliasTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
