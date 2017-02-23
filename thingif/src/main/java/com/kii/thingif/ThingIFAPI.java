@@ -1013,7 +1013,7 @@ public class ThingIFAPI implements Parcelable {
             JSONObject command = JsonUtils.newJson(
                 this.gson.toJson(form));
             command.put("issuer", this.owner.getTypedID());
-            if (form.getTargetID() == null) {
+            if (!command.has("target")) {
                 command.put("target", this.target.getTypedID().toString());
             }
             requestBody.put("command", command);
