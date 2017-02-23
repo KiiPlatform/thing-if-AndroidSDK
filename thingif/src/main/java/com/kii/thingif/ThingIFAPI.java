@@ -28,7 +28,6 @@ import com.kii.thingif.exception.ThingIFException;
 import com.kii.thingif.exception.ThingIFRestException;
 import com.kii.thingif.exception.UnloadableInstanceVersionException;
 import com.kii.thingif.exception.UnregisteredAliasException;
-import com.kii.thingif.exception.UnsupportedActionException;
 import com.kii.thingif.gateway.EndNode;
 import com.kii.thingif.gateway.Gateway;
 import com.kii.thingif.gateway.PendingEndNode;
@@ -1493,7 +1492,7 @@ public class ThingIFAPI implements Parcelable {
      * in the target.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws UnsupportedActionException Thrown when the returned response has a action that cannot handle this instance.
+     * @throws UnregisteredAliasException Thrown when the returned response contains alias that cannot be handled.
      */
     @NonNull
     @WorkerThread
@@ -1519,25 +1518,24 @@ public class ThingIFAPI implements Parcelable {
         JSONObject responseBody = this.restClient.sendRequest(request);
         String nextPaginationKey = responseBody.optString("nextPaginationKey", null);
         JSONArray triggerArray = responseBody.optJSONArray("triggers");
-        List<Trigger> triggers = new ArrayList<Trigger>();
-        if (triggerArray != null) {
-            for (int i = 0; i < triggerArray.length(); i++) {
-                JSONObject triggerJson = triggerArray.optJSONObject(i);
-                JSONObject commandJson = triggerJson.optJSONObject("command");
-                //TODO: // FIXME: 2017/01/23
-//                Schema schema = null;
-//                if (commandJson != null) {
-//                    String schemaName = commandJson.optString("schema", null);
-//                    int schemaVersion = commandJson.optInt("schemaVersion");
-//                    schema = this.getSchema(schemaName, schemaVersion);
-//                    if (schema == null) {
-//                        continue;
-//                    }
-//                }
-//                triggers.add(this.deserialize(schema, triggerJson, this.target.getTypedID()));
+        List<Trigger> triggers = new ArrayList<>();
+        try {
+            if (triggerArray != null) {
+                for (int i = 0; i < triggerArray.length(); i++) {
+                    JsonObject triggerJson = new JsonParser()
+                            .parse(triggerArray.optJSONObject(i).toString()).getAsJsonObject();
+                    triggerJson.add("targetID", gson.toJsonTree(this.target.getTypedID()));
+                    triggers.add(gson.fromJson(triggerJson, Trigger.class));
+                }
             }
+        }catch (JsonParseException ex) {
+        if (ex.getCause() instanceof ThingIFException) {
+            throw (ThingIFException) ex.getCause();
+        } else {
+            throw ex;
         }
-        return new Pair<List<Trigger>, String>(triggers, nextPaginationKey);
+    }
+        return new Pair<>(triggers, nextPaginationKey);
     }
 
     /**

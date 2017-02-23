@@ -15,6 +15,7 @@ import com.kii.thingif.states.AirConditionerState;
 import com.kii.thingif.states.HumidityState;
 import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.ServerCode;
+import com.kii.thingif.trigger.Trigger;
 import com.kii.thingif.trigger.TriggerOptions;
 import com.kii.thingif.utils.JsonUtil;
 import com.squareup.okhttp.mockwebserver.MockResponse;
@@ -318,6 +319,21 @@ public class ThingIFAPITestBase extends SmallTestBase {
                     options,
                     disabled,
                     disabledReason);
+            response.setBody(responseBody.toString());
+        }
+        this.server.enqueue(response);
+    }
+
+    protected void addMockResponseForListTriggers(int httpStatus, Trigger[] triggers, String paginationKey) throws Exception{
+        MockResponse response = new MockResponse().setResponseCode(httpStatus);
+        if (triggers != null) {
+            JSONObject responseBody = new JSONObject();
+            JSONArray array = new JSONArray();
+            for (Trigger trigger : triggers) {
+                array.put(JsonUtil.triggerToJson(trigger));
+            }
+            responseBody.put("triggers", array);
+            responseBody.putOpt("nextPaginationKey", paginationKey);
             response.setBody(responseBody.toString());
         }
         this.server.enqueue(response);
