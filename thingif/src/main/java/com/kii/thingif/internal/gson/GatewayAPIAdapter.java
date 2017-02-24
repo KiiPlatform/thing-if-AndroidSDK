@@ -62,7 +62,7 @@ public class GatewayAPIAdapter implements JsonSerializer<GatewayAPI>, JsonDeseri
         }
         JsonObject json = jsonElement.getAsJsonObject();
         KiiApp app = gson.fromJson(json.getAsJsonObject("app"), KiiApp.class);
-        Uri gatewayAddress = Uri.parse(json.getAsJsonPrimitive("gatewayAddress").getAsString());
+        Uri gatewayAddress = Uri.parse(json.get("gatewayAddress").getAsString());
         GatewayAPI.Builder builder = GatewayAPI.Builder.newBuilder(this.androidContext, app, gatewayAddress);
         if(json.has("tag")) {
             builder.setTag(json.get("tag").getAsString());
