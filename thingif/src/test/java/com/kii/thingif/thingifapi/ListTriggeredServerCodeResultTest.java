@@ -72,8 +72,8 @@ public class ListTriggeredServerCodeResultTest extends ThingIFAPITestBase{
         };
 
 
-        addMockResponseForListTriggeredServerCodeResults(200, new TriggeredServerCodeResult[]{serverCodeResult1, serverCodeResult2, serverCodeResult3, serverCodeResult4}, paginationKey);
-        addMockResponseForListTriggeredServerCodeResults(200, new TriggeredServerCodeResult[]{serverCodeResult5, serverCodeResult6, serverCodeResult7}, null);
+        addMockResponseForListTriggeredServerCodeResults(200, firstResults, paginationKey);
+        addMockResponseForListTriggeredServerCodeResults(200, secondResults, null);
 
         Pair<List<TriggeredServerCodeResult>, String> result1 = api.listTriggeredServerCodeResults(triggerID, 4, null);
         Assert.assertEquals(paginationKey, result1.second);
