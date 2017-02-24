@@ -17,6 +17,7 @@ import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.Trigger;
 import com.kii.thingif.trigger.TriggerOptions;
+import com.kii.thingif.trigger.TriggeredServerCodeResult;
 import com.kii.thingif.utils.JsonUtil;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
@@ -343,6 +344,23 @@ public class ThingIFAPITestBase extends SmallTestBase {
         if (triggerID != null) {
             JsonObject responseBody = new JsonObject();
             responseBody.addProperty("triggerID", triggerID);
+            response.setBody(responseBody.toString());
+        }
+        this.server.enqueue(response);
+    }
+    protected void addMockResponseForListTriggeredServerCodeResults(
+            int httpStatus,
+            TriggeredServerCodeResult[] results,
+            String paginationKey) throws Exception{
+        MockResponse response = new MockResponse().setResponseCode(httpStatus);
+        if (results != null) {
+            JSONObject responseBody = new JSONObject();
+            JSONArray array = new JSONArray();
+            for (TriggeredServerCodeResult result : results) {
+                array.put(JsonUtil.triggeredServerCodeResultToJson(result));
+            }
+            responseBody.put("triggerServerCodeResults", array);
+            responseBody.putOpt("nextPaginationKey", paginationKey);
             response.setBody(responseBody.toString());
         }
         this.server.enqueue(response);
