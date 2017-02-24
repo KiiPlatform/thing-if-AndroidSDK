@@ -7,6 +7,7 @@ import com.kii.thingif.command.Command;
 import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.Trigger;
+import com.kii.thingif.trigger.TriggeredServerCodeResult;
 import com.kii.thingif.utils.JsonUtil;
 
 import junit.framework.Assert;
@@ -101,5 +102,24 @@ public class SmallTestBase {
                 message,
                 JsonUtil.triggerToJson(expected),
                 JsonUtil.triggerToJson(actual));
+    }
+
+    protected void assertSameTriggeredServerCodeResults(
+            String message,
+            TriggeredServerCodeResult expected,
+            TriggeredServerCodeResult actual) {
+        assertJSONObject(
+                message,
+                JsonUtil.triggeredServerCodeResultToJson(expected),
+                JsonUtil.triggeredServerCodeResultToJson(actual)
+        );
+    }
+    protected void assertSameTriggeredServerCodeResults(
+            TriggeredServerCodeResult expected,
+            TriggeredServerCodeResult actual) {
+        assertJSONObject(
+                JsonUtil.triggeredServerCodeResultToJson(expected),
+                JsonUtil.triggeredServerCodeResultToJson(actual)
+        );
     }
 }

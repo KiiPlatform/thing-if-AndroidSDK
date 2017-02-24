@@ -1,5 +1,6 @@
 package com.kii.thingif.utils;
 
+import com.kii.thingif.ServerError;
 import com.kii.thingif.actions.ToJSON;
 import com.kii.thingif.clause.trigger.AndClauseInTrigger;
 import com.kii.thingif.clause.trigger.EqualsClauseInTrigger;
@@ -18,6 +19,7 @@ import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.StatePredicate;
 import com.kii.thingif.trigger.Trigger;
 import com.kii.thingif.trigger.TriggerOptions;
+import com.kii.thingif.trigger.TriggeredServerCodeResult;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -215,6 +217,35 @@ public class JsonUtil {
             }
             ret.putOpt("disabled", disabled);
             ret.putOpt("disabledReason", disabledReason);
+            return ret;
+        }catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static JSONObject triggeredServerCodeResultToJson(TriggeredServerCodeResult result) {
+        JSONObject ret = new JSONObject();
+        try{
+            ret.put("succeeded", result.isSucceeded());
+            ret.putOpt("returnedValue", result.getReturnedValue());
+            ret.put("executedAt", result.getExecutedAt());
+            ret.putOpt("endpoint", result.getEndpoint());
+            if (result.getError() != null) {
+                ret.putOpt("error", serverErrorToJson(result.getError()));
+            }
+            return ret;
+        }catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static JSONObject serverErrorToJson(ServerError err) {
+        JSONObject ret = new JSONObject();
+        try{
+            ret.put("errorMessage", err.getErrorMessage());
+            ret.put("details", new JSONObject()
+                    .put("errorCode", err.getErrorCode())
+                    .put("message", err.getDetailMessage()));
             return ret;
         }catch (JSONException e) {
             throw new RuntimeException(e);
