@@ -190,4 +190,39 @@ public class ListTriggeredServerCodeResultTest extends ThingIFAPITestBase{
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         api.listTriggeredServerCodeResults(triggerID, 10, null);
     }
+
+    @Test
+    public void listTriggeredServerCodeResultsWithOnlyPaginationKeyTest() throws Exception {
+        String triggerID = UUID.randomUUID().toString();
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
+        ThingIFAPIUtils.setTarget(api, target);
+
+        TriggeredServerCodeResult serverCodeResult1 =
+                TriggeredServerCodeResultFactory.create(true, "1234", System.currentTimeMillis(), "func1", null);
+
+        addMockResponseForListTriggeredServerCodeResults(200, new TriggeredServerCodeResult[]{serverCodeResult1}, null);
+
+        String paginationKey = "pagination-12345-key";
+        Pair<List<TriggeredServerCodeResult>, String> result1 = api.listTriggeredServerCodeResults(triggerID, 0, paginationKey);
+        Assert.assertNull(result1.second);
+        List<TriggeredServerCodeResult> results1 = result1.first;
+        Assert.assertEquals(1, results1.size());
+        assertSameTriggeredServerCodeResults(serverCodeResult1, results1.get(0));
+
+
+        // verify the 1st request
+        RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers/" + triggerID + "/results/server-code?paginationKey=" + paginationKey, request1.getPath());
+        Assert.assertEquals("GET", request1.getMethod());
+
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
+        expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        this.assertRequestHeader(expectedRequestHeaders, request1);
+    }
 }
