@@ -80,15 +80,21 @@ public class ListTriggeredServerCodeResultTest extends ThingIFAPITestBase{
         Assert.assertEquals(4, result1.first.size());
         for (int i=0; i<firstResults.length; i++) {
             TriggeredServerCodeResult expectedResult = firstResults[i];
-            assertSameTriggeredServerCodeResults(expectedResult, result1.first.get(i));
+            assertSameTriggeredServerCodeResults(
+                    "failed on ["+i+"]",
+                    expectedResult,
+                    result1.first.get(i));
         }
 
         Pair<List<TriggeredServerCodeResult>, String> result2 = api.listTriggeredServerCodeResults(triggerID, 4, result1.second);
         Assert.assertNull(result2.second);
         Assert.assertEquals(3, result2.first.size());
         for (int i=0; i<secondResults.length; i++) {
-            TriggeredServerCodeResult expectedResult = firstResults[i];
-            assertSameTriggeredServerCodeResults(expectedResult, result2.first.get(i));
+            TriggeredServerCodeResult expectedResult = secondResults[i];
+            assertSameTriggeredServerCodeResults(
+                    "failed on ["+i+"]",
+                    expectedResult,
+                    result2.first.get(i));
         }
 
         // verify the 1st request
