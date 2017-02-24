@@ -35,6 +35,7 @@ import com.kii.thingif.internal.gson.AliasActionAdapter;
 import com.kii.thingif.internal.gson.JSONObjectAdapter;
 import com.kii.thingif.internal.gson.PredicateAdapter;
 import com.kii.thingif.internal.gson.ThingIFAPIAdapter;
+import com.kii.thingif.trigger.TriggeredServerCodeResultAdapter;
 import com.kii.thingif.internal.gson.TypedIDAdapter;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
@@ -454,6 +455,9 @@ public class ThingIFAPI implements Parcelable {
                 .registerTypeAdapter(
                         Predicate.class,
                         new PredicateAdapter())
+                .registerTypeAdapter(
+                        TriggeredServerCodeResult.class,
+                        new TriggeredServerCodeResultAdapter())
                 .create();
     }
     /**
@@ -1460,15 +1464,14 @@ public class ThingIFAPI implements Parcelable {
         String nextPaginationKey = responseBody.optString("nextPaginationKey", null);
         JSONArray resultArray = responseBody.optJSONArray("triggerServerCodeResults");
 
-        List<TriggeredServerCodeResult> results = new ArrayList<TriggeredServerCodeResult>();
+        List<TriggeredServerCodeResult> results = new ArrayList<>();
         if (resultArray != null) {
             for (int i = 0; i < resultArray.length(); i++) {
                 JSONObject resultJson = resultArray.optJSONObject(i);
-                //TODO: // FIXME: 2017/01/23
-//                results.add(this.deserialize(resultJson, TriggeredServerCodeResult.class));
+                results.add(this.gson.fromJson(resultJson.toString(), TriggeredServerCodeResult.class));
             }
         }
-        return new Pair<List<TriggeredServerCodeResult>, String>(results, nextPaginationKey);
+        return new Pair<>(results, nextPaginationKey);
     }
 
     /**
