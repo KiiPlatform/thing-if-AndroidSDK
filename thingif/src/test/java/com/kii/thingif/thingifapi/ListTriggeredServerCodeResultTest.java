@@ -58,40 +58,38 @@ public class ListTriggeredServerCodeResultTest extends ThingIFAPITestBase{
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         ThingIFAPIUtils.setTarget(api, target);
 
-        TriggeredServerCodeResult serverCodeResult1 =
-                TriggeredServerCodeResultFactory.create(true, "1234", System.currentTimeMillis(), "func1", null);
-        TriggeredServerCodeResult serverCodeResult2 =
-                TriggeredServerCodeResultFactory.create(true, "12.34", System.currentTimeMillis() + 1000, "func2", null);
-        TriggeredServerCodeResult serverCodeResult3 =
-                TriggeredServerCodeResultFactory.create(true, "true", System.currentTimeMillis() + 2000, "func3", null);
-        TriggeredServerCodeResult serverCodeResult4 =
-                TriggeredServerCodeResultFactory.create(true, "\"abcd\"", System.currentTimeMillis() + 3000, "func4", null);
-        TriggeredServerCodeResult serverCodeResult5 =
-                TriggeredServerCodeResultFactory.create(true, "{\"field\":\"abcd\"}", System.currentTimeMillis() + 4000, "func5", null);
-        TriggeredServerCodeResult serverCodeResult6 =
-                TriggeredServerCodeResultFactory.create(true, "[1, \"2\", 3]", System.currentTimeMillis() + 5000, "func6", null);
-        TriggeredServerCodeResult serverCodeResult7 =
-                TriggeredServerCodeResultFactory.create(false, null, System.currentTimeMillis() + 6000, "func7", new ServerError("Error found", "RUNTIME_ERROR", "faital error"));
+        TriggeredServerCodeResult[] firstResults = {
+                TriggeredServerCodeResultFactory.create(true, "1234", System.currentTimeMillis(), "func1", null),
+                TriggeredServerCodeResultFactory.create(true, "12.34", System.currentTimeMillis() + 1000, "func2", null),
+                TriggeredServerCodeResultFactory.create(true, "true", System.currentTimeMillis() + 2000, "func3", null),
+                TriggeredServerCodeResultFactory.create(true, "\"abcd\"", System.currentTimeMillis() + 3000, "func4", null)
+        };
 
-        this.addMockResponseForListTriggeredServerCodeResults(200, new TriggeredServerCodeResult[]{serverCodeResult1, serverCodeResult2, serverCodeResult3, serverCodeResult4}, paginationKey);
-        this.addMockResponseForListTriggeredServerCodeResults(200, new TriggeredServerCodeResult[]{serverCodeResult5, serverCodeResult6, serverCodeResult7}, null);
+        TriggeredServerCodeResult[] secondResults = {
+                TriggeredServerCodeResultFactory.create(true, "{\"field\":\"abcd\"}", System.currentTimeMillis() + 4000, "func5", null),
+                TriggeredServerCodeResultFactory.create(true, "[1, \"2\", 3]", System.currentTimeMillis() + 5000, "func6", null),
+                TriggeredServerCodeResultFactory.create(false, null, System.currentTimeMillis() + 6000, "func7", new ServerError("Error found", "RUNTIME_ERROR", "faital error"))
+        };
+
+
+        addMockResponseForListTriggeredServerCodeResults(200, new TriggeredServerCodeResult[]{serverCodeResult1, serverCodeResult2, serverCodeResult3, serverCodeResult4}, paginationKey);
+        addMockResponseForListTriggeredServerCodeResults(200, new TriggeredServerCodeResult[]{serverCodeResult5, serverCodeResult6, serverCodeResult7}, null);
 
         Pair<List<TriggeredServerCodeResult>, String> result1 = api.listTriggeredServerCodeResults(triggerID, 4, null);
         Assert.assertEquals(paginationKey, result1.second);
-        List<TriggeredServerCodeResult> results1 = result1.first;
-        Assert.assertEquals(4, results1.size());
-        assertSameTriggeredServerCodeResults(serverCodeResult1, results1.get(0));
-        assertSameTriggeredServerCodeResults(serverCodeResult2, results1.get(1));
-        assertSameTriggeredServerCodeResults(serverCodeResult3, results1.get(2));
-        assertSameTriggeredServerCodeResults(serverCodeResult4, results1.get(3));
+        Assert.assertEquals(4, result1.first.size());
+        for (int i=0; i<firstResults.length; i++) {
+            TriggeredServerCodeResult expectedResult = firstResults[i];
+            assertSameTriggeredServerCodeResults(expectedResult, result1.first.get(i));
+        }
 
         Pair<List<TriggeredServerCodeResult>, String> result2 = api.listTriggeredServerCodeResults(triggerID, 4, result1.second);
         Assert.assertNull(result2.second);
-        List<TriggeredServerCodeResult> results2 = result2.first;
-        Assert.assertEquals(3, results2.size());
-        assertSameTriggeredServerCodeResults(serverCodeResult5, results2.get(0));
-        assertSameTriggeredServerCodeResults(serverCodeResult6, results2.get(1));
-        assertSameTriggeredServerCodeResults(serverCodeResult7, results2.get(2));
+        Assert.assertEquals(3, result2.first.size());
+        for (int i=0; i<secondResults.length; i++) {
+            TriggeredServerCodeResult expectedResult = firstResults[i];
+            assertSameTriggeredServerCodeResults(expectedResult, result2.first.get(i));
+        }
 
         // verify the 1st request
         RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -124,7 +122,7 @@ public class ListTriggeredServerCodeResultTest extends ThingIFAPITestBase{
         TriggeredServerCodeResult serverCodeResult1 =
                 TriggeredServerCodeResultFactory.create(true, "1234", System.currentTimeMillis(), "func1", null);
 
-        this.addMockResponseForListTriggeredServerCodeResults(200, new TriggeredServerCodeResult[]{serverCodeResult1}, null);
+        addMockResponseForListTriggeredServerCodeResults(200, new TriggeredServerCodeResult[]{serverCodeResult1}, null);
 
         Pair<List<TriggeredServerCodeResult>, String> result1 = api.listTriggeredServerCodeResults(triggerID, 0, null);
         Assert.assertNull(result1.second);
