@@ -19,7 +19,6 @@ import com.kii.thingif.SDKVersion;
 import com.kii.thingif.exception.StoredInstanceNotFoundException;
 import com.kii.thingif.exception.ThingIFException;
 import com.kii.thingif.exception.UnloadableInstanceVersionException;
-import com.kii.thingif.internal.gson.GatewayAPIAdapter;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
 import com.kii.thingif.internal.utils.Path;
@@ -42,9 +41,9 @@ public class GatewayAPI implements Parcelable {
     private static Context context;
     private final String tag;
     private final KiiApp app;
-    private final Uri gatewayAddress;
+    private final String gatewayAddress;
     private String accessToken;
-    private final IoTRestClient restClient;
+    private transient final IoTRestClient restClient;
 
     public static class Builder {
 
@@ -52,7 +51,6 @@ public class GatewayAPI implements Parcelable {
         private String tag;
         private final KiiApp app;
         private final Uri gatewayAddress;
-        private String accessToken;
 
         private Builder(
                 @Nullable Context context,
@@ -79,16 +77,6 @@ public class GatewayAPI implements Parcelable {
         @NonNull
         public Builder setTag(@Nullable String tag) {
             this.tag = tag;
-            return this;
-        }
-
-        /** Set accessToken to this GatewayAPI instance.
-         * @param token if null or empty string is passed, it will be ignored.
-         * @return builder instance for chaining call.
-         */
-        @NonNull
-        public Builder setAccessToken(@Nullable String token) {
-            this.accessToken = token;
             return this;
         }
 
@@ -125,7 +113,6 @@ public class GatewayAPI implements Parcelable {
         @NonNull
         public GatewayAPI build() {
             GatewayAPI api = new GatewayAPI(this.context, this.tag, this.app, this.gatewayAddress);
-            api.setAccessToken(this.accessToken);
             return api;
         }
     }
@@ -144,7 +131,7 @@ public class GatewayAPI implements Parcelable {
         }
         this.app = app;
         this.tag =tag;
-        this.gatewayAddress = gatewayAddress;
+        this.gatewayAddress = gatewayAddress.toString();
         this.restClient = new IoTRestClient();
     }
 
@@ -170,7 +157,7 @@ public class GatewayAPI implements Parcelable {
             throw new IllegalArgumentException("password is null or empty");
         }
         String path = MessageFormat.format("/{0}/token", this.app.getSiteName());
-        String url = Path.combine(this.gatewayAddress.toString(), path);
+        String url = Path.combine(this.gatewayAddress, path);
 
         String credential = this.app.getAppID() + ":" + this.app.getAppKey();
         Map<String, String> headers = new HashMap<String, String>();
@@ -203,7 +190,7 @@ public class GatewayAPI implements Parcelable {
             throw new IllegalStateException("Needs user login before execute this API");
         }
         String path = MessageFormat.format("/{0}/apps/{1}/gateway/onboarding", this.app.getSiteName(), this.app.getAppID());
-        String url = Path.combine(this.gatewayAddress.toString(), path);
+        String url = Path.combine(this.gatewayAddress, path);
         Map<String, String> headers = this.newHeader();
 
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers);
@@ -230,7 +217,7 @@ public class GatewayAPI implements Parcelable {
             throw new IllegalStateException("Needs user login before execute this API");
         }
         String path = MessageFormat.format("/{0}/apps/{1}/gateway/id", this.app.getSiteName(), this.app.getAppID());
-        String url = Path.combine(this.gatewayAddress.toString(), path);
+        String url = Path.combine(this.gatewayAddress, path);
         Map<String, String> headers = this.newHeader();
 
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
@@ -251,7 +238,7 @@ public class GatewayAPI implements Parcelable {
             throw new IllegalStateException("Needs user login before execute this API");
         }
         String path = MessageFormat.format("/{0}/apps/{1}/gateway/end-nodes/onboarded", this.app.getSiteName(), this.app.getAppID());
-        String url = Path.combine(this.gatewayAddress.toString(), path);
+        String url = Path.combine(this.gatewayAddress, path);
         Map<String, String> headers = this.newHeader();
 
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
@@ -285,7 +272,7 @@ public class GatewayAPI implements Parcelable {
             throw new IllegalStateException("Needs user login before execute this API");
         }
         String path = MessageFormat.format("/{0}/apps/{1}/gateway/end-nodes/pending", this.app.getSiteName(), this.app.getAppID());
-        String url = Path.combine(this.gatewayAddress.toString(), path);
+        String url = Path.combine(this.gatewayAddress, path);
         Map<String, String> headers = this.newHeader();
 
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
@@ -326,7 +313,7 @@ public class GatewayAPI implements Parcelable {
             throw new IllegalArgumentException("venderThingID is null or empty");
         }
         String path = MessageFormat.format("/{0}/apps/{1}/gateway/end-nodes/VENDOR_THING_ID:{2}", this.app.getSiteName(), this.app.getAppID(), endNode.getVendorThingID());
-        String url = Path.combine(this.gatewayAddress.toString(), path);
+        String url = Path.combine(this.gatewayAddress, path);
         Map<String, String> headers = this.newHeader();
 
         JSONObject requestBody = new JSONObject();
@@ -351,7 +338,7 @@ public class GatewayAPI implements Parcelable {
             throw new IllegalStateException("Needs user login before execute this API");
         }
         String path = "/gateway-app/gateway/restore";
-        String url = Path.combine(this.gatewayAddress.toString(), path);
+        String url = Path.combine(this.gatewayAddress, path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers);
         this.restClient.sendRequest(request);
@@ -378,7 +365,7 @@ public class GatewayAPI implements Parcelable {
             throw new IllegalArgumentException("venderThingID is null or empty");
         }
         String path = MessageFormat.format("/{0}/apps/{1}/gateway/end-nodes/THING_ID:{2}", this.app.getSiteName(), this.app.getAppID(), endNodeThingID);
-        String url = Path.combine(this.gatewayAddress.toString(), path);
+        String url = Path.combine(this.gatewayAddress, path);
         Map<String, String> headers = this.newHeader();
 
         JSONObject requestBody = new JSONObject();
@@ -406,7 +393,7 @@ public class GatewayAPI implements Parcelable {
             throw new IllegalStateException("Needs user login before execute this API");
         }
         String path = "/gateway-info";
-        String url = Path.combine(this.gatewayAddress.toString(), path);
+        String url = Path.combine(this.gatewayAddress, path);
         Map<String, String> headers = this.newHeader();
 
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
@@ -458,7 +445,7 @@ public class GatewayAPI implements Parcelable {
      */
     @NonNull
     public Uri getGatewayAddress() {
-        return this.gatewayAddress;
+        return Uri.parse(this.gatewayAddress);
     }
 
     /**
@@ -469,8 +456,6 @@ public class GatewayAPI implements Parcelable {
     public String getAccessToken() {
         return this.accessToken;
     }
-
-    void setAccessToken(String token) { this.accessToken = token; }
 
     // Implementation of Parcelable
     public static final Creator<GatewayAPI> CREATOR = new Creator<GatewayAPI>() {
@@ -488,7 +473,7 @@ public class GatewayAPI implements Parcelable {
     protected GatewayAPI(Parcel in) {
         this.tag = in.readString();
         this.app = in.readParcelable(KiiApp.class.getClassLoader());
-        this.gatewayAddress = in.readParcelable(Uri.class.getClassLoader());
+        this.gatewayAddress = in.readString();
         this.accessToken = in.readString();
         this.restClient = new IoTRestClient();
     }
@@ -502,7 +487,7 @@ public class GatewayAPI implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.tag);
         dest.writeParcelable(this.app, flags);
-        dest.writeParcelable(this.gatewayAddress, flags);
+        dest.writeString(this.gatewayAddress);
         dest.writeString(this.accessToken);
     }
 
@@ -563,9 +548,7 @@ public class GatewayAPI implements Parcelable {
                     MINIMUM_LOADABLE_SDK_VERSION);
         }
 
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(GatewayAPI.class, new GatewayAPIAdapter(GatewayAPI.context))
-                .create();
+        Gson gson = new GsonBuilder().create();
         return  gson.fromJson(serializedJson, GatewayAPI.class);
     }
     /**
@@ -594,9 +577,7 @@ public class GatewayAPI implements Parcelable {
         if (preferences != null) {
             SharedPreferences.Editor editor = preferences.edit();
             editor.putString(getStoredSDKVersionKey(instance.tag), SDKVersion.versionString);
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(GatewayAPI.class, new GatewayAPIAdapter(GatewayAPI.context))
-                    .create();
+            Gson gson = new GsonBuilder().create();
             editor.putString(getStoredInstanceKey(instance.tag), gson.toJson(instance));
             editor.apply();
         }
