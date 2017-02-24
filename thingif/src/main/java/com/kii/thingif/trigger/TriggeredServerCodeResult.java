@@ -2,7 +2,6 @@ package com.kii.thingif.trigger;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.text.TextUtils;
 
 import com.kii.thingif.ServerError;
 
@@ -31,7 +30,7 @@ public class TriggeredServerCodeResult implements Parcelable {
     private String endpoint;
     private ServerError error;
 
-    public TriggeredServerCodeResult(boolean succeeded, Object returnedValue, long executedAt, String endpoint, ServerError error) {
+    TriggeredServerCodeResult(boolean succeeded, Object returnedValue, long executedAt, String endpoint, ServerError error) {
         this.succeeded = succeeded;
         this.returnedValue = returnedValue;
         this.executedAt = executedAt;
