@@ -11,12 +11,15 @@ import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 import android.util.Base64;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.kii.thingif.KiiApp;
 import com.kii.thingif.MediaTypes;
 import com.kii.thingif.SDKVersion;
 import com.kii.thingif.exception.StoredInstanceNotFoundException;
 import com.kii.thingif.exception.ThingIFException;
 import com.kii.thingif.exception.UnloadableInstanceVersionException;
+import com.kii.thingif.internal.gson.GatewayAPIAdapter;
 import com.kii.thingif.internal.http.IoTRestClient;
 import com.kii.thingif.internal.http.IoTRestRequest;
 import com.kii.thingif.internal.utils.Path;
@@ -49,6 +52,7 @@ public class GatewayAPI implements Parcelable {
         private String tag;
         private final KiiApp app;
         private final Uri gatewayAddress;
+        private String accessToken;
 
         private Builder(
                 @Nullable Context context,
@@ -75,6 +79,16 @@ public class GatewayAPI implements Parcelable {
         @NonNull
         public Builder setTag(@Nullable String tag) {
             this.tag = tag;
+            return this;
+        }
+
+        /** Set accessToken to this GatewayAPI instance.
+         * @param token if null or empty string is passed, it will be ignored.
+         * @return builder instance for chaining call.
+         */
+        @NonNull
+        public Builder setAccessToken(@Nullable String token) {
+            this.accessToken = token;
             return this;
         }
 
@@ -111,6 +125,7 @@ public class GatewayAPI implements Parcelable {
         @NonNull
         public GatewayAPI build() {
             GatewayAPI api = new GatewayAPI(this.context, this.tag, this.app, this.gatewayAddress);
+            api.setAccessToken(this.accessToken);
             return api;
         }
     }
@@ -455,6 +470,8 @@ public class GatewayAPI implements Parcelable {
         return this.accessToken;
     }
 
+    void setAccessToken(String token) { this.accessToken = token; }
+
     // Implementation of Parcelable
     public static final Creator<GatewayAPI> CREATOR = new Creator<GatewayAPI>() {
         @Override
@@ -546,9 +563,10 @@ public class GatewayAPI implements Parcelable {
                     MINIMUM_LOADABLE_SDK_VERSION);
         }
 
-        //TODO: // FIXME: 2017/01/23 
-        return null;
-//        return  GsonRepository.gson().fromJson(serializedJson, GatewayAPI.class);
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(GatewayAPI.class, new GatewayAPIAdapter(GatewayAPI.context))
+                .create();
+        return  gson.fromJson(serializedJson, GatewayAPI.class);
     }
     /**
      * Clear all saved instances in the SharedPreferences.
@@ -576,8 +594,10 @@ public class GatewayAPI implements Parcelable {
         if (preferences != null) {
             SharedPreferences.Editor editor = preferences.edit();
             editor.putString(getStoredSDKVersionKey(instance.tag), SDKVersion.versionString);
-            //TODO: // FIXME: 2017/01/23 
-//            editor.putString(getStoredInstanceKey(instance.tag), GsonRepository.gson().toJson(instance));
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(GatewayAPI.class, new GatewayAPIAdapter(GatewayAPI.context))
+                    .create();
+            editor.putString(getStoredInstanceKey(instance.tag), gson.toJson(instance));
             editor.apply();
         }
     }
