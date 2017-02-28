@@ -1186,18 +1186,6 @@ public class ThingIFAPI implements Parcelable {
             @Nullable TriggerOptions options)
         throws ThingIFException
     {
-        return patchTriggerWithForm(triggerID, form, predicate, options);
-    }
-    
-    @NonNull
-    @WorkerThread
-    private Trigger patchTriggerWithForm(
-            @NonNull String triggerID,
-            @Nullable TriggeredCommandForm form,
-            @Nullable Predicate predicate,
-            @Nullable TriggerOptions options)
-        throws ThingIFException
-    {
         if (this.target == null) {
             throw new IllegalStateException(
                 "Can not perform this action before onboarding");
