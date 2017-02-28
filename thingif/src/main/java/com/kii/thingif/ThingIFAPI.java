@@ -1174,7 +1174,7 @@ public class ThingIFAPI implements Parcelable {
      * more following conditions are met.
      * <ul>
      *  <li>triggerID is null or empty string.</li>
-     *  <li>All of form, predicate and options are null</li>
+     *  <li>All of form, predicate and options are null.</li>
      * </ul>
      */
     @NonNull
@@ -1188,7 +1188,39 @@ public class ThingIFAPI implements Parcelable {
     {
         return patchTriggerWithForm(triggerID, form, predicate, options);
     }
-    
+
+    /**
+     * Apply patch to registered trigger.
+     * Modify registered trigger with specified patch.
+     * <p>
+     * Limited version of {@link #patchTrigger(String, TriggeredCommandForm, Predicate, TriggerOptions)}
+     * <p>
+     * @param triggerID ID of the trigger to apply patch.
+     * @param form Form of triggered command. It contains name of schema,
+     * version of schema, list of actions, target IDof thing etc. You can see
+     * detail of form in {@link TriggeredCommandForm}.
+     * @param predicate Modified predicate.
+     * @return Updated trigger instance.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws IllegalArgumentException This exception is thrown if one or
+     * more following conditions are met.
+     * <ul>
+     *  <li>triggerID is null or empty string.</li>
+     *  <li>both form and predicate are null.</li>
+     * </ul>
+     */
+    @NonNull
+    @WorkerThread
+    public Trigger patchTrigger(
+            @NonNull String triggerID,
+            @Nullable TriggeredCommandForm form,
+            @Nullable Predicate predicate)
+            throws ThingIFException
+    {
+        return patchTriggerWithForm(triggerID, form, predicate, null);
+    }
+
     @NonNull
     @WorkerThread
     private Trigger patchTriggerWithForm(

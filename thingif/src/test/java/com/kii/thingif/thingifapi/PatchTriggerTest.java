@@ -1370,7 +1370,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
                 null);
 
         Trigger trigger;
-        trigger = this.defaultApi.patchTrigger(triggerID, null, predicate);
+        trigger = this.defaultApi.patchTrigger(triggerID, (ServerCode) null, predicate);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -1486,7 +1486,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
 
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         ThingIFAPIUtils.setTarget(api, target);
-        api.patchTrigger("trigger-1234", null, null);
+        api.patchTrigger("trigger-1234", (ServerCode) null, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -1573,4 +1573,492 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
         expectedRequestBody.put("triggersWhat","SERVER_CODE");
         this.assertRequestBody(expectedRequestBody, request);
     }
+
+    @Test
+    //call patchTrigger(String, TriggeredCommandForm, StatePredicate)
+    public void patchCommandTrigger_FormOnlyHasActions_StatePredicate_Test() throws Exception {
+
+        List<AliasAction<? extends Action>> actions = getDefaultActions();
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions).build();
+        StatePredicate predicate = new StatePredicate(new Condition(
+                new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
+        TriggerOptions options = TriggerOptions.Builder.newBuilder()
+                .setTitle("trigger title")
+                .setDescription("trigger description")
+                .setMetadata(new JSONObject().put("key1", "value1"))
+                .build();
+
+        String triggerID = "trigger-1234";
+
+        Assert.assertNotNull(this.defaultApi.getTarget());
+        Command expectedCommand = CommandFactory.newTriggeredCommand(
+                this.defaultApi.getOwner().getTypedID(),
+                actions,
+                this.defaultApi.getTarget().getTypedID(),
+                null,
+                null,
+                null);
+
+        this.addEmptyMockResponse(204);
+        this.addMockResponseForGetTriggerWithCommand(
+                200,
+                triggerID,
+                expectedCommand,
+                predicate,
+                options,
+                false,
+                null);
+
+        Trigger trigger = this.defaultApi.patchTrigger(triggerID, form, predicate);
+        // verify the result
+        Assert.assertEquals(triggerID, trigger.getTriggerID());
+        Assert.assertEquals(false, trigger.disabled());
+        Assert.assertNull(trigger.getDisabledReason());
+        Assert.assertNull(trigger.getServerCode());
+        assertSamePredicate(predicate, trigger.getPredicate());
+        assertSameCommands(expectedCommand, trigger.getCommand());
+        // verify the 1st request
+        RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
+        String thingID = this.defaultApi.getTarget().getTypedID().toString();
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID + "/triggers/"+ triggerID, request1.getPath());
+        Assert.assertEquals("PATCH", request1.getMethod());
+
+        Map<String, String> expectedRequestHeaders1 = new HashMap<>();
+        expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders1.put("Authorization", "Bearer " + this.defaultApi.getOwner().getAccessToken());
+        expectedRequestHeaders1.put("Content-Type", "application/json");
+        this.assertRequestHeader(expectedRequestHeaders1, request1);
+
+        JSONObject expectedRequestBody = new JSONObject();
+        expectedRequestBody.put("command", JsonUtil.commandToJson(expectedCommand));
+        expectedRequestBody.put("predicate", JsonUtil.predicateToJson(predicate));
+        expectedRequestBody.put("triggersWhat","COMMAND");
+        this.assertRequestBody(expectedRequestBody, request1);
+
+        // verify the 2nd request
+        RecordedRequest request2 = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID + "/triggers/" + triggerID, request2.getPath());
+        Assert.assertEquals("GET", request2.getMethod());
+
+        Map<String, String> expectedRequestHeaders2 = new HashMap<>();
+        expectedRequestHeaders2.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders2.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders2.put("Authorization", "Bearer " + this.defaultApi.getOwner().getAccessToken());
+        this.assertRequestHeader(expectedRequestHeaders2, request2);
+    }
+    @Test
+    // call patchTrigger(String, TriggeredCommandForm, ScheduleOncePredicate)
+    public void patchCommandTrigger_FormHasActionsAndCommandOption_ScheduledOncePredicate_Test() throws Exception {
+        List<AliasAction<? extends Action>> actions = getDefaultActions();
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions)
+                .setTitle("command title")
+                .setDescription("command description")
+                .setMetadata(new JSONObject().put("k", "v"))
+                .build();
+        ScheduleOncePredicate predicate = new ScheduleOncePredicate(System.currentTimeMillis());
+        TriggerOptions options = TriggerOptions.Builder.newBuilder()
+                .setTitle("trigger title")
+                .setMetadata(new JSONObject().put("key1", "value1"))
+                .build();
+
+        String triggerID = "trigger-1234";
+
+        Assert.assertNotNull(this.defaultApi.getTarget());
+        Command expectedCommand = CommandFactory.newTriggeredCommand(
+                this.defaultApi.getOwner().getTypedID(),
+                actions,
+                this.defaultApi.getTarget().getTypedID(),
+                form.getTitle(),
+                form.getDescription(),
+                form.getMetadata());
+
+        this.addEmptyMockResponse(204);
+        this.addMockResponseForGetTriggerWithCommand(
+                200,
+                triggerID,
+                expectedCommand,
+                predicate,
+                options,
+                false,
+                null);
+
+        Trigger trigger = this.defaultApi.patchTrigger(triggerID, form, predicate);
+        // verify the result
+        Assert.assertEquals(triggerID, trigger.getTriggerID());
+        Assert.assertEquals(false, trigger.disabled());
+        Assert.assertNull(trigger.getDisabledReason());
+        Assert.assertNull(trigger.getServerCode());
+        assertSamePredicate(predicate, trigger.getPredicate());
+        assertSameCommands(expectedCommand, trigger.getCommand());
+        // verify the 1st request
+        RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
+        String thingID = this.defaultApi.getTarget().getTypedID().toString();
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID + "/triggers/"+ triggerID, request1.getPath());
+        Assert.assertEquals("PATCH", request1.getMethod());
+
+        Map<String, String> expectedRequestHeaders1 = new HashMap<>();
+        expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders1.put("Authorization", "Bearer " + this.defaultApi.getOwner().getAccessToken());
+        expectedRequestHeaders1.put("Content-Type", "application/json");
+        this.assertRequestHeader(expectedRequestHeaders1, request1);
+
+        JSONObject expectedRequestBody = new JSONObject();
+        expectedRequestBody.put("command", JsonUtil.commandToJson(expectedCommand));
+        expectedRequestBody.put("predicate", JsonUtil.predicateToJson(predicate));
+        expectedRequestBody.put("triggersWhat","COMMAND");
+        this.assertRequestBody(expectedRequestBody, request1);
+
+        // verify the 2nd request
+        RecordedRequest request2 = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID + "/triggers/" + triggerID, request2.getPath());
+        Assert.assertEquals("GET", request2.getMethod());
+
+        Map<String, String> expectedRequestHeaders2 = new HashMap<>();
+        expectedRequestHeaders2.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders2.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders2.put("Authorization", "Bearer " + this.defaultApi.getOwner().getAccessToken());
+        this.assertRequestHeader(expectedRequestHeaders2, request2);
+    }
+
+    @Test
+    // call patchTrigger(String, TriggeredCommandForm, SchedulePredicate)
+    public void patchCommandTrigger_FormHasTarget_SchedulePredicate_Test() throws Exception {
+        List<AliasAction<? extends Action>> actions = new ArrayList<>();
+        TypedID targetID = new TypedID(TypedID.Types.THING, "another thing");
+        actions.add(new AliasAction<Action>(
+                ALIAS1,
+                new AirConditionerActions(true, null)));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions)
+                .setTargetID(targetID)
+                .build();
+        SchedulePredicate predicate = new SchedulePredicate("1 * * * *");
+        TriggerOptions options = TriggerOptions.Builder.newBuilder()
+                .setTitle("trigger title")
+                .setMetadata(new JSONObject().put("key1", "value1"))
+                .build();
+
+        String triggerID = "trigger-1234";
+
+        Assert.assertNotNull(this.defaultApi.getTarget());
+        Command expectedCommand = CommandFactory.newTriggeredCommand(
+                this.defaultApi.getOwner().getTypedID(),
+                actions,
+                targetID,
+                null,
+                null,
+                null);
+
+        this.addEmptyMockResponse(204);
+        this.addMockResponseForGetTriggerWithCommand(
+                200,
+                triggerID,
+                expectedCommand,
+                predicate,
+                options,
+                false,
+                null);
+
+        Trigger trigger = this.defaultApi.patchTrigger(triggerID, form, predicate);
+        // verify the result
+        Assert.assertEquals(triggerID, trigger.getTriggerID());
+        Assert.assertEquals(false, trigger.disabled());
+        Assert.assertNull(trigger.getDisabledReason());
+        Assert.assertNull(trigger.getServerCode());
+        assertSamePredicate(predicate, trigger.getPredicate());
+        assertSameCommands(expectedCommand, trigger.getCommand());
+        // verify the 1st request
+        RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
+        String thingID = this.defaultApi.getTarget().getTypedID().toString();
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID + "/triggers/"+ triggerID, request1.getPath());
+        Assert.assertEquals("PATCH", request1.getMethod());
+
+        Map<String, String> expectedRequestHeaders1 = new HashMap<>();
+        expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders1.put("Authorization", "Bearer " + this.defaultApi.getOwner().getAccessToken());
+        expectedRequestHeaders1.put("Content-Type", "application/json");
+        this.assertRequestHeader(expectedRequestHeaders1, request1);
+
+        JSONObject expectedRequestBody = new JSONObject();
+        expectedRequestBody.put("command", JsonUtil.commandToJson(expectedCommand));
+        expectedRequestBody.put("predicate", JsonUtil.predicateToJson(predicate));
+        expectedRequestBody.put("triggersWhat","COMMAND");
+        this.assertRequestBody(expectedRequestBody, request1);
+
+        // verify the 2nd request
+        RecordedRequest request2 = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID + "/triggers/" + triggerID, request2.getPath());
+        Assert.assertEquals("GET", request2.getMethod());
+
+        Map<String, String> expectedRequestHeaders2 = new HashMap<>();
+        expectedRequestHeaders2.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders2.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders2.put("Authorization", "Bearer " + this.defaultApi.getOwner().getAccessToken());
+        this.assertRequestHeader(expectedRequestHeaders2, request2);
+    }
+
+    @Test
+    // call patchTrigger(String, TriggeredCommandForm, null)
+    public void patchCommandTrigger_Form_NullPredicate_Test() throws Exception {
+        List<AliasAction<? extends Action>> actions = getDefaultActions();
+        TriggeredCommandForm form = getDefaultForm();
+        TriggerOptions options = TriggerOptions.Builder.newBuilder()
+                .setTitle("cross thing trigger title")
+                .setDescription("cross thing trigger description")
+                .build();
+
+        String triggerID = "trigger-1234";
+
+        Assert.assertNotNull(this.defaultApi.getTarget());
+        Command expectedCommand = CommandFactory.newTriggeredCommand(
+                this.defaultApi.getOwner().getTypedID(),
+                form.getAliasActions(),
+                this.defaultApi.getTarget().getTypedID(),
+                form.getTitle(),
+                form.getDescription(),
+                form.getMetadata());
+
+        this.addEmptyMockResponse(204);
+        this.addMockResponseForGetTriggerWithCommand(
+                200,
+                triggerID,
+                expectedCommand,
+                getDefaultPredicate(),
+                options,
+                false,
+                null);
+
+        Trigger trigger = this.defaultApi.patchTrigger(triggerID, form, null);
+        // verify the result
+        Assert.assertEquals(triggerID, trigger.getTriggerID());
+        Assert.assertEquals(false, trigger.disabled());
+        Assert.assertNull(trigger.getDisabledReason());
+        Assert.assertNull(trigger.getServerCode());
+        assertSameCommands(expectedCommand, trigger.getCommand());
+        assertSamePredicate(getDefaultPredicate(), trigger.getPredicate());
+        // verify the 1st request
+        RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
+        String thingID = this.defaultApi.getTarget().getTypedID().toString();
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID + "/triggers/"+ triggerID, request1.getPath());
+        Assert.assertEquals("PATCH", request1.getMethod());
+
+        Map<String, String> expectedRequestHeaders1 = new HashMap<>();
+        expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders1.put("Authorization", "Bearer " + this.defaultApi.getOwner().getAccessToken());
+        expectedRequestHeaders1.put("Content-Type", "application/json");
+        this.assertRequestHeader(expectedRequestHeaders1, request1);
+
+        JSONObject expectedRequestBody = new JSONObject();
+        expectedRequestBody.put("command", JsonUtil.commandToJson(expectedCommand));
+        expectedRequestBody.put("triggersWhat","COMMAND");
+        this.assertRequestBody(expectedRequestBody, request1);
+
+        // verify the 2nd request
+        RecordedRequest request2 = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID + "/triggers/" + triggerID, request2.getPath());
+        Assert.assertEquals("GET", request2.getMethod());
+
+        Map<String, String> expectedRequestHeaders2 = new HashMap<>();
+        expectedRequestHeaders2.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders2.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders2.put("Authorization", "Bearer " + this.defaultApi.getOwner().getAccessToken());
+        this.assertRequestHeader(expectedRequestHeaders2, request2);
+    }
+
+    @Test
+    // call patchTrigger(String, null, SchedulePredicate)
+    public void patchCommandTrigger_NullForm_SchedulePredicate_Test() throws Exception {
+        SchedulePredicate predicate = new SchedulePredicate("1 * * * *");
+        TriggerOptions options = getDefaultOptions();
+        String triggerID = "trigger-1234";
+
+        Assert.assertNotNull(this.defaultApi.getTarget());
+
+        this.addEmptyMockResponse(204);
+        this.addMockResponseForGetTriggerWithCommand(
+                200,
+                triggerID,
+                getDefaultCommand(),
+                getDefaultPredicate(),
+                options,
+                false,
+                null);
+
+        Trigger trigger = this.defaultApi.patchTrigger(triggerID, (TriggeredCommandForm) null, predicate);
+        // verify the result
+        Assert.assertEquals(triggerID, trigger.getTriggerID());
+        Assert.assertEquals(false, trigger.disabled());
+        Assert.assertNull(trigger.getDisabledReason());
+        Assert.assertNull(trigger.getServerCode());
+        assertSameCommands(getDefaultCommand(), trigger.getCommand());
+        assertSamePredicate(getDefaultPredicate(), trigger.getPredicate());
+        // verify the 1st request
+        RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
+        String thingID = this.defaultApi.getTarget().getTypedID().toString();
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID + "/triggers/"+ triggerID, request1.getPath());
+        Assert.assertEquals("PATCH", request1.getMethod());
+
+        Map<String, String> expectedRequestHeaders1 = new HashMap<>();
+        expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders1.put("Authorization", "Bearer " + this.defaultApi.getOwner().getAccessToken());
+        expectedRequestHeaders1.put("Content-Type", "application/json");
+        this.assertRequestHeader(expectedRequestHeaders1, request1);
+
+        JSONObject expectedRequestBody = new JSONObject();
+        expectedRequestBody.put("triggersWhat","COMMAND");
+        expectedRequestBody.putOpt("predicate", JsonUtil.predicateToJson(predicate));
+        this.assertRequestBody(expectedRequestBody, request1);
+
+        // verify the 2nd request
+        RecordedRequest request2 = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID + "/triggers/" + triggerID, request2.getPath());
+        Assert.assertEquals("GET", request2.getMethod());
+
+        Map<String, String> expectedRequestHeaders2 = new HashMap<>();
+        expectedRequestHeaders2.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders2.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders2.put("Authorization", "Bearer " + this.defaultApi.getOwner().getAccessToken());
+        this.assertRequestHeader(expectedRequestHeaders2, request2);
+    }
+
+    @Test
+    // call patchTrigger(String, TriggeredCommandForm, Predicate)
+    public void patchCommandTrigger403ErrorTest2() throws Exception {
+        Assert.assertNotNull(this.defaultApi.getTarget());
+        TypedID thingID = this.defaultApi.getTarget().getTypedID();
+
+        TriggeredCommandForm form = getDefaultForm();
+        Predicate predicate = getDefaultPredicate();
+
+        Command expectedCommand = getDefaultCommand();
+        this.addEmptyMockResponse(403);
+
+        try {
+            this.defaultApi.patchTrigger("trigger-1234", form, predicate);
+            Assert.fail("ThingIFRestException should be thrown");
+        } catch (ForbiddenException e) {
+        }
+        // verify the request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers/trigger-1234", request.getPath());
+        Assert.assertEquals("PATCH", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders1 = new HashMap<>();
+        expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders1.put("Authorization", "Bearer " + this.defaultApi.getOwner().getAccessToken());
+        expectedRequestHeaders1.put("Content-Type", "application/json");
+        this.assertRequestHeader(expectedRequestHeaders1, request);
+
+        JSONObject expectedRequestBody = new JSONObject();
+        expectedRequestBody.put("command", JsonUtil.commandToJson(expectedCommand));
+        expectedRequestBody.put("predicate",JsonUtil.predicateToJson(predicate));
+        expectedRequestBody.put("triggersWhat","COMMAND");
+        this.assertRequestBody(expectedRequestBody, request);
+    }
+    @Test
+    // call patchTrigger(String, TriggeredCommandForm, Predicate)
+    public void patchTrigger404ErrorTest2() throws Exception {
+        Assert.assertNotNull(this.defaultApi.getTarget());
+        TypedID thingID = this.defaultApi.getTarget().getTypedID();
+
+        TriggeredCommandForm form = getDefaultForm();
+        Predicate predicate = getDefaultPredicate();
+
+        Command expectedCommand = getDefaultCommand();
+        this.addEmptyMockResponse(404);
+
+        try {
+            this.defaultApi.patchTrigger("trigger-1234", form, predicate);
+            Assert.fail("ThingIFRestException should be thrown");
+        } catch (NotFoundException e) {
+        }
+        // verify the request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers/trigger-1234", request.getPath());
+        Assert.assertEquals("PATCH", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders1 = new HashMap<>();
+        expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders1.put("Authorization", "Bearer " + this.defaultApi.getOwner().getAccessToken());
+        expectedRequestHeaders1.put("Content-Type", "application/json");
+        this.assertRequestHeader(expectedRequestHeaders1, request);
+
+        JSONObject expectedRequestBody = new JSONObject();
+        expectedRequestBody.put("command", JsonUtil.commandToJson(expectedCommand));
+        expectedRequestBody.put("predicate",JsonUtil.predicateToJson(predicate));
+        expectedRequestBody.put("triggersWhat","COMMAND");
+        this.assertRequestBody(expectedRequestBody, request);
+    }
+    @Test
+    // call patchTrigger(String, TriggeredCommandForm, Predicate)
+    public void patchTrigger503ErrorTest2() throws Exception {
+        Assert.assertNotNull(this.defaultApi.getTarget());
+        TypedID thingID = this.defaultApi.getTarget().getTypedID();
+
+        TriggeredCommandForm form = getDefaultForm();
+        Predicate predicate = getDefaultPredicate();
+
+        Command expectedCommand = getDefaultCommand();
+        this.addEmptyMockResponse(503);
+
+        try {
+            this.defaultApi.patchTrigger("trigger-1234", form, predicate);
+            Assert.fail("ThingIFRestException should be thrown");
+        } catch (ServiceUnavailableException e) {
+        }
+        // verify the request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers/trigger-1234", request.getPath());
+        Assert.assertEquals("PATCH", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders1 = new HashMap<>();
+        expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders1.put("Authorization", "Bearer " + this.defaultApi.getOwner().getAccessToken());
+        expectedRequestHeaders1.put("Content-Type", "application/json");
+        this.assertRequestHeader(expectedRequestHeaders1, request);
+
+        JSONObject expectedRequestBody = new JSONObject();
+        expectedRequestBody.put("command", JsonUtil.commandToJson(expectedCommand));
+        expectedRequestBody.put("predicate",JsonUtil.predicateToJson(predicate));
+        expectedRequestBody.put("triggersWhat","COMMAND");
+        this.assertRequestBody(expectedRequestBody, request);
+    }
+    @Test(expected = IllegalStateException.class)
+    // call patchTrigger(String, TriggeredCommandForm, Predicate)
+    public void patchCommandTriggerWithNullTargetTest2() throws Exception {
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
+        api.patchTrigger("trigger-1234", getDefaultForm(), getDefaultPredicate());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    // call patchTrigger(String, null, null)
+    public void patchCommandTrigger_NullForm_NullPredicate_Test() throws Exception{
+        this.defaultApi.patchTrigger("trigger-1234", (TriggeredCommandForm)null, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    // call patchTrigger(null, TriggeredCommandForm, Predicate)
+    public void patchCommandTrigger_NullTriggerID_Form_Predicate_Test() throws Exception{
+        this.defaultApi.patchTrigger(
+                null,
+                getDefaultForm(),
+                getDefaultPredicate());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    // call patchTrigger("", TriggeredCommandForm, Predicate)
+    public void patchCommandTrigger_EmptyTriggerID_Form_Predicate_Test() throws Exception{
+        this.defaultApi.patchTrigger(
+                "",
+                getDefaultForm(),
+                getDefaultPredicate());
+    }
+
 }
