@@ -1858,19 +1858,19 @@ public class ThingIFAPI implements Parcelable {
             throw new IllegalArgumentException("firmwareVersion is null or empty");
         }
 
-        String path = MessageFormat.format("/api/apps/{0}/things/{1}",
+        String path = MessageFormat.format("/thing-if/apps/{0}/things/{1}/firmware-version",
                 this.app.getAppID(), this.target.getTypedID().getID());
         String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
         JSONObject requestBody = new JSONObject();
         try {
-            requestBody.put("_firmwareVersion", firmwareVersion);
+            requestBody.put("firmwareVersion", firmwareVersion);
         } catch (JSONException e) {
             // Unexpected.
             throw new RuntimeException(e);
         }
-        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.PATCH, headers,
-                MediaTypes.MEDIA_TYPE_THING_UPDATE_REQUEST, requestBody);
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.PUT, headers,
+                MediaTypes.MEDIA_TYPE_THING_FIRMWARE_VERSION_UPDATE_REQUEST, requestBody);
         this.restClient.sendRequest(request);
     }
 

@@ -52,10 +52,7 @@ public class UpdateFirmwareVersionTest extends ThingIFAPITestBase {
         String triggerID = "trigger-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        String responseBody = "{\"modifiedAt\" : 1000}";
-        MockResponse response = new MockResponse().setResponseCode(200);
-        response.addHeader("Content-Type", "application/vnd.kii.ThingUpdateResponse+json");
-        response.setBody(responseBody);
+        MockResponse response = new MockResponse().setResponseCode(204);
         this.server.enqueue(response);
 
         ThingIFAPI api = createDefaultThingIFAPIBuilder(this.context, APP_ID, APP_KEY)
@@ -66,13 +63,14 @@ public class UpdateFirmwareVersionTest extends ThingIFAPITestBase {
 
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(API_BASE_PATH + "/things/" + thingID.getID(), request.getPath());
-        Assert.assertEquals("PATCH", request.getMethod());
+        Assert.assertEquals(BASE_PATH + "/things/" + thingID.getID() + "/firmware-version",
+                request.getPath());
+        Assert.assertEquals("PUT", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
-        expectedRequestHeaders.put("Content-Type", "application/vnd.kii.ThingUpdateRequest+json");
+        expectedRequestHeaders.put("Content-Type", "application/vnd.kii.ThingFirmwareVersionUpdateRequest+json");
         expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
         this.assertRequestHeader(expectedRequestHeaders, request);
     }
@@ -113,76 +111,6 @@ public class UpdateFirmwareVersionTest extends ThingIFAPITestBase {
     }
 
     @Test
-    public void error400Test() throws Exception {
-        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
-        String accessToken = "thing-access-token-1234";
-        String triggerID = "trigger-1234";
-        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
-
-        this.addEmptyMockResponse(400);
-
-        ThingIFAPI api = createDefaultThingIFAPIBuilder(this.context, APP_ID, APP_KEY)
-                .setTarget(target)
-                .build();
-
-        try {
-            api.updateFirmwareVersion("V1");
-            Assert.fail("BadRequestException should be thrown");
-        } catch (BadRequestException e) {
-            // Expected.
-        } catch (Exception e) {
-            Assert.fail("Unexpected exception: " + e.toString());
-        }
-
-        // verify the request
-        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(API_BASE_PATH + "/things/" + thingID.getID(), request.getPath());
-        Assert.assertEquals("PATCH", request.getMethod());
-
-        Map<String, String> expectedRequestHeaders = new HashMap<>();
-        expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
-        expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
-        expectedRequestHeaders.put("Content-Type", "application/vnd.kii.ThingUpdateRequest+json");
-        expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
-        this.assertRequestHeader(expectedRequestHeaders, request);
-    }
-
-    @Test
-    public void error401Test() throws Exception {
-        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
-        String accessToken = "thing-access-token-1234";
-        String triggerID = "trigger-1234";
-        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
-
-        this.addEmptyMockResponse(401);
-
-        ThingIFAPI api = createDefaultThingIFAPIBuilder(this.context, APP_ID, APP_KEY)
-                .setTarget(target)
-                .build();
-
-        try {
-            api.updateFirmwareVersion("V1");
-            Assert.fail("UnauthorizedException should be thrown");
-        } catch (UnauthorizedException e) {
-            // Expected.
-        } catch (Exception e) {
-            Assert.fail("Unexpected exception: " + e.toString());
-        }
-
-        // verify the request
-        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(API_BASE_PATH + "/things/" + thingID.getID(), request.getPath());
-        Assert.assertEquals("PATCH", request.getMethod());
-
-        Map<String, String> expectedRequestHeaders = new HashMap<>();
-        expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
-        expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
-        expectedRequestHeaders.put("Content-Type", "application/vnd.kii.ThingUpdateRequest+json");
-        expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
-        this.assertRequestHeader(expectedRequestHeaders, request);
-    }
-
-    @Test
     public void error403Test() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
@@ -206,13 +134,14 @@ public class UpdateFirmwareVersionTest extends ThingIFAPITestBase {
 
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(API_BASE_PATH + "/things/" + thingID.getID(), request.getPath());
-        Assert.assertEquals("PATCH", request.getMethod());
+        Assert.assertEquals(BASE_PATH + "/things/" + thingID.getID() + "/firmware-version",
+                request.getPath());
+        Assert.assertEquals("PUT", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
-        expectedRequestHeaders.put("Content-Type", "application/vnd.kii.ThingUpdateRequest+json");
+        expectedRequestHeaders.put("Content-Type", "application/vnd.kii.ThingFirmwareVersionUpdateRequest+json");
         expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
         this.assertRequestHeader(expectedRequestHeaders, request);
     }
@@ -241,13 +170,14 @@ public class UpdateFirmwareVersionTest extends ThingIFAPITestBase {
 
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(API_BASE_PATH + "/things/" + thingID.getID(), request.getPath());
-        Assert.assertEquals("PATCH", request.getMethod());
+        Assert.assertEquals(BASE_PATH + "/things/" + thingID.getID() + "/firmware-version",
+                request.getPath());
+        Assert.assertEquals("PUT", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
-        expectedRequestHeaders.put("Content-Type", "application/vnd.kii.ThingUpdateRequest+json");
+        expectedRequestHeaders.put("Content-Type", "application/vnd.kii.ThingFirmwareVersionUpdateRequest+json");
         expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
         this.assertRequestHeader(expectedRequestHeaders, request);
     }
@@ -276,13 +206,14 @@ public class UpdateFirmwareVersionTest extends ThingIFAPITestBase {
 
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(API_BASE_PATH + "/things/" + thingID.getID(), request.getPath());
-        Assert.assertEquals("PATCH", request.getMethod());
+        Assert.assertEquals(BASE_PATH + "/things/" + thingID.getID() + "/firmware-version",
+                request.getPath());
+        Assert.assertEquals("PUT", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
-        expectedRequestHeaders.put("Content-Type", "application/vnd.kii.ThingUpdateRequest+json");
+        expectedRequestHeaders.put("Content-Type", "application/vnd.kii.ThingFirmwareVersionUpdateRequest+json");
         expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
         this.assertRequestHeader(expectedRequestHeaders, request);
     }
