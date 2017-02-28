@@ -1214,21 +1214,59 @@ public class ThingIFAPI implements Parcelable {
      */
     @NonNull
     @WorkerThread
-    public Trigger patchTrigger(
+    public Trigger patchCommandTrigger(
             @NonNull String triggerID,
             @Nullable TriggeredCommandForm form,
             @Nullable Predicate predicate,
             @Nullable TriggerOptions options)
         throws ThingIFException
     {
-        return patchTriggerWithForm(triggerID, form, predicate, options);
+        if (this.target == null) {
+            throw new IllegalStateException(
+                    "Can not perform this action before onboarding");
+        }
+        if (TextUtils.isEmpty(triggerID)) {
+            throw new IllegalArgumentException("triggerID is null or empty");
+        }
+        if (form == null && predicate == null && options == null) {
+            throw new IllegalArgumentException(
+                    "All of form, predicate and options are null.");
+        }
+
+        JSONObject requestBody = null;
+        try {
+            if (options != null) {
+                requestBody =
+                        JsonUtils.newJson(this.gson.toJson(options));
+            } else {
+                requestBody = new JSONObject();
+            }
+
+            requestBody.put("triggersWhat", TriggersWhat.COMMAND.name());
+            if (predicate != null) {
+                requestBody.put("predicate",
+                        JsonUtils.newJson(this.gson.toJson(predicate, Predicate.class)));
+            }
+            if (form != null) {
+                JSONObject command = JsonUtils.newJson(
+                        this.gson.toJson(form));
+                command.put("issuer", this.owner.getTypedID());
+                if (form.getTargetID() == null) {
+                    command.put("target", this.target.getTypedID().toString());
+                }
+                requestBody.put("command", command);
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        return this.patchTrigger(triggerID, requestBody);
     }
 
     /**
      * Apply patch to registered trigger.
      * Modify registered trigger with specified patch.
      * <p>
-     * Limited version of {@link #patchTrigger(String, TriggeredCommandForm, Predicate, TriggerOptions)}
+     * Limited version of {@link #patchCommandTrigger(String, TriggeredCommandForm, Predicate, TriggerOptions)}
      * <p>
      * @param triggerID ID of the trigger to apply patch.
      * @param form Form of triggered command. It contains name of schema,
@@ -1247,63 +1285,13 @@ public class ThingIFAPI implements Parcelable {
      */
     @NonNull
     @WorkerThread
-    public Trigger patchTrigger(
+    public Trigger patchCommandTrigger(
             @NonNull String triggerID,
             @Nullable TriggeredCommandForm form,
             @Nullable Predicate predicate)
             throws ThingIFException
     {
-        return patchTriggerWithForm(triggerID, form, predicate, null);
-    }
-
-    @NonNull
-    @WorkerThread
-    private Trigger patchTriggerWithForm(
-            @NonNull String triggerID,
-            @Nullable TriggeredCommandForm form,
-            @Nullable Predicate predicate,
-            @Nullable TriggerOptions options)
-        throws ThingIFException
-    {
-        if (this.target == null) {
-            throw new IllegalStateException(
-                "Can not perform this action before onboarding");
-        }
-        if (TextUtils.isEmpty(triggerID)) {
-            throw new IllegalArgumentException("triggerID is null or empty");
-        }
-        if (form == null && predicate == null && options == null) {
-            throw new IllegalArgumentException(
-                "All of form, predicate and options are null.");
-        }
-
-        JSONObject requestBody = null;
-        try {
-            if (options != null) {
-                requestBody =
-                    JsonUtils.newJson(this.gson.toJson(options));
-            } else {
-                requestBody = new JSONObject();
-            }
-
-            requestBody.put("triggersWhat", TriggersWhat.COMMAND.name());
-            if (predicate != null) {
-                requestBody.put("predicate",
-                        JsonUtils.newJson(this.gson.toJson(predicate, Predicate.class)));
-            }
-            if (form != null) {
-                JSONObject command = JsonUtils.newJson(
-                    this.gson.toJson(form));
-                command.put("issuer", this.owner.getTypedID());
-                if (form.getTargetID() == null) {
-                    command.put("target", this.target.getTypedID().toString());
-                }
-                requestBody.put("command", command);
-            }
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-        return this.patchTrigger(triggerID, requestBody);
+        return patchCommandTrigger(triggerID, form, predicate, null);
     }
 
     /**
@@ -1326,15 +1314,46 @@ public class ThingIFAPI implements Parcelable {
      */
     @NonNull
     @WorkerThread
-    public Trigger patchTrigger(
+    public Trigger patchServerCodeTrigger(
             @NonNull String triggerID,
             @Nullable ServerCode serverCode,
             @Nullable Predicate predicate,
             @Nullable TriggerOptions options)
         throws ThingIFException
     {
-        return patchServerCodeTrigger(triggerID, serverCode, predicate,
-                options);
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
+        }
+        if (TextUtils.isEmpty(triggerID)) {
+            throw new IllegalArgumentException("triggerID is null or empty");
+        }
+        if (serverCode == null && predicate == null && options == null) {
+            throw new IllegalArgumentException(
+                    "serverCode, predicate and options are null.");
+        }
+        JSONObject requestBody = null;
+        try {
+            if (options != null) {
+                requestBody = JsonUtils.newJson(
+                        this.gson.toJson(options));
+            } else {
+                requestBody = new JSONObject();
+            }
+            if (predicate != null) {
+                requestBody.put("predicate",
+                        JsonUtils.newJson(
+                                this.gson.toJson(predicate, Predicate.class)));
+            }
+            if (serverCode != null) {
+                requestBody.put("serverCode",
+                        JsonUtils.newJson(
+                                this.gson.toJson(serverCode)));
+            }
+            requestBody.put("triggersWhat", TriggersWhat.SERVER_CODE.name());
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        return this.patchTrigger(triggerID, requestBody);
     }
 
     /**
@@ -1342,7 +1361,7 @@ public class ThingIFAPI implements Parcelable {
      * Modify registered Trigger with specified patch.
      *
      * <p>
-     * Limited version of {@link #patchTrigger(String, ServerCode, Predicate,
+     * Limited version of {@link #patchServerCodeTrigger(String, ServerCode, Predicate,
      * TriggerOptions)}
      * <p>
      *
@@ -1363,7 +1382,7 @@ public class ThingIFAPI implements Parcelable {
      */
     @NonNull
     @WorkerThread
-    public Trigger patchTrigger(
+    public Trigger patchServerCodeTrigger(
             @NonNull String triggerID,
             @Nullable ServerCode serverCode,
             @Nullable Predicate predicate) throws ThingIFException {
@@ -1374,49 +1393,6 @@ public class ThingIFAPI implements Parcelable {
         return patchServerCodeTrigger(triggerID, serverCode, predicate, null);
     }
 
-    @NonNull
-    @WorkerThread
-    private Trigger patchServerCodeTrigger(
-            @NonNull String triggerID,
-            @Nullable ServerCode serverCode,
-            @Nullable Predicate predicate,
-            @Nullable TriggerOptions options)
-        throws ThingIFException
-    {
-        if (this.target == null) {
-            throw new IllegalStateException("Can not perform this action before onboarding");
-        }
-        if (TextUtils.isEmpty(triggerID)) {
-            throw new IllegalArgumentException("triggerID is null or empty");
-        }
-        if (serverCode == null && predicate == null && options == null) {
-            throw new IllegalArgumentException(
-                "serverCode, predicate and options are null.");
-        }
-        JSONObject requestBody = null;
-        try {
-            if (options != null) {
-                requestBody = JsonUtils.newJson(
-                    this.gson.toJson(options));
-            } else {
-                requestBody = new JSONObject();
-            }
-            if (predicate != null) {
-                requestBody.put("predicate",
-                        JsonUtils.newJson(
-                            this.gson.toJson(predicate, Predicate.class)));
-            }
-            if (serverCode != null) {
-                requestBody.put("serverCode",
-                        JsonUtils.newJson(
-                            this.gson.toJson(serverCode)));
-            }
-            requestBody.put("triggersWhat", TriggersWhat.SERVER_CODE.name());
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-        return this.patchTrigger(triggerID, requestBody);
-    }
     private Trigger patchTrigger(@NonNull String triggerID, @NonNull JSONObject requestBody) throws ThingIFException {
         String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}", this.app.getAppID(), this.target.getTypedID().toString(), triggerID);
         String url = Path.combine(this.app.getBaseUrl(), path);

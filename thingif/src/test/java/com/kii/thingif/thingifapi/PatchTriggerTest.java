@@ -149,7 +149,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
                 false,
                 null);
 
-        Trigger trigger = this.defaultApi.patchTrigger(triggerID, form, predicate, options);
+        Trigger trigger = this.defaultApi.patchCommandTrigger(triggerID, form, predicate, options);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -226,7 +226,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
                 false,
                 null);
 
-        Trigger trigger = this.defaultApi.patchTrigger(triggerID, form, predicate, options);
+        Trigger trigger = this.defaultApi.patchCommandTrigger(triggerID, form, predicate, options);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -306,7 +306,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
                 false,
                 null);
 
-        Trigger trigger = this.defaultApi.patchTrigger(triggerID, form, predicate, options);
+        Trigger trigger = this.defaultApi.patchCommandTrigger(triggerID, form, predicate, options);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -382,7 +382,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
                 false,
                 null);
 
-        Trigger trigger = this.defaultApi.patchTrigger(triggerID, form, null, options);
+        Trigger trigger = this.defaultApi.patchCommandTrigger(triggerID, form, null, options);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -445,7 +445,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
                 false,
                 null);
 
-        Trigger trigger = this.defaultApi.patchTrigger(triggerID, (TriggeredCommandForm) null, predicate, options);
+        Trigger trigger = this.defaultApi.patchCommandTrigger(triggerID, null, predicate, options);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -515,7 +515,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
                 false,
                 null);
 
-        Trigger trigger = this.defaultApi.patchTrigger(triggerID, form, predicate, null);
+        Trigger trigger = this.defaultApi.patchCommandTrigger(triggerID, form, predicate, null);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -567,7 +567,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(403);
 
         try {
-            this.defaultApi.patchTrigger("trigger-1234", form, predicate, null);
+            this.defaultApi.patchCommandTrigger("trigger-1234", form, predicate, null);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ForbiddenException e) {
         }
@@ -602,7 +602,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(404);
 
         try {
-            this.defaultApi.patchTrigger("trigger-1234", form, predicate, null);
+            this.defaultApi.patchCommandTrigger("trigger-1234", form, predicate, null);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (NotFoundException e) {
         }
@@ -637,7 +637,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(503);
 
         try {
-            this.defaultApi.patchTrigger("trigger-1234", form, predicate, null);
+            this.defaultApi.patchCommandTrigger("trigger-1234", form, predicate, null);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ServiceUnavailableException e) {
         }
@@ -663,19 +663,19 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
     // call patchTrigger(String, TriggeredCommandForm, Predicate, TriggerOptions)
     public void patchCommandTriggerWithNullTargetTest() throws Exception {
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
-        api.patchTrigger("trigger-1234", getDefaultForm(), getDefaultPredicate(), getDefaultOptions());
+        api.patchCommandTrigger("trigger-1234", getDefaultForm(), getDefaultPredicate(), getDefaultOptions());
     }
 
     @Test(expected = IllegalArgumentException.class)
     // call patchTrigger(String, null, null, null)
     public void patchCommandTrigger_NullForm_NullPredicate_NullOptions_Test() throws Exception{
-        this.defaultApi.patchTrigger("trigger-1234", (TriggeredCommandForm)null, null, null);
+        this.defaultApi.patchCommandTrigger("trigger-1234", null, null, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     // call patchTrigger(null, TriggeredCommandForm, Predicate, TriggerOptions)
     public void patchCommandTrigger_NullTriggerID_Form_Predicate_Options_Test() throws Exception{
-        this.defaultApi.patchTrigger(
+        this.defaultApi.patchCommandTrigger(
                 null,
                 getDefaultForm(),
                 getDefaultPredicate(),
@@ -685,7 +685,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
     @Test(expected = IllegalArgumentException.class)
     // call patchTrigger("", TriggeredCommandForm, Predicate, TriggerOptions)
     public void patchCommandTrigger_EmptyTriggerID_Form_Predicate_Options_Test() throws Exception{
-        this.defaultApi.patchTrigger(
+        this.defaultApi.patchCommandTrigger(
                 "",
                 getDefaultForm(),
                 getDefaultPredicate(),
@@ -704,7 +704,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
         this.addMockResponseForGetTriggerWithServerCode(200, triggerID, serverCode, predicate, options, false, null);
 
         Trigger trigger;
-        trigger = this.defaultApi.patchTrigger(triggerID, serverCode, predicate, options);
+        trigger = this.defaultApi.patchServerCodeTrigger(triggerID, serverCode, predicate, options);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -758,7 +758,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
         this.addMockResponseForGetTriggerWithServerCode(200, triggerID, serverCode, predicate, options, false, null);
 
         Trigger trigger;
-        trigger = this.defaultApi.patchTrigger(triggerID, serverCode, predicate, options);
+        trigger = this.defaultApi.patchServerCodeTrigger(triggerID, serverCode, predicate, options);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -811,7 +811,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
         this.addMockResponseForGetTriggerWithServerCode(200, triggerID, serverCode, predicate, options, false, null);
 
         Trigger trigger;
-        trigger = this.defaultApi.patchTrigger(triggerID, serverCode, predicate, options);
+        trigger = this.defaultApi.patchServerCodeTrigger(triggerID, serverCode, predicate, options);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -864,7 +864,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
         this.addMockResponseForGetTriggerWithServerCode(200, triggerID, serverCode, predicate, null, false, null);
 
         Trigger trigger;
-        trigger = this.defaultApi.patchTrigger(triggerID, serverCode, predicate, null);
+        trigger = this.defaultApi.patchServerCodeTrigger(triggerID, serverCode, predicate, null);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -922,7 +922,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
                 null);
 
         Trigger trigger;
-        trigger = this.defaultApi.patchTrigger(triggerID, (ServerCode) null, predicate, options);
+        trigger = this.defaultApi.patchServerCodeTrigger(triggerID, (ServerCode) null, predicate, options);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -980,7 +980,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
                 null);
 
         Trigger trigger;
-        trigger = this.defaultApi.patchTrigger(
+        trigger = this.defaultApi.patchServerCodeTrigger(
                 triggerID,
                 getDefaultServerCode(),
                 null,
@@ -1042,7 +1042,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
                 null);
 
         Trigger trigger;
-        trigger = this.defaultApi.patchTrigger(
+        trigger = this.defaultApi.patchServerCodeTrigger(
                 triggerID,
                 (ServerCode) null,
                 null,
@@ -1091,7 +1091,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
     // call patchTrigger(String, ServerCode, Predicate, TriggerOptions)
     public void patchServerCodeTrigger_NullOptions_WithNullTargetTest() throws Exception {
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
-        api.patchTrigger(
+        api.patchServerCodeTrigger(
                 "trigger-1234",
                 getDefaultServerCode(),
                 getDefaultPredicate(),
@@ -1108,13 +1108,13 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
 
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         ThingIFAPIUtils.setTarget(api, target);
-        api.patchTrigger("trigger-1234", (ServerCode) null, null, null);
+        api.patchServerCodeTrigger("trigger-1234", (ServerCode) null, null, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     // call patchTrigger(null, ServerCode, Predicate, TriggerOptions)
     public void patchServerCodeTrigger_NullTriggerID_NonNullOptions_ServerCode_Predicate_Test() throws Exception{
-        this.defaultApi.patchTrigger(
+        this.defaultApi.patchServerCodeTrigger(
                 null,
                 getDefaultServerCode(),
                 getDefaultPredicate(),
@@ -1124,7 +1124,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
     @Test(expected = IllegalArgumentException.class)
     // call patchTrigger("", ServerCode, Predicate, TriggerOptions)
     public void patchServerCodeTrigger_EmptyTriggerID_NonNullOptions_ServerCode_Predicate_Test() throws Exception{
-        this.defaultApi.patchTrigger(
+        this.defaultApi.patchServerCodeTrigger(
                 "",
                 getDefaultServerCode(),
                 getDefaultPredicate(),
@@ -1140,7 +1140,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(404);
 
         try {
-            this.defaultApi.patchTrigger("trigger-1234", expectedServerCode, predicate);
+            this.defaultApi.patchServerCodeTrigger("trigger-1234", expectedServerCode, predicate);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (NotFoundException e) {
         }
@@ -1173,7 +1173,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(503);
 
         try {
-            this.defaultApi.patchTrigger("trigger-1234", expectedServerCode, predicate);
+            this.defaultApi.patchServerCodeTrigger("trigger-1234", expectedServerCode, predicate);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ServiceUnavailableException e) {
         }
@@ -1211,7 +1211,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
         this.addMockResponseForGetTriggerWithServerCode(200, triggerID, serverCode, predicate, options, false, null);
 
         Trigger trigger;
-        trigger = this.defaultApi.patchTrigger(triggerID, serverCode, predicate);
+        trigger = this.defaultApi.patchServerCodeTrigger(triggerID, serverCode, predicate);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -1262,7 +1262,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
         this.addMockResponseForGetTriggerWithServerCode(200, triggerID, serverCode, predicate, options, false, null);
 
         Trigger trigger;
-        trigger = this.defaultApi.patchTrigger(triggerID, serverCode, predicate);
+        trigger = this.defaultApi.patchServerCodeTrigger(triggerID, serverCode, predicate);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -1312,7 +1312,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
         this.addMockResponseForGetTriggerWithServerCode(200, triggerID, serverCode, predicate, options, false, null);
 
         Trigger trigger;
-        trigger = this.defaultApi.patchTrigger(triggerID, serverCode, predicate);
+        trigger = this.defaultApi.patchServerCodeTrigger(triggerID, serverCode, predicate);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -1370,7 +1370,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
                 null);
 
         Trigger trigger;
-        trigger = this.defaultApi.patchTrigger(triggerID, (ServerCode) null, predicate);
+        trigger = this.defaultApi.patchServerCodeTrigger(triggerID, (ServerCode) null, predicate);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -1425,7 +1425,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
                 null);
 
         Trigger trigger;
-        trigger = this.defaultApi.patchTrigger(
+        trigger = this.defaultApi.patchServerCodeTrigger(
                 triggerID,
                 getDefaultServerCode(),
                 null);
@@ -1470,7 +1470,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
     // call patchTrigger(String, ServerCode, Predicate)
     public void patchServerCodeTrigger_WithNullTargetTest() throws Exception {
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
-        api.patchTrigger(
+        api.patchServerCodeTrigger(
                 "trigger-1234",
                 getDefaultServerCode(),
                 getDefaultPredicate());
@@ -1486,13 +1486,13 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
 
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         ThingIFAPIUtils.setTarget(api, target);
-        api.patchTrigger("trigger-1234", (ServerCode) null, null);
+        api.patchServerCodeTrigger("trigger-1234", (ServerCode) null, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     // call patchTrigger(null, ServerCode, Predicate)
     public void patchServerCodeTrigger_NullTriggerID_ServerCode_Predicate_Test() throws Exception{
-        this.defaultApi.patchTrigger(
+        this.defaultApi.patchServerCodeTrigger(
                 null,
                 getDefaultServerCode(),
                 getDefaultPredicate());
@@ -1501,7 +1501,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
     @Test(expected = IllegalArgumentException.class)
     // call patchTrigger("", ServerCode, Predicate)
     public void patchServerCodeTrigger_EmptyTriggerID_ServerCode_Predicate_Test() throws Exception{
-        this.defaultApi.patchTrigger(
+        this.defaultApi.patchServerCodeTrigger(
                 "",
                 getDefaultServerCode(),
                 getDefaultPredicate());
@@ -1516,7 +1516,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(404);
 
         try {
-            this.defaultApi.patchTrigger("trigger-1234", expectedServerCode, predicate);
+            this.defaultApi.patchServerCodeTrigger("trigger-1234", expectedServerCode, predicate);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (NotFoundException e) {
         }
@@ -1549,7 +1549,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(503);
 
         try {
-            this.defaultApi.patchTrigger("trigger-1234", expectedServerCode, predicate);
+            this.defaultApi.patchServerCodeTrigger("trigger-1234", expectedServerCode, predicate);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ServiceUnavailableException e) {
         }
@@ -1609,7 +1609,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
                 false,
                 null);
 
-        Trigger trigger = this.defaultApi.patchTrigger(triggerID, form, predicate);
+        Trigger trigger = this.defaultApi.patchCommandTrigger(triggerID, form, predicate);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -1683,7 +1683,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
                 false,
                 null);
 
-        Trigger trigger = this.defaultApi.patchTrigger(triggerID, form, predicate);
+        Trigger trigger = this.defaultApi.patchCommandTrigger(triggerID, form, predicate);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -1760,7 +1760,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
                 false,
                 null);
 
-        Trigger trigger = this.defaultApi.patchTrigger(triggerID, form, predicate);
+        Trigger trigger = this.defaultApi.patchCommandTrigger(triggerID, form, predicate);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -1830,7 +1830,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
                 false,
                 null);
 
-        Trigger trigger = this.defaultApi.patchTrigger(triggerID, form, null);
+        Trigger trigger = this.defaultApi.patchCommandTrigger(triggerID, form, null);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -1887,7 +1887,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
                 false,
                 null);
 
-        Trigger trigger = this.defaultApi.patchTrigger(triggerID, (TriggeredCommandForm) null, predicate);
+        Trigger trigger = this.defaultApi.patchCommandTrigger(triggerID, null, predicate);
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -1938,7 +1938,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(403);
 
         try {
-            this.defaultApi.patchTrigger("trigger-1234", form, predicate);
+            this.defaultApi.patchCommandTrigger("trigger-1234", form, predicate);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ForbiddenException e) {
         }
@@ -1973,7 +1973,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(404);
 
         try {
-            this.defaultApi.patchTrigger("trigger-1234", form, predicate);
+            this.defaultApi.patchCommandTrigger("trigger-1234", form, predicate);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (NotFoundException e) {
         }
@@ -2008,7 +2008,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
         this.addEmptyMockResponse(503);
 
         try {
-            this.defaultApi.patchTrigger("trigger-1234", form, predicate);
+            this.defaultApi.patchCommandTrigger("trigger-1234", form, predicate);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ServiceUnavailableException e) {
         }
@@ -2034,19 +2034,19 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
     // call patchTrigger(String, TriggeredCommandForm, Predicate)
     public void patchCommandTriggerWithNullTargetTest2() throws Exception {
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
-        api.patchTrigger("trigger-1234", getDefaultForm(), getDefaultPredicate());
+        api.patchCommandTrigger("trigger-1234", getDefaultForm(), getDefaultPredicate());
     }
 
     @Test(expected = IllegalArgumentException.class)
     // call patchTrigger(String, null, null)
     public void patchCommandTrigger_NullForm_NullPredicate_Test() throws Exception{
-        this.defaultApi.patchTrigger("trigger-1234", (TriggeredCommandForm)null, null);
+        this.defaultApi.patchCommandTrigger("trigger-1234", null, null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     // call patchTrigger(null, TriggeredCommandForm, Predicate)
     public void patchCommandTrigger_NullTriggerID_Form_Predicate_Test() throws Exception{
-        this.defaultApi.patchTrigger(
+        this.defaultApi.patchCommandTrigger(
                 null,
                 getDefaultForm(),
                 getDefaultPredicate());
@@ -2055,7 +2055,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
     @Test(expected = IllegalArgumentException.class)
     // call patchTrigger("", TriggeredCommandForm, Predicate)
     public void patchCommandTrigger_EmptyTriggerID_Form_Predicate_Test() throws Exception{
-        this.defaultApi.patchTrigger(
+        this.defaultApi.patchCommandTrigger(
                 "",
                 getDefaultForm(),
                 getDefaultPredicate());
