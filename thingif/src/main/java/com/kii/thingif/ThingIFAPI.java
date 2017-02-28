@@ -980,7 +980,7 @@ public class ThingIFAPI implements Parcelable {
      * @return Instance of the Trigger registered in IoT Cloud.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws IllegalArgumentException if form and/or predicate is null.
+     * @throws IllegalArgumentException if any of form, predicate and options is/are null.
      */
     @NonNull
     @WorkerThread
@@ -993,6 +993,39 @@ public class ThingIFAPI implements Parcelable {
         return postNewTriggerWithForm(form, predicate, options);
     }
 
+    /**
+     * Post new Trigger with commands to IoT Cloud.
+     *
+     * <p>
+     * When thing retrieved by {@link #getTarget()} of this ThingIFAPI
+     * instance meets condition described by predicate, A command registered
+     * by {@link TriggeredCommandForm} sends to thing given by {@link
+     * TriggeredCommandForm#getTargetID()}.
+     * </p>
+     * Limited version of {@link #postNewTrigger(TriggeredCommandForm, Predicate, TriggerOptions)}
+     * <p>
+     * {@link #getTarget()} instance and thing specified by {@link
+     * TriggeredCommandForm#getTargetID()} must be same owner's things.
+     * </p>
+     *
+     * @param form Form of triggered command. It contains name of schema,
+     * version of schema, list of actions, target IDof thing etc. You can see
+     * detail of form in {@link TriggeredCommandForm}.
+     * @param predicate Specify when the Trigger fires command.
+     * @return Instance of the Trigger registered in IoT Cloud.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws IllegalArgumentException if any of form and predicate is/are null.
+     */
+    @NonNull
+    @WorkerThread
+    public Trigger postNewTrigger(
+            @NonNull TriggeredCommandForm form,
+            @NonNull Predicate predicate)
+            throws ThingIFException
+    {
+        return postNewTriggerWithForm(form, predicate, null);
+    }
     private Trigger postNewTriggerWithForm(
             @NonNull TriggeredCommandForm form,
             @NonNull Predicate predicate,
@@ -1039,6 +1072,7 @@ public class ThingIFAPI implements Parcelable {
      * @return Instance of the Trigger registered in IoT Cloud.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws IllegalArgumentException if any of serverCode, predicate and options is/are null.
      */
     @NonNull
     @WorkerThread
@@ -1065,6 +1099,7 @@ public class ThingIFAPI implements Parcelable {
      * @return Instance of the Trigger registered in IoT Cloud.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws IllegalArgumentException if any of serverCode and predicate is/are null.
      */
     @NonNull
     @WorkerThread
@@ -1282,8 +1317,12 @@ public class ThingIFAPI implements Parcelable {
      * @return Updated Trigger instance.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws IllegalArgumentException when all of  serverCode, predicates
-     * and options are null.
+     * @throws IllegalArgumentException This exception is thrown if one or
+     * more following conditions are met.
+     * <ul>
+     *  <li>triggerID is null or empty string.</li>
+     *  <li>all of serverCode, predicate and options are null.</li>
+     * </ul>
      */
     @NonNull
     @WorkerThread
@@ -1315,8 +1354,12 @@ public class ThingIFAPI implements Parcelable {
      * @return Updated Trigger instance.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws IllegalArgumentException when both server and predicates are
-     * null.
+     * @throws IllegalArgumentException This exception is thrown if one or
+     * more following conditions are met.
+     * <ul>
+     *  <li>triggerID is null or empty string.</li>
+     *  <li>both serverCode and predicate are null.</li>
+     * </ul>
      */
     @NonNull
     @WorkerThread

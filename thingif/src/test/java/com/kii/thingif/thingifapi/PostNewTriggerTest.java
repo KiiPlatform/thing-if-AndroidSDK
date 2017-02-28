@@ -78,6 +78,16 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
         }else{
             commandTargetID = target.getTypedID();
         }
+
+        TriggerOptions expectedOpitons;
+        if (options != null) {
+            expectedOpitons = options;
+        }else {
+            expectedOpitons = TriggerOptions.Builder.newBuilder()
+                    .setTitle("trigger title")
+                    .setDescription("trigger description")
+                    .setMetadata(new JSONObject().put("key", "value")).build();
+        }
         Command expectedCommand = CommandFactory.newCommand(
                 api.getOwner().getTypedID(),
                 form.getAliasActions(),
@@ -103,7 +113,12 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
 
         ThingIFAPIUtils.setTarget(api, target);
 
-        Trigger trigger = api.postNewTrigger(form, predicate, options);
+        Trigger trigger;
+        if (options != null) {
+            trigger = api.postNewTrigger(form, predicate, options);
+        }else {
+            trigger = api.postNewTrigger(form, predicate);
+        }
         // verify the result
         Assert.assertEquals(triggerID, trigger.getTriggerID());
         Assert.assertEquals(false, trigger.disabled());
@@ -601,7 +616,7 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
                 new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         ThingIFAPIUtils.setTarget(api, target);
-        api.postNewTrigger(null, predicate);
+        api.postNewTrigger((ServerCode) null, predicate);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -727,4 +742,284 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
         expectedRequestBody.put("triggersWhat","SERVER_CODE");
         this.assertRequestBody(expectedRequestBody, request);
     }
+
+    @Test
+    public void postNewCommandTrigger_FormOnlyHasActions_StatePredicate_Test() throws Exception {
+        List<AliasAction<? extends Action>> actions = new ArrayList<>();
+        actions.add(new AliasAction<Action>(
+                ALIAS1,
+                new AirConditionerActions(true, null)));
+        actions.add(new AliasAction<Action>(
+                ALIAS2,
+                new HumidityActions(45)));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions).build();
+        StatePredicate predicate = new StatePredicate(new Condition(
+                new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
+        this.postNewTriggerWithCommandTest(form, predicate, null);
+    }
+    @Test
+    public void postNewCommandTrigger_FormOnlyHasActionsAndCommandOption_ScheduledOncePredicate_Test() throws Exception {
+        List<AliasAction<? extends Action>> actions = new ArrayList<>();
+        actions.add(new AliasAction<Action>(
+                ALIAS1,
+                new AirConditionerActions(true, null)));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions)
+                .setTitle("command title")
+                .setDescription("command description")
+                .setMetadata(new JSONObject().put("k", "v"))
+                .build();
+        ScheduleOncePredicate predicate = new ScheduleOncePredicate(System.currentTimeMillis());
+        this.postNewTriggerWithCommandTest(form, predicate, null);
+    }
+
+    @Test
+    public void postNewCommandCrossThingTrigger_FormHasTarget_SchedulePredicate_Test() throws Exception {
+        List<AliasAction<? extends Action>> actions = new ArrayList<>();
+        TypedID targetID = new TypedID(TypedID.Types.THING, "another thing");
+        actions.add(new AliasAction<Action>(
+                ALIAS1,
+                new AirConditionerActions(true, null)));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions)
+                .setTargetID(targetID)
+                .setTitle("command title")
+                .setDescription("command description")
+                .setMetadata(new JSONObject().put("k", "v"))
+                .build();
+        SchedulePredicate predicate = new SchedulePredicate("1 * * * *");
+        this.postNewTriggerWithCommandTest(form, predicate, null);
+    }
+
+    @Test
+    public void postNewCommandTrigger403ErrorTest2() throws Exception {
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        List<AliasAction<? extends Action>> actions = new ArrayList<>();
+        actions.add(new AliasAction<Action>(
+                ALIAS1,
+                new AirConditionerActions(true, null)));
+        actions.add(new AliasAction<Action>(
+                ALIAS2,
+                new HumidityActions(45)));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions).build();
+
+        StatePredicate predicate = new StatePredicate(new Condition(
+                new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
+
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
+
+        Command expectedCommand = CommandFactory.newCommand(
+                api.getOwner().getTypedID(),
+                form.getAliasActions(),
+                null,
+                target.getTypedID(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                form.getTitle(),
+                form.getDescription(),
+                form.getMetadata());
+        this.addEmptyMockResponse(403);
+
+        try {
+            ThingIFAPIUtils.setTarget(api, target);
+            api.postNewTrigger(form, predicate);
+            Assert.fail("ThingIFRestException should be thrown");
+        } catch (ForbiddenException e) {
+        }
+        // verify the request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers", request.getPath());
+        Assert.assertEquals("POST", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders1 = new HashMap<>();
+        expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders1.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        expectedRequestHeaders1.put("Content-Type", "application/json");
+        this.assertRequestHeader(expectedRequestHeaders1, request);
+
+        JSONObject expectedRequestBody = new JSONObject();
+        expectedRequestBody.put("command", JsonUtil.commandToJson(expectedCommand));
+        expectedRequestBody.put("predicate",JsonUtil.predicateToJson(predicate));
+        expectedRequestBody.put("triggersWhat","COMMAND");
+        this.assertRequestBody(expectedRequestBody, request);
+    }
+    @Test
+    public void postNewTrigger404ErrorTest2() throws Exception {
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        List<AliasAction<? extends Action>> actions = new ArrayList<>();
+        actions.add(new AliasAction<Action>(
+                ALIAS1,
+                new AirConditionerActions(true, null)));
+        actions.add(new AliasAction<Action>(
+                ALIAS2,
+                new HumidityActions(45)));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions).build();
+
+        StatePredicate predicate = new StatePredicate(new Condition(
+                new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
+
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
+
+        Command expectedCommand = CommandFactory.newCommand(
+                api.getOwner().getTypedID(),
+                form.getAliasActions(),
+                null,
+                target.getTypedID(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                form.getTitle(),
+                form.getDescription(),
+                form.getMetadata());
+        this.addEmptyMockResponse(404);
+
+        try {
+            ThingIFAPIUtils.setTarget(api, target);
+            api.postNewTrigger(form, predicate);
+            Assert.fail("ThingIFRestException should be thrown");
+        } catch (NotFoundException e) {
+        }
+        // verify the request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers", request.getPath());
+        Assert.assertEquals("POST", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders1 = new HashMap<>();
+        expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders1.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        expectedRequestHeaders1.put("Content-Type", "application/json");
+        this.assertRequestHeader(expectedRequestHeaders1, request);
+
+        JSONObject expectedRequestBody = new JSONObject();
+        expectedRequestBody.put("command", JsonUtil.commandToJson(expectedCommand));
+        expectedRequestBody.put("predicate",JsonUtil.predicateToJson(predicate));
+        expectedRequestBody.put("triggersWhat","COMMAND");
+        this.assertRequestBody(expectedRequestBody, request);
+    }
+    @Test
+    public void postNewTrigger503ErrorTest2() throws Exception {
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        List<AliasAction<? extends Action>> actions = new ArrayList<>();
+        actions.add(new AliasAction<Action>(
+                ALIAS1,
+                new AirConditionerActions(true, null)));
+        actions.add(new AliasAction<Action>(
+                ALIAS2,
+                new HumidityActions(45)));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions).build();
+
+        StatePredicate predicate = new StatePredicate(new Condition(
+                new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
+
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
+
+        Command expectedCommand = CommandFactory.newCommand(
+                api.getOwner().getTypedID(),
+                form.getAliasActions(),
+                null,
+                target.getTypedID(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                form.getTitle(),
+                form.getDescription(),
+                form.getMetadata());
+
+        this.addEmptyMockResponse(503);
+
+        try {
+            ThingIFAPIUtils.setTarget(api, target);
+            api.postNewTrigger(form, predicate);
+            Assert.fail("ThingIFRestException should be thrown");
+        } catch (ServiceUnavailableException e) {
+        }
+        // verify the request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers", request.getPath());
+        Assert.assertEquals("POST", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders1 = new HashMap<>();
+        expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders1.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        expectedRequestHeaders1.put("Content-Type", "application/json");
+        this.assertRequestHeader(expectedRequestHeaders1, request);
+
+        JSONObject expectedRequestBody = new JSONObject();
+        expectedRequestBody.put("command", JsonUtil.commandToJson(expectedCommand));
+        expectedRequestBody.put("predicate",JsonUtil.predicateToJson(predicate));
+        expectedRequestBody.put("triggersWhat","COMMAND");
+        this.assertRequestBody(expectedRequestBody, request);
+    }
+    @Test(expected = IllegalStateException.class)
+    public void postNewCommandTriggerWithNullTargetTest2() throws Exception {
+
+        List<AliasAction<? extends Action>> actions = new ArrayList<>();
+        actions.add(new AliasAction<Action>(
+                ALIAS1,
+                new AirConditionerActions(true, null)));
+        actions.add(new AliasAction<Action>(
+                ALIAS2,
+                new HumidityActions(45)));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions).build();
+
+        StatePredicate predicate = new StatePredicate(new Condition(
+                new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
+
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
+        api.postNewTrigger(form, predicate);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void postNewCommandTrigger_NullForm_Test2() throws Exception{
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        StatePredicate predicate = new StatePredicate(new Condition(
+                new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
+
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
+        ThingIFAPIUtils.setTarget(api, target);
+        api.postNewTrigger((TriggeredCommandForm) null, predicate);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void postNewCommandTrigger_NullPredicate2_Test() throws Exception{
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        List<AliasAction<? extends Action>> actions = new ArrayList<>();
+        actions.add(new AliasAction<Action>(
+                ALIAS1,
+                new AirConditionerActions(true, null)));
+        actions.add(new AliasAction<Action>(
+                ALIAS2,
+                new HumidityActions(45)));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions).build();
+
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
+        ThingIFAPIUtils.setTarget(api, target);
+        api.postNewTrigger(form, null);
+    }
+
 }
