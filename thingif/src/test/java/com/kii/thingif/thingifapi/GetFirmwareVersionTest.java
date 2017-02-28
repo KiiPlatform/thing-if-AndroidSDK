@@ -53,7 +53,7 @@ public class GetFirmwareVersionTest extends ThingIFAPITestBase {
         String triggerID = "trigger-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        String responseBody = "{\"_firmwareVersion\" : \"V1\"}";
+        String responseBody = "{\"firmwareVersion\" : \"V1\"}";
         MockResponse response = new MockResponse().setResponseCode(200);
         response.setBody(responseBody);
         this.server.enqueue(response);
@@ -68,7 +68,8 @@ public class GetFirmwareVersionTest extends ThingIFAPITestBase {
 
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(API_BASE_PATH + "/things/" + thingID.getID(), request.getPath());
+        Assert.assertEquals(BASE_PATH + "/things/" + thingID.getID() + "/firmware-version",
+                request.getPath());
         Assert.assertEquals("GET", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<>();
@@ -85,8 +86,8 @@ public class GetFirmwareVersionTest extends ThingIFAPITestBase {
         String triggerID = "trigger-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        String responseBody = "{ }";
-        MockResponse response = new MockResponse().setResponseCode(200);
+        String responseBody = "{ \"errorCode\": \"FIRMWARE_VERSION_NOT_FOUND\" }";
+        MockResponse response = new MockResponse().setResponseCode(404);
         response.setBody(responseBody);
         this.server.enqueue(response);
 
@@ -100,7 +101,8 @@ public class GetFirmwareVersionTest extends ThingIFAPITestBase {
 
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(API_BASE_PATH + "/things/" + thingID.getID(), request.getPath());
+        Assert.assertEquals(BASE_PATH + "/things/" + thingID.getID() + "/firmware-version",
+                request.getPath());
         Assert.assertEquals("GET", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<>();
@@ -134,7 +136,8 @@ public class GetFirmwareVersionTest extends ThingIFAPITestBase {
 
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(API_BASE_PATH + "/things/" + thingID.getID(), request.getPath());
+        Assert.assertEquals(BASE_PATH + "/things/" + thingID.getID() + "/firmware-version",
+                request.getPath());
         Assert.assertEquals("GET", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<>();
@@ -168,7 +171,8 @@ public class GetFirmwareVersionTest extends ThingIFAPITestBase {
 
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(API_BASE_PATH + "/things/" + thingID.getID(), request.getPath());
+        Assert.assertEquals(BASE_PATH + "/things/" + thingID.getID() + "/firmware-version",
+                request.getPath());
         Assert.assertEquals("GET", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<>();
@@ -185,7 +189,10 @@ public class GetFirmwareVersionTest extends ThingIFAPITestBase {
         String triggerID = "trigger-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        this.addEmptyMockResponse(404);
+        String responseBody = "{ \"errorCode\": \"THING_NOT_FOUND\" }";
+        MockResponse response = new MockResponse().setResponseCode(404);
+        response.setBody(responseBody);
+        this.server.enqueue(response);
 
         ThingIFAPI api = createDefaultThingIFAPIBuilder(this.context, APP_ID, APP_KEY)
                 .setTarget(target)
@@ -202,7 +209,8 @@ public class GetFirmwareVersionTest extends ThingIFAPITestBase {
 
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(API_BASE_PATH + "/things/" + thingID.getID(), request.getPath());
+        Assert.assertEquals(BASE_PATH + "/things/" + thingID.getID() + "/firmware-version",
+                request.getPath());
         Assert.assertEquals("GET", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<>();
@@ -236,7 +244,8 @@ public class GetFirmwareVersionTest extends ThingIFAPITestBase {
 
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(API_BASE_PATH + "/things/" + thingID.getID(), request.getPath());
+        Assert.assertEquals(BASE_PATH + "/things/" + thingID.getID() + "/firmware-version",
+                request.getPath());
         Assert.assertEquals("GET", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<>();

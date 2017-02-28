@@ -23,6 +23,7 @@ import com.kii.thingif.command.Command;
 import com.kii.thingif.command.CommandForm;
 import com.kii.thingif.exception.BadRequestException;
 import com.kii.thingif.exception.ConflictException;
+import com.kii.thingif.exception.NotFoundException;
 import com.kii.thingif.exception.StoredInstanceNotFoundException;
 import com.kii.thingif.exception.ThingIFException;
 import com.kii.thingif.exception.ThingIFRestException;
@@ -1959,13 +1960,22 @@ public class ThingIFAPI implements Parcelable {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
-        String path = MessageFormat.format("/api/apps/{0}/things/{1}",
+        String path = MessageFormat.format("/thing-if/apps/{0}/things/{1}/firmware-version",
                 this.app.getAppID(), this.target.getTypedID().getID());
         String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
-        JSONObject responseBody = this.restClient.sendRequest(request);
-        return responseBody.optString("_firmwareVersion", null);
+        JSONObject responseBody;
+        try {
+            responseBody = this.restClient.sendRequest(request);
+        } catch (NotFoundException e) {
+            String code = e.getErrorCode();
+            if ("FIRMWARE_VERSION_NOT_FOUND".equals(code)) {
+                return null;
+            }
+            throw e;
+        }
+        return responseBody.optString("firmwareVersion", null);
     }
 
     /**
