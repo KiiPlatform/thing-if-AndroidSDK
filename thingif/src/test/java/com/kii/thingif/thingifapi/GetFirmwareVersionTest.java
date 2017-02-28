@@ -15,10 +15,9 @@ import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
-import junit.framework.Assert;
-
 import org.json.JSONObject;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,8 +68,8 @@ public class GetFirmwareVersionTest extends ThingIFAPITestBase {
 
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        org.junit.Assert.assertEquals(API_BASE_PATH + "/things/" + thingID.getID(), request.getPath());
-        org.junit.Assert.assertEquals("GET", request.getMethod());
+        Assert.assertEquals(API_BASE_PATH + "/things/" + thingID.getID(), request.getPath());
+        Assert.assertEquals("GET", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
@@ -101,8 +100,8 @@ public class GetFirmwareVersionTest extends ThingIFAPITestBase {
 
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        org.junit.Assert.assertEquals(API_BASE_PATH + "/things/" + thingID.getID(), request.getPath());
-        org.junit.Assert.assertEquals("GET", request.getMethod());
+        Assert.assertEquals(API_BASE_PATH + "/things/" + thingID.getID(), request.getPath());
+        Assert.assertEquals("GET", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
@@ -126,6 +125,7 @@ public class GetFirmwareVersionTest extends ThingIFAPITestBase {
 
         try {
             api.getFirmwareVersion();
+            Assert.fail("UnauthorizedException should be thrown");
         } catch (UnauthorizedException e) {
             // Expected.
         } catch (Exception e) {
@@ -134,8 +134,8 @@ public class GetFirmwareVersionTest extends ThingIFAPITestBase {
 
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        org.junit.Assert.assertEquals(API_BASE_PATH + "/things/" + thingID.getID(), request.getPath());
-        org.junit.Assert.assertEquals("GET", request.getMethod());
+        Assert.assertEquals(API_BASE_PATH + "/things/" + thingID.getID(), request.getPath());
+        Assert.assertEquals("GET", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
@@ -159,6 +159,7 @@ public class GetFirmwareVersionTest extends ThingIFAPITestBase {
 
         try {
             api.getFirmwareVersion();
+            Assert.fail("ForbiddenException should be thrown");
         } catch (ForbiddenException e) {
             // Expected.
         } catch (Exception e) {
@@ -167,8 +168,8 @@ public class GetFirmwareVersionTest extends ThingIFAPITestBase {
 
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        org.junit.Assert.assertEquals(API_BASE_PATH + "/things/" + thingID.getID(), request.getPath());
-        org.junit.Assert.assertEquals("GET", request.getMethod());
+        Assert.assertEquals(API_BASE_PATH + "/things/" + thingID.getID(), request.getPath());
+        Assert.assertEquals("GET", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
@@ -192,6 +193,7 @@ public class GetFirmwareVersionTest extends ThingIFAPITestBase {
 
         try {
             api.getFirmwareVersion();
+            Assert.fail("NotFoundException should be thrown");
         } catch (NotFoundException e) {
             // Expected.
         } catch (Exception e) {
@@ -200,8 +202,8 @@ public class GetFirmwareVersionTest extends ThingIFAPITestBase {
 
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        org.junit.Assert.assertEquals(API_BASE_PATH + "/things/" + thingID.getID(), request.getPath());
-        org.junit.Assert.assertEquals("GET", request.getMethod());
+        Assert.assertEquals(API_BASE_PATH + "/things/" + thingID.getID(), request.getPath());
+        Assert.assertEquals("GET", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
@@ -225,6 +227,7 @@ public class GetFirmwareVersionTest extends ThingIFAPITestBase {
 
         try {
             api.getFirmwareVersion();
+            Assert.fail("ServiceUnavailableException should be thrown");
         } catch (ServiceUnavailableException e) {
             // Expected.
         } catch (Exception e) {
@@ -233,8 +236,8 @@ public class GetFirmwareVersionTest extends ThingIFAPITestBase {
 
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        org.junit.Assert.assertEquals(API_BASE_PATH + "/things/" + thingID.getID(), request.getPath());
-        org.junit.Assert.assertEquals("GET", request.getMethod());
+        Assert.assertEquals(API_BASE_PATH + "/things/" + thingID.getID(), request.getPath());
+        Assert.assertEquals("GET", request.getMethod());
 
         Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
