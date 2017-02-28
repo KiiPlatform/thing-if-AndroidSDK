@@ -423,7 +423,6 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
         this.assertRequestHeader(expectedRequestHeaders2, request2);
     }
 
-
     @Test
     // call patchTrigger(String, null, SchedulePredicate, TriggerOptions)
     public void patchCommandTrigger_NullForm_SchedulePredicate_NonNullOptions_Test() throws Exception {
@@ -671,6 +670,26 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
     // call patchTrigger(String, null, null, null)
     public void patchCommandTrigger_NullForm_NullPredicate_NullOptions_Test() throws Exception{
         this.defaultApi.patchTrigger("trigger-1234", (TriggeredCommandForm)null, null, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    // call patchTrigger(null, TriggeredCommandForm, Predicate, TriggerOptions)
+    public void patchCommandTrigger_NullTriggerID_Form_Predicate_Options_Test() throws Exception{
+        this.defaultApi.patchTrigger(
+                null,
+                getDefaultForm(),
+                getDefaultPredicate(),
+                getDefaultOptions());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    // call patchTrigger("", TriggeredCommandForm, Predicate, TriggerOptions)
+    public void patchCommandTrigger_EmptyTriggerID_Form_Predicate_Options_Test() throws Exception{
+        this.defaultApi.patchTrigger(
+                "",
+                getDefaultForm(),
+                getDefaultPredicate(),
+                getDefaultOptions());
     }
 
     @Test
