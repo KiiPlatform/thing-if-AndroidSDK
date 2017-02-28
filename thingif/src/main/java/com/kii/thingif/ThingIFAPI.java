@@ -1211,35 +1211,31 @@ public class ThingIFAPI implements Parcelable {
         }
 
         JSONObject requestBody = null;
-        //TODO: // FIXME: 2017/01/23
-//        try {
-//            if (options != null) {
-//                requestBody =
-//                    JsonUtils.newJson(GsonRepository.gson().toJson(options));
-//            } else {
-//                requestBody = new JSONObject();
-//            }
-//
-//            requestBody.put("triggersWhat", TriggersWhat.COMMAND.name());
-//            if (predicate != null) {
-//                requestBody.put("predicate",
-//                        JsonUtils.newJson(
-//                            GsonRepository.gson().toJson(predicate)));
-//            }
-//            if (form != null) {
-//                //TODO: // FIXME: 12/15/16 need to fix parse code
-//                JSONObject command = JsonUtils.newJson(
-//                    GsonRepository.gson(
-//                        ).toJson(form));
-//                command.put("issuer", this.owner.getTypedID());
-//                if (form.getTargetID() == null) {
-//                    command.put("target", this.target.getTypedID().toString());
-//                }
-//                requestBody.put("command", command);
-//            }
-//        } catch (JSONException e) {
-//            // Won't happen
-//        }
+        try {
+            if (options != null) {
+                requestBody =
+                    JsonUtils.newJson(this.gson.toJson(options));
+            } else {
+                requestBody = new JSONObject();
+            }
+
+            requestBody.put("triggersWhat", TriggersWhat.COMMAND.name());
+            if (predicate != null) {
+                requestBody.put("predicate",
+                        JsonUtils.newJson(this.gson.toJson(predicate, Predicate.class)));
+            }
+            if (form != null) {
+                JSONObject command = JsonUtils.newJson(
+                    this.gson.toJson(form));
+                command.put("issuer", this.owner.getTypedID());
+                if (form.getTargetID() == null) {
+                    command.put("target", this.target.getTypedID().toString());
+                }
+                requestBody.put("command", command);
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
         return this.patchTrigger(triggerID, requestBody);
     }
 
@@ -1323,28 +1319,27 @@ public class ThingIFAPI implements Parcelable {
                 "serverCode, predicate and options are null.");
         }
         JSONObject requestBody = null;
-        //TODO: // FIXME: 2017/01/23
-//        try {
-//            if (options != null) {
-//                requestBody = JsonUtils.newJson(
-//                    GsonRepository.gson().toJson(options));
-//            } else {
-//                requestBody = new JSONObject();
-//            }
-//            if (predicate != null) {
-//                requestBody.put("predicate",
-//                        JsonUtils.newJson(
-//                            GsonRepository.gson().toJson(predicate)));
-//            }
-//            if (serverCode != null) {
-//                requestBody.put("serverCode",
-//                        JsonUtils.newJson(
-//                            GsonRepository.gson().toJson(serverCode)));
-//            }
-//            requestBody.put("triggersWhat", TriggersWhat.SERVER_CODE.name());
-//        } catch (JSONException e) {
-//            // Won't happen
-//        }
+        try {
+            if (options != null) {
+                requestBody = JsonUtils.newJson(
+                    this.gson.toJson(options));
+            } else {
+                requestBody = new JSONObject();
+            }
+            if (predicate != null) {
+                requestBody.put("predicate",
+                        JsonUtils.newJson(
+                            this.gson.toJson(predicate, Predicate.class)));
+            }
+            if (serverCode != null) {
+                requestBody.put("serverCode",
+                        JsonUtils.newJson(
+                            this.gson.toJson(serverCode)));
+            }
+            requestBody.put("triggersWhat", TriggersWhat.SERVER_CODE.name());
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
         return this.patchTrigger(triggerID, requestBody);
     }
     private Trigger patchTrigger(@NonNull String triggerID, @NonNull JSONObject requestBody) throws ThingIFException {
