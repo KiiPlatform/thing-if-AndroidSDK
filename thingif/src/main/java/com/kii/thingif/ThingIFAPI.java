@@ -980,7 +980,7 @@ public class ThingIFAPI implements Parcelable {
      * @return Instance of the Trigger registered in IoT Cloud.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws IllegalArgumentException if form and/or predicate is null.
+     * @throws IllegalArgumentException if any of form, predicate and options is/are null.
      */
     @NonNull
     @WorkerThread
@@ -993,6 +993,39 @@ public class ThingIFAPI implements Parcelable {
         return postNewTriggerWithForm(form, predicate, options);
     }
 
+    /**
+     * Post new Trigger with commands to IoT Cloud.
+     *
+     * <p>
+     * When thing retrieved by {@link #getTarget()} of this ThingIFAPI
+     * instance meets condition described by predicate, A command registered
+     * by {@link TriggeredCommandForm} sends to thing given by {@link
+     * TriggeredCommandForm#getTargetID()}.
+     * </p>
+     * Limited version of {@link #postNewTrigger(TriggeredCommandForm, Predicate, TriggerOptions)}
+     * <p>
+     * {@link #getTarget()} instance and thing specified by {@link
+     * TriggeredCommandForm#getTargetID()} must be same owner's things.
+     * </p>
+     *
+     * @param form Form of triggered command. It contains name of schema,
+     * version of schema, list of actions, target IDof thing etc. You can see
+     * detail of form in {@link TriggeredCommandForm}.
+     * @param predicate Specify when the Trigger fires command.
+     * @return Instance of the Trigger registered in IoT Cloud.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws IllegalArgumentException if any of form and predicate is/are null.
+     */
+    @NonNull
+    @WorkerThread
+    public Trigger postNewTrigger(
+            @NonNull TriggeredCommandForm form,
+            @NonNull Predicate predicate)
+            throws ThingIFException
+    {
+        return postNewTriggerWithForm(form, predicate, null);
+    }
     private Trigger postNewTriggerWithForm(
             @NonNull TriggeredCommandForm form,
             @NonNull Predicate predicate,
@@ -1039,6 +1072,7 @@ public class ThingIFAPI implements Parcelable {
      * @return Instance of the Trigger registered in IoT Cloud.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws IllegalArgumentException if any of serverCode, predicate and options is/are null.
      */
     @NonNull
     @WorkerThread
@@ -1065,6 +1099,7 @@ public class ThingIFAPI implements Parcelable {
      * @return Instance of the Trigger registered in IoT Cloud.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws IllegalArgumentException if any of serverCode and predicate is/are null.
      */
     @NonNull
     @WorkerThread
@@ -1174,12 +1209,12 @@ public class ThingIFAPI implements Parcelable {
      * more following conditions are met.
      * <ul>
      *  <li>triggerID is null or empty string.</li>
-     *  <li>All of form, predicate and options are null</li>
+     *  <li>All of form, predicate and options are null.</li>
      * </ul>
      */
     @NonNull
     @WorkerThread
-    public Trigger patchTrigger(
+    public Trigger patchCommandTrigger(
             @NonNull String triggerID,
             @Nullable TriggeredCommandForm form,
             @Nullable Predicate predicate,
@@ -1188,21 +1223,21 @@ public class ThingIFAPI implements Parcelable {
     {
         if (this.target == null) {
             throw new IllegalStateException(
-                "Can not perform this action before onboarding");
+                    "Can not perform this action before onboarding");
         }
         if (TextUtils.isEmpty(triggerID)) {
             throw new IllegalArgumentException("triggerID is null or empty");
         }
         if (form == null && predicate == null && options == null) {
             throw new IllegalArgumentException(
-                "All of form, predicate and options are null.");
+                    "All of form, predicate and options are null.");
         }
 
         JSONObject requestBody = null;
         try {
             if (options != null) {
                 requestBody =
-                    JsonUtils.newJson(this.gson.toJson(options));
+                        JsonUtils.newJson(this.gson.toJson(options));
             } else {
                 requestBody = new JSONObject();
             }
@@ -1214,7 +1249,7 @@ public class ThingIFAPI implements Parcelable {
             }
             if (form != null) {
                 JSONObject command = JsonUtils.newJson(
-                    this.gson.toJson(form));
+                        this.gson.toJson(form));
                 command.put("issuer", this.owner.getTypedID());
                 if (form.getTargetID() == null) {
                     command.put("target", this.target.getTypedID().toString());
@@ -1228,6 +1263,38 @@ public class ThingIFAPI implements Parcelable {
     }
 
     /**
+     * Apply patch to registered trigger.
+     * Modify registered trigger with specified patch.
+     * <p>
+     * Limited version of {@link #patchCommandTrigger(String, TriggeredCommandForm, Predicate, TriggerOptions)}
+     * <p>
+     * @param triggerID ID of the trigger to apply patch.
+     * @param form Form of triggered command. It contains name of schema,
+     * version of schema, list of actions, target IDof thing etc. You can see
+     * detail of form in {@link TriggeredCommandForm}.
+     * @param predicate Modified predicate.
+     * @return Updated trigger instance.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws IllegalArgumentException This exception is thrown if one or
+     * more following conditions are met.
+     * <ul>
+     *  <li>triggerID is null or empty string.</li>
+     *  <li>both form and predicate are null.</li>
+     * </ul>
+     */
+    @NonNull
+    @WorkerThread
+    public Trigger patchCommandTrigger(
+            @NonNull String triggerID,
+            @Nullable TriggeredCommandForm form,
+            @Nullable Predicate predicate)
+            throws ThingIFException
+    {
+        return patchCommandTrigger(triggerID, form, predicate, null);
+    }
+
+    /**
      * Apply Patch to registered Trigger
      * Modify registered Trigger with specified patch.
      *
@@ -1238,58 +1305,16 @@ public class ThingIFAPI implements Parcelable {
      * @return Updated Trigger instance.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws IllegalArgumentException when all of  serverCode, predicates
-     * and options are null.
+     * @throws IllegalArgumentException This exception is thrown if one or
+     * more following conditions are met.
+     * <ul>
+     *  <li>triggerID is null or empty string.</li>
+     *  <li>all of serverCode, predicate and options are null.</li>
+     * </ul>
      */
     @NonNull
     @WorkerThread
-    public Trigger patchTrigger(
-            @NonNull String triggerID,
-            @Nullable ServerCode serverCode,
-            @Nullable Predicate predicate,
-            @Nullable TriggerOptions options)
-        throws ThingIFException
-    {
-        return patchServerCodeTrigger(triggerID, serverCode, predicate,
-                options);
-    }
-
-    /**
-     * Apply Patch to registered Trigger
-     * Modify registered Trigger with specified patch.
-     *
-     * <p>
-     * Limited version of {@link #patchTrigger(String, ServerCode, Predicate,
-     * TriggerOptions)}
-     * <p>
-     *
-     * @param triggerID ID ot the Trigger to apply patch
-     * @param serverCode Specify server code you want to execute. If null,
-     * predicate must not be null.
-     * @param predicate Modified predicate. If null, serverCode must not be
-     * null.
-     * @return Updated Trigger instance.
-     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
-     * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws IllegalArgumentException when both server and predicates are
-     * null.
-     */
-    @NonNull
-    @WorkerThread
-    public Trigger patchTrigger(
-            @NonNull String triggerID,
-            @Nullable ServerCode serverCode,
-            @Nullable Predicate predicate) throws ThingIFException {
-        if (serverCode == null && predicate == null) {
-            throw new IllegalArgumentException(
-                "serverCode and predicate are null.");
-        }
-        return patchServerCodeTrigger(triggerID, serverCode, predicate, null);
-    }
-
-    @NonNull
-    @WorkerThread
-    private Trigger patchServerCodeTrigger(
+    public Trigger patchServerCodeTrigger(
             @NonNull String triggerID,
             @Nullable ServerCode serverCode,
             @Nullable Predicate predicate,
@@ -1304,25 +1329,25 @@ public class ThingIFAPI implements Parcelable {
         }
         if (serverCode == null && predicate == null && options == null) {
             throw new IllegalArgumentException(
-                "serverCode, predicate and options are null.");
+                    "serverCode, predicate and options are null.");
         }
         JSONObject requestBody = null;
         try {
             if (options != null) {
                 requestBody = JsonUtils.newJson(
-                    this.gson.toJson(options));
+                        this.gson.toJson(options));
             } else {
                 requestBody = new JSONObject();
             }
             if (predicate != null) {
                 requestBody.put("predicate",
                         JsonUtils.newJson(
-                            this.gson.toJson(predicate, Predicate.class)));
+                                this.gson.toJson(predicate, Predicate.class)));
             }
             if (serverCode != null) {
                 requestBody.put("serverCode",
                         JsonUtils.newJson(
-                            this.gson.toJson(serverCode)));
+                                this.gson.toJson(serverCode)));
             }
             requestBody.put("triggersWhat", TriggersWhat.SERVER_CODE.name());
         } catch (JSONException e) {
@@ -1330,6 +1355,44 @@ public class ThingIFAPI implements Parcelable {
         }
         return this.patchTrigger(triggerID, requestBody);
     }
+
+    /**
+     * Apply Patch to registered Trigger
+     * Modify registered Trigger with specified patch.
+     *
+     * <p>
+     * Limited version of {@link #patchServerCodeTrigger(String, ServerCode, Predicate,
+     * TriggerOptions)}
+     * <p>
+     *
+     * @param triggerID ID ot the Trigger to apply patch
+     * @param serverCode Specify server code you want to execute. If null,
+     * predicate must not be null.
+     * @param predicate Modified predicate. If null, serverCode must not be
+     * null.
+     * @return Updated Trigger instance.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
+     * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws IllegalArgumentException This exception is thrown if one or
+     * more following conditions are met.
+     * <ul>
+     *  <li>triggerID is null or empty string.</li>
+     *  <li>both serverCode and predicate are null.</li>
+     * </ul>
+     */
+    @NonNull
+    @WorkerThread
+    public Trigger patchServerCodeTrigger(
+            @NonNull String triggerID,
+            @Nullable ServerCode serverCode,
+            @Nullable Predicate predicate) throws ThingIFException {
+        if (serverCode == null && predicate == null) {
+            throw new IllegalArgumentException(
+                "serverCode and predicate are null.");
+        }
+        return patchServerCodeTrigger(triggerID, serverCode, predicate, null);
+    }
+
     private Trigger patchTrigger(@NonNull String triggerID, @NonNull JSONObject requestBody) throws ThingIFException {
         String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/triggers/{2}", this.app.getAppID(), this.target.getTypedID().toString(), triggerID);
         String url = Path.combine(this.app.getBaseUrl(), path);
