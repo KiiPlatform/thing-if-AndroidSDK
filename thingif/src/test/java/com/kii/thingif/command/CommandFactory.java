@@ -7,6 +7,28 @@ import org.json.JSONObject;
 import java.util.List;
 
 public class CommandFactory {
+    public static Command newTriggeredCommand(
+            TypedID issuerID,
+            List<AliasAction<? extends Action>> aliasActions,
+            TypedID targetID,
+            String title,
+            String description,
+            JSONObject metadata) {
+        return new Command(
+                issuerID,
+                aliasActions,
+                null,
+                targetID,
+                null,
+                null,
+                null,
+                null,
+                null,
+                title,
+                description,
+                metadata);
+    }
+
     public static Command newCommand(
             TypedID issuerID,
             List<AliasAction<? extends Action>> aliasActions,

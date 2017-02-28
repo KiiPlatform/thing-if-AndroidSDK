@@ -365,4 +365,14 @@ public class ThingIFAPITestBase extends SmallTestBase {
         }
         this.server.enqueue(response);
     }
+
+    protected void assertTriggerOptions(
+            TriggerOptions expected,
+            Trigger actual)
+    {
+        Assert.assertEquals(expected.getTitle(), actual.getTitle());
+        Assert.assertEquals(expected.getDescription(), actual.getDescription());
+        assertJSONObject(expected.getMetadata(), actual.getMetadata());
+    }
+
 }

@@ -251,4 +251,16 @@ public class JsonUtil {
             throw new RuntimeException(e);
         }
     }
+
+    public static JSONObject triggerOptionToJson(TriggerOptions option) {
+        JSONObject ret = new JSONObject();
+        try{
+            ret.put("title", option.getTitle());
+            ret.put("description", option.getDescription());
+            ret.put("metadata", option.getMetadata());
+            return ret;
+        }catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
