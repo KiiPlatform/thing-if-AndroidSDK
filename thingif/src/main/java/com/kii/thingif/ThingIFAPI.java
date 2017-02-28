@@ -1846,12 +1846,32 @@ public class ThingIFAPI implements Parcelable {
      * @param firmwareVersion New firmware version.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws IllegalArgumentException if thingType is null.
+     * @throws IllegalArgumentException if firmwareVersion is null or empty.
      */
     @WorkerThread
     public void updateFirmwareVersion(
             @NonNull String firmwareVersion) throws ThingIFException{
-        //TODO: // FIXME: 12/20/16 implement the logic
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
+        }
+        if (TextUtils.isEmpty(firmwareVersion)) {
+            throw new IllegalArgumentException("firmwareVersion is null or empty");
+        }
+
+        String path = MessageFormat.format("/api/apps/{0}/things/{1}",
+                this.app.getAppID(), this.target.getTypedID().getID());
+        String url = Path.combine(this.app.getBaseUrl(), path);
+        Map<String, String> headers = this.newHeader();
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("_firmwareVersion", firmwareVersion);
+        } catch (JSONException e) {
+            // Unexpected.
+            throw new RuntimeException(e);
+        }
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.PATCH, headers,
+                MediaTypes.MEDIA_TYPE_THING_UPDATE_REQUEST, requestBody);
+        this.restClient.sendRequest(request);
     }
 
     /**
