@@ -1,11 +1,8 @@
 package com.kii.thingif.clause.query;
 
-import android.os.Parcel;
 import android.support.annotation.NonNull;
 
 import com.kii.thingif.clause.base.BaseEquals;
-
-import org.json.JSONObject;
 
 public class EqualsClauseInQuery implements BaseEquals, QueryClause {
     private @NonNull String field;
@@ -41,34 +38,6 @@ public class EqualsClauseInQuery implements BaseEquals, QueryClause {
     public Object getValue() {
         return this.value;
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.field);
-        dest.writeValue(this.value);
-    }
-
-    private EqualsClauseInQuery(Parcel in) {
-        this.field = in.readString();
-        this.value = in.readValue(Object.class.getClassLoader());
-    }
-
-    public static final Creator<EqualsClauseInQuery> CREATOR = new Creator<EqualsClauseInQuery>() {
-        @Override
-        public EqualsClauseInQuery createFromParcel(Parcel source) {
-            return new EqualsClauseInQuery(source);
-        }
-
-        @Override
-        public EqualsClauseInQuery[] newArray(int size) {
-            return new EqualsClauseInQuery[size];
-        }
-    };
 
     @Override
     public boolean equals(Object o) {

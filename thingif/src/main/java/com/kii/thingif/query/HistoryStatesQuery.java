@@ -1,13 +1,11 @@
 package com.kii.thingif.query;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.kii.thingif.clause.query.QueryClause;
 
-public class HistoryStatesQuery implements Parcelable {
+public class HistoryStatesQuery{
 
     private @NonNull String alias;
     private @Nullable QueryClause clause;
@@ -160,38 +158,4 @@ public class HistoryStatesQuery implements Parcelable {
         }
         return result;
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.alias);
-        dest.writeParcelable(this.clause, flags);
-        dest.writeString(this.firmwareVersion);
-        dest.writeSerializable(this.bestEffortLimit);
-        dest.writeString(this.nextPaginationKey);
-    }
-
-    public HistoryStatesQuery(Parcel in) {
-        this.alias = in.readString();
-        this.clause = in.readParcelable(QueryClause.class.getClassLoader());
-        this.firmwareVersion = in.readString();
-        this.bestEffortLimit = (Integer) in.readSerializable();
-        this.nextPaginationKey = in.readString();
-    }
-
-    public static final Creator<HistoryStatesQuery> CREATOR = new Creator<HistoryStatesQuery>() {
-        @Override
-        public HistoryStatesQuery createFromParcel(Parcel source) {
-            return new HistoryStatesQuery(source);
-        }
-
-        @Override
-        public HistoryStatesQuery[] newArray(int size) {
-            return new HistoryStatesQuery[size];
-        }
-    };
 }

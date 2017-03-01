@@ -1,7 +1,5 @@
 package com.kii.thingif.query;
 
-import android.os.Parcel;
-
 import com.kii.thingif.clause.query.EqualsClauseInQuery;
 import com.kii.thingif.clause.query.NotEqualsClauseInQuery;
 
@@ -126,52 +124,5 @@ public class GroupedHistoryStatesQueryTest {
 
         Assert.assertFalse(target.equals(null));
         Assert.assertFalse(target.equals((Object)range2));
-    }
-
-    @Test
-    public void parcelableTest() {
-        TimeRange range = new TimeRange(new Date(1), new Date(100));
-        EqualsClauseInQuery query = new EqualsClauseInQuery("dummy", "value");
-        GroupedHistoryStatesQuery src = GroupedHistoryStatesQuery.Builder
-                .newBuilder("alias", range)
-                .setClause(query)
-                .setFirmwareVersion("version")
-                .build();
-
-        Assert.assertNotNull(src);
-        Assert.assertEquals("alias", src.getAlias());
-        Assert.assertEquals(query, src.getClause());
-        Assert.assertEquals("version", src.getFirmwareVersion());
-        Assert.assertEquals(range, src.getTimeRange());
-
-        Parcel parcel = Parcel.obtain();
-        src.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-        GroupedHistoryStatesQuery dest = GroupedHistoryStatesQuery.CREATOR.createFromParcel(parcel);
-
-        Assert.assertNotNull(dest);
-        Assert.assertTrue(src.equals(dest));
-    }
-
-    @Test
-    public void parcelableNullableTest() {
-        TimeRange range = new TimeRange(new Date(1), new Date(100));
-        GroupedHistoryStatesQuery src = GroupedHistoryStatesQuery.Builder
-                .newBuilder("alias", range)
-                .build();
-
-        Assert.assertNotNull(src);
-        Assert.assertEquals("alias", src.getAlias());
-        Assert.assertNull(src.getClause());
-        Assert.assertNull(src.getFirmwareVersion());
-        Assert.assertEquals(range, src.getTimeRange());
-
-        Parcel parcel = Parcel.obtain();
-        src.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-        GroupedHistoryStatesQuery dest = GroupedHistoryStatesQuery.CREATOR.createFromParcel(parcel);
-
-        Assert.assertNotNull(dest);
-        Assert.assertTrue(src.equals(dest));
     }
 }

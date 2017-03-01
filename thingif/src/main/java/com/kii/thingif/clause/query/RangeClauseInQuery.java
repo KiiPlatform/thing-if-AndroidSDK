@@ -1,12 +1,9 @@
 package com.kii.thingif.clause.query;
 
-import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.kii.thingif.clause.base.BaseRange;
-
-import org.json.JSONObject;
 
 public class RangeClauseInQuery implements QueryClause, BaseRange {
     private @NonNull String field;
@@ -112,40 +109,6 @@ public class RangeClauseInQuery implements QueryClause, BaseRange {
     public Boolean getUpperIncluded() {
         return this.upperIncluded;
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.field);
-        dest.writeValue(this.lowerLimit);
-        dest.writeValue(this.upperLimit);
-        dest.writeValue(this.lowerIncluded);
-        dest.writeValue(this.upperIncluded);
-    }
-
-    private RangeClauseInQuery(Parcel in) {
-        this.field = in.readString();
-        this.lowerLimit = (Number) in.readValue(Number.class.getClassLoader());
-        this.upperLimit = (Number) in.readValue(Number.class.getClassLoader());
-        this.lowerIncluded = (Boolean) in.readValue(Boolean.class.getClassLoader());
-        this.upperIncluded = (Boolean) in.readValue(Boolean.class.getClassLoader());
-    }
-
-    public static final Creator<RangeClauseInQuery> CREATOR = new Creator<RangeClauseInQuery>() {
-        @Override
-        public RangeClauseInQuery createFromParcel(Parcel source) {
-            return new RangeClauseInQuery(source);
-        }
-
-        @Override
-        public RangeClauseInQuery[] newArray(int size) {
-            return new RangeClauseInQuery[size];
-        }
-    };
 
     @Override
     public boolean equals(Object o) {
