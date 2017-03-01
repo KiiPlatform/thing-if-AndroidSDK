@@ -1,9 +1,6 @@
 package com.kii.thingif.clause.query;
 
 import com.kii.thingif.SmallTestBase;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 

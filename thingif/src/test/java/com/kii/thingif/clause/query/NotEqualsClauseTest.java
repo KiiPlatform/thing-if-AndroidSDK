@@ -1,13 +1,9 @@
 package com.kii.thingif.clause.query;
 
 import com.kii.thingif.SmallTestBase;
-import com.kii.thingif.clause.query.EqualsClauseInQuery;
-import com.kii.thingif.clause.query.NotEqualsClauseInQuery;
 import com.kii.thingif.clause.trigger.EqualsClauseInTrigger;
 import com.kii.thingif.clause.trigger.NotEqualsClauseInTrigger;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 

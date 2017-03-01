@@ -1,10 +1,6 @@
 package com.kii.thingif.clause.query;
 
-import android.os.Parcel;
-
 import com.kii.thingif.clause.base.BaseNotEquals;
-
-import org.json.JSONObject;
 
 public class NotEqualsClauseInQuery implements BaseNotEquals, QueryClause {
 
@@ -20,32 +16,6 @@ public class NotEqualsClauseInQuery implements BaseNotEquals, QueryClause {
     public EqualsClauseInQuery getEquals() {
         return this.equals;
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(this.equals, flags);
-    }
-
-    private NotEqualsClauseInQuery(Parcel in) {
-        this.equals = in.readParcelable(EqualsClauseInQuery.class.getClassLoader());
-    }
-
-    public static final Creator<NotEqualsClauseInQuery> CREATOR = new Creator<NotEqualsClauseInQuery>() {
-        @Override
-        public NotEqualsClauseInQuery createFromParcel(Parcel source) {
-            return new NotEqualsClauseInQuery(source);
-        }
-
-        @Override
-        public NotEqualsClauseInQuery[] newArray(int size) {
-            return new NotEqualsClauseInQuery[size];
-        }
-    };
 
     @Override
     public boolean equals(Object o) {
