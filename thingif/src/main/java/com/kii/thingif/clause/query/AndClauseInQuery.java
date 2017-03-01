@@ -7,7 +7,7 @@ import com.kii.thingif.clause.base.BaseAnd;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AndClauseInQuery implements BaseAnd<QueryClause> {
+public class AndClauseInQuery implements BaseAnd<QueryClause>, QueryClause {
     private List<QueryClause> clauses = new ArrayList<>();
 
     public AndClauseInQuery(@NonNull QueryClause ...clauses){

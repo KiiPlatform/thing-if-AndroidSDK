@@ -2,6 +2,12 @@ package com.kii.thingif.utils;
 
 import com.kii.thingif.ServerError;
 import com.kii.thingif.actions.ToJSON;
+import com.kii.thingif.clause.query.AndClauseInQuery;
+import com.kii.thingif.clause.query.EqualsClauseInQuery;
+import com.kii.thingif.clause.query.NotEqualsClauseInQuery;
+import com.kii.thingif.clause.query.OrClauseInQuery;
+import com.kii.thingif.clause.query.QueryClause;
+import com.kii.thingif.clause.query.RangeClauseInQuery;
 import com.kii.thingif.clause.trigger.AndClauseInTrigger;
 import com.kii.thingif.clause.trigger.EqualsClauseInTrigger;
 import com.kii.thingif.clause.trigger.NotEqualsClauseInTrigger;
@@ -261,6 +267,54 @@ public class JsonUtil {
             return ret;
         }catch (JSONException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static JSONObject queryClauseToJson(QueryClause clause) {
+        try {
+            if (clause instanceof EqualsClauseInQuery) {
+                JSONObject json = new JSONObject();
+                EqualsClauseInQuery eq = (EqualsClauseInQuery)clause;
+                json.put("type", "eq");
+                json.put("field", eq.getField());
+                json.put("value", eq.getValue());
+                return json;
+            } else if(clause instanceof NotEqualsClauseInQuery) {
+                return new JSONObject()
+                        .put("type", "not")
+                        .put("clause", queryClauseToJson(((NotEqualsClauseInQuery) clause).getEquals()));
+            } else if (clause instanceof RangeClauseInQuery) {
+                JSONObject rangeJson = new JSONObject();
+                RangeClauseInQuery range = (RangeClauseInQuery) clause;
+                rangeJson.put("type", "range");
+                rangeJson.put("field", range.getField());
+                rangeJson.putOpt("lowerIncluded", range.getLowerIncluded());
+                rangeJson.putOpt("lowerLimit", range.getLowerLimit());
+                rangeJson.putOpt("upperIncluded", range.getUpperIncluded());
+                rangeJson.putOpt("upperLimit", range.getUpperLimit());
+                return rangeJson;
+            } else if (clause instanceof AndClauseInQuery) {
+                JSONArray clauses = new JSONArray();
+                for (QueryClause subClause : ((AndClauseInQuery)clause).getClauses()) {
+                    clauses.put(queryClauseToJson(subClause));
+                }
+                return new JSONObject()
+                        .put("type", "and")
+                        .put("clauses", clauses);
+            } else if (clause instanceof OrClauseInQuery) {
+
+                JSONArray clauses = new JSONArray();
+                for (QueryClause subClause : ((OrClauseInQuery) clause).getClauses()) {
+                    clauses.put(queryClauseToJson(subClause));
+                }
+                return new JSONObject()
+                        .put("type", "or")
+                        .put("clauses", clauses);
+            }else{
+                throw new RuntimeException("not support trigger clause");
+            }
+        }catch (JSONException ex) {
+            throw new RuntimeException(ex);
         }
     }
 }
