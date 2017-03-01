@@ -1902,7 +1902,27 @@ public class ThingIFAPI implements Parcelable {
     @WorkerThread
     public void updateThingType(
             @NonNull String thingType) throws ThingIFException{
-        //TODO: // FIXME: 12/20/16 implement the logic
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
+        }
+        if (TextUtils.isEmpty(thingType)) {
+            throw new IllegalArgumentException("thingType is null or empty");
+        }
+
+        String path = MessageFormat.format("/thing-if/apps/{0}/things/{1}/thing-type",
+                this.app.getAppID(), this.target.getTypedID().getID());
+        String url = Path.combine(this.app.getBaseUrl(), path);
+        Map<String, String> headers = this.newHeader();
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("thingType", thingType);
+        } catch (JSONException e) {
+            // Unexpected.
+            throw new RuntimeException(e);
+        }
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.PUT, headers,
+                MediaTypes.MEDIA_TYPE_THING_TYPE_UPDATE_REQUEST, requestBody);
+        this.restClient.sendRequest(request);
     }
 
     /**
