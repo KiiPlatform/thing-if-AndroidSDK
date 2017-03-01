@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.kii.thingif.clause.query.AllClause;
 import com.kii.thingif.clause.query.AndClauseInQuery;
 import com.kii.thingif.clause.query.EqualsClauseInQuery;
 import com.kii.thingif.clause.query.NotEqualsClauseInQuery;
@@ -22,12 +23,15 @@ public class QueryClauseAdapter implements
         String type;
         JsonObject ret;
         if (clause instanceof EqualsClauseInQuery ||
-                clause instanceof RangeClauseInQuery) {
+                clause instanceof RangeClauseInQuery ||
+                clause instanceof AllClause ) {
             ret = new Gson().toJsonTree(clause).getAsJsonObject();
             if (clause instanceof EqualsClauseInQuery) {
                 type = "eq";
-            }else {
+            } else if (clause instanceof RangeClauseInQuery){
                 type = "range";
+            } else {
+                type = "all";
             }
         } else {
             ret = new JsonObject();
