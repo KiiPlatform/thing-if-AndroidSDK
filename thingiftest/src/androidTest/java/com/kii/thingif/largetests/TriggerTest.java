@@ -34,6 +34,7 @@ import com.kii.thingif.trigger.TriggersWhen;
 
 import org.json.JSONObject;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -43,20 +44,27 @@ import java.util.UUID;
 
 @RunWith(AndroidJUnit4.class)
 public class TriggerTest extends LargeTestCaseBase{
-    @Test
-    public void basicTriggerTest() throws Exception {
-        ThingIFAPI api = this.createDefaultThingIFAPI();
+
+    private  ThingIFAPI onboardedApi;
+    @Before
+    public void before() throws Exception{
+        super.before();
+        this.onboardedApi = this.createDefaultThingIFAPI();
         String vendorThingID = UUID.randomUUID().toString();
         String thingPassword = "password";
-
         // on-boarding thing
         OnboardWithVendorThingIDOptions options =
                 new OnboardWithVendorThingIDOptions.Builder()
                         .setThingType(DEFAULT_THING_TYPE)
                         .setFirmwareVersion(DEFAULT_FIRMWARE_VERSION).build();
-        Target target = api.onboardWithVendorThingID(vendorThingID, thingPassword, options);
+        Target target = this.onboardedApi.onboardWithVendorThingID(vendorThingID, thingPassword, options);
         Assert.assertEquals(TypedID.Types.THING, target.getTypedID().getType());
         Assert.assertNotNull(target.getAccessToken());
+    }
+    @Test
+    public void commandTriggerTest() throws Exception {
+        Target target = this.onboardedApi.getTarget();
+        Assert.assertNotNull(target);
 
         // create trigger 1: command,  state predicate, null options
         List<AliasAction<? extends Action>> aliasActions = new ArrayList<>();
@@ -64,13 +72,12 @@ public class TriggerTest extends LargeTestCaseBase{
                 new AliasAction<>(
                         ALIAS1,
                         new AirConditionerActions(true, 25)));
-
         Condition condition1 = new Condition(new EqualsClauseInTrigger(ALIAS1, "power", true));
         StatePredicate predicate1 = new StatePredicate(condition1, TriggersWhen.CONDITION_TRUE);
 
         TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(aliasActions).build();
 
-        Trigger trigger1 = api.postNewTrigger(form, predicate1, null);
+        Trigger trigger1 = this.onboardedApi.postNewTrigger(form, predicate1, null);
         Assert.assertNotNull(trigger1.getTriggerID());
         Assert.assertFalse(trigger1.disabled());
         Assert.assertNull(trigger1.getDisabledReason());
@@ -81,7 +88,7 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertNotNull(trigger1Command);
         Assert.assertNull(trigger1Command.getCommandID());
         Assert.assertEquals(target.getTypedID(), trigger1Command.getTargetID());
-        Assert.assertEquals(api.getOwner().getTypedID(), trigger1Command.getIssuerID());
+        Assert.assertEquals(this.onboardedApi.getOwner().getTypedID(), trigger1Command.getIssuerID());
         Assert.assertNull(trigger1Command.getCommandState());
         Assert.assertNull(trigger1Command.getFiredByTriggerID());
         Assert.assertNull(trigger1Command.getCreated());
@@ -102,9 +109,9 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertEquals(Boolean.TRUE, ((EqualsClauseInTrigger)trigger1Predicate.getCondition().getClause()).getValue());
 
         // disable/enable trigger 1
-        trigger1 = api.enableTrigger(trigger1.getTriggerID(), false);
+        trigger1 = this.onboardedApi.enableTrigger(trigger1.getTriggerID(), false);
         Assert.assertTrue(trigger1.disabled());
-        trigger1 = api.enableTrigger(trigger1.getTriggerID(), true);
+        trigger1 = this.onboardedApi.enableTrigger(trigger1.getTriggerID(), true);
         Assert.assertFalse(trigger1.disabled());
 
         // create trigger 2: command, schedule predicate, non null options
@@ -118,7 +125,7 @@ public class TriggerTest extends LargeTestCaseBase{
                 .setTitle("trigger title")
                 .setDescription("trigger description")
                 .setMetadata(new JSONObject().put("key", "value")).build();
-        Trigger trigger2 = api.postNewTrigger(
+        Trigger trigger2 = this.onboardedApi.postNewTrigger(
                 TriggeredCommandForm.Builder.newBuilder(aliasActions2).build(),
                 predicate2,
                 options2);
@@ -138,7 +145,7 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertNotNull(trigger2Command);
         Assert.assertNull(trigger2Command.getCommandID());
         Assert.assertEquals(target.getTypedID(), trigger2Command.getTargetID());
-        Assert.assertEquals(api.getOwner().getTypedID(), trigger2Command.getIssuerID());
+        Assert.assertEquals(this.onboardedApi.getOwner().getTypedID(), trigger2Command.getIssuerID());
         Assert.assertNull(trigger2Command.getCommandState());
         Assert.assertNull(trigger2Command.getFiredByTriggerID());
         Assert.assertNull(trigger2Command.getCreated());
@@ -156,14 +163,14 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertEquals("5 * * * *", trigger2Predicate.getSchedule());
 
         // disable trigger 2
-        trigger2 = api.enableTrigger(trigger2.getTriggerID(), false);
+        trigger2 = this.onboardedApi.enableTrigger(trigger2.getTriggerID(), false);
         Assert.assertTrue(trigger2.disabled());
 
         // update trigger 2
         List<AliasAction<? extends Action>> aliasActions21 = new ArrayList<>();
         aliasActions21.add(new AliasAction<Action>(ALIAS1, new AirConditionerActions(false, null)));
         SchedulePredicate trigger2Predicate2 = new SchedulePredicate("7 * * * *");
-        trigger2 = api.patchCommandTrigger(
+        trigger2 = this.onboardedApi.patchCommandTrigger(
                 trigger2.getTriggerID(),
                 TriggeredCommandForm.Builder.newBuilder(aliasActions21).build(),
                 trigger2Predicate2);
@@ -183,7 +190,7 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertNotNull(trigger2Command);
         Assert.assertNull(trigger2Command.getCommandID());
         Assert.assertEquals(target.getTypedID(), trigger2Command.getTargetID());
-        Assert.assertEquals(api.getOwner().getTypedID(), trigger2Command.getIssuerID());
+        Assert.assertEquals(this.onboardedApi.getOwner().getTypedID(), trigger2Command.getIssuerID());
         Assert.assertNull(trigger2Command.getCommandState());
         Assert.assertNull(trigger2Command.getFiredByTriggerID());
         Assert.assertNull(trigger2Command.getCreated());
@@ -209,8 +216,7 @@ public class TriggerTest extends LargeTestCaseBase{
                         new HumidityActions(50)));
         ScheduleOncePredicate predicate3 = new ScheduleOncePredicate(System.currentTimeMillis()+ 1000*1000);
 
-
-        Trigger trigger3 = api.postNewTrigger(
+        Trigger trigger3 = this.onboardedApi.postNewTrigger(
                 TriggeredCommandForm.Builder.newBuilder(aliasActions3).build(),
                 predicate3,
                 null);
@@ -224,7 +230,7 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertNotNull(trigger3Command);
         Assert.assertNull(trigger3Command.getCommandID());
         Assert.assertEquals(target.getTypedID(), trigger3Command.getTargetID());
-        Assert.assertEquals(api.getOwner().getTypedID(), trigger3Command.getIssuerID());
+        Assert.assertEquals(this.onboardedApi.getOwner().getTypedID(), trigger3Command.getIssuerID());
         Assert.assertNull(trigger3Command.getCommandState());
         Assert.assertNull(trigger3Command.getFiredByTriggerID());
         Assert.assertNull(trigger3Command.getCreated());
@@ -242,151 +248,23 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertEquals(predicate3.getScheduleAt(), trigger3Predicate.getScheduleAt());
 
 
-        // create trigger 4: server code, state predicate, non null options
-        String endpoint1 = "my_function";
-        String executorAccessToken1 = target.getAccessToken();
-        String targetAppID1 = api.getAppID();
-        JSONObject parameters1 = new JSONObject("{\"doAction\":true}");
-        ServerCode serverCode1 = new ServerCode(endpoint1, executorAccessToken1, targetAppID1, parameters1);
-        Condition condition4 = new Condition(new EqualsClauseInTrigger(ALIAS1, "power", true));
-        StatePredicate predicate4 = new StatePredicate(condition4, TriggersWhen.CONDITION_TRUE);
-        TriggerOptions options4 = TriggerOptions.Builder.newBuilder()
-                .setTitle("trigger title")
-                .setMetadata(new JSONObject().put("k", "v"))
-                .build();
-
-        Trigger trigger4 = api.postNewTrigger(serverCode1, predicate4, options4);
+        // create trigger 4, same as trigger 1
+        Trigger trigger4 = this.onboardedApi.postNewTrigger(form, predicate1, null);
         Assert.assertNotNull(trigger4.getTriggerID());
-        Assert.assertFalse(trigger4.disabled());
-        Assert.assertNull(trigger4.getDisabledReason());
-        Assert.assertNull(trigger4.getCommand());
-        Assert.assertEquals(options4.getTitle(), trigger4.getTitle());
-        Assert.assertNull(trigger4.getDescription());
-        Assert.assertNotNull(options4.getMetadata());
-        Assert.assertNotNull(trigger4.getMetadata());
-        Assert.assertEquals(options4.getMetadata().toString(), trigger4.getMetadata().toString());
-
-        ServerCode trigger4ServerCode = trigger4.getServerCode();
-
-        Assert.assertNotNull(trigger4ServerCode);
-        Assert.assertEquals(endpoint1, trigger4ServerCode.getEndpoint());
-        Assert.assertEquals(executorAccessToken1, trigger4ServerCode.getExecutorAccessToken());
-        Assert.assertEquals(targetAppID1, trigger4ServerCode.getTargetAppID());
-        assertJSONObject(parameters1, trigger4ServerCode.getParameters());
-
-        StatePredicate trigger4Predicate = (StatePredicate)trigger4.getPredicate();
-        Assert.assertEquals(EventSource.STATES, trigger4Predicate.getEventSource());
-        Assert.assertEquals(TriggersWhen.CONDITION_TRUE, trigger4Predicate.getTriggersWhen());
-        Assert.assertEquals("power", ((EqualsClauseInTrigger)trigger4Predicate.getCondition().getClause()).getField());
-        Assert.assertEquals(Boolean.TRUE, ((EqualsClauseInTrigger)trigger4Predicate.getCondition().getClause()).getValue());
-
-        // update trigger 4
-        ServerCode serverCode11 = new ServerCode("my_function2", null);
-        StatePredicate predicate41 = new StatePredicate(
-                new Condition(RangeClauseInTrigger.lessThan(ALIAS1, "currentTemperature", 23)),
-                TriggersWhen.CONDITION_FALSE_TO_TRUE);
-        trigger4 = api.patchServerCodeTrigger(trigger4.getTriggerID(), serverCode11, predicate41);
-
-        Assert.assertNotNull(trigger4.getTriggerID());
-        Assert.assertFalse(trigger4.disabled());
-        Assert.assertNull(trigger4.getDisabledReason());
-        Assert.assertNull(trigger4.getCommand());
-        Assert.assertEquals(options4.getTitle(), trigger4.getTitle());
-        Assert.assertNull(trigger4.getDescription());
-        Assert.assertNotNull(options4.getMetadata());
-        Assert.assertNotNull(trigger4.getMetadata());
-        Assert.assertEquals(options4.getMetadata().toString(), trigger4.getMetadata().toString());
-
-        trigger4ServerCode = trigger4.getServerCode();
-        Assert.assertNotNull(trigger4ServerCode);
-
-        Assert.assertEquals(serverCode11.getEndpoint(), trigger4ServerCode.getEndpoint());
-        Assert.assertNull(trigger4ServerCode.getExecutorAccessToken());
-        Assert.assertEquals(targetAppID1, trigger4ServerCode.getTargetAppID());
-        Assert.assertNull(trigger4ServerCode.getParameters());
-
-        trigger4Predicate = (StatePredicate)trigger4.getPredicate();
-        Assert.assertEquals(EventSource.STATES, trigger4Predicate.getEventSource());
-        Assert.assertEquals(TriggersWhen.CONDITION_FALSE_TO_TRUE, trigger4Predicate.getTriggersWhen());
-        Assert.assertTrue(trigger4Predicate.getCondition().getClause() instanceof RangeClauseInTrigger);
-        RangeClauseInTrigger clause4 = (RangeClauseInTrigger)trigger4Predicate.getCondition().getClause();
-        Assert.assertEquals("currentTemperature", clause4.getField());
-        Assert.assertNotNull(clause4.getUpperLimit());
-        Assert.assertEquals(23, clause4.getUpperLimit().intValue());
-        Assert.assertNotNull(clause4.getUpperIncluded());
-        Assert.assertFalse(clause4.getUpperIncluded());
-        Assert.assertNull(clause4.getLowerLimit());
-        Assert.assertNull(clause4.getLowerIncluded());
-
-        // create trigger 5: server code, schedule predicate, null options
-        String endpoint2 = "my_function";
-        String executorAccessToken2 = target.getAccessToken();
-        String targetAppID2 = api.getAppID();
-        JSONObject parameters2 = new JSONObject("{\"doAction\":false}");
-        ServerCode serverCode2 = new ServerCode(endpoint2, executorAccessToken2, targetAppID2, parameters2);
-        SchedulePredicate predicate5 = new SchedulePredicate("4 * * * *");
-
-        Trigger trigger5 = api.postNewTrigger(serverCode2, predicate5);
-        Assert.assertNotNull(trigger5.getTriggerID());
-        Assert.assertFalse(trigger5.disabled());
-        Assert.assertNull(trigger5.getDisabledReason());
-        Assert.assertNull(trigger5.getCommand());
-
-        ServerCode trigger5ServerCode = trigger5.getServerCode();
-        Assert.assertNotNull(trigger5ServerCode);
-        Assert.assertEquals(endpoint2, trigger5ServerCode.getEndpoint());
-        Assert.assertEquals(executorAccessToken2, trigger5ServerCode.getExecutorAccessToken());
-        Assert.assertEquals(targetAppID2, trigger5ServerCode.getTargetAppID());
-        assertJSONObject(parameters2, trigger5ServerCode.getParameters());
-
-        SchedulePredicate trigger5Predicate = (SchedulePredicate)trigger5.getPredicate();
-        Assert.assertEquals("4 * * * *", trigger5Predicate.getSchedule());
-
-        trigger5 = api.enableTrigger(trigger5.getTriggerID(), false);
-        Assert.assertTrue(trigger5.disabled());
-
-        // create trigger 6: server code, scheduleOnce predicate, null options
-        String endpoint3 = "my_function";
-        String executorAccessToken3 = target.getAccessToken();
-        String targetAppID3 = api.getAppID();
-        JSONObject parameters3 = new JSONObject("{\"doAction3\":true}");
-        ServerCode serverCode3 = new ServerCode(endpoint3, executorAccessToken3, targetAppID3, parameters3);
-        ScheduleOncePredicate predicate6 = new ScheduleOncePredicate(System.currentTimeMillis()+2000*1000);
-
-        Trigger trigger6 = api.postNewTrigger(serverCode3, predicate6);
-        Assert.assertNotNull(trigger6.getTriggerID());
-        Assert.assertFalse(trigger6.disabled());
-        Assert.assertNull(trigger6.getDisabledReason());
-        Assert.assertNull(trigger6.getCommand());
-
-        ServerCode trigger6ServerCode = trigger6.getServerCode();
-        Assert.assertNotNull(trigger6ServerCode);
-
-        Assert.assertEquals(endpoint3, trigger6ServerCode.getEndpoint());
-        Assert.assertEquals(executorAccessToken3, trigger6ServerCode.getExecutorAccessToken());
-        Assert.assertEquals(targetAppID3, trigger6ServerCode.getTargetAppID());
-        assertJSONObject(parameters3, trigger6ServerCode.getParameters());
-
-        ScheduleOncePredicate trigger6Predicate = (ScheduleOncePredicate)trigger6.getPredicate();
-        Assert.assertEquals(predicate6.getScheduleAt(), trigger6Predicate.getScheduleAt());
-
-        // create trigger 7, same as trigger 1
-        Trigger trigger7 = api.postNewTrigger(form, predicate1, null);
-        Assert.assertNotNull(trigger7.getTriggerID());
-        Pair<List<Trigger>, String> results = api.listTriggers(0, null);
-        Assert.assertEquals(7, results.first.size());
+        Pair<List<Trigger>, String> results = this.onboardedApi.listTriggers(0, null);
+        Assert.assertEquals(4, results.first.size());
         Assert.assertNull(results.second);
 
-        // delete trigger 7
-        api.deleteTrigger(trigger7.getTriggerID());
+        // delete trigger 4
+        this.onboardedApi.deleteTrigger(trigger4.getTriggerID());
 
         // list trigger again for the first 5 triggers
-        Pair<List<Trigger>, String> results1 = api.listTriggers(5, null);
+        Pair<List<Trigger>, String> results1 = this.onboardedApi.listTriggers(2, null);
         Assert.assertNotNull(results1.second);
-        Assert.assertEquals(5, results1.first.size());
+        Assert.assertEquals(2, results1.first.size());
 
         // list triggers for the rest 1 trigger
-        Pair<List<Trigger>, String> results2 = api.listTriggers(0, results1.second);
+        Pair<List<Trigger>, String> results2 = this.onboardedApi.listTriggers(0, results1.second);
         Assert.assertEquals(1, results2.first.size());
 
         List<Trigger> allTriggers = new ArrayList<>();
@@ -402,13 +280,7 @@ public class TriggerTest extends LargeTestCaseBase{
                 trigger2 = trigger;
             } else if (TextUtils.equals(trigger3.getTriggerID(), trigger.getTriggerID())) {
                 trigger3 = trigger;
-            } else if (TextUtils.equals(trigger4.getTriggerID(), trigger.getTriggerID())) {
-                trigger4 = trigger;
-            } else if (TextUtils.equals(trigger5.getTriggerID(), trigger.getTriggerID())) {
-                trigger5 = trigger;
-            } else if (TextUtils.equals(trigger6.getTriggerID(), trigger.getTriggerID())) {
-                trigger6 = trigger;
-            } else if (TextUtils.equals(trigger7.getTriggerID(), trigger.getTriggerID())) {
+            }else if (TextUtils.equals(trigger4.getTriggerID(), trigger.getTriggerID())) {
                 Assert.fail("delete trigger should not be in resutls");
             }
         }
@@ -424,7 +296,7 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertNotNull(trigger1Command);
         Assert.assertNull(trigger1Command.getCommandID());
         Assert.assertEquals(target.getTypedID(), trigger1Command.getTargetID());
-        Assert.assertEquals(api.getOwner().getTypedID(), trigger1Command.getIssuerID());
+        Assert.assertEquals(this.onboardedApi.getOwner().getTypedID(), trigger1Command.getIssuerID());
         Assert.assertNull(trigger1Command.getCommandState());
         Assert.assertNull(trigger1Command.getFiredByTriggerID());
         Assert.assertNull(trigger1Command.getCreated());
@@ -460,7 +332,7 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertNotNull(trigger2Command);
         Assert.assertNull(trigger2Command.getCommandID());
         Assert.assertEquals(target.getTypedID(), trigger2Command.getTargetID());
-        Assert.assertEquals(api.getOwner().getTypedID(), trigger2Command.getIssuerID());
+        Assert.assertEquals(this.onboardedApi.getOwner().getTypedID(), trigger2Command.getIssuerID());
         Assert.assertNull(trigger2Command.getCommandState());
         Assert.assertNull(trigger2Command.getFiredByTriggerID());
         Assert.assertNull(trigger2Command.getCreated());
@@ -489,7 +361,7 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertNotNull(trigger3Command);
         Assert.assertNull(trigger3Command.getCommandID());
         Assert.assertEquals(target.getTypedID(), trigger3Command.getTargetID());
-        Assert.assertEquals(api.getOwner().getTypedID(), trigger3Command.getIssuerID());
+        Assert.assertEquals(this.onboardedApi.getOwner().getTypedID(), trigger3Command.getIssuerID());
         Assert.assertNull(trigger3Command.getCommandState());
         Assert.assertNull(trigger3Command.getFiredByTriggerID());
         Assert.assertNull(trigger3Command.getCreated());
@@ -505,8 +377,59 @@ public class TriggerTest extends LargeTestCaseBase{
 
         trigger3Predicate = (ScheduleOncePredicate) trigger3.getPredicate();
         Assert.assertEquals(predicate3.getScheduleAt(), trigger3Predicate.getScheduleAt());
+    }
 
-        // trigger 4
+    @Test
+    public void serverCodeTriggerTest() throws Exception{
+        Target target = this.onboardedApi.getTarget();
+        Assert.assertNotNull(target);
+        Assert.assertNotNull(target.getAccessToken());
+
+        // create trigger: server code, state predicate, non null options
+        String endpoint1 = "my_function";
+        String executorAccessToken1 = target.getAccessToken();
+        String targetAppID1 = this.onboardedApi.getAppID();
+        JSONObject parameters1 = new JSONObject("{\"doAction\":true}");
+        ServerCode serverCode1 = new ServerCode(endpoint1, executorAccessToken1, targetAppID1, parameters1);
+        Condition condition4 = new Condition(new EqualsClauseInTrigger(ALIAS1, "power", true));
+        StatePredicate predicate4 = new StatePredicate(condition4, TriggersWhen.CONDITION_TRUE);
+        TriggerOptions options4 = TriggerOptions.Builder.newBuilder()
+                .setTitle("trigger title")
+                .setMetadata(new JSONObject().put("k", "v"))
+                .build();
+
+        Trigger trigger4 = this.onboardedApi.postNewTrigger(serverCode1, predicate4, options4);
+        Assert.assertNotNull(trigger4.getTriggerID());
+        Assert.assertFalse(trigger4.disabled());
+        Assert.assertNull(trigger4.getDisabledReason());
+        Assert.assertNull(trigger4.getCommand());
+        Assert.assertEquals(options4.getTitle(), trigger4.getTitle());
+        Assert.assertNull(trigger4.getDescription());
+        Assert.assertNotNull(options4.getMetadata());
+        Assert.assertNotNull(trigger4.getMetadata());
+        Assert.assertEquals(options4.getMetadata().toString(), trigger4.getMetadata().toString());
+
+        ServerCode trigger4ServerCode = trigger4.getServerCode();
+
+        Assert.assertNotNull(trigger4ServerCode);
+        Assert.assertEquals(endpoint1, trigger4ServerCode.getEndpoint());
+        Assert.assertEquals(executorAccessToken1, trigger4ServerCode.getExecutorAccessToken());
+        Assert.assertEquals(targetAppID1, trigger4ServerCode.getTargetAppID());
+        assertJSONObject(parameters1, trigger4ServerCode.getParameters());
+
+        StatePredicate trigger4Predicate = (StatePredicate)trigger4.getPredicate();
+        Assert.assertEquals(EventSource.STATES, trigger4Predicate.getEventSource());
+        Assert.assertEquals(TriggersWhen.CONDITION_TRUE, trigger4Predicate.getTriggersWhen());
+        Assert.assertEquals("power", ((EqualsClauseInTrigger)trigger4Predicate.getCondition().getClause()).getField());
+        Assert.assertEquals(Boolean.TRUE, ((EqualsClauseInTrigger)trigger4Predicate.getCondition().getClause()).getValue());
+
+        // update trigger
+        ServerCode serverCode11 = new ServerCode("my_function2", null);
+        StatePredicate predicate41 = new StatePredicate(
+                new Condition(RangeClauseInTrigger.lessThan(ALIAS1, "currentTemperature", 23)),
+                TriggersWhen.CONDITION_FALSE_TO_TRUE);
+        trigger4 = this.onboardedApi.patchServerCodeTrigger(trigger4.getTriggerID(), serverCode11, predicate41);
+
         Assert.assertNotNull(trigger4.getTriggerID());
         Assert.assertFalse(trigger4.disabled());
         Assert.assertNull(trigger4.getDisabledReason());
@@ -529,7 +452,7 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertEquals(EventSource.STATES, trigger4Predicate.getEventSource());
         Assert.assertEquals(TriggersWhen.CONDITION_FALSE_TO_TRUE, trigger4Predicate.getTriggersWhen());
         Assert.assertTrue(trigger4Predicate.getCondition().getClause() instanceof RangeClauseInTrigger);
-        clause4 = (RangeClauseInTrigger)trigger4Predicate.getCondition().getClause();
+        RangeClauseInTrigger clause4 = (RangeClauseInTrigger)trigger4Predicate.getCondition().getClause();
         Assert.assertEquals("currentTemperature", clause4.getField());
         Assert.assertNotNull(clause4.getUpperLimit());
         Assert.assertEquals(23, clause4.getUpperLimit().intValue());
@@ -538,32 +461,48 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertNull(clause4.getLowerLimit());
         Assert.assertNull(clause4.getLowerIncluded());
 
-        // trigger 5
+        // create trigger: server code, schedule predicate, null options
+        String endpoint2 = "my_function";
+        String executorAccessToken2 = target.getAccessToken();
+        String targetAppID2 = this.onboardedApi.getAppID();
+        JSONObject parameters2 = new JSONObject("{\"doAction\":false}");
+        ServerCode serverCode2 = new ServerCode(endpoint2, executorAccessToken2, targetAppID2, parameters2);
+        SchedulePredicate predicate5 = new SchedulePredicate("4 * * * *");
+
+        Trigger trigger5 = this.onboardedApi.postNewTrigger(serverCode2, predicate5);
         Assert.assertNotNull(trigger5.getTriggerID());
-        Assert.assertTrue(trigger5.disabled());
+        Assert.assertFalse(trigger5.disabled());
         Assert.assertNull(trigger5.getDisabledReason());
         Assert.assertNull(trigger5.getCommand());
 
-        trigger5ServerCode = trigger5.getServerCode();
+        ServerCode trigger5ServerCode = trigger5.getServerCode();
         Assert.assertNotNull(trigger5ServerCode);
         Assert.assertEquals(endpoint2, trigger5ServerCode.getEndpoint());
         Assert.assertEquals(executorAccessToken2, trigger5ServerCode.getExecutorAccessToken());
         Assert.assertEquals(targetAppID2, trigger5ServerCode.getTargetAppID());
         assertJSONObject(parameters2, trigger5ServerCode.getParameters());
 
-        trigger5Predicate = (SchedulePredicate)trigger5.getPredicate();
+        SchedulePredicate trigger5Predicate = (SchedulePredicate)trigger5.getPredicate();
         Assert.assertEquals("4 * * * *", trigger5Predicate.getSchedule());
 
-        trigger5 = api.enableTrigger(trigger5.getTriggerID(), false);
+        trigger5 = this.onboardedApi.enableTrigger(trigger5.getTriggerID(), false);
         Assert.assertTrue(trigger5.disabled());
 
-        // trigger 6
+        // create trigger 6: server code, scheduleOnce predicate, null options
+        String endpoint3 = "my_function";
+        String executorAccessToken3 = target.getAccessToken();
+        String targetAppID3 = this.onboardedApi.getAppID();
+        JSONObject parameters3 = new JSONObject("{\"doAction3\":true}");
+        ServerCode serverCode3 = new ServerCode(endpoint3, executorAccessToken3, targetAppID3, parameters3);
+        ScheduleOncePredicate predicate6 = new ScheduleOncePredicate(System.currentTimeMillis()+2000*1000);
+
+        Trigger trigger6 = this.onboardedApi.postNewTrigger(serverCode3, predicate6);
         Assert.assertNotNull(trigger6.getTriggerID());
         Assert.assertFalse(trigger6.disabled());
         Assert.assertNull(trigger6.getDisabledReason());
         Assert.assertNull(trigger6.getCommand());
 
-        trigger6ServerCode = trigger6.getServerCode();
+        ServerCode trigger6ServerCode = trigger6.getServerCode();
         Assert.assertNotNull(trigger6ServerCode);
 
         Assert.assertEquals(endpoint3, trigger6ServerCode.getEndpoint());
@@ -571,10 +510,10 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertEquals(targetAppID3, trigger6ServerCode.getTargetAppID());
         assertJSONObject(parameters3, trigger6ServerCode.getParameters());
 
-        trigger6Predicate = (ScheduleOncePredicate)trigger6.getPredicate();
+        ScheduleOncePredicate trigger6Predicate = (ScheduleOncePredicate)trigger6.getPredicate();
         Assert.assertEquals(predicate6.getScheduleAt(), trigger6Predicate.getScheduleAt());
-
     }
+
     @Test
     public void listTriggersEmptyResultTest() throws Exception {
         ThingIFAPI api = this.createDefaultThingIFAPI();
@@ -596,6 +535,7 @@ public class TriggerTest extends LargeTestCaseBase{
         List<Trigger> triggers = results.first;
         Assert.assertEquals(0, triggers.size());
     }
+
     @Test
     public void listTriggerServerCodeResultsTest() throws Exception {
         if (!this.server.hasAdminCredential()) {
