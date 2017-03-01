@@ -5,10 +5,10 @@ import android.support.annotation.Nullable;
 
 import com.kii.thingif.clause.query.QueryClause;
 
-public class HistoryStatesQuery{
+public class HistoryStatesQuery {
 
     private @NonNull String alias;
-    private @Nullable QueryClause clause;
+    private @NonNull QueryClause clause;
     private @Nullable String firmwareVersion;
     private @Nullable Integer bestEffortLimit;
     private @Nullable String nextPaginationKey;
@@ -17,7 +17,7 @@ public class HistoryStatesQuery{
 
     private HistoryStatesQuery(
             @NonNull  String alias,
-            @Nullable QueryClause clause,
+            @NonNull QueryClause clause,
             @Nullable String firmwareVersion,
             @Nullable Integer bestEffortLimit,
             @Nullable String nextPaginationKey) {

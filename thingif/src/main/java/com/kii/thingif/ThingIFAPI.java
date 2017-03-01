@@ -1998,9 +1998,8 @@ public class ThingIFAPI implements Parcelable {
     }
 
     /**
-     * Query history states with trait alias.
+     * Query history states.
      * @param query Instance of {@link HistoryStatesQuery}.
-     *              If clause of query is null, query all history states.
      * @param <S> Type of subclass of {@link TargetState}.
      * @return Pair instance. First element is list of target state.
      *  Second element is next pagination key.
