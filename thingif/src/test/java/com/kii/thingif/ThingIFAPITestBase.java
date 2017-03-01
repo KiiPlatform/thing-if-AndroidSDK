@@ -40,7 +40,6 @@ public class ThingIFAPITestBase extends SmallTestBase {
     protected final String APP_ID = "smalltest";
     protected final String APP_KEY = "abcdefghijklmnopqrstuvwxyz123456789";
     protected static final String BASE_PATH = "/thing-if/apps/smalltest";
-    protected static final String API_BASE_PATH = "/api/apps/smalltest";
     protected static final String ALIAS1 = "AirConditionerAlias";
     protected static final String ALIAS2 = "HumidityAlias";
 
