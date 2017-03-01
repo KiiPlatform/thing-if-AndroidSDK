@@ -2,6 +2,7 @@ package com.kii.thingif.utils;
 
 import com.kii.thingif.ServerError;
 import com.kii.thingif.actions.ToJSON;
+import com.kii.thingif.clause.query.AllClause;
 import com.kii.thingif.clause.query.AndClauseInQuery;
 import com.kii.thingif.clause.query.EqualsClauseInQuery;
 import com.kii.thingif.clause.query.NotEqualsClauseInQuery;
@@ -310,7 +311,9 @@ public class JsonUtil {
                 return new JSONObject()
                         .put("type", "or")
                         .put("clauses", clauses);
-            }else{
+            }else if (clause instanceof AllClause) {
+                return new JSONObject().put("type", "all");
+            } else {
                 throw new RuntimeException("not support trigger clause");
             }
         }catch (JSONException ex) {
