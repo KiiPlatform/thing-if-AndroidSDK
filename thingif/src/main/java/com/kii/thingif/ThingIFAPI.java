@@ -1941,12 +1941,30 @@ public class ThingIFAPI implements Parcelable {
     /**
      * Get thing type of the thing.
      * @return Name of thing type of the thing. If thing type is not set, null is returned.
+     * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      */
     @Nullable
     @WorkerThread
-    public String getThingType(){
-        //TODO: // FIXME: 12/20/16 implement the logic.
-        return null;
+    public String getThingType() throws ThingIFException {
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
+        }
+        String path = MessageFormat.format("/thing-if/apps/{0}/things/{1}/thing-type",
+                this.app.getAppID(), this.target.getTypedID().getID());
+        String url = Path.combine(this.app.getBaseUrl(), path);
+        Map<String, String> headers = this.newHeader();
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.GET, headers);
+        JSONObject responseBody;
+        try {
+            responseBody = this.restClient.sendRequest(request);
+        } catch (NotFoundException e) {
+            String code = e.getErrorCode();
+            if ("THING_WITHOUT_THING_TYPE".equals(code)) {
+                return null;
+            }
+            throw e;
+        }
+        return responseBody.optString("thingType", null);
     }
 
     /**
