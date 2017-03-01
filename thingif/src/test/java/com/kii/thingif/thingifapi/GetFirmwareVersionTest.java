@@ -86,7 +86,8 @@ public class GetFirmwareVersionTest extends ThingIFAPITestBase {
         String triggerID = "trigger-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        String responseBody = "{ \"errorCode\": \"FIRMWARE_VERSION_NOT_FOUND\" }";
+        // TODO: When server response fixed, change to FIRMWARE_VERSION_NOT_FOUND.
+        String responseBody = "{ \"errorCode\": \"THING_WITHOUT_THING_TYPE\" }";
         MockResponse response = new MockResponse().setResponseCode(404);
         response.setBody(responseBody);
         this.server.enqueue(response);
