@@ -516,21 +516,13 @@ public class TriggerTest extends LargeTestCaseBase{
 
     @Test
     public void listTriggersEmptyResultTest() throws Exception {
-        ThingIFAPI api = this.createDefaultThingIFAPI();
-        String vendorThingID = UUID.randomUUID().toString();
-        String thingPassword = "password";
-
-        // on-boarding thing
-        OnboardWithVendorThingIDOptions options =
-                new OnboardWithVendorThingIDOptions.Builder()
-                        .setThingType(DEFAULT_THING_TYPE)
-                        .setFirmwareVersion(DEFAULT_FIRMWARE_VERSION).build();
-        Target target = api.onboardWithVendorThingID(vendorThingID, thingPassword, options);
+        Target target = this.onboardedApi.getTarget();
+        Assert.assertNotNull(target);
 
         Assert.assertEquals(TypedID.Types.THING, target.getTypedID().getType());
         Assert.assertNotNull(target.getAccessToken());
 
-        Pair<List<Trigger>, String> results = api.listTriggers(100, null);
+        Pair<List<Trigger>, String> results = this.onboardedApi.listTriggers(100, null);
         Assert.assertNull(results.second);
         List<Trigger> triggers = results.first;
         Assert.assertEquals(0, triggers.size());
@@ -553,30 +545,20 @@ public class TriggerTest extends LargeTestCaseBase{
         String versionID = rest.api().servercode().deploy(javascript);
         rest.api().servercode().setCurrentVersion(versionID);
 
-        // initialize ThingIFAPI
-        ThingIFAPI api = this.createDefaultThingIFAPI();
-        String vendorThingID = UUID.randomUUID().toString();
-        String thingPassword = "password";
-
-        // on-boarding thing
-        OnboardWithVendorThingIDOptions options =
-                new OnboardWithVendorThingIDOptions.Builder()
-                        .setThingType(DEFAULT_THING_TYPE)
-                        .setFirmwareVersion(DEFAULT_FIRMWARE_VERSION).build();
-        Target target = api.onboardWithVendorThingID(vendorThingID, thingPassword, options);
-        Assert.assertEquals(TypedID.Types.THING, target.getTypedID().getType());
+        Target target = this.onboardedApi.getTarget();
+        Assert.assertNotNull(target);
         Assert.assertNotNull(target.getAccessToken());
 
         // create new server code trigger
         String endpoint = "server_code_for_trigger";
         String executorAccessToken = target.getAccessToken();
-        String targetAppID = api.getAppID();
+        String targetAppID = this.onboardedApi.getAppID();
         JSONObject parameters = new JSONObject("{\"arg1\":\"passed_parameter\"}");
         ServerCode serverCode = new ServerCode(endpoint, executorAccessToken, targetAppID, parameters);
         Condition condition = new Condition(new EqualsClauseInTrigger(ALIAS1, "power", true));
         StatePredicate predicate = new StatePredicate(condition, TriggersWhen.CONDITION_TRUE);
 
-        Trigger trigger = api.postNewTrigger(serverCode, predicate);
+        Trigger trigger = this.onboardedApi.postNewTrigger(serverCode, predicate);
         Assert.assertNotNull(trigger.getTriggerID());
         Assert.assertFalse(trigger.disabled());
         Assert.assertNull(trigger.getDisabledReason());
@@ -601,7 +583,8 @@ public class TriggerTest extends LargeTestCaseBase{
 
         Thread.sleep(3000);
 
-        Pair<List<TriggeredServerCodeResult>, String> triggerServerCodeResults = api.listTriggeredServerCodeResults(trigger.getTriggerID(), 0, null);
+        Pair<List<TriggeredServerCodeResult>, String> triggerServerCodeResults =
+                this.onboardedApi.listTriggeredServerCodeResults(trigger.getTriggerID(), 0, null);
         Assert.assertEquals(1, triggerServerCodeResults.first.size());
         Assert.assertNull(triggerServerCodeResults.second);
         TriggeredServerCodeResult triggeredServerCodeResult = triggerServerCodeResults.first.get(0);
@@ -629,31 +612,20 @@ public class TriggerTest extends LargeTestCaseBase{
         String versionID = rest.api().servercode().deploy(javascript);
         rest.api().servercode().setCurrentVersion(versionID);
 
-        // initialize ThingIFAPI
-        ThingIFAPI api = this.createDefaultThingIFAPI();
-        String vendorThingID = UUID.randomUUID().toString();
-        String thingPassword = "password";
-
-        // on-boarding thing
-        OnboardWithVendorThingIDOptions options =
-                new OnboardWithVendorThingIDOptions.Builder()
-                        .setThingType(DEFAULT_THING_TYPE)
-                        .setFirmwareVersion(DEFAULT_FIRMWARE_VERSION).build();
-        Target target = api.onboardWithVendorThingID(vendorThingID, thingPassword, options);
-
-        Assert.assertEquals(TypedID.Types.THING, target.getTypedID().getType());
+        Target target = this.onboardedApi.getTarget();
+        Assert.assertNotNull(target);
         Assert.assertNotNull(target.getAccessToken());
 
         // create new server code trigger
         String endpoint = "server_code_for_trigger";
         String executorAccessToken = target.getAccessToken();
-        String targetAppID = api.getAppID();
+        String targetAppID = this.onboardedApi.getAppID();
         JSONObject parameters = new JSONObject("{\"arg1\":\"passed_parameter\"}");
         ServerCode serverCode = new ServerCode(endpoint, executorAccessToken, targetAppID, parameters);
         Condition condition = new Condition(new EqualsClauseInTrigger(ALIAS1, "power", true));
         StatePredicate predicate = new StatePredicate(condition, TriggersWhen.CONDITION_TRUE);
 
-        Trigger trigger = api.postNewTrigger(serverCode, predicate);
+        Trigger trigger = this.onboardedApi.postNewTrigger(serverCode, predicate);
         Assert.assertNotNull(trigger.getTriggerID());
         Assert.assertFalse(trigger.disabled());
         Assert.assertNull(trigger.getDisabledReason());
@@ -678,7 +650,8 @@ public class TriggerTest extends LargeTestCaseBase{
 
         Thread.sleep(3000);
 
-        Pair<List<TriggeredServerCodeResult>, String> triggerServerCodeResults = api.listTriggeredServerCodeResults(trigger.getTriggerID(), 0, null);
+        Pair<List<TriggeredServerCodeResult>, String> triggerServerCodeResults =
+                this.onboardedApi.listTriggeredServerCodeResults(trigger.getTriggerID(), 0, null);
         Assert.assertEquals(1, triggerServerCodeResults.first.size());
         Assert.assertNull(triggerServerCodeResults.second);
         TriggeredServerCodeResult triggeredServerCodeResult = triggerServerCodeResults.first.get(0);
@@ -694,18 +667,8 @@ public class TriggerTest extends LargeTestCaseBase{
 
     @Test(expected = BadRequestException.class)
     public void basicInvalidSchedulePredicateTriggerTest() throws Exception {
-        ThingIFAPI api = this.createDefaultThingIFAPI();
-        String vendorThingID = UUID.randomUUID().toString();
-        String thingPassword = "password";
-
-        // on-boarding thing
-        OnboardWithVendorThingIDOptions options =
-                new OnboardWithVendorThingIDOptions.Builder()
-                        .setThingType(DEFAULT_THING_TYPE)
-                        .setFirmwareVersion(DEFAULT_FIRMWARE_VERSION).build();
-        Target target = api.onboardWithVendorThingID(vendorThingID, thingPassword, options);        Assert.assertEquals(TypedID.Types.THING, target.getTypedID().getType());
-        Assert.assertEquals(TypedID.Types.THING, target.getTypedID().getType());
-        Assert.assertNotNull(target.getAccessToken());
+        Target target = this.onboardedApi.getTarget();
+        Assert.assertNotNull(target);
 
         // create new trigger
         List<AliasAction<? extends Action>> aliasActions = new ArrayList<>();
@@ -716,6 +679,6 @@ public class TriggerTest extends LargeTestCaseBase{
 
         TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(aliasActions).build();
         SchedulePredicate predicate1 = new SchedulePredicate("wrong format");
-        api.postNewTrigger(form, predicate1, null);
+        this.onboardedApi.postNewTrigger(form, predicate1, null);
     }
 }
