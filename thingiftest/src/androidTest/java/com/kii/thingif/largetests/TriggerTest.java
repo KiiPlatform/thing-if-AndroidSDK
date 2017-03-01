@@ -77,7 +77,7 @@ public class TriggerTest extends LargeTestCaseBase{
 
         TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(aliasActions).build();
 
-        Trigger trigger1 = this.onboardedApi.postNewTrigger(form, predicate1, null);
+        Trigger trigger1 = this.onboardedApi.postNewTrigger(form, predicate1);
         Assert.assertNotNull(trigger1.getTriggerID());
         Assert.assertFalse(trigger1.disabled());
         Assert.assertNull(trigger1.getDisabledReason());
@@ -249,7 +249,7 @@ public class TriggerTest extends LargeTestCaseBase{
 
 
         // create trigger 4, same as trigger 1
-        Trigger trigger4 = this.onboardedApi.postNewTrigger(form, predicate1, null);
+        Trigger trigger4 = this.onboardedApi.postNewTrigger(form, predicate1);
         Assert.assertNotNull(trigger4.getTriggerID());
         Pair<List<Trigger>, String> results = this.onboardedApi.listTriggers(0, null);
         Assert.assertEquals(4, results.first.size());
@@ -679,6 +679,6 @@ public class TriggerTest extends LargeTestCaseBase{
 
         TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(aliasActions).build();
         SchedulePredicate predicate1 = new SchedulePredicate("wrong format");
-        this.onboardedApi.postNewTrigger(form, predicate1, null);
+        this.onboardedApi.postNewTrigger(form, predicate1);
     }
 }
