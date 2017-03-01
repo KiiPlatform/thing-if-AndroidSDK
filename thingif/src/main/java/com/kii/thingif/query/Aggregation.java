@@ -1,16 +1,12 @@
 package com.kii.thingif.query;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Represent aggregation
  */
-public class Aggregation implements Parcelable{
+public class Aggregation {
     private @NonNull final FunctionType function;
     private @NonNull final String field;
     private @NonNull final FieldType fieldType;
@@ -190,28 +186,4 @@ public class Aggregation implements Parcelable{
         //TODO: // FIXME: 12/21/16 read fieldType
         this.fieldType = (FieldType) in.readSerializable();
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeSerializable(this.function);
-        dest.writeString(this.field);
-        dest.writeSerializable(this.fieldType);
-    }
-
-    public static final Creator<Aggregation> CREATOR = new Creator<Aggregation>() {
-        @Override
-        public Aggregation createFromParcel(Parcel source) {
-            return new Aggregation(source);
-        }
-
-        @Override
-        public Aggregation[] newArray(int size) {
-            return new Aggregation[size];
-        }
-    };
 }

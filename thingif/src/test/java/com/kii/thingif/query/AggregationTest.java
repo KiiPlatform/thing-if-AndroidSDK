@@ -1,7 +1,5 @@
 package com.kii.thingif.query;
 
-import android.os.Parcel;
-
 import com.kii.thingif.query.Aggregation.FunctionType;
 import com.kii.thingif.query.Aggregation.FieldType;
 
@@ -297,19 +295,5 @@ public class AggregationTest {
 
         Assert.assertFalse(target.equals(null));
         Assert.assertFalse(target.equals((Object)FunctionType.COUNT));
-    }
-
-    @Test
-    public void parcelableTest() {
-        Aggregation src = Aggregation.newAggregation(FunctionType.SUM, "dummy",
-                FieldType.INTEGER);
-
-        Parcel parcel = Parcel.obtain();
-        src.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-        Aggregation dest = Aggregation.CREATOR.createFromParcel(parcel);
-
-        Assert.assertNotNull(dest);
-        Assert.assertTrue(src.equals(dest));
     }
 }
