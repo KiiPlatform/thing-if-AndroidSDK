@@ -2,8 +2,16 @@ package com.kii.thingif.states;
 
 import com.kii.thingif.TargetState;
 
-public class HumidityState implements TargetState {
-    public int currentHumidity;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class HumidityState implements TargetState, StateToJson {
+    public Integer currentHumidity;
+    public HumidityState(){}
+
+    public HumidityState(Integer currentHumidity) {
+        this.currentHumidity = currentHumidity;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -14,6 +22,16 @@ public class HumidityState implements TargetState {
             return false;
         }
         HumidityState other = (HumidityState)o;
-        return this.currentHumidity == other.currentHumidity;
+        return (this.currentHumidity == null? other.currentHumidity == null :
+            this.currentHumidity.equals(other.currentHumidity));
+    }
+
+    @Override
+    public JSONObject toJSONObject() {
+        try {
+            return new JSONObject().put("currentHumidity", this.currentHumidity);
+        }catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -19,6 +19,8 @@ import com.kii.thingif.command.ActionResult;
 import com.kii.thingif.command.AliasAction;
 import com.kii.thingif.command.AliasActionResult;
 import com.kii.thingif.command.Command;
+import com.kii.thingif.query.HistoryState;
+import com.kii.thingif.states.StateToJson;
 import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.ScheduleOncePredicate;
 import com.kii.thingif.trigger.SchedulePredicate;
@@ -318,6 +320,17 @@ public class JsonUtil {
             }
         }catch (JSONException ex) {
             throw new RuntimeException(ex);
+        }
+    }
+
+    public static JSONObject historyStateToJson(HistoryState historyState) {
+        try{
+
+            JSONObject ret = ((StateToJson)historyState.getState()).toJSONObject();
+            ret.put("_created", historyState.getCreatedAt().getTime());
+            return ret;
+        }catch (JSONException e) {
+            throw new RuntimeException(e);
         }
     }
 }
