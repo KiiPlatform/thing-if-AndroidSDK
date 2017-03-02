@@ -3,6 +3,7 @@ package com.kii.thingif.internal.gson;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kii.thingif.SmallTestBase;
+import com.kii.thingif.clause.query.AllClause;
 import com.kii.thingif.clause.query.AndClauseInQuery;
 import com.kii.thingif.clause.query.EqualsClauseInQuery;
 import com.kii.thingif.clause.query.NotEqualsClauseInQuery;
@@ -25,6 +26,7 @@ public class QueryClauseAdapterTest extends SmallTestBase{
     @Test
     public void serializationTest() throws Exception{
         QueryClause[] clauses = {
+                new AllClause(),
                 new EqualsClauseInQuery("power", true),
                 new NotEqualsClauseInQuery(new EqualsClauseInQuery("temperature", 23)),
                 RangeClauseInQuery.range("humidity", 45, true, 23, true),
@@ -37,11 +39,11 @@ public class QueryClauseAdapterTest extends SmallTestBase{
         for (int i=0; i<clauses.length; i++) {
             QueryClause clause = clauses[i];
             String jsonString = gson.toJson(clause, QueryClause.class);
-            JSONObject deserializedJson = new JSONObject(jsonString);
+            JSONObject serializedJson = new JSONObject(jsonString);
             assertJSONObject(
                     "failed on ["+i+"]",
                     JsonUtil.queryClauseToJson(clause),
-                    deserializedJson);
+                    serializedJson);
         }
     }
 }
