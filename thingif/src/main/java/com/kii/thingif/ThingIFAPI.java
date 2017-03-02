@@ -34,6 +34,7 @@ import com.kii.thingif.gateway.EndNode;
 import com.kii.thingif.gateway.Gateway;
 import com.kii.thingif.gateway.PendingEndNode;
 import com.kii.thingif.internal.gson.AliasActionAdapter;
+import com.kii.thingif.internal.gson.HistoryStateAdapter;
 import com.kii.thingif.internal.gson.JSONObjectAdapter;
 import com.kii.thingif.internal.gson.PredicateAdapter;
 import com.kii.thingif.internal.gson.QueryClauseAdapter;
@@ -2040,6 +2041,11 @@ public class ThingIFAPI implements Parcelable {
             throw new IllegalArgumentException("query is null");
         }
 
+        if (!this.stateTypes.containsKey(query.getAlias())) {
+            throw new UnregisteredAliasException(query.getAlias(), false);
+        }
+        Class<? extends TargetState> stateClass = this.stateTypes.get(query.getAlias());
+
         String path =  MessageFormat.format("/thing-if/apps/{0}/targets/{1}/states/aliases/{2}/query",
                 this.app.getAppID(), this.target.getTypedID().toString(), query.getAlias());
         String url = Path.combine(this.app.getBaseUrl(), path);
@@ -2078,10 +2084,13 @@ public class ThingIFAPI implements Parcelable {
         List<HistoryState<S>> states = new ArrayList<>();
 
         if (statesArray != null) {
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(HistoryState.class, new HistoryStateAdapter(stateClass))
+                    .create();
             try {
                 for (int i = 0; i < statesArray.length(); i++) {
                     JSONObject stateJson = statesArray.optJSONObject(i);
-                    states.add(this.gson.fromJson(stateJson.toString(), HistoryState.class));
+                    states.add(gson.fromJson(stateJson.toString(), HistoryState.class));
                 }
             }catch (JsonParseException ex) {
                 if (ex.getCause() instanceof ThingIFException) {
