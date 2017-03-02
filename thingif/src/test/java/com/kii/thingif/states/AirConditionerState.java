@@ -24,8 +24,9 @@ public class AirConditionerState implements TargetState, StateToJson {
             return false;
         }
         AirConditionerState other = (AirConditionerState)o;
-        return this.power == other.power &&
-                this.currentTemperature == other.currentTemperature;
+        return (this.power == null? other.power == null : this.power.equals(other.power)) &&
+                (this.currentTemperature == null? other.currentTemperature == null :
+                        this.currentTemperature.equals(other.currentTemperature));
     }
 
     @Override

@@ -22,7 +22,8 @@ public class HumidityState implements TargetState, StateToJson {
             return false;
         }
         HumidityState other = (HumidityState)o;
-        return this.currentHumidity == other.currentHumidity;
+        return (this.currentHumidity == null? other.currentHumidity == null :
+            this.currentHumidity.equals(other.currentHumidity));
     }
 
     @Override
