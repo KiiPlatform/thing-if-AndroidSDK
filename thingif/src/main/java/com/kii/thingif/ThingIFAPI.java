@@ -15,6 +15,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.kii.thingif.clause.query.QueryClause;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
 import com.kii.thingif.command.AliasActionResult;
@@ -35,6 +36,7 @@ import com.kii.thingif.gateway.PendingEndNode;
 import com.kii.thingif.internal.gson.AliasActionAdapter;
 import com.kii.thingif.internal.gson.JSONObjectAdapter;
 import com.kii.thingif.internal.gson.PredicateAdapter;
+import com.kii.thingif.internal.gson.QueryClauseAdapter;
 import com.kii.thingif.internal.gson.ThingIFAPIAdapter;
 import com.kii.thingif.trigger.TriggeredServerCodeResultAdapter;
 import com.kii.thingif.internal.gson.TypedIDAdapter;
@@ -459,6 +461,9 @@ public class ThingIFAPI implements Parcelable {
                 .registerTypeAdapter(
                         TriggeredServerCodeResult.class,
                         new TriggeredServerCodeResultAdapter())
+                .registerTypeAdapter(
+                        QueryClause.class,
+                        new QueryClauseAdapter())
                 .create();
     }
     /**
@@ -2028,8 +2033,65 @@ public class ThingIFAPI implements Parcelable {
      */
     public <S extends TargetState> Pair<List<HistoryState<S>>, String> query(
             @NonNull HistoryStatesQuery query) throws ThingIFException{
-        //TODO: // FIXME: 12/22/16 implement the logic
-        return null;
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
+        }
+        if (query == null) {
+            throw new IllegalArgumentException("query is null");
+        }
+
+        String path =  MessageFormat.format("/thing-if/apps/{0}/targets/{1}/states/aliases/{2}/query",
+                this.app.getAppID(), this.target.getTypedID().toString(), query.getAlias());
+        String url = Path.combine(this.app.getBaseUrl(), path);
+        Map<String, String> headers = this.newHeader();
+        JSONObject requestBody = new JSONObject();
+
+        JSONObject queryObject =
+                JsonUtils.newJson(this.gson.toJson(query.getClause(), QueryClause.class));
+        try {
+            requestBody.put("query", queryObject);
+            if (query.getFirmwareVersion() != null) {
+                requestBody.put("firmwareVersion", query.getFirmwareVersion());
+            }
+        }catch (JSONException e) {
+            // never happen
+            throw new RuntimeException(e);
+        }
+
+        IoTRestRequest request = new IoTRestRequest(
+                url,
+                IoTRestRequest.Method.POST,
+                headers,
+                MediaTypes.MEDIA_TYPE_QUERY_HISTORY_STATE,
+                requestBody);
+
+        if (query.getBestEffortLimit() != null &&
+                query.getBestEffortLimit() > 0) {
+            request.addQueryParameter("bestEffortLimit", query.getBestEffortLimit());
+        }
+        if (!TextUtils.isEmpty(query.getNextPaginationKey())) {
+            request.addQueryParameter("paginationKey", query.getNextPaginationKey());
+        }
+        JSONObject responseBody = this.restClient.sendRequest(request);
+        String nextPaginationKey = responseBody.optString("nextPaginationKey", null);
+        JSONArray statesArray = responseBody.optJSONArray("results");
+        List<HistoryState<S>> states = new ArrayList<>();
+
+        if (statesArray != null) {
+            try {
+                for (int i = 0; i < statesArray.length(); i++) {
+                    JSONObject stateJson = statesArray.optJSONObject(i);
+                    states.add(this.gson.fromJson(stateJson.toString(), HistoryState.class));
+                }
+            }catch (JsonParseException ex) {
+                if (ex.getCause() instanceof ThingIFException) {
+                    throw (ThingIFException)ex.getCause();
+                }else{
+                    throw ex;
+                }
+            }
+        }
+        return new Pair<>(states, nextPaginationKey);
     }
 
     /**
