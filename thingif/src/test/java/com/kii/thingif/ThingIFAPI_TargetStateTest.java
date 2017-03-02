@@ -69,11 +69,11 @@ public class ThingIFAPI_TargetStateTest extends ThingIFAPITestBase {
         Assert.assertTrue(states.get(ALIAS1) instanceof AirConditionerState);
         AirConditionerState airState = (AirConditionerState) states.get(ALIAS1);
         Assert.assertTrue(airState.power);
-        Assert.assertEquals(30, airState.currentTemperature);
+        Assert.assertEquals(30, airState.currentTemperature.intValue());
 
         Assert.assertTrue(states.get(ALIAS2) instanceof HumidityState);
         HumidityState humState = (HumidityState) states.get(ALIAS2);
-        Assert.assertEquals(80, humState.currentHumidity);
+        Assert.assertEquals(80, humState.currentHumidity.intValue());
 
         // verify the 1st request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -137,7 +137,7 @@ public class ThingIFAPI_TargetStateTest extends ThingIFAPITestBase {
         // verify the result
         Assert.assertNotNull(state);
         Assert.assertFalse(state.power);
-        Assert.assertEquals(25, state.currentTemperature);
+        Assert.assertEquals(25, state.currentTemperature.intValue());
 
         // verify the 1st request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
