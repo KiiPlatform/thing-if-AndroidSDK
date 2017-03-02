@@ -190,7 +190,7 @@ public class CommandTest {
 
         // test retrieve action by alias
         List<AliasAction<AirConditionerActions>> foundActions =
-                command.getAction(alias1, AirConditionerActions.class);
+                command.getAliasAction(alias1, AirConditionerActions.class);
         Assert.assertEquals(2, foundActions.size());
         Assert.assertEquals(alias1, foundActions.get(0).getAlias());
         Assert.assertEquals(true, foundActions.get(0).getAction().isPower().booleanValue());
@@ -200,7 +200,7 @@ public class CommandTest {
         Assert.assertNull(foundActions.get(1).getAction().getPresetTemperature());
 
         List<AliasAction<NewAction>> foundActions2 =
-                command.getAction("NewAlias", NewAction.class);
+                command.getAliasAction("NewAlias", NewAction.class);
         Assert.assertEquals(0, foundActions2.size());
 
         // test retrieve action result by alias and acton name
