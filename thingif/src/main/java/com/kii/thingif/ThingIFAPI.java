@@ -36,6 +36,8 @@ import com.kii.thingif.internal.gson.AliasActionAdapter;
 import com.kii.thingif.internal.gson.JSONObjectAdapter;
 import com.kii.thingif.internal.gson.PredicateAdapter;
 import com.kii.thingif.internal.gson.ThingIFAPIAdapter;
+import com.kii.thingif.query.AggregatedResultAdapter;
+import com.kii.thingif.internal.gson.GroupedHistoryStatesQueryAdapter;
 import com.kii.thingif.trigger.TriggeredServerCodeResultAdapter;
 import com.kii.thingif.internal.gson.TypedIDAdapter;
 import com.kii.thingif.internal.http.IoTRestClient;
@@ -2059,11 +2061,44 @@ public class ThingIFAPI implements Parcelable {
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
      * @throws BadRequestException Thrown if timeRange of query is over 60 data grouping intervals.
+     * @throws UnregisteredAliasException Thrown when alias cannot be handled.
      */
     public <T extends Number, S extends TargetState> List<AggregatedResult<T, S>> aggregate(
             @NonNull GroupedHistoryStatesQuery groupedQuery,
             @NonNull Aggregation aggregation) throws ThingIFException {
-        //TODO: // FIXME: 12/21/16 implement the logic
-        return new ArrayList<>();
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
+        }
+        if (!this.stateTypes.containsKey(groupedQuery.getAlias())) {
+            throw new UnregisteredAliasException(groupedQuery.getAlias(), false);
+        }
+
+        Gson localGson = new GsonBuilder()
+                .registerTypeAdapter(GroupedHistoryStatesQuery.class,
+                        new GroupedHistoryStatesQueryAdapter(aggregation))
+                .registerTypeAdapter(AggregatedResult.class,
+                        new AggregatedResultAdapter(this.stateTypes.get(groupedQuery.getAlias())))
+                .create();
+
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/states/aliases/{2}/query",
+                this.app.getAppID(), this.target.getTypedID().toString(), groupedQuery.getAlias());
+        String url = Path.combine(this.app.getBaseUrl(), path);
+        Map<String, String> headers = this.newHeader();
+        JSONObject requestBody = JsonUtils.newJson(localGson.toJson(groupedQuery));
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers,
+                MediaTypes.MEDIA_TYPE_TRAIT_STATE_QUERY_REQUEST, requestBody);
+        JSONObject responseBody = this.restClient.sendRequest(request);
+        JSONArray results = responseBody.optJSONArray("results");
+
+        List<AggregatedResult<T, S>> retList = new ArrayList<>();
+        if (results != null) {
+            for (int i = 0; i < results.length(); ++i) {
+                JSONObject result = results.optJSONObject(i);
+                if (result != null) {
+                    retList.add(localGson.fromJson(result.toString(), AggregatedResult.class));
+                }
+            }
+        }
+        return retList;
     }
 }
