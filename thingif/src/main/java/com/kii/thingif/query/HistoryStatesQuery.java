@@ -4,14 +4,16 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.google.gson.annotations.SerializedName;
 import com.kii.thingif.clause.query.QueryClause;
 
 public class HistoryStatesQuery {
 
-    private @NonNull String alias;
-    private @NonNull QueryClause clause;
+    private transient @NonNull String alias;
+    private transient @NonNull QueryClause clause;
     private @Nullable String firmwareVersion;
     private @Nullable Integer bestEffortLimit;
+    @SerializedName("paginationKey")
     private @Nullable String nextPaginationKey;
 
     private transient volatile int hashCode; // cached hashcode for performance

@@ -2027,13 +2027,17 @@ public class ThingIFAPI implements Parcelable {
      * Query history states.
      * @param query Instance of {@link HistoryStatesQuery}.
      * @param <S> Type of subclass of {@link TargetState}.
+     * @param classOfState Class of target state.
      * @return Pair instance. First element is list of target state.
      *  Second element is next pagination key.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws UnregisteredAliasException Thrown when the returned response contains alias that cannot be handled.
+     * @throws ClassCastException Thrown when S is different with TargetState registered for query.alias.
      */
     public <S extends TargetState> Pair<List<HistoryState<S>>, String> query(
-            @NonNull HistoryStatesQuery query) throws ThingIFException{
+            @NonNull HistoryStatesQuery query,
+            @NonNull Class<S> classOfState) throws ThingIFException{
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
@@ -2044,21 +2048,23 @@ public class ThingIFAPI implements Parcelable {
         if (!this.stateTypes.containsKey(query.getAlias())) {
             throw new UnregisteredAliasException(query.getAlias(), false);
         }
-        Class<? extends TargetState> stateClass = this.stateTypes.get(query.getAlias());
+        Class<? extends TargetState> stateClass =
+                this.stateTypes.get(query.getAlias()).asSubclass(classOfState);
 
         String path =  MessageFormat.format("/thing-if/apps/{0}/targets/{1}/states/aliases/{2}/query",
                 this.app.getAppID(), this.target.getTypedID().toString(), query.getAlias());
         String url = Path.combine(this.app.getBaseUrl(), path);
         Map<String, String> headers = this.newHeader();
-        JSONObject requestBody = new JSONObject();
 
-        JSONObject queryObject =
+        JSONObject requestBody =
+                JsonUtils.newJson(this.gson.toJson(query, HistoryStatesQuery.class));
+
+        JSONObject clauseObject =
                 JsonUtils.newJson(this.gson.toJson(query.getClause(), QueryClause.class));
         try {
-            requestBody.put("query", queryObject);
-            if (query.getFirmwareVersion() != null) {
-                requestBody.put("firmwareVersion", query.getFirmwareVersion());
-            }
+            requestBody.put(
+                    "query",
+                    new JSONObject().put("clause", clauseObject));
         }catch (JSONException e) {
             // never happen
             throw new RuntimeException(e);
@@ -2071,13 +2077,6 @@ public class ThingIFAPI implements Parcelable {
                 MediaTypes.MEDIA_TYPE_QUERY_HISTORY_STATE,
                 requestBody);
 
-        if (query.getBestEffortLimit() != null &&
-                query.getBestEffortLimit() > 0) {
-            request.addQueryParameter("bestEffortLimit", query.getBestEffortLimit());
-        }
-        if (!TextUtils.isEmpty(query.getNextPaginationKey())) {
-            request.addQueryParameter("paginationKey", query.getNextPaginationKey());
-        }
         JSONObject responseBody = this.restClient.sendRequest(request);
         String nextPaginationKey = responseBody.optString("nextPaginationKey", null);
         JSONArray statesArray = responseBody.optJSONArray("results");
@@ -2087,17 +2086,9 @@ public class ThingIFAPI implements Parcelable {
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(HistoryState.class, new HistoryStateAdapter(stateClass))
                     .create();
-            try {
-                for (int i = 0; i < statesArray.length(); i++) {
-                    JSONObject stateJson = statesArray.optJSONObject(i);
-                    states.add(gson.fromJson(stateJson.toString(), HistoryState.class));
-                }
-            }catch (JsonParseException ex) {
-                if (ex.getCause() instanceof ThingIFException) {
-                    throw (ThingIFException)ex.getCause();
-                }else{
-                    throw ex;
-                }
+            for (int i = 0; i < statesArray.length(); i++) {
+                JSONObject stateJson = statesArray.optJSONObject(i);
+                states.add(gson.fromJson(stateJson.toString(), HistoryState.class));
             }
         }
         return new Pair<>(states, nextPaginationKey);
