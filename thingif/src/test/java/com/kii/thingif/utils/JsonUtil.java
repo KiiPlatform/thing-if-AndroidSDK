@@ -2,6 +2,7 @@ package com.kii.thingif.utils;
 
 import com.kii.thingif.ServerError;
 import com.kii.thingif.actions.ToJSON;
+import com.kii.thingif.clause.query.AllClause;
 import com.kii.thingif.clause.query.AndClauseInQuery;
 import com.kii.thingif.clause.query.EqualsClauseInQuery;
 import com.kii.thingif.clause.query.NotEqualsClauseInQuery;
@@ -18,6 +19,8 @@ import com.kii.thingif.command.ActionResult;
 import com.kii.thingif.command.AliasAction;
 import com.kii.thingif.command.AliasActionResult;
 import com.kii.thingif.command.Command;
+import com.kii.thingif.query.HistoryState;
+import com.kii.thingif.states.StateToJson;
 import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.ScheduleOncePredicate;
 import com.kii.thingif.trigger.SchedulePredicate;
@@ -310,11 +313,24 @@ public class JsonUtil {
                 return new JSONObject()
                         .put("type", "or")
                         .put("clauses", clauses);
-            }else{
+            }else if (clause instanceof AllClause) {
+                return new JSONObject().put("type", "all");
+            } else {
                 throw new RuntimeException("not support trigger clause");
             }
         }catch (JSONException ex) {
             throw new RuntimeException(ex);
+        }
+    }
+
+    public static JSONObject historyStateToJson(HistoryState historyState) {
+        try{
+
+            JSONObject ret = ((StateToJson)historyState.getState()).toJSONObject();
+            ret.put("_created", historyState.getCreatedAt().getTime());
+            return ret;
+        }catch (JSONException e) {
+            throw new RuntimeException(e);
         }
     }
 }
