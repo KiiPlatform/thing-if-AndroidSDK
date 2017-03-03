@@ -73,7 +73,7 @@ public class QueryUngroupedHistoryStateTest extends ThingIFAPITestBase {
                 .setFirmwareVersion("v1")
                 .build();
 
-        Pair<List<HistoryState<AirConditionerState>>, String> result = api.query(query, AirConditionerState.class);
+        Pair<List<HistoryState<AirConditionerState>>, String> result = api.query(query);
 
         // verify result
         Assert.assertEquals("100/3", result.second);
@@ -126,7 +126,7 @@ public class QueryUngroupedHistoryStateTest extends ThingIFAPITestBase {
                 .setNextPaginationKey("100/2")
                 .setFirmwareVersion("v1")
                 .build();
-        api.query(query, AirConditionerState.class);
+        api.query(query);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -134,7 +134,7 @@ public class QueryUngroupedHistoryStateTest extends ThingIFAPITestBase {
         Target target = new StandaloneThing("thing1", "vendor-thing-1", "dummyToken");
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         ThingIFAPIUtils.setTarget(api, target);
-        api.query(null, AirConditionerState.class);
+        api.query((HistoryStatesQuery) null);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -146,23 +146,6 @@ public class QueryUngroupedHistoryStateTest extends ThingIFAPITestBase {
                 .setNextPaginationKey("100/2")
                 .setFirmwareVersion("v1")
                 .build();
-        api.query(query, AirConditionerState.class);
-    }
-
-    @Test(expected = ClassCastException.class)
-    public void query_with_diff_sate_ClassCastException_should_thrown_Test() throws Exception {
-        Target target = new StandaloneThing("thing1", "vendor-thing-1", "dummyToken");
-
-        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
-        ThingIFAPIUtils.setTarget(api, target);
-
-        HistoryStatesQuery query = HistoryStatesQuery.Builder
-                .newBuilder(ALIAS1, new AllClause())
-                .setBestEffortLimit(5)
-                .setNextPaginationKey("100/2")
-                .setFirmwareVersion("v1")
-                .build();
-
-        api.query(query, HumidityState.class);
+        api.query(query);
     }
 }

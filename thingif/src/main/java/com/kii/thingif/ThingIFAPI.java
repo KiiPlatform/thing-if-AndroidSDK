@@ -2027,17 +2027,14 @@ public class ThingIFAPI implements Parcelable {
      * Query history states.
      * @param query Instance of {@link HistoryStatesQuery}.
      * @param <S> Type of subclass of {@link TargetState}.
-     * @param classOfState Class of target state.
      * @return Pair instance. First element is list of target state.
      *  Second element is next pagination key.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
      * @throws UnregisteredAliasException Thrown when the returned response contains alias that cannot be handled.
-     * @throws ClassCastException Thrown when S is different with TargetState registered for query.alias.
      */
     public <S extends TargetState> Pair<List<HistoryState<S>>, String> query(
-            @NonNull HistoryStatesQuery query,
-            @NonNull Class<S> classOfState) throws ThingIFException{
+            @NonNull HistoryStatesQuery query) throws ThingIFException{
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
@@ -2048,8 +2045,8 @@ public class ThingIFAPI implements Parcelable {
         if (!this.stateTypes.containsKey(query.getAlias())) {
             throw new UnregisteredAliasException(query.getAlias(), false);
         }
-        Class<? extends TargetState> stateClass =
-                this.stateTypes.get(query.getAlias()).asSubclass(classOfState);
+
+        Class<? extends TargetState> stateClass = this.stateTypes.get(query.getAlias());
 
         String path =  MessageFormat.format("/thing-if/apps/{0}/targets/{1}/states/aliases/{2}/query",
                 this.app.getAppID(), this.target.getTypedID().toString(), query.getAlias());
