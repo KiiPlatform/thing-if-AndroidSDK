@@ -36,7 +36,8 @@ public class AggregatedResultAdapter<T extends Number, S extends TargetState>
         JsonObject json = jsonElement.getAsJsonObject();
 
         if (!json.has("range") || !json.has("value")) {
-            throw new JsonParseException("no neceessary fields.");
+            throw new JsonParseException(
+                    "json doesn't contain both of 2 necessary fields: range and value.");
         }
 
         Gson gson = new GsonBuilder()
@@ -54,6 +55,6 @@ public class AggregatedResultAdapter<T extends Number, S extends TargetState>
                 aggregateObjects.add(gson.fromJson(objects.get(i), HistoryState.class));
             }
         }
-        return new AggregatedResult(range, value, aggregateObjects);
+        return new AggregatedResult<T, S>(range, value, aggregateObjects);
     }
 }

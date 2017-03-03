@@ -3,10 +3,13 @@ package com.kii.thingif.query;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Represent aggregation
  */
 public class Aggregation {
+    @SerializedName("type")
     private @NonNull final FunctionType function;
     private @NonNull final String field;
     private @NonNull final FieldType fieldType;

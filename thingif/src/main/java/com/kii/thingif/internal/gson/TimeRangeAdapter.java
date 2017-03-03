@@ -24,7 +24,8 @@ public class TimeRangeAdapter implements JsonDeserializer<TimeRange> {
         JsonObject json = jsonElement.getAsJsonObject();
 
         if (!json.has("from") || !json.has("to")) {
-            throw new JsonParseException("no neceessary fields.");
+            throw new JsonParseException(
+                    "son doesn't contain both of 2 necessary fields: from and to.");
         }
 
         Date from = new Date(json.getAsJsonPrimitive("from").getAsLong());

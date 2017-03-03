@@ -20,7 +20,6 @@ public class GroupedHistoryStatesQueryAdapter implements JsonSerializer<GroupedH
 
     private Gson gson = new GsonBuilder()
             .registerTypeAdapter(QueryClause.class, new QueryClauseAdapter())
-            .registerTypeAdapter(Aggregation.class, new AggregationAdapter())
             .create();
 
     private Aggregation aggregation;
