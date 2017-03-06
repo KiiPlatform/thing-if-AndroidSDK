@@ -70,7 +70,7 @@ public class GroupedHistoryStatesQuery {
 
         /**
          * Set firmware version for grouped query.
-         * @param firmwareVersion firmware version
+         * @param firmwareVersion older firmware version, which defined this alias.
          * @return Builder instance for chaining.
          */
         public Builder setFirmwareVersion(@Nullable String firmwareVersion) {
