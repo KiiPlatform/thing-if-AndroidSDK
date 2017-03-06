@@ -2074,10 +2074,21 @@ public class ThingIFAPI implements Parcelable {
                 MediaTypes.MEDIA_TYPE_QUERY_HISTORY_STATE,
                 requestBody);
 
-        JSONObject responseBody = this.restClient.sendRequest(request);
+        JSONObject responseBody;
+        List<HistoryState<S>> states = new ArrayList<>();
+
+        try {
+            responseBody = this.restClient.sendRequest(request);
+        }catch (ConflictException e) {
+            // when thing never update its state to server, will throw this exception
+            if (e.getErrorCode().equals("STATE_HISTORY_NOT_AVAILABLE")) {
+                return new Pair<>(states, null);
+            } else {
+                throw e;
+            }
+        }
         String nextPaginationKey = responseBody.optString("nextPaginationKey", null);
         JSONArray statesArray = responseBody.optJSONArray("results");
-        List<HistoryState<S>> states = new ArrayList<>();
 
         if (statesArray != null) {
             Gson gson = new GsonBuilder()
