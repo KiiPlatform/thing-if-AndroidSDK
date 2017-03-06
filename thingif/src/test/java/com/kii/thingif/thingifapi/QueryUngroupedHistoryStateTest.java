@@ -20,6 +20,7 @@ import com.kii.thingif.query.HistoryStatesQuery;
 import com.kii.thingif.states.AirConditionerState;
 import com.kii.thingif.thingifapi.utils.ThingIFAPIUtils;
 import com.kii.thingif.utils.JsonUtil;
+import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
@@ -382,6 +383,55 @@ public class QueryUngroupedHistoryStateTest extends ThingIFAPITestBase {
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ConflictException e) {
         }
+        // verify the request
+        RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
+        junit.framework.Assert.assertEquals(
+                MessageFormat.format("{0}/targets/{1}/states/aliases/{2}/query",
+                        BASE_PATH,
+                        target.getTypedID().toString(),
+                        ALIAS1),
+                request1.getPath());
+        Assert.assertEquals("POST", request1.getMethod());
+
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
+        expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders.put("Authorization", "Bearer " + this.defaultApi.getOwner().getAccessToken());
+        expectedRequestHeaders.put("Content-Type", "application/vnd.kii.TraitStateQueryRequest+json");
+        this.assertRequestHeader(expectedRequestHeaders, request1);
+
+        JSONObject expectedRequestBody = new JSONObject();
+        expectedRequestBody.put(
+                "query",
+                new JSONObject()
+                        .put("clause", JsonUtil.queryClauseToJson(new AllClause())));
+        expectedRequestBody.putOpt("firmwareVersion", query.getFirmwareVersion());
+        expectedRequestBody.putOpt("paginationKey", query.getNextPaginationKey());
+        expectedRequestBody.putOpt("bestEffortLimit", query.getBestEffortLimit());
+        this.assertRequestBody(expectedRequestBody, request1);
+    }
+
+    @Test
+    public void query_ungrouped_historyStates_noStatesInServer_409ErrorTest() throws Exception {
+        HistoryStatesQuery query = getDefaultQuery();
+        Target target = this.defaultApi.getTarget();
+        Assert.assertNotNull(target);
+
+        MockResponse response = new MockResponse();
+        response.setResponseCode(409);
+        String responseBody =
+                "{\n" +
+                "  \"errorCode\": \"STATE_HISTORY_NOT_AVAILABLE\",\n" +
+                "  \"message\": \"Time series bucket does not exist\"\n" +
+                "}";
+        response.setBody(responseBody);
+        this.server.enqueue(response);
+
+        Pair<List<HistoryState<AirConditionerState>>, String> results =
+                this.defaultApi.query(query);
+        Assert.assertEquals(0, results.first.size());
+        Assert.assertNull(results.second);
+
         // verify the request
         RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
         junit.framework.Assert.assertEquals(
