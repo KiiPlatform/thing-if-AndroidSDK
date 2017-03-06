@@ -2071,7 +2071,7 @@ public class ThingIFAPI implements Parcelable {
                 url,
                 IoTRestRequest.Method.POST,
                 headers,
-                MediaTypes.MEDIA_TYPE_QUERY_HISTORY_STATE,
+                MediaTypes.MEDIA_TYPE_TRAIT_STATE_QUERY_REQUEST,
                 requestBody);
 
         JSONObject responseBody;
