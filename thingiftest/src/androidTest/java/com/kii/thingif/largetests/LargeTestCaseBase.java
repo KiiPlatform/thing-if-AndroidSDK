@@ -105,15 +105,16 @@ public class LargeTestCaseBase {
 
     protected void updateTargetState(Target thing, TargetState[] states) {
         KiiCredentials credentials = new KiiCredentials(thing.getAccessToken());
+        KiiRest rest = new KiiRest(
+                this.server.getAppID(),
+                this.server.getAppKey(),
+                this.server.getBaseUrl()+"/api",
+                this.server.getBaseUrl()+"/thing-if", null);
+        rest.setCredentials(credentials);
         KiiThingIfTargetStatesResource targetStates =
                 new KiiThingIfTargetStatesResource(
                         new KiiThingIfTargetResource(
-                                new KiiThingIfResource(
-                                        this.server.getAppID(),
-                                        this.server.getAppKey(),
-                                        this.server.getBaseUrl(),
-                                        credentials,
-                                        KiiDefaultLogger.INSTANCE),
+                                rest.thingif(),
                                 thing.getTypedID().toString()
                         ));
         try {
@@ -130,7 +131,7 @@ public class LargeTestCaseBase {
                     throw new RuntimeException("not supported state for test");
                 }
             }
-            targetStates.save(aliasState);
+            targetStates.save(aliasState, true);
         }catch (KiiRestException e) {
             throw new RuntimeException(e);
         }
