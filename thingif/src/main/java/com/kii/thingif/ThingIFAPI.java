@@ -2081,7 +2081,7 @@ public class ThingIFAPI implements Parcelable {
             responseBody = this.restClient.sendRequest(request);
         }catch (ConflictException e) {
             // when thing never update its state to server, server returns this error.
-            if (e.getErrorCode().equals("STATE_HISTORY_NOT_AVAILABLE")) {
+            if (e.getErrorCode() != null && e.getErrorCode().equals("STATE_HISTORY_NOT_AVAILABLE")) {
                 return new Pair<>(states, null);
             } else {
                 throw e;
