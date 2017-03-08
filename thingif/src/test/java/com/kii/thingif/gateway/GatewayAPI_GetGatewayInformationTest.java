@@ -1,30 +1,29 @@
 package com.kii.thingif.gateway;
 
 import android.net.Uri;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
 
 import com.kii.thingif.KiiApp;
 import com.kii.thingif.exception.UnauthorizedException;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(RobolectricTestRunner.class)
 public class GatewayAPI_GetGatewayInformationTest extends GatewayAPITestBase {
     @Test
     public void getGatewayInformationTest() throws Exception {
         String vendorThingID = UUID.randomUUID().toString();
 
-        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
+        GatewayAPI api = this.createGatewayAPIWithLoggedIn();
         this.addMockResponseForGetGatewayInformation(200, vendorThingID);
         GatewayInformation information = api.getGatewayInformation();
 
@@ -32,7 +31,7 @@ public class GatewayAPI_GetGatewayInformationTest extends GatewayAPITestBase {
         org.junit.Assert.assertEquals("/gateway-info", request.getPath());
         org.junit.Assert.assertEquals("GET", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("Authorization", "Bearer " + ACCESS_TOKEN);
         this.assertRequestHeader(expectedRequestHeaders, request);
 
@@ -42,14 +41,14 @@ public class GatewayAPI_GetGatewayInformationTest extends GatewayAPITestBase {
     public void getGatewayInformationNoLoggedInTest() throws Exception {
         KiiApp app = getApp(APP_ID, APP_KEY);
         Uri gatewayAddress = getGatewayAddress();
-        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
+        GatewayAPI api = new GatewayAPI(RuntimeEnvironment.application.getApplicationContext(), app, gatewayAddress);
         api.getGatewayInformation();
     }
     @Test
     public void getGatewayInformation401ErrorTest() throws Exception {
         String vendorThingID = UUID.randomUUID().toString();
 
-        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
+        GatewayAPI api = this.createGatewayAPIWithLoggedIn();
         this.addEmptyMockResponse(401);
         try {
             api.getGatewayInformation();
@@ -61,7 +60,7 @@ public class GatewayAPI_GetGatewayInformationTest extends GatewayAPITestBase {
         org.junit.Assert.assertEquals("/gateway-info", request.getPath());
         org.junit.Assert.assertEquals("GET", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("Authorization", "Bearer " + ACCESS_TOKEN);
         this.assertRequestHeader(expectedRequestHeaders, request);
     }
