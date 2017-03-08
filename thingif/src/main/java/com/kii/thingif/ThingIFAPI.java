@@ -2159,10 +2159,22 @@ public class ThingIFAPI implements Parcelable {
         JSONObject requestBody = JsonUtils.newJson(localGson.toJson(groupedQuery));
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers,
                 MediaTypes.MEDIA_TYPE_TRAIT_STATE_QUERY_REQUEST, requestBody);
-        JSONObject responseBody = this.restClient.sendRequest(request);
-        JSONArray results = responseBody.optJSONArray("results");
 
         List<AggregatedResult<T, S>> retList = new ArrayList<>();
+
+        JSONObject responseBody;
+        try {
+            responseBody = this.restClient.sendRequest(request);
+        }catch (ConflictException e) {
+            // when thing never update its state to server, server returns this error.
+            if (e.getErrorCode() != null && e.getErrorCode().equals("STATE_HISTORY_NOT_AVAILABLE")) {
+                return retList;
+            } else {
+                throw e;
+            }
+        }
+
+        JSONArray results = responseBody.optJSONArray("results");
         if (results != null) {
             for (int i = 0; i < results.length(); ++i) {
                 JSONObject result = results.optJSONObject(i);

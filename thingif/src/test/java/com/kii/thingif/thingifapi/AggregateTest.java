@@ -252,6 +252,52 @@ public class AggregateTest extends ThingIFAPITestBase {
         this.assertRequestBody(requestBody, request);
     }
 
+    @Test
+    public void successNoStatesInServerTest() throws Exception {
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        String triggerID = "trigger-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        TimeRange range = new TimeRange(new Date(1), new Date(100));
+        EqualsClauseInQuery clause = new EqualsClauseInQuery("dummy", "value");
+        GroupedHistoryStatesQuery query = GroupedHistoryStatesQuery.Builder
+                .newBuilder(ALIAS1, range)
+                .setClause(clause)
+                .build();
+        Aggregation aggregation = Aggregation.newMaxAggregation("100", Aggregation.FieldType.INTEGER);
+
+        MockResponse response = new MockResponse().setResponseCode(409);
+        response.setBody(
+                "{" +
+                    "\"errorCode\": \"STATE_HISTORY_NOT_AVAILABLE\"," +
+                    "\"message\": \"Time series bucket does not exist\"" +
+                "}");
+        this.server.enqueue(response);
+
+        ThingIFAPI api = createDefaultThingIFAPIBuilder(this.context, APP_ID, APP_KEY)
+                .setTarget(target)
+                .build();
+
+        List<AggregatedResult<Integer, AirConditionerState>> results = api.aggregate(query, aggregation, Integer.class);
+
+        Assert.assertNotNull(results);
+        Assert.assertEquals(0, results.size());
+
+        // verify the request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/states/aliases/" + ALIAS1 + "/query",
+                request.getPath());
+        Assert.assertEquals("POST", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
+        expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders.put("Content-Type", "application/vnd.kii.TraitStateQueryRequest+json");
+        expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        this.assertRequestHeader(expectedRequestHeaders, request);
+    }
+
     @Test(expected = IllegalStateException.class)
     public void errorNoTargetTest() throws Exception {
         TimeRange range = new TimeRange(new Date(1), new Date(100));
