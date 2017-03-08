@@ -1,8 +1,6 @@
 package com.kii.thingif.gateway;
 
 import android.net.Uri;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
 
 import com.google.gson.JsonObject;
 import com.kii.thingif.KiiApp;
@@ -16,20 +14,22 @@ import com.squareup.okhttp.mockwebserver.RecordedRequest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(RobolectricTestRunner.class)
 public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBase {
     @Test
     public void notifyOnboardingCompletionTest() throws Exception {
         String thingID = "th." + UUID.randomUUID().toString();
         String vendorThingID = UUID.randomUUID().toString();
 
-        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
+        GatewayAPI api = this.createGatewayAPIWithLoggedIn();
 
         this.addEmptyMockResponse(204);
         api.notifyOnboardingCompletion(new EndNode(thingID, vendorThingID, null));
@@ -38,7 +38,7 @@ public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBas
         Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/end-nodes/VENDOR_THING_ID:" + vendorThingID, request.getPath());
         Assert.assertEquals("PUT", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("Authorization", "Bearer " + ACCESS_TOKEN);
         expectedRequestHeaders.put("Content-Type", "application/json");
         this.assertRequestHeader(expectedRequestHeaders, request);
@@ -54,25 +54,24 @@ public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBas
 
         KiiApp app = getApp(APP_ID, APP_KEY);
         Uri gatewayAddress = getGatewayAddress();
-        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
+        GatewayAPI api = new GatewayAPI(RuntimeEnvironment.application.getApplicationContext(), app, gatewayAddress);
         api.notifyOnboardingCompletion(new EndNode(thingID, vendorThingID, null));
     }
     @Test(expected = IllegalArgumentException.class)
     public void notifyOnboardingCompletionWithNullThingIDTest() throws Exception {
-        String thingID = null;
         String vendorThingID =  UUID.randomUUID().toString();
 
-        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
+        GatewayAPI api = this.createGatewayAPIWithLoggedIn();
 
         this.addEmptyMockResponse(204);
-        api.notifyOnboardingCompletion(new EndNode(thingID, vendorThingID, null));
+        api.notifyOnboardingCompletion(new EndNode(null, vendorThingID, null));
     }
     @Test(expected = IllegalArgumentException.class)
     public void notifyOnboardingCompletionWithEmptyThingIDTest() throws Exception {
         String thingID = "";
         String vendorThingID = UUID.randomUUID().toString();
 
-        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
+        GatewayAPI api = this.createGatewayAPIWithLoggedIn();
 
         this.addEmptyMockResponse(204);
         api.notifyOnboardingCompletion(new EndNode(thingID, vendorThingID, null));
@@ -82,7 +81,7 @@ public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBas
         String thingID = "th." + UUID.randomUUID().toString();
         String vendorThingID = null;
 
-        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
+        GatewayAPI api = this.createGatewayAPIWithLoggedIn();
 
         this.addEmptyMockResponse(204);
         api.notifyOnboardingCompletion(new EndNode(thingID, vendorThingID, null));
@@ -92,7 +91,7 @@ public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBas
         String thingID = "th." + UUID.randomUUID().toString();
         String vendorThingID = "";
 
-        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
+        GatewayAPI api = this.createGatewayAPIWithLoggedIn();
 
         this.addEmptyMockResponse(204);
         api.notifyOnboardingCompletion(new EndNode(thingID, vendorThingID, null));
@@ -102,7 +101,7 @@ public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBas
         String thingID = "th." + UUID.randomUUID().toString();
         String vendorThingID = UUID.randomUUID().toString();
 
-        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
+        GatewayAPI api = this.createGatewayAPIWithLoggedIn();
 
         this.addEmptyMockResponse(400);
         try {
@@ -115,7 +114,7 @@ public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBas
         Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/end-nodes/VENDOR_THING_ID:" + vendorThingID, request.getPath());
         Assert.assertEquals("PUT", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("Authorization", "Bearer " + ACCESS_TOKEN);
         expectedRequestHeaders.put("Content-Type", "application/json");
         this.assertRequestHeader(expectedRequestHeaders, request);
@@ -129,7 +128,7 @@ public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBas
         String thingID = "th." + UUID.randomUUID().toString();
         String vendorThingID = UUID.randomUUID().toString();
 
-        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
+        GatewayAPI api = this.createGatewayAPIWithLoggedIn();
 
         this.addEmptyMockResponse(401);
         try {
@@ -142,7 +141,7 @@ public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBas
         Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/end-nodes/VENDOR_THING_ID:" + vendorThingID, request.getPath());
         Assert.assertEquals("PUT", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("Authorization", "Bearer " + ACCESS_TOKEN);
         expectedRequestHeaders.put("Content-Type", "application/json");
         this.assertRequestHeader(expectedRequestHeaders, request);
@@ -156,7 +155,7 @@ public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBas
         String thingID = "th." + UUID.randomUUID().toString();
         String vendorThingID = UUID.randomUUID().toString();
 
-        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
+        GatewayAPI api = this.createGatewayAPIWithLoggedIn();
 
         this.addEmptyMockResponse(404);
         try {
@@ -169,7 +168,7 @@ public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBas
         Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/end-nodes/VENDOR_THING_ID:" + vendorThingID, request.getPath());
         Assert.assertEquals("PUT", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("Authorization", "Bearer " + ACCESS_TOKEN);
         expectedRequestHeaders.put("Content-Type", "application/json");
         this.assertRequestHeader(expectedRequestHeaders, request);
@@ -183,7 +182,7 @@ public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBas
         String thingID = "th." + UUID.randomUUID().toString();
         String vendorThingID = UUID.randomUUID().toString();
 
-        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
+        GatewayAPI api = this.createGatewayAPIWithLoggedIn();
 
         this.addEmptyMockResponse(409);
         try {
@@ -196,7 +195,7 @@ public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBas
         Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/end-nodes/VENDOR_THING_ID:" + vendorThingID, request.getPath());
         Assert.assertEquals("PUT", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("Authorization", "Bearer " + ACCESS_TOKEN);
         expectedRequestHeaders.put("Content-Type", "application/json");
         this.assertRequestHeader(expectedRequestHeaders, request);
@@ -210,7 +209,7 @@ public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBas
         String thingID = "th." + UUID.randomUUID().toString();
         String vendorThingID = UUID.randomUUID().toString();
 
-        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
+        GatewayAPI api = this.createGatewayAPIWithLoggedIn();
 
         this.addEmptyMockResponse(503);
         try {
@@ -223,7 +222,7 @@ public class GatewayAPI_NotifyOnboardingCompletionTest extends GatewayAPITestBas
         Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/end-nodes/VENDOR_THING_ID:" + vendorThingID, request.getPath());
         Assert.assertEquals("PUT", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("Authorization", "Bearer " + ACCESS_TOKEN);
         expectedRequestHeaders.put("Content-Type", "application/json");
         this.assertRequestHeader(expectedRequestHeaders, request);
