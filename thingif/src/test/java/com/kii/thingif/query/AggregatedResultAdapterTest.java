@@ -45,7 +45,7 @@ public class AggregatedResultAdapterTest {
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(
                         AggregatedResult.class,
-                        new AggregatedResultAdapter<Integer, AirConditionerState>(AirConditionerState.class))
+                        new AggregatedResultAdapter(AirConditionerState.class, Integer.class))
                 .registerTypeAdapter(TimeRange.class, new TimeRangeAdapter())
                 .create();
 
@@ -53,8 +53,7 @@ public class AggregatedResultAdapterTest {
 
         Assert.assertNotNull(actual);
         Assert.assertEquals(expect.getTimeRange(), actual.getTimeRange());
-        // TODO: type mismatch. Integer and LazilyParsedNumber.
-        //Assert.assertEquals(expect.getValue(), actual.getValue());
+        Assert.assertEquals(expect.getValue(), actual.getValue());
         Assert.assertEquals(expect.getAggregatedObjects(), actual.getAggregatedObjects());
     }
 }

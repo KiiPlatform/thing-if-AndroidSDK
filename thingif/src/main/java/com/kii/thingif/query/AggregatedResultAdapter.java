@@ -19,9 +19,11 @@ import java.util.List;
 public class AggregatedResultAdapter<T extends Number, S extends TargetState>
         implements JsonDeserializer<AggregatedResult<T, S>> {
     private Class<S> stateClass;
+    private Class<T> fieldClass;
 
-    public AggregatedResultAdapter(Class<S> cls) {
-        this.stateClass = cls;
+    public AggregatedResultAdapter(Class<S> stateClass, Class<T> fieldClass) {
+        this.stateClass = stateClass;
+        this.fieldClass = fieldClass;
     }
 
     @Override
@@ -46,7 +48,7 @@ public class AggregatedResultAdapter<T extends Number, S extends TargetState>
                 .create();
 
         TimeRange range = gson.fromJson(json.getAsJsonObject("range"), TimeRange.class);
-        T value = (T)json.getAsJsonPrimitive("value").getAsNumber();
+        T value = gson.fromJson(json.getAsJsonPrimitive("value"), this.fieldClass);
         List<HistoryState<S>> aggregateObjects = null;
         if (json.has("objects")) {
             aggregateObjects = new ArrayList<>();

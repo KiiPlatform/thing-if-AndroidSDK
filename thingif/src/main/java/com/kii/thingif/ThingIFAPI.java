@@ -2149,7 +2149,7 @@ public class ThingIFAPI implements Parcelable {
                 .registerTypeAdapter(GroupedHistoryStatesQuery.class,
                         new GroupedHistoryStatesQueryAdapter(aggregation))
                 .registerTypeAdapter(AggregatedResult.class,
-                        new AggregatedResultAdapter(this.stateTypes.get(groupedQuery.getAlias())))
+                        new AggregatedResultAdapter(this.stateTypes.get(groupedQuery.getAlias()), fieldClass))
                 .create();
 
         String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/states/aliases/{2}/query",

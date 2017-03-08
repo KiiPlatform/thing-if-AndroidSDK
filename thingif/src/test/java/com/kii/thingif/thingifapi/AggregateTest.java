@@ -130,7 +130,7 @@ public class AggregateTest extends ThingIFAPITestBase {
                 .setTarget(target)
                 .build();
 
-        List<AggregatedResult<Integer, AirConditionerState>> results = api.aggregate(query, aggregation);
+        List<AggregatedResult<Integer, AirConditionerState>> results = api.aggregate(query, aggregation, Integer.class);
 
         Assert.assertNotNull(results);
         Assert.assertEquals(1, results.size());
@@ -221,7 +221,7 @@ public class AggregateTest extends ThingIFAPITestBase {
                 .setTarget(target)
                 .build();
 
-        List<AggregatedResult<Integer, AirConditionerState>> results = api.aggregate(query, aggregation);
+        List<AggregatedResult<Integer, AirConditionerState>> results = api.aggregate(query, aggregation, Integer.class);
 
         Assert.assertNotNull(results);
         Assert.assertEquals(1, results.size());
@@ -264,7 +264,7 @@ public class AggregateTest extends ThingIFAPITestBase {
 
         ThingIFAPI api = createDefaultThingIFAPIBuilder(this.context, APP_ID, APP_KEY)
                 .build();
-        api.aggregate(query, aggregation);
+        api.aggregate(query, aggregation, Integer.class);
     }
 
     @Test(expected = UnregisteredAliasException.class)
@@ -285,7 +285,7 @@ public class AggregateTest extends ThingIFAPITestBase {
         ThingIFAPI api = createDefaultThingIFAPIBuilder(this.context, APP_ID, APP_KEY)
                 .setTarget(target)
                 .build();
-        api.aggregate(query, aggregation);
+        api.aggregate(query, aggregation, Integer.class);
     }
 
     @Test
@@ -310,7 +310,7 @@ public class AggregateTest extends ThingIFAPITestBase {
                 .build();
 
         try {
-            api.aggregate(query, aggregation);
+            api.aggregate(query, aggregation, Integer.class);
             Assert.fail("BadRequestException should be thrown");
         } catch (BadRequestException e) {
             // Expected.
@@ -354,7 +354,7 @@ public class AggregateTest extends ThingIFAPITestBase {
                 .build();
 
         try {
-            api.aggregate(query, aggregation);
+            api.aggregate(query, aggregation, Integer.class);
             Assert.fail("ForbiddenException should be thrown");
         } catch (ForbiddenException e) {
             // Expected.
@@ -398,7 +398,7 @@ public class AggregateTest extends ThingIFAPITestBase {
                 .build();
 
         try {
-            api.aggregate(query, aggregation);
+            api.aggregate(query, aggregation, Integer.class);
             Assert.fail("NotFoundException should be thrown");
         } catch (NotFoundException e) {
             // Expected.
@@ -442,7 +442,7 @@ public class AggregateTest extends ThingIFAPITestBase {
                 .build();
 
         try {
-            api.aggregate(query, aggregation);
+            api.aggregate(query, aggregation, Integer.class);
             Assert.fail("ConflictException should be thrown");
         } catch (ConflictException e) {
             // Expected.
@@ -486,7 +486,7 @@ public class AggregateTest extends ThingIFAPITestBase {
                 .build();
 
         try {
-            api.aggregate(query, aggregation);
+            api.aggregate(query, aggregation, Integer.class);
             Assert.fail("ServiceUnavailableException should be thrown");
         } catch (ServiceUnavailableException e) {
             // Expected.
