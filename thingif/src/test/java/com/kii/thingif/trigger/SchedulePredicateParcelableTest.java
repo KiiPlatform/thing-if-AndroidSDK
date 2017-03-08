@@ -1,17 +1,16 @@
 package com.kii.thingif.trigger;
 
 import android.os.Parcel;
-import android.support.test.runner.AndroidJUnit4;
 
 import com.kii.thingif.SmallTestBase;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
-@RunWith(AndroidJUnit4.class)
-public class SchedulePredicateParcelableTest extends SmallTestBase {
-
+@RunWith(RobolectricTestRunner.class)
+public class SchedulePredicateParcelableTest extends SmallTestBase{
     @Test
     public void parcelableTest() throws Exception {
         SchedulePredicate predicate = new SchedulePredicate("1 * * * *");
