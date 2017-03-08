@@ -2,15 +2,18 @@ package com.kii.thingif.query;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
+import com.google.gson.annotations.SerializedName;
 import com.kii.thingif.clause.query.QueryClause;
 
 public class HistoryStatesQuery {
 
-    private @NonNull String alias;
-    private @NonNull QueryClause clause;
+    private transient @NonNull String alias;
+    private transient @NonNull QueryClause clause;
     private @Nullable String firmwareVersion;
     private @Nullable Integer bestEffortLimit;
+    @SerializedName("paginationKey")
     private @Nullable String nextPaginationKey;
 
     private transient volatile int hashCode; // cached hashcode for performance
@@ -31,21 +34,21 @@ public class HistoryStatesQuery {
     public static class Builder {
 
         private @NonNull String alias;
-        private @Nullable QueryClause clause;
+        private @NonNull QueryClause clause;
         private @Nullable String firmwareVersion;
         private @Nullable Integer bestEffortLimit;
         private @Nullable String nextPaginationKey;
 
-        public Builder(@NonNull String alias){
+        private Builder(
+                @NonNull String alias,
+                @NonNull QueryClause clause){
             this.alias = alias;
-        }
-        public static Builder newBuilder(@NonNull String alias){
-            return new Builder(alias);
-        }
-
-        public Builder setClause(@NonNull QueryClause clause) {
             this.clause = clause;
-            return this;
+        }
+        public static Builder newBuilder(
+                @NonNull String alias,
+                @NonNull QueryClause clause){
+            return new Builder(alias, clause);
         }
 
         public Builder setFirmwareVersion(@Nullable String firmwareVersion) {
@@ -64,6 +67,12 @@ public class HistoryStatesQuery {
         }
 
         public HistoryStatesQuery build() {
+            if (TextUtils.isEmpty(this.alias)) {
+                throw new IllegalArgumentException("alias is null or empty");
+            }
+            if (this.clause == null) {
+                throw new IllegalArgumentException("clause is null or empty");
+            }
             return new HistoryStatesQuery(
                     this.alias,
                     this.clause,
@@ -79,7 +88,7 @@ public class HistoryStatesQuery {
         return this.alias;
     }
 
-    @Nullable
+    @NonNull
     public QueryClause getClause() {
         return this.clause;
     }
@@ -109,14 +118,6 @@ public class HistoryStatesQuery {
         }
         HistoryStatesQuery other = (HistoryStatesQuery) o;
 
-        if (this.clause != null) {
-            if (!this.clause.equals(other.clause)) {
-                return false;
-            }
-        } else if (other.clause != null) {
-            return false;
-        }
-
         if (this.firmwareVersion != null) {
             if (!this.firmwareVersion.equals(other.firmwareVersion)) {
                 return false;
@@ -141,7 +142,7 @@ public class HistoryStatesQuery {
             return false;
         }
 
-        return this.alias.equals(other.alias);
+        return this.alias.equals(other.alias) && this.clause.equals(other.clause);
     }
 
     @Override
@@ -150,7 +151,7 @@ public class HistoryStatesQuery {
         if (result == 0) {
             result = 17;
             result = 31 * result + this.alias.hashCode();
-            result = 31 * result + (this.clause != null ? this.clause.hashCode() : 0);
+            result = 31 * result + this.clause.hashCode();
             result = 31 * result + (this.firmwareVersion != null ? this.firmwareVersion.hashCode() : 0);
             result = 31 * result + (this.bestEffortLimit != null ? this.bestEffortLimit.hashCode() : 0);
             result = 31 * result + (this.nextPaginationKey != null ? this.nextPaginationKey.hashCode() : 0);

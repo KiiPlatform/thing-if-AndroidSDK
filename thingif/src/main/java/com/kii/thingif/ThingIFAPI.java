@@ -15,6 +15,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.kii.thingif.clause.query.QueryClause;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
 import com.kii.thingif.command.AliasActionResult;
@@ -33,8 +34,10 @@ import com.kii.thingif.gateway.EndNode;
 import com.kii.thingif.gateway.Gateway;
 import com.kii.thingif.gateway.PendingEndNode;
 import com.kii.thingif.internal.gson.AliasActionAdapter;
+import com.kii.thingif.internal.gson.HistoryStateAdapter;
 import com.kii.thingif.internal.gson.JSONObjectAdapter;
 import com.kii.thingif.internal.gson.PredicateAdapter;
+import com.kii.thingif.internal.gson.QueryClauseAdapter;
 import com.kii.thingif.internal.gson.ThingIFAPIAdapter;
 import com.kii.thingif.trigger.TriggeredServerCodeResultAdapter;
 import com.kii.thingif.internal.gson.TypedIDAdapter;
@@ -459,6 +462,9 @@ public class ThingIFAPI implements Parcelable {
                 .registerTypeAdapter(
                         TriggeredServerCodeResult.class,
                         new TriggeredServerCodeResultAdapter())
+                .registerTypeAdapter(
+                        QueryClause.class,
+                        new QueryClauseAdapter())
                 .create();
     }
     /**
@@ -2025,11 +2031,75 @@ public class ThingIFAPI implements Parcelable {
      *  Second element is next pagination key.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
+     * @throws UnregisteredAliasException Thrown when the returned response contains alias that cannot be handled.
      */
     public <S extends TargetState> Pair<List<HistoryState<S>>, String> query(
             @NonNull HistoryStatesQuery query) throws ThingIFException{
-        //TODO: // FIXME: 12/22/16 implement the logic
-        return null;
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
+        }
+        if (query == null) {
+            throw new IllegalArgumentException("query is null");
+        }
+
+        if (!this.stateTypes.containsKey(query.getAlias())) {
+            throw new UnregisteredAliasException(query.getAlias(), false);
+        }
+
+        Class<? extends TargetState> stateClass = this.stateTypes.get(query.getAlias());
+
+        String path =  MessageFormat.format("/thing-if/apps/{0}/targets/{1}/states/aliases/{2}/query",
+                this.app.getAppID(), this.target.getTypedID().toString(), query.getAlias());
+        String url = Path.combine(this.app.getBaseUrl(), path);
+        Map<String, String> headers = this.newHeader();
+
+        JSONObject requestBody =
+                JsonUtils.newJson(this.gson.toJson(query, HistoryStatesQuery.class));
+
+        JSONObject clauseObject =
+                JsonUtils.newJson(this.gson.toJson(query.getClause(), QueryClause.class));
+        try {
+            requestBody.put(
+                    "query",
+                    new JSONObject().put("clause", clauseObject));
+        }catch (JSONException e) {
+            // never happen
+            throw new RuntimeException(e);
+        }
+
+        IoTRestRequest request = new IoTRestRequest(
+                url,
+                IoTRestRequest.Method.POST,
+                headers,
+                MediaTypes.MEDIA_TYPE_TRAIT_STATE_QUERY_REQUEST,
+                requestBody);
+
+        JSONObject responseBody;
+        List<HistoryState<S>> states = new ArrayList<>();
+
+        try {
+            responseBody = this.restClient.sendRequest(request);
+        }catch (ConflictException e) {
+            // when thing never update its state to server, server returns this error.
+            if (e.getErrorCode() != null && e.getErrorCode().equals("STATE_HISTORY_NOT_AVAILABLE")) {
+                return new Pair<>(states, null);
+            } else {
+                throw e;
+            }
+        }
+        String nextPaginationKey = responseBody.optString("nextPaginationKey", null);
+        JSONArray statesArray = responseBody.optJSONArray("results");
+
+        if (statesArray != null) {
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(HistoryState.class, new HistoryStateAdapter(stateClass))
+                    .create();
+            for (int i = 0; i < statesArray.length(); i++) {
+                JSONObject stateJson = statesArray.optJSONObject(i);
+                states.add(gson.fromJson(stateJson.toString(), HistoryState.class));
+            }
+        }
+        return new Pair<>(states, nextPaginationKey);
     }
 
     /**

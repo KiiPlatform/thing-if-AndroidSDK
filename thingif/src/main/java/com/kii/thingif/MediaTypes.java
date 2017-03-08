@@ -13,4 +13,5 @@ public class MediaTypes {
     public static final MediaType MEDIA_TYPE_POST_NEW_COMMAND_TRAIT = MediaType.parse("application/vnd.kii.CommandCreationRequest+json");
     public static final MediaType MEDIA_TYPE_THING_FIRMWARE_VERSION_UPDATE_REQUEST = MediaType.parse("application/vnd.kii.ThingFirmwareVersionUpdateRequest+json");
     public static final MediaType MEDIA_TYPE_THING_TYPE_UPDATE_REQUEST = MediaType.parse("application/vnd.kii.ThingTypeUpdateRequest+json");
+    public static final MediaType MEDIA_TYPE_TRAIT_STATE_QUERY_REQUEST = MediaType.parse("application/vnd.kii.TraitStateQueryRequest+json");
 }
