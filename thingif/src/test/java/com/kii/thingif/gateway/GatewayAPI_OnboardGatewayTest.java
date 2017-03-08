@@ -1,8 +1,6 @@
 package com.kii.thingif.gateway;
 
 import android.net.Uri;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
 
 import com.kii.thingif.KiiApp;
 import com.kii.thingif.exception.BadRequestException;
@@ -11,24 +9,24 @@ import com.kii.thingif.exception.ServiceUnavailableException;
 import com.kii.thingif.exception.UnauthorizedException;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(RobolectricTestRunner.class)
 public class GatewayAPI_OnboardGatewayTest extends GatewayAPITestBase {
-
     @Test
     public void onboardGatewayTest() throws Exception {
         String thingID = "th." + UUID.randomUUID().toString();
 
-        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
+        GatewayAPI api = this.createGatewayAPIWithLoggedIn();
         this.addMockResponseForOnboardGateway(200, thingID);
         Gateway result = api.onboardGateway();
 
@@ -36,7 +34,7 @@ public class GatewayAPI_OnboardGatewayTest extends GatewayAPITestBase {
         Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/onboarding", request.getPath());
         Assert.assertEquals("POST", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("Authorization", "Bearer " + ACCESS_TOKEN);
         this.assertRequestHeader(expectedRequestHeaders, request);
 
@@ -47,14 +45,14 @@ public class GatewayAPI_OnboardGatewayTest extends GatewayAPITestBase {
     public void onboardGatewayNoLoggedInTest() throws Exception {
         KiiApp app = getApp(APP_ID, APP_KEY);
         Uri gatewayAddress = getGatewayAddress();
-        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
+        GatewayAPI api = new GatewayAPI(RuntimeEnvironment.application.getApplicationContext(), app, gatewayAddress);
         api.onboardGateway();
     }
     @Test
     public void onboardGateway400ErrorTest() throws Exception {
         String thingID = "th." + UUID.randomUUID().toString();
 
-        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
+        GatewayAPI api = this.createGatewayAPIWithLoggedIn();
         this.addEmptyMockResponse(400);
         try {
             api.onboardGateway();
@@ -66,7 +64,7 @@ public class GatewayAPI_OnboardGatewayTest extends GatewayAPITestBase {
         Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/onboarding", request.getPath());
         Assert.assertEquals("POST", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("Authorization", "Bearer " + ACCESS_TOKEN);
         this.assertRequestHeader(expectedRequestHeaders, request);
 
@@ -76,7 +74,7 @@ public class GatewayAPI_OnboardGatewayTest extends GatewayAPITestBase {
     public void onboardGateway401ErrorTest() throws Exception {
         String thingID = "th." + UUID.randomUUID().toString();
 
-        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
+        GatewayAPI api = this.createGatewayAPIWithLoggedIn();
         this.addEmptyMockResponse(401);
         try {
             api.onboardGateway();
@@ -88,7 +86,7 @@ public class GatewayAPI_OnboardGatewayTest extends GatewayAPITestBase {
         Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/onboarding", request.getPath());
         Assert.assertEquals("POST", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("Authorization", "Bearer " + ACCESS_TOKEN);
         this.assertRequestHeader(expectedRequestHeaders, request);
 
@@ -98,7 +96,7 @@ public class GatewayAPI_OnboardGatewayTest extends GatewayAPITestBase {
     public void onboardGateway409ErrorTest() throws Exception {
         String thingID = "th." + UUID.randomUUID().toString();
 
-        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
+        GatewayAPI api = this.createGatewayAPIWithLoggedIn();
         this.addEmptyMockResponse(409);
         try {
             api.onboardGateway();
@@ -110,7 +108,7 @@ public class GatewayAPI_OnboardGatewayTest extends GatewayAPITestBase {
         Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/onboarding", request.getPath());
         Assert.assertEquals("POST", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("Authorization", "Bearer " + ACCESS_TOKEN);
         this.assertRequestHeader(expectedRequestHeaders, request);
 
@@ -120,7 +118,7 @@ public class GatewayAPI_OnboardGatewayTest extends GatewayAPITestBase {
     public void onboardGateway503ErrorTest() throws Exception {
         String thingID = "th." + UUID.randomUUID().toString();
 
-        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
+        GatewayAPI api = this.createGatewayAPIWithLoggedIn();
         this.addEmptyMockResponse(503);
         try {
             api.onboardGateway();
@@ -132,7 +130,7 @@ public class GatewayAPI_OnboardGatewayTest extends GatewayAPITestBase {
         Assert.assertEquals("/CUSTOM/apps/" + APP_ID + "/gateway/onboarding", request.getPath());
         Assert.assertEquals("POST", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("Authorization", "Bearer " + ACCESS_TOKEN);
         this.assertRequestHeader(expectedRequestHeaders, request);
 
