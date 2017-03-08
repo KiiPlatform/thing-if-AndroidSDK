@@ -11,12 +11,15 @@ import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+@RunWith(RobolectricTestRunner.class)
 public class GatewayAPI_LoginTest extends GatewayAPITestBase {
     @Test
     public void loginTest() throws Exception {
