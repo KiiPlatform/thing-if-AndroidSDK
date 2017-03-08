@@ -5,11 +5,21 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.kii.cloud.rest.client.KiiRest;
+import com.kii.cloud.rest.client.exception.KiiRestException;
+import com.kii.cloud.rest.client.logging.KiiDefaultLogger;
+import com.kii.cloud.rest.client.model.KiiCredentials;
 import com.kii.cloud.rest.client.model.storage.KiiNormalUser;
+import com.kii.cloud.rest.client.model.storage.KiiThing;
+import com.kii.cloud.rest.client.resource.KiiThingIfResource;
+import com.kii.cloud.rest.client.resource.thingif.KiiThingIfTargetResource;
+import com.kii.cloud.rest.client.resource.thingif.KiiThingIfTargetStatesResource;
 import com.kii.thingif.KiiApp;
 import com.kii.thingif.Owner;
+import com.kii.thingif.Target;
 import com.kii.thingif.TargetState;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.TypedID;
@@ -18,6 +28,7 @@ import com.kii.thingif.actions.HumidityActions;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.states.AirConditionerState;
 import com.kii.thingif.states.HumidityState;
+import com.kii.thingif.states.StateToJSON;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
@@ -89,6 +100,40 @@ public class LargeTestCaseBase {
                     json.getString("client_secret"));
         } finally {
             IOUtils.closeQuietly(is);
+        }
+    }
+
+    protected void updateTargetState(Target thing, TargetState[] states) {
+        KiiCredentials credentials = new KiiCredentials(thing.getAccessToken());
+        KiiRest rest = new KiiRest(
+                this.server.getAppID(),
+                this.server.getAppKey(),
+                this.server.getBaseUrl()+"/api",
+                this.server.getBaseUrl()+"/thing-if", null);
+        rest.setCredentials(credentials);
+        KiiThingIfTargetStatesResource targetStates =
+                new KiiThingIfTargetStatesResource(
+                        new KiiThingIfTargetResource(
+                                rest.thingif(),
+                                thing.getTypedID().toString()
+                        ));
+        try {
+            JsonObject aliasState = new JsonObject();
+            for (TargetState state : states) {
+                JsonObject stateJson =
+                        new JsonParser()
+                                .parse(((StateToJSON)state).toJSONObject().toString()).getAsJsonObject();
+                if (state instanceof AirConditionerState) {
+                    aliasState.add(ALIAS1, stateJson);
+                } else if (state instanceof HumidityState) {
+                    aliasState.add(ALIAS2, stateJson);
+                } else {
+                    throw new RuntimeException("not supported state for test");
+                }
+            }
+            targetStates.save(aliasState, true);
+        }catch (KiiRestException e) {
+            throw new RuntimeException(e);
         }
     }
 
