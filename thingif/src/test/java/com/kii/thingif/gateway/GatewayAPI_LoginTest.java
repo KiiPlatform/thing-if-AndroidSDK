@@ -1,8 +1,6 @@
 package com.kii.thingif.gateway;
 
 import android.net.Uri;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
 import android.util.Base64;
 
 import com.google.gson.JsonObject;
@@ -13,13 +11,12 @@ import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-@RunWith(AndroidJUnit4.class)
 public class GatewayAPI_LoginTest extends GatewayAPITestBase {
     @Test
     public void loginTest() throws Exception {
@@ -28,7 +25,7 @@ public class GatewayAPI_LoginTest extends GatewayAPITestBase {
         String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
         Uri gatewayAddress = getGatewayAddress();
-        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
+        GatewayAPI api = new GatewayAPI(RuntimeEnvironment.application.getApplicationContext(), app, gatewayAddress);
 
         this.addMockResponseForLogin(200, accessToken);
         api.login(username, password);
@@ -37,7 +34,7 @@ public class GatewayAPI_LoginTest extends GatewayAPITestBase {
         Assert.assertEquals("/CUSTOM/token", request.getPath());
         Assert.assertEquals("POST", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("Authorization", "Basic " + Base64.encodeToString((APP_ID + ":" + APP_KEY).getBytes(), Base64.NO_WRAP));
         expectedRequestHeaders.put("Content-Type", "application/json");
         this.assertRequestHeader(expectedRequestHeaders, request);
@@ -51,45 +48,39 @@ public class GatewayAPI_LoginTest extends GatewayAPITestBase {
     }
     @Test(expected = IllegalArgumentException.class)
     public void loginWithNullUsernameTest() throws Exception {
-        String username = null;
         String password = "pa$$word";
-        String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
         Uri gatewayAddress = getGatewayAddress();
-        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
+        GatewayAPI api = new GatewayAPI(RuntimeEnvironment.application.getApplicationContext(), app, gatewayAddress);
 
-        api.login(username, password);
+        api.login(null, password);
     }
     @Test(expected = IllegalArgumentException.class)
     public void loginWithEmptyUsernameTest() throws Exception {
         String username = "";
         String password = "pa$$word";
-        String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
         Uri gatewayAddress = getGatewayAddress();
-        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
+        GatewayAPI api = new GatewayAPI(RuntimeEnvironment.application.getApplicationContext(), app, gatewayAddress);
 
         api.login(username, password);
     }
     @Test(expected = IllegalArgumentException.class)
     public void loginWithNullPasswordTest() throws Exception {
         String username = "user01";
-        String password = null;
-        String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
         Uri gatewayAddress = getGatewayAddress();
-        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
+        GatewayAPI api = new GatewayAPI(RuntimeEnvironment.application.getApplicationContext(), app, gatewayAddress);
 
-        api.login(username, password);
+        api.login(username, null);
     }
     @Test(expected = IllegalArgumentException.class)
     public void loginWithEmptyPasswordTest() throws Exception {
         String username = "user01";
         String password = "";
-        String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
         Uri gatewayAddress = getGatewayAddress();
-        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
+        GatewayAPI api = new GatewayAPI(RuntimeEnvironment.application.getApplicationContext(), app, gatewayAddress);
 
         api.login(username, password);
     }
@@ -97,10 +88,9 @@ public class GatewayAPI_LoginTest extends GatewayAPITestBase {
     public void login400ErrorTest() throws Exception {
         String username = "user01";
         String password = "pa$$word";
-        String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
         Uri gatewayAddress = getGatewayAddress();
-        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
+        GatewayAPI api = new GatewayAPI(RuntimeEnvironment.application.getApplicationContext(), app, gatewayAddress);
 
         this.addEmptyMockResponse(400);
         try {
@@ -113,7 +103,7 @@ public class GatewayAPI_LoginTest extends GatewayAPITestBase {
         Assert.assertEquals("/CUSTOM/token", request.getPath());
         Assert.assertEquals("POST", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("Authorization", "Basic " + Base64.encodeToString((APP_ID + ":" + APP_KEY).getBytes(), Base64.NO_WRAP));
         expectedRequestHeaders.put("Content-Type", "application/json");
         this.assertRequestHeader(expectedRequestHeaders, request);
@@ -129,10 +119,9 @@ public class GatewayAPI_LoginTest extends GatewayAPITestBase {
     public void login401ErrorTest() throws Exception {
         String username = "user01";
         String password = "pa$$word";
-        String accessToken = "token-abcd1234";
         KiiApp app = this.getApp(APP_ID, APP_KEY);
         Uri gatewayAddress = getGatewayAddress();
-        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
+        GatewayAPI api = new GatewayAPI(RuntimeEnvironment.application.getApplicationContext(), app, gatewayAddress);
 
         this.addEmptyMockResponse(401);
         try {
@@ -145,7 +134,7 @@ public class GatewayAPI_LoginTest extends GatewayAPITestBase {
         Assert.assertEquals("/CUSTOM/token", request.getPath());
         Assert.assertEquals("POST", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("Authorization", "Basic " + Base64.encodeToString((APP_ID + ":" + APP_KEY).getBytes(), Base64.NO_WRAP));
         expectedRequestHeaders.put("Content-Type", "application/json");
         this.assertRequestHeader(expectedRequestHeaders, request);
