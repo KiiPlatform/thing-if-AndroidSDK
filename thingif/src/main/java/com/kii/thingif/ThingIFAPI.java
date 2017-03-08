@@ -2055,7 +2055,8 @@ public class ThingIFAPI implements Parcelable {
      * @param groupedQuery {@link GroupedHistoryStatesQuery} instance. timeRange in query should less than
      *                                               60 data grouping intervals.
      * @param aggregation {@link Aggregation} instance.
-     * @param <T> Type of aggregated result field.
+     * @param fieldClass Class of {@link AggregatedResult#value}.
+     * @param <T> Type of {@link AggregatedResult#value}.
      * @param <S> Type of subclass of {@link TargetState}.
      * @return List of {@link AggregatedResult} instance.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
@@ -2065,7 +2066,8 @@ public class ThingIFAPI implements Parcelable {
      */
     public <T extends Number, S extends TargetState> List<AggregatedResult<T, S>> aggregate(
             @NonNull GroupedHistoryStatesQuery groupedQuery,
-            @NonNull Aggregation aggregation) throws ThingIFException {
+            @NonNull Aggregation aggregation,
+            @NonNull Class<T> fieldClass) throws ThingIFException {
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
