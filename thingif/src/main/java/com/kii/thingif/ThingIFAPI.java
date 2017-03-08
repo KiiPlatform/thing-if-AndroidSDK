@@ -2026,15 +2026,20 @@ public class ThingIFAPI implements Parcelable {
     /**
      * Query history states.
      * @param query Instance of {@link HistoryStatesQuery}.
+     * @param targetStateClass class of S, used to verify with registered target state class for the
+     *                         specified alias
      * @param <S> Type of subclass of {@link TargetState}.
      * @return Pair instance. First element is list of target state.
      *  Second element is next pagination key.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
      * @throws UnregisteredAliasException Thrown when the returned response contains alias that cannot be handled.
+     * @throws ClassCastException Thrown when targetStateClass is different with registered target
+     * class for the specified alias.
      */
     public <S extends TargetState> Pair<List<HistoryState<S>>, String> query(
-            @NonNull HistoryStatesQuery query) throws ThingIFException{
+            @NonNull HistoryStatesQuery query,
+            @NonNull Class<S> targetStateClass) throws ThingIFException{
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
         }
@@ -2106,14 +2111,19 @@ public class ThingIFAPI implements Parcelable {
      * Group history state
      * @param query {@link GroupedHistoryStatesQuery} instance. timeRange in query should less than
      *                                               60 data grouping intervals.
+     * @param targetStateClass class of S, used to verify with registered target state class for the
+     *                         specified alias
      * @param <S> Type of subclass of {@link TargetState}.
      * @return List of {@link GroupedHistoryStates} instances.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
      * @throws BadRequestException Thrown if timeRange of query is over 60 data grouping intervals.
+     * @throws ClassCastException Thrown when targetStateClass is different with registered target
+     * class for the specified alias.
      */
     public <S extends TargetState> List<GroupedHistoryStates<S>> query(
-            @NonNull GroupedHistoryStatesQuery query) throws ThingIFException{
+            @NonNull GroupedHistoryStatesQuery query,
+            @NonNull Class<S> targetStateClass) throws ThingIFException{
         //TODO: // FIXME: 12/21/16 implement the logic
         return new ArrayList<>();
     }
@@ -2123,16 +2133,23 @@ public class ThingIFAPI implements Parcelable {
      * @param groupedQuery {@link GroupedHistoryStatesQuery} instance. timeRange in query should less than
      *                                               60 data grouping intervals.
      * @param aggregation {@link Aggregation} instance.
-     * @param <T> Type of aggregated result field.
+     * @param targetStateClass class of S, used to verify with registered target state class for the
+     *                         specified alias
+     * @param valueClass Class of {@link AggregatedResult#value}.
+     * @param <T> Type of {@link AggregatedResult#value}.
      * @param <S> Type of subclass of {@link TargetState}.
      * @return List of {@link AggregatedResult} instance.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
      * @throws BadRequestException Thrown if timeRange of query is over 60 data grouping intervals.
+     * @throws ClassCastException Thrown when targetStateClass is different with registered target
+     * class for the specified alias.
      */
     public <T extends Number, S extends TargetState> List<AggregatedResult<T, S>> aggregate(
             @NonNull GroupedHistoryStatesQuery groupedQuery,
-            @NonNull Aggregation aggregation) throws ThingIFException {
+            @NonNull Aggregation aggregation,
+            @NonNull Class<S> targetStateClass,
+            @NonNull Class<T> valueClass) throws ThingIFException {
         //TODO: // FIXME: 12/21/16 implement the logic
         return new ArrayList<>();
     }
