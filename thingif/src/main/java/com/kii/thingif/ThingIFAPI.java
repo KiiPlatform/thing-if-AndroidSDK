@@ -1634,6 +1634,7 @@ public class ThingIFAPI implements Parcelable {
      * Get the State of specified alias.
      * State will be serialized with Gson library.
      * @param alias Specify alias to get state.
+     * @param targetStateClass Class of S.
      * @param <S> Class implements TargetState interface
      * @return Instance of Target State.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
@@ -1644,7 +1645,8 @@ public class ThingIFAPI implements Parcelable {
     @NonNull
     @WorkerThread
     public <S extends TargetState> S getTargetState(
-            @NonNull String alias) throws ThingIFException {
+            @NonNull String alias,
+            @NonNull Class<S> targetStateClass) throws ThingIFException {
 
         if (this.target == null) {
             throw new IllegalStateException("Can not perform this action before onboarding");
