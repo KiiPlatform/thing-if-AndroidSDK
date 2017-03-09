@@ -2179,12 +2179,17 @@ public class ThingIFAPI implements Parcelable {
         if (!this.stateTypes.containsKey(groupedQuery.getAlias())) {
             throw new UnregisteredAliasException(groupedQuery.getAlias(), false);
         }
+        Class<? extends TargetState> storedStateClass = this.stateTypes.get(groupedQuery.getAlias());
+        if (!storedStateClass.equals(targetStateClass)) {
+            throw new ClassCastException("registered target state class is different with " +
+                    "targetStateClass parameter");
+        }
 
         Gson localGson = new GsonBuilder()
                 .registerTypeAdapter(GroupedHistoryStatesQuery.class,
                         new GroupedHistoryStatesQueryAdapter(aggregation))
                 .registerTypeAdapter(AggregatedResult.class,
-                        new AggregatedResultAdapter(targetStateClass, valueClass))
+                        new AggregatedResultAdapter<>(targetStateClass, valueClass))
                 .create();
 
         String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/states/aliases/{2}/query",
@@ -2210,11 +2215,14 @@ public class ThingIFAPI implements Parcelable {
         }
 
         JSONArray results = responseBody.optJSONArray("groupedResults");
+        Type aggregatedResultType = new TypeToken<AggregatedResult<T, S>>(){}.getType();
         if (results != null) {
             for (int i = 0; i < results.length(); ++i) {
                 JSONObject result = results.optJSONObject(i);
                 if (result != null) {
-                    retList.add(localGson.fromJson(result.toString(), AggregatedResult.class));
+                    AggregatedResult<T, S> aggregatedResult =
+                            localGson.fromJson(result.toString(), aggregatedResultType);
+                    retList.add(aggregatedResult);
                 }
             }
         }

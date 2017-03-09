@@ -47,7 +47,7 @@ public class AggregatedResultAdapterTest {
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(
                         AggregatedResult.class,
-                        new AggregatedResultAdapter(AirConditionerState.class, Integer.class))
+                        new AggregatedResultAdapter<>(AirConditionerState.class, Integer.class))
                 .registerTypeAdapter(TimeRange.class, new TimeRangeAdapter())
                 .create();
 

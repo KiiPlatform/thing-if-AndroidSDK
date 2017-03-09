@@ -8,6 +8,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.reflect.TypeToken;
 import com.kii.thingif.TargetState;
 import com.kii.thingif.internal.gson.HistoryStateAdapter;
 import com.kii.thingif.internal.gson.TimeRangeAdapter;
@@ -62,8 +63,10 @@ public class AggregatedResultAdapter<T extends Number, S extends TargetState>
         if (aggregation.has("objects")) {
             aggregateObjects = new ArrayList<>();
             JsonArray objects = aggregation.getAsJsonArray("objects");
+            Type historyStateType = new TypeToken<HistoryState<S>>(){}.getType();
             for (int i = 0; i < objects.size(); ++i) {
-                aggregateObjects.add(gson.fromJson(objects.get(i), HistoryState.class));
+                HistoryState<S> historyState = gson.fromJson(objects.get(i), historyStateType);
+                aggregateObjects.add(historyState);
             }
         }
         return new AggregatedResult<T, S>(range, value, aggregateObjects);

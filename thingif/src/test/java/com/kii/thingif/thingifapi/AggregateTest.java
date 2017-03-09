@@ -21,6 +21,7 @@ import com.kii.thingif.query.GroupedHistoryStatesQuery;
 import com.kii.thingif.query.HistoryState;
 import com.kii.thingif.query.TimeRange;
 import com.kii.thingif.states.AirConditionerState;
+import com.kii.thingif.states.HumidityState;
 import com.kii.thingif.utils.JsonUtil;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
@@ -561,5 +562,26 @@ public class AggregateTest extends ThingIFAPITestBase {
         expectedRequestHeaders.put("Content-Type", "application/vnd.kii.TraitStateQueryRequest+json");
         expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
         this.assertRequestHeader(expectedRequestHeaders, request);
+    }
+
+    @Test(expected = ClassCastException.class)
+    public void errorTargetStateClassCastExceptionTest() throws Exception {
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        String triggerID = "trigger-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        TimeRange range = new TimeRange(new Date(1), new Date(100));
+        EqualsClauseInQuery clause = new EqualsClauseInQuery("dummy", "value");
+        GroupedHistoryStatesQuery query = GroupedHistoryStatesQuery.Builder
+                .newBuilder(ALIAS1, range)
+                .setClause(clause)
+                .build();
+        Aggregation aggregation = Aggregation.newMaxAggregation("value", Aggregation.FieldType.INTEGER);
+
+        ThingIFAPI api = createDefaultThingIFAPIBuilder(this.context, APP_ID, APP_KEY)
+                .setTarget(target)
+                .build();
+        api.aggregate(query, aggregation, HumidityState.class, Integer.class);
     }
 }
