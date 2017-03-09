@@ -10,7 +10,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
 @RunWith(RobolectricTestRunner.class)
-public class SchedulePredicateParcelableTest extends SmallTestBase{
+public class SchedulePredicateParcelableTest extends SmallTestBase {
     @Test
     public void parcelableTest() throws Exception {
         SchedulePredicate predicate = new SchedulePredicate("1 * * * *");
