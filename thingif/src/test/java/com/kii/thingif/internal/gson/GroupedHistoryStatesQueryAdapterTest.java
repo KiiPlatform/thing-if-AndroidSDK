@@ -137,6 +137,7 @@ public class GroupedHistoryStatesQueryAdapterTest {
                         "\"aggregations\":[" +
                             "{" +
                                 "\"type\":\"" + aggregation.getFunction().name() + "\"," +
+                                "\"putAggregationInto\":\"" + aggregation.getFunction().name().toLowerCase() + "\"," +
                                 "\"field\":\"" + aggregation.getField() + "\"," +
                                 "\"fieldType\":\"" + aggregation.getFieldType().name() + "\"" +
                             "}" +
@@ -187,6 +188,7 @@ public class GroupedHistoryStatesQueryAdapterTest {
                         "\"aggregations\":[" +
                             "{" +
                                 "\"type\":\"" + aggregation.getFunction().name() + "\"," +
+                                "\"putAggregationInto\":\"" + aggregation.getFunction().name().toLowerCase() + "\"," +
                                 "\"field\":\"" + aggregation.getField() + "\"," +
                                 "\"fieldType\":\"" + aggregation.getFieldType().name() + "\"" +
                             "}" +
