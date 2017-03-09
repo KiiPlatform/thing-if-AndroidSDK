@@ -65,8 +65,6 @@ public class AggregateTest extends LargeTestCaseBase {
     public void successCountTest() throws Exception {
         AirConditionerState[] airStates = {
                 new AirConditionerState(true, 23),
-                new AirConditionerState(true, 24),
-                new AirConditionerState(true, 25),
                 new AirConditionerState(true, 26)
         };
 
@@ -96,7 +94,7 @@ public class AggregateTest extends LargeTestCaseBase {
         TimeRange responseRange = result.getTimeRange();
         Assert.assertTrue(range.getFrom().getTime() >= responseRange.getFrom().getTime());
         Assert.assertTrue(range.getTo().getTime() <= responseRange.getTo().getTime());
-        Assert.assertEquals(4, result.getValue());
+        Assert.assertEquals(2, result.getValue());
         Assert.assertNull(result.getAggregatedObjects());
     }
 
@@ -104,8 +102,6 @@ public class AggregateTest extends LargeTestCaseBase {
     public void successMaxTest() throws Exception {
         AirConditionerState[] airStates = {
                 new AirConditionerState(true, 23),
-                new AirConditionerState(true, 24),
-                new AirConditionerState(true, 25),
                 new AirConditionerState(true, 26)
         };
 
@@ -142,8 +138,6 @@ public class AggregateTest extends LargeTestCaseBase {
     public void successMinTest() throws Exception {
         AirConditionerState[] airStates = {
                 new AirConditionerState(true, 23),
-                new AirConditionerState(true, 24),
-                new AirConditionerState(true, 25),
                 new AirConditionerState(true, 26)
         };
 
@@ -180,8 +174,6 @@ public class AggregateTest extends LargeTestCaseBase {
     public void successMeanTest() throws Exception {
         AirConditionerState[] airStates = {
                 new AirConditionerState(true, 22),
-                new AirConditionerState(true, 24),
-                new AirConditionerState(true, 26),
                 new AirConditionerState(true, 28)
         };
 
@@ -219,8 +211,6 @@ public class AggregateTest extends LargeTestCaseBase {
     public void successSumTest() throws Exception {
         AirConditionerState[] airStates = {
                 new AirConditionerState(true, 23),
-                new AirConditionerState(true, 24),
-                new AirConditionerState(true, 25),
                 new AirConditionerState(true, 26)
         };
 
@@ -250,7 +240,7 @@ public class AggregateTest extends LargeTestCaseBase {
         TimeRange responseRange = result.getTimeRange();
         Assert.assertTrue(range.getFrom().getTime() >= responseRange.getFrom().getTime());
         Assert.assertTrue(range.getTo().getTime() <= responseRange.getTo().getTime());
-        Assert.assertEquals(98, result.getValue());
+        Assert.assertEquals(49, result.getValue());
         Assert.assertNull(result.getAggregatedObjects());
     }
 }
