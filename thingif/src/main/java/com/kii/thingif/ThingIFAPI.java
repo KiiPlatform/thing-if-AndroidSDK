@@ -15,6 +15,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import com.kii.thingif.clause.query.QueryClause;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
@@ -65,6 +66,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -2040,8 +2042,9 @@ public class ThingIFAPI implements Parcelable {
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
      * @throws UnregisteredAliasException Thrown when the returned response contains alias that cannot be handled.
-     * @throws ClassCastException Thrown when targetStateClass is different with registered target
+     * @throws ClassCastException Thrown when targetStateClass is different with registered target state
      * class for the specified alias.
+     * @throws IllegalArgumentException Thrown when any of query and targetStateClass is/are null.
      */
     public <S extends TargetState> Pair<List<HistoryState<S>>, String> query(
             @NonNull HistoryStatesQuery query,
@@ -2052,12 +2055,20 @@ public class ThingIFAPI implements Parcelable {
         if (query == null) {
             throw new IllegalArgumentException("query is null");
         }
+        if (targetStateClass == null) {
+            throw new IllegalArgumentException("targetStateClass is null");
+        }
 
         if (!this.stateTypes.containsKey(query.getAlias())) {
             throw new UnregisteredAliasException(query.getAlias(), false);
         }
 
-        Class<? extends TargetState> stateClass = this.stateTypes.get(query.getAlias());
+        Class<? extends TargetState> storedStateClass = this.stateTypes.get(query.getAlias());
+
+        if (!storedStateClass.equals(targetStateClass)) {
+            throw new ClassCastException("registered target state class is different with " +
+                    "targetStateClass parameter");
+        }
 
         String path =  MessageFormat.format("/thing-if/apps/{0}/targets/{1}/states/aliases/{2}/query",
                 this.app.getAppID(), this.target.getTypedID().toString(), query.getAlias());
@@ -2101,13 +2112,16 @@ public class ThingIFAPI implements Parcelable {
         String nextPaginationKey = responseBody.optString("nextPaginationKey", null);
         JSONArray statesArray = responseBody.optJSONArray("results");
 
+
         if (statesArray != null) {
             Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(HistoryState.class, new HistoryStateAdapter(stateClass))
+                    .registerTypeAdapter(HistoryState.class, new HistoryStateAdapter(targetStateClass))
                     .create();
+            Type historyStateType = new TypeToken<HistoryState<S>>(){}.getType();
             for (int i = 0; i < statesArray.length(); i++) {
                 JSONObject stateJson = statesArray.optJSONObject(i);
-                states.add(gson.fromJson(stateJson.toString(), HistoryState.class));
+                HistoryState<S> historyState = gson.fromJson(stateJson.toString(), historyStateType);
+                states.add(historyState);
             }
         }
         return new Pair<>(states, nextPaginationKey);
