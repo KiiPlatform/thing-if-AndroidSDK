@@ -1,13 +1,13 @@
 package com.kii.thingif;
 
 import android.os.Parcel;
-import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(RobolectricTestRunner.class)
 public class TargetParcelableTest extends SmallTestBase {
     @Test
     public void test() throws Exception {
