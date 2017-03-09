@@ -46,7 +46,6 @@ public class GetTargetStateTest extends ThingIFAPITestBase {
     public void getTargetStateTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        String triggerID = "trigger-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         String responseBody =
@@ -85,7 +84,7 @@ public class GetTargetStateTest extends ThingIFAPITestBase {
         org.junit.Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/states", request.getPath());
         org.junit.Assert.assertEquals("GET", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
@@ -102,7 +101,6 @@ public class GetTargetStateTest extends ThingIFAPITestBase {
     public void getTargetState_UnknownAliasTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        String triggerID = "trigger-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         String responseBody =
@@ -123,7 +121,6 @@ public class GetTargetStateTest extends ThingIFAPITestBase {
     public void getTargetStateWithAliasTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        String triggerID = "trigger-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         String responseBody =
@@ -138,7 +135,7 @@ public class GetTargetStateTest extends ThingIFAPITestBase {
         ThingIFAPI api = createDefaultThingIFAPIBuilder(this.context, APP_ID, APP_KEY)
                 .setTarget(target)
                 .build();
-        AirConditionerState state = api.getTargetState(ALIAS1);
+        AirConditionerState state = api.getTargetState(ALIAS1, AirConditionerState.class);
         // verify the result
         Assert.assertNotNull(state);
         Assert.assertFalse(state.power);
@@ -151,7 +148,7 @@ public class GetTargetStateTest extends ThingIFAPITestBase {
                 request.getPath());
         org.junit.Assert.assertEquals("GET", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
@@ -161,19 +158,18 @@ public class GetTargetStateTest extends ThingIFAPITestBase {
     @Test(expected = IllegalStateException.class)
     public void getTargetStateWithAlias_NullTargetTest() throws Exception {
         ThingIFAPI api = this.createDefaultThingIFAPIBuilder(this.context, APP_ID, APP_KEY).build();
-        api.getTargetState(ALIAS1);
+        api.getTargetState(ALIAS1, AirConditionerState.class);
     }
 
     @Test(expected = UnregisteredAliasException.class)
     public void getTargetStateWithAlias_UnknownAliasTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        String triggerID = "trigger-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
         ThingIFAPI api = this.createDefaultThingIFAPIBuilder(this.context, APP_ID, APP_KEY)
                 .setTarget(target)
                 .build();
 
-        api.getTargetState("unknown");
+        api.getTargetState("unknown", AirConditionerState.class);
     }
 }
