@@ -3,25 +3,22 @@ package com.kii.thingif.trigger;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.test.runner.AndroidJUnit4;
 
 import com.kii.thingif.SmallTestBase;
 
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Created on 2016/09/30.
- */
-@RunWith(AndroidJUnit4.class)
+@RunWith(RobolectricTestRunner.class)
 public class TriggerOptionsTest extends SmallTestBase {
 
     private static final class TestCase<T> {
@@ -57,28 +54,28 @@ public class TriggerOptionsTest extends SmallTestBase {
     }
 
     private static List<TestCase<TestData>> createNormalTestCases()
-        throws JSONException
+            throws JSONException
     {
         List<TestCase<TestData>> retval = new ArrayList<>();
         JSONObject metadata = new JSONObject();
         metadata.put("key", "value");
         Collections.addAll(retval,
                 createNormalTestData(
-                    "1", new TestData(null, null, null)),
+                        "1", new TestData(null, null, null)),
                 createNormalTestData(
-                    "2", new TestData(null, "description", null)),
+                        "2", new TestData(null, "description", null)),
                 createNormalTestData(
-                    "3", new TestData(null, null, metadata)),
+                        "3", new TestData(null, null, metadata)),
                 createNormalTestData(
-                    "4", new TestData(null, "description", metadata)),
+                        "4", new TestData(null, "description", metadata)),
                 createNormalTestData(
-                    "5", new TestData("title", null, null)),
+                        "5", new TestData("title", null, null)),
                 createNormalTestData(
-                    "6", new TestData("title", "description", null)),
+                        "6", new TestData("title", "description", null)),
                 createNormalTestData(
-                    "7", new TestData("title", null, metadata)),
+                        "7", new TestData("title", null, metadata)),
                 createNormalTestData(
-                    "8", new TestData("title", "description", metadata)));
+                        "8", new TestData("title", "description", metadata)));
         return retval;
     }
 
@@ -146,13 +143,13 @@ public class TriggerOptionsTest extends SmallTestBase {
         List<TestCase<String>> retval = new ArrayList<>();
         Collections.addAll(retval,
                 new TestCase<>(
-                    "1",
-                    new TestData(RandomStringUtils.random(51), null, null),
-                    "title is more than 50 charactors."),
+                        "1",
+                        new TestData(RandomStringUtils.random(51), null, null),
+                        "title is more than 50 charactors."),
                 new TestCase<>(
-                    "2",
-                    new TestData(null, RandomStringUtils.random(201), null),
-                    "description is more than 200 charactors."));
+                        "2",
+                        new TestData(null, RandomStringUtils.random(201), null),
+                        "description is more than 200 charactors."));
         return retval;
     }
 
