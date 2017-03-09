@@ -1,7 +1,12 @@
-package com.kii.thingif;
+package com.kii.thingif.thingifapi;
 
 import android.content.Context;
 
+import com.kii.thingif.StandaloneThing;
+import com.kii.thingif.Target;
+import com.kii.thingif.ThingIFAPI;
+import com.kii.thingif.ThingIFAPITestBase;
+import com.kii.thingif.TypedID;
 import com.kii.thingif.exception.UnregisteredAliasException;
 import com.kii.thingif.states.AirConditionerState;
 import com.kii.thingif.states.HumidityState;
@@ -22,7 +27,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(RobolectricTestRunner.class)
-public class ThingIFAPI_TargetStateTest extends ThingIFAPITestBase {
+public class GetTargetStateTest extends ThingIFAPITestBase {
     private Context context;
 
     @Before
