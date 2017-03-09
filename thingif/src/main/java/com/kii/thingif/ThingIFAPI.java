@@ -1641,6 +1641,7 @@ public class ThingIFAPI implements Parcelable {
      * @throws ThingIFRestException Thrown when server returns error response.
      * @throws ClassCastException Thrown when S is different with registered class for this alias.
      * @throws UnregisteredAliasException Thrown when alias cannot be handled.
+     * @throws IllegalArgumentException Thrown when targetStateClass is null.
      */
     @NonNull
     @WorkerThread
@@ -1654,6 +1655,9 @@ public class ThingIFAPI implements Parcelable {
         if (!this.stateTypes.containsKey(alias)) {
             throw new UnregisteredAliasException(alias, false);
         }
+        if (targetStateClass == null) {
+            throw new IllegalArgumentException("targetStateClass is null");
+        }
 
         String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/states/aliases/{2}",
                 this.app.getAppID(), this.target.getTypedID().toString(), alias);
@@ -1663,7 +1667,7 @@ public class ThingIFAPI implements Parcelable {
 
         JSONObject responseBody = this.restClient.sendRequest(request);
         JsonObject object = new JsonParser().parse(responseBody.toString()).getAsJsonObject();
-        return (S)this.gson.fromJson(object, this.stateTypes.get(alias));
+        return targetStateClass.cast(this.gson.fromJson(object, this.stateTypes.get(alias)));
     }
 
     /**
