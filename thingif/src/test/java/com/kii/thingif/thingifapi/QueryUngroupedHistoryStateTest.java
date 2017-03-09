@@ -18,6 +18,7 @@ import com.kii.thingif.exception.UnregisteredAliasException;
 import com.kii.thingif.query.HistoryState;
 import com.kii.thingif.query.HistoryStatesQuery;
 import com.kii.thingif.states.AirConditionerState;
+import com.kii.thingif.states.HumidityState;
 import com.kii.thingif.thingifapi.utils.ThingIFAPIUtils;
 import com.kii.thingif.utils.JsonUtil;
 import com.squareup.okhttp.mockwebserver.MockResponse;
@@ -92,7 +93,7 @@ public class QueryUngroupedHistoryStateTest extends ThingIFAPITestBase {
                 .setFirmwareVersion("v1")
                 .build();
 
-        Pair<List<HistoryState<AirConditionerState>>, String> result = api.query(query);
+        Pair<List<HistoryState<AirConditionerState>>, String> result = api.query(query, AirConditionerState.class);
 
         // verify result
         Assert.assertEquals("100/3", result.second);
@@ -144,7 +145,7 @@ public class QueryUngroupedHistoryStateTest extends ThingIFAPITestBase {
         addMockResponseForQueryUngroupedHistoryState(200, expectedStates, null);
 
         Pair<List<HistoryState<AirConditionerState>>, String> result =
-                this.defaultApi.query(query);
+                this.defaultApi.query(query, AirConditionerState.class);
 
         // verify result
         Assert.assertNull(result.second);
@@ -190,7 +191,7 @@ public class QueryUngroupedHistoryStateTest extends ThingIFAPITestBase {
                 .setNextPaginationKey("100/2")
                 .setFirmwareVersion("v1")
                 .build();
-        api.query(query);
+        api.query(query, AirConditionerState.class);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -198,7 +199,7 @@ public class QueryUngroupedHistoryStateTest extends ThingIFAPITestBase {
         Target target = new StandaloneThing("thing1", "vendor-thing-1", "dummyToken");
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         ThingIFAPIUtils.setTarget(api, target);
-        api.query((HistoryStatesQuery) null);
+        api.query((HistoryStatesQuery) null, AirConditionerState.class);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -210,7 +211,7 @@ public class QueryUngroupedHistoryStateTest extends ThingIFAPITestBase {
                 .setNextPaginationKey("100/2")
                 .setFirmwareVersion("v1")
                 .build();
-        api.query(query);
+        api.query(query, AirConditionerState.class);
     }
 
     @Test
@@ -221,7 +222,7 @@ public class QueryUngroupedHistoryStateTest extends ThingIFAPITestBase {
 
         this.addEmptyMockResponse(400);
         try {
-            this.defaultApi.query(query);
+            this.defaultApi.query(query, AirConditionerState.class);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (BadRequestException e) {
         }
@@ -260,7 +261,7 @@ public class QueryUngroupedHistoryStateTest extends ThingIFAPITestBase {
 
         this.addEmptyMockResponse(403);
         try {
-            this.defaultApi.query(query);
+            this.defaultApi.query(query, AirConditionerState.class);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ForbiddenException e) {
         }
@@ -299,7 +300,7 @@ public class QueryUngroupedHistoryStateTest extends ThingIFAPITestBase {
 
         this.addEmptyMockResponse(404);
         try {
-            this.defaultApi.query(query);
+            this.defaultApi.query(query, AirConditionerState.class);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (NotFoundException e) {
         }
@@ -339,7 +340,7 @@ public class QueryUngroupedHistoryStateTest extends ThingIFAPITestBase {
 
         this.addEmptyMockResponse(503);
         try {
-            this.defaultApi.query(query);
+            this.defaultApi.query(query, AirConditionerState.class);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ServiceUnavailableException e) {
         }
@@ -379,7 +380,7 @@ public class QueryUngroupedHistoryStateTest extends ThingIFAPITestBase {
 
         this.addEmptyMockResponse(409);
         try {
-            this.defaultApi.query(query);
+            this.defaultApi.query(query, AirConditionerState.class);
             Assert.fail("ThingIFRestException should be thrown");
         } catch (ConflictException e) {
         }
@@ -428,7 +429,7 @@ public class QueryUngroupedHistoryStateTest extends ThingIFAPITestBase {
         this.server.enqueue(response);
 
         Pair<List<HistoryState<AirConditionerState>>, String> results =
-                this.defaultApi.query(query);
+                this.defaultApi.query(query, AirConditionerState.class);
         Assert.assertEquals(0, results.first.size());
         Assert.assertNull(results.second);
 
@@ -458,5 +459,35 @@ public class QueryUngroupedHistoryStateTest extends ThingIFAPITestBase {
         expectedRequestBody.putOpt("paginationKey", query.getNextPaginationKey());
         expectedRequestBody.putOpt("bestEffortLimit", query.getBestEffortLimit());
         this.assertRequestBody(expectedRequestBody, request1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void query_with_nullTargetStateClass_IllegalArgumentException_should_thrown_Test() throws Exception{
+        Target target = new StandaloneThing("thing1", "vendor-thing-1", "dummyToken");
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
+        ThingIFAPIUtils.setTarget(api, target);
+
+        HistoryStatesQuery query = HistoryStatesQuery.Builder
+                .newBuilder(ALIAS1, new AllClause())
+                .setBestEffortLimit(5)
+                .setNextPaginationKey("100/2")
+                .setFirmwareVersion("v1")
+                .build();
+        api.query(query, null);
+    }
+
+    @Test(expected = ClassCastException.class)
+    public void query_with_diffTargetStateClass_ClassCastException_should_thrown_Test() throws Exception{
+        Target target = new StandaloneThing("thing1", "vendor-thing-1", "dummyToken");
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
+        ThingIFAPIUtils.setTarget(api, target);
+
+        HistoryStatesQuery query = HistoryStatesQuery.Builder
+                .newBuilder(ALIAS1, new AllClause())
+                .setBestEffortLimit(5)
+                .setNextPaginationKey("100/2")
+                .setFirmwareVersion("v1")
+                .build();
+        api.query(query, HumidityState.class);
     }
 }
