@@ -1,8 +1,6 @@
 package com.kii.thingif.gateway;
 
 import android.net.Uri;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
 
 import com.kii.thingif.KiiApp;
 import com.kii.thingif.exception.BadRequestException;
@@ -13,17 +11,18 @@ import com.squareup.okhttp.mockwebserver.RecordedRequest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(RobolectricTestRunner.class)
 public class GatewayAPI_RestoreTest extends GatewayAPITestBase {
-
     @Test
     public void restoreTest() throws Exception {
-        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
+        GatewayAPI api = this.createGatewayAPIWithLoggedIn();
         this.addEmptyMockResponse(204);
         api.restore();
 
@@ -31,7 +30,7 @@ public class GatewayAPI_RestoreTest extends GatewayAPITestBase {
         Assert.assertEquals("/gateway-app/gateway/restore", request.getPath());
         Assert.assertEquals("POST", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("Authorization", "Bearer " + ACCESS_TOKEN);
         this.assertRequestHeader(expectedRequestHeaders, request);
 
@@ -41,12 +40,12 @@ public class GatewayAPI_RestoreTest extends GatewayAPITestBase {
     public void restoreNoLoggedInTest() throws Exception {
         KiiApp app = getApp(APP_ID, APP_KEY);
         Uri gatewayAddress = getGatewayAddress();
-        GatewayAPI api = new GatewayAPI(InstrumentationRegistry.getTargetContext(), app, gatewayAddress);
+        GatewayAPI api = new GatewayAPI(RuntimeEnvironment.application.getApplicationContext(), app, gatewayAddress);
         api.restore();
     }
     @Test
     public void restore400ErrorTest() throws Exception {
-        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
+        GatewayAPI api = this.createGatewayAPIWithLoggedIn();
         this.addEmptyMockResponse(400);
         try {
             api.restore();
@@ -58,7 +57,7 @@ public class GatewayAPI_RestoreTest extends GatewayAPITestBase {
         Assert.assertEquals("/gateway-app/gateway/restore", request.getPath());
         Assert.assertEquals("POST", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("Authorization", "Bearer " + ACCESS_TOKEN);
         this.assertRequestHeader(expectedRequestHeaders, request);
 
@@ -66,7 +65,7 @@ public class GatewayAPI_RestoreTest extends GatewayAPITestBase {
     }
     @Test
     public void restore401ErrorTest() throws Exception {
-        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
+        GatewayAPI api = this.createGatewayAPIWithLoggedIn();
         this.addEmptyMockResponse(401);
         try {
             api.restore();
@@ -78,7 +77,7 @@ public class GatewayAPI_RestoreTest extends GatewayAPITestBase {
         Assert.assertEquals("/gateway-app/gateway/restore", request.getPath());
         Assert.assertEquals("POST", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("Authorization", "Bearer " + ACCESS_TOKEN);
         this.assertRequestHeader(expectedRequestHeaders, request);
 
@@ -86,7 +85,7 @@ public class GatewayAPI_RestoreTest extends GatewayAPITestBase {
     }
     @Test
     public void restore409ErrorTest() throws Exception {
-        GatewayAPI api = this.craeteGatewayAPIWithLoggedIn();
+        GatewayAPI api = this.createGatewayAPIWithLoggedIn();
         this.addEmptyMockResponse(409);
         try {
             api.restore();
@@ -98,7 +97,7 @@ public class GatewayAPI_RestoreTest extends GatewayAPITestBase {
         Assert.assertEquals("/gateway-app/gateway/restore", request.getPath());
         Assert.assertEquals("POST", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("Authorization", "Bearer " + ACCESS_TOKEN);
         this.assertRequestHeader(expectedRequestHeaders, request);
 

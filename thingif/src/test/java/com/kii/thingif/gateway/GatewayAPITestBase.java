@@ -53,7 +53,7 @@ public class GatewayAPITestBase extends SmallTestBase {
         Uri.Builder builder = new Uri.Builder();
         return builder.scheme("http").encodedAuthority(server.getHostName() + ":" + server.getPort()).build();
     }
-    protected GatewayAPI craeteGatewayAPIWithLoggedIn() throws Exception {
+    protected GatewayAPI createGatewayAPIWithLoggedIn() throws Exception {
         KiiApp app = getApp(APP_ID, APP_KEY);
         Uri gatewayAddress = getGatewayAddress();
         this.addMockResponseForLogin(200, ACCESS_TOKEN);
