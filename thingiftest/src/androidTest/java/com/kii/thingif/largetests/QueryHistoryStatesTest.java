@@ -47,7 +47,7 @@ public class QueryHistoryStatesTest extends LargeTestCaseBase {
         HistoryStatesQuery query =
                 HistoryStatesQuery.Builder.newBuilder(ALIAS1, new AllClause()).build();
         Pair<List<HistoryState<AirConditionerState>>, String > result =
-                this.onboardedApi.query(query);
+                this.onboardedApi.query(query, AirConditionerState.class);
 
         Assert.assertNull(result.second);
         Assert.assertEquals(0, result.first.size());
@@ -72,7 +72,7 @@ public class QueryHistoryStatesTest extends LargeTestCaseBase {
         HistoryStatesQuery query1 =
                 HistoryStatesQuery.Builder.newBuilder(ALIAS1, new AllClause()).build();
         Pair<List<HistoryState<AirConditionerState>>, String> result1 =
-                this.onboardedApi.query(query1);
+                this.onboardedApi.query(query1, AirConditionerState.class);
 
         Assert.assertEquals(4, result1.first.size());
         Assert.assertNull(result1.second);
@@ -84,7 +84,7 @@ public class QueryHistoryStatesTest extends LargeTestCaseBase {
                         RangeClauseInQuery.greaterThan("currentTemperature", 30))
                         .setFirmwareVersion("v1").build();
         Pair<List<HistoryState<AirConditionerState>>, String> result2 =
-                this.onboardedApi.query(query2);
+                this.onboardedApi.query(query2, AirConditionerState.class);
         Assert.assertEquals(0, result2.first.size());
         Assert.assertNull(result2.second);
 
@@ -97,7 +97,7 @@ public class QueryHistoryStatesTest extends LargeTestCaseBase {
                         .setBestEffortLimit(3)
                         .setFirmwareVersion("v1").build();
         Pair<List<HistoryState<AirConditionerState>>, String> result3 =
-                this.onboardedApi.query(query3);
+                this.onboardedApi.query(query3, AirConditionerState.class);
         Assert.assertEquals(3, result3.first.size());
         Assert.assertNotNull(result3.second);
 
@@ -109,7 +109,7 @@ public class QueryHistoryStatesTest extends LargeTestCaseBase {
                                 new AllClause())
                         .setNextPaginationKey(result3.second).build();
         Pair<List<HistoryState<AirConditionerState>>, String> result4 =
-                this.onboardedApi.query(query4);
+                this.onboardedApi.query(query4, AirConditionerState.class);
         Assert.assertEquals(1, result4.first.size());
         Assert.assertNull(result4.second);
 
@@ -123,7 +123,7 @@ public class QueryHistoryStatesTest extends LargeTestCaseBase {
                                 ALIAS1,
                                 new AllClause()).setFirmwareVersion("v1").build();
         Pair<List<HistoryState<AirConditionerState>>, String> result5 =
-                this.onboardedApi.query(query5);
+                this.onboardedApi.query(query5, AirConditionerState.class);
         Assert.assertEquals(4, result5.first.size());
         Assert.assertNull(result5.second);
     }
@@ -139,7 +139,7 @@ public class QueryHistoryStatesTest extends LargeTestCaseBase {
                                 ALIAS1,
                                 new AllClause()).build();
         try {
-            this.onboardedApi.query(query);
+            this.onboardedApi.query(query, AirConditionerState.class);
             Assert.fail("should fail");
         }catch (NotFoundException e) {
             Assert.assertEquals("TRAIT_ALIAS_NOT_FOUND", e.getErrorCode());
