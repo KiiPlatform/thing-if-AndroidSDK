@@ -1,21 +1,45 @@
-package com.kii.thingif;
+package com.kii.thingif.thingifapi;
 
-import android.support.test.runner.AndroidJUnit4;
+import android.content.Context;
 
+import com.kii.thingif.StandaloneThing;
+import com.kii.thingif.Target;
+import com.kii.thingif.ThingIFAPI;
+import com.kii.thingif.ThingIFAPITestBase;
+import com.kii.thingif.TypedID;
 import com.kii.thingif.exception.NotFoundException;
+import com.kii.thingif.thingifapi.utils.ThingIFAPIUtils;
+import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-@RunWith(AndroidJUnit4.class)
-public class ThingIFAPI_GetVendorThingIDTest extends ThingIFAPITestBase {
+@RunWith(RobolectricTestRunner.class)
+public class GetVendorThingIDTest extends ThingIFAPITestBase {
+    private Context context;
+
+    @Before
+    public void before() throws Exception {
+        context = RuntimeEnvironment.application.getApplicationContext();
+        this.server = new MockWebServer();
+        this.server.start();
+    }
+
+    @After
+    public void after() throws Exception {
+        this.server.shutdown();
+    }
 
     @Test
     public void getVendorThingIDTest() throws Exception {
@@ -24,7 +48,7 @@ public class ThingIFAPI_GetVendorThingIDTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(context, APP_ID, APP_KEY);
         ThingIFAPIUtils.setTarget(api, target);
 
         this.addMockResponseForGetVendorThingID(200, vendorThingID);
@@ -36,7 +60,7 @@ public class ThingIFAPI_GetVendorThingIDTest extends ThingIFAPITestBase {
         Assert.assertEquals(KII_CLOUD_BASE_PATH + "/things/" + thingID.getID() + "/vendor-thing-id", request.getPath());
         Assert.assertEquals("GET", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
@@ -44,12 +68,11 @@ public class ThingIFAPI_GetVendorThingIDTest extends ThingIFAPITestBase {
     }
     @Test
     public void getVendorThingID404ErrorTest() throws Exception {
-        String vendorThingID = UUID.randomUUID().toString();
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(context, APP_ID, APP_KEY);
         ThingIFAPIUtils.setTarget(api, target);
 
         this.addEmptyMockResponse(404);
@@ -64,7 +87,7 @@ public class ThingIFAPI_GetVendorThingIDTest extends ThingIFAPITestBase {
         Assert.assertEquals(KII_CLOUD_BASE_PATH + "/things/" + thingID.getID() + "/vendor-thing-id", request.getPath());
         Assert.assertEquals("GET", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
