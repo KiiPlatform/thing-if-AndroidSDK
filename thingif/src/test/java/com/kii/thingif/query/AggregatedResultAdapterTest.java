@@ -32,14 +32,16 @@ public class AggregatedResultAdapterTest {
                         "\"from\":" +  range.getFrom().getTime() + "," +
                         "\"to\":" + range.getTo().getTime() +
                     "}," +
-                    "\"value\": " + expect.getValue() + "," +
-                    "\"objects\":[" +
-                        "{" +
-                            "\"_created\": " + historyState.getCreatedAt().getTime() + "," +
-                            "\"power\": " + airState.power + "," +
-                            "\"currentTemperature\": " + airState.currentTemperature +
-                        "}" +
-                    "]" +
+                    "\"aggregations\":[{" +
+                        "\"value\": " + expect.getValue() + "," +
+                        "\"objects\":[" +
+                            "{" +
+                                "\"_created\": " + historyState.getCreatedAt().getTime() + "," +
+                                "\"power\": " + airState.power + "," +
+                                "\"currentTemperature\": " + airState.currentTemperature +
+                            "}" +
+                        "]" +
+                    "}]" +
                 "}").toString();
 
         Gson gson = new GsonBuilder()

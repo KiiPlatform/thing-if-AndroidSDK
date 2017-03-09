@@ -96,6 +96,7 @@ public class AggregateTest extends ThingIFAPITestBase {
                         "\"aggregations\":[" +
                             "{" +
                                 "\"type\":\"" + aggregation.getFunction().name() + "\"," +
+                                "\"putAggregationInto\":\"" + aggregation.getFunction().name().toLowerCase() + "\"," +
                                 "\"field\":\"" + aggregation.getField() + "\"," +
                                 "\"fieldType\":\"" + aggregation.getFieldType().name() + "\"}" +
                         "]" +
@@ -104,20 +105,22 @@ public class AggregateTest extends ThingIFAPITestBase {
 
         JSONObject responseBody = JsonUtils.newJson(
             "{" +
-                "\"results\":[" +
+                "\"groupedResults\":[" +
                     "{" +
                         "\"range\":{" +
                             "\"from\":" + range.getFrom().getTime() + "," +
                             "\"to\":" + range.getTo().getTime() +
                         "}," +
-                        "\"value\": 2000," +
-                        "\"objects\":[" +
-                            "{" +
-                                "\"_created\": 50," +
-                                "\"power\": true," +
-                                "\"currentTemperature\": 25" +
-                            "}" +
-                        "]" +
+                        "\"aggregations\":[{" +
+                            "\"value\": 2000," +
+                            "\"objects\":[" +
+                                "{" +
+                                    "\"_created\": 50," +
+                                    "\"power\": true," +
+                                    "\"currentTemperature\": 25" +
+                                "}" +
+                            "]" +
+                        "}]" +
                     "}" +
                 "]" +
             "}");
@@ -186,6 +189,7 @@ public class AggregateTest extends ThingIFAPITestBase {
                         "\"aggregations\":[" +
                             "{" +
                                 "\"type\":\"" + aggregation.getFunction().name() + "\"," +
+                                "\"putAggregationInto\":\"" + aggregation.getFunction().name().toLowerCase() + "\"," +
                                 "\"field\":\"" + aggregation.getField() + "\"," +
                                 "\"fieldType\":\"" + aggregation.getFieldType().name() + "\"" +
                             "}" +
@@ -195,20 +199,22 @@ public class AggregateTest extends ThingIFAPITestBase {
 
         JSONObject responseBody = JsonUtils.newJson(
                 "{" +
-                    "\"results\":[" +
+                    "\"groupedResults\":[" +
                         "{" +
                             "\"range\":{" +
                                 "\"from\":" + range.getFrom().getTime() + "," +
                                 "\"to\":" + range.getTo().getTime() +
                             "}," +
-                            "\"value\": 2000," +
-                            "\"objects\":[" +
-                                "{" +
-                                    "\"_created\": 50," +
-                                    "\"power\": true," +
-                                    "\"currentTemperature\": 25" +
-                                "}" +
-                            "]" +
+                            "\"aggregations\":[{" +
+                                "\"value\": 2000," +
+                                "\"objects\":[" +
+                                    "{" +
+                                        "\"_created\": 50," +
+                                        "\"power\": true," +
+                                        "\"currentTemperature\": 25" +
+                                    "}" +
+                                "]" +
+                            "}]" +
                         "}" +
                     "]" +
                 "}");

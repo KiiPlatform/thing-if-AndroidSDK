@@ -37,9 +37,9 @@ public class AggregatedResultAdapter<T extends Number, S extends TargetState>
 
         JsonObject json = jsonElement.getAsJsonObject();
 
-        if (!json.has("range") || !json.has("value")) {
+        if (!json.has("range") || !json.has("aggregations")) {
             throw new JsonParseException(
-                    "json doesn't contain both of 2 necessary fields: range and value.");
+                    "json doesn't contain both of 2 necessary fields: range and aggregations.");
         }
 
         Gson gson = new GsonBuilder()
@@ -48,11 +48,20 @@ public class AggregatedResultAdapter<T extends Number, S extends TargetState>
                 .create();
 
         TimeRange range = gson.fromJson(json.getAsJsonObject("range"), TimeRange.class);
-        T value = gson.fromJson(json.getAsJsonPrimitive("value"), this.fieldClass);
+        JsonArray aggregations = json.getAsJsonArray("aggregations");
+        if (aggregations.size() != 1) {
+            throw new JsonParseException(
+                    "aggregations doesn't contain one object.");
+        }
+        JsonObject aggregation = aggregations.get(0).getAsJsonObject();
+        T value = null;
         List<HistoryState<S>> aggregateObjects = null;
-        if (json.has("objects")) {
+        if (aggregation.has("value")) {
+            value = gson.fromJson(aggregation.getAsJsonPrimitive("value"), this.fieldClass);
+        }
+        if (aggregation.has("objects")) {
             aggregateObjects = new ArrayList<>();
-            JsonArray objects = json.getAsJsonArray("objects");
+            JsonArray objects = aggregation.getAsJsonArray("objects");
             for (int i = 0; i < objects.size(); ++i) {
                 aggregateObjects.add(gson.fromJson(objects.get(i), HistoryState.class));
             }

@@ -51,7 +51,9 @@ public class GroupedHistoryStatesQueryAdapter implements JsonSerializer<GroupedH
         query.addProperty("grouped", true);
         if (this.aggregation != null) {
             JsonArray aggregations = new JsonArray();
-            aggregations.add(gson.toJsonTree(this.aggregation, Aggregation.class));
+            JsonObject aggregation = gson.toJsonTree(this.aggregation, Aggregation.class).getAsJsonObject();
+            aggregation.addProperty("putAggregationInto", this.aggregation.getFunction().name().toLowerCase());
+            aggregations.add(aggregation);
             query.add("aggregations", aggregations);
         }
         json.add("query", query);

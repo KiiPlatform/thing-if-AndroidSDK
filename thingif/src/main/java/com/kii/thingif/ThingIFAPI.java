@@ -2174,7 +2174,7 @@ public class ThingIFAPI implements Parcelable {
             }
         }
 
-        JSONArray results = responseBody.optJSONArray("results");
+        JSONArray results = responseBody.optJSONArray("groupedResults");
         if (results != null) {
             for (int i = 0; i < results.length(); ++i) {
                 JSONObject result = results.optJSONObject(i);
