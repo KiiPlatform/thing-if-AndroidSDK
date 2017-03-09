@@ -1,7 +1,12 @@
-package com.kii.thingif;
+package com.kii.thingif.thingifapi;
 
 import android.content.Context;
 
+import com.kii.thingif.StandaloneThing;
+import com.kii.thingif.Target;
+import com.kii.thingif.ThingIFAPI;
+import com.kii.thingif.ThingIFAPITestBase;
+import com.kii.thingif.TypedID;
 import com.kii.thingif.exception.UnregisteredAliasException;
 import com.kii.thingif.states.AirConditionerState;
 import com.kii.thingif.states.HumidityState;
@@ -22,7 +27,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(RobolectricTestRunner.class)
-public class ThingIFAPI_TargetStateTest extends ThingIFAPITestBase {
+public class GetTargetStateTest extends ThingIFAPITestBase {
     private Context context;
 
     @Before
@@ -41,7 +46,6 @@ public class ThingIFAPI_TargetStateTest extends ThingIFAPITestBase {
     public void getTargetStateTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        String triggerID = "trigger-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         String responseBody =
@@ -80,7 +84,7 @@ public class ThingIFAPI_TargetStateTest extends ThingIFAPITestBase {
         org.junit.Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/states", request.getPath());
         org.junit.Assert.assertEquals("GET", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
@@ -97,7 +101,6 @@ public class ThingIFAPI_TargetStateTest extends ThingIFAPITestBase {
     public void getTargetState_UnknownAliasTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        String triggerID = "trigger-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         String responseBody =
@@ -118,7 +121,6 @@ public class ThingIFAPI_TargetStateTest extends ThingIFAPITestBase {
     public void getTargetStateWithAliasTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        String triggerID = "trigger-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         String responseBody =
@@ -133,7 +135,7 @@ public class ThingIFAPI_TargetStateTest extends ThingIFAPITestBase {
         ThingIFAPI api = createDefaultThingIFAPIBuilder(this.context, APP_ID, APP_KEY)
                 .setTarget(target)
                 .build();
-        AirConditionerState state = api.getTargetState(ALIAS1);
+        AirConditionerState state = api.getTargetState(ALIAS1, AirConditionerState.class);
         // verify the result
         Assert.assertNotNull(state);
         Assert.assertFalse(state.power);
@@ -146,7 +148,7 @@ public class ThingIFAPI_TargetStateTest extends ThingIFAPITestBase {
                 request.getPath());
         org.junit.Assert.assertEquals("GET", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
@@ -156,19 +158,68 @@ public class ThingIFAPI_TargetStateTest extends ThingIFAPITestBase {
     @Test(expected = IllegalStateException.class)
     public void getTargetStateWithAlias_NullTargetTest() throws Exception {
         ThingIFAPI api = this.createDefaultThingIFAPIBuilder(this.context, APP_ID, APP_KEY).build();
-        api.getTargetState(ALIAS1);
+        api.getTargetState(ALIAS1, AirConditionerState.class);
     }
 
     @Test(expected = UnregisteredAliasException.class)
     public void getTargetStateWithAlias_UnknownAliasTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
-        String triggerID = "trigger-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
         ThingIFAPI api = this.createDefaultThingIFAPIBuilder(this.context, APP_ID, APP_KEY)
                 .setTarget(target)
                 .build();
 
-        api.getTargetState("unknown");
+        api.getTargetState("unknown", AirConditionerState.class);
     }
-}
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getTargetStateWithNullTargetStateClassTest() throws Exception {
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+        ThingIFAPI api = this.createDefaultThingIFAPIBuilder(this.context, APP_ID, APP_KEY)
+                .setTarget(target)
+                .build();
+
+        api.getTargetState(ALIAS1, null);
+    }
+
+    @Test
+    public void getTargetStateWithDifferentStateClassTest() throws Exception {
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        String responseBody =
+                "{" +
+                        "\"power\":false," +
+                        "\"currentTemperature\":25" +
+                        "}";
+        MockResponse response = new MockResponse().setResponseCode(200);
+        response.setBody(responseBody);
+        this.server.enqueue(response);
+
+        ThingIFAPI api = createDefaultThingIFAPIBuilder(this.context, APP_ID, APP_KEY)
+                .setTarget(target)
+                .build();
+        try {
+            api.getTargetState(ALIAS1, HumidityState.class);
+            Assert.fail("should throw exception");
+        }catch (ClassCastException e) {
+        }
+
+        // verify the 1st request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        org.junit.Assert.assertEquals(
+                BASE_PATH + "/targets/" + thingID.toString() + "/states/aliases/" + ALIAS1,
+                request.getPath());
+        org.junit.Assert.assertEquals("GET", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
+        expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        this.assertRequestHeader(expectedRequestHeaders, request);
+    }
+  }
