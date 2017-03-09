@@ -172,4 +172,54 @@ public class GetTargetStateTest extends ThingIFAPITestBase {
 
         api.getTargetState("unknown", AirConditionerState.class);
     }
-}
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getTargetStateWithNullTargetStateClassTest() throws Exception {
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+        ThingIFAPI api = this.createDefaultThingIFAPIBuilder(this.context, APP_ID, APP_KEY)
+                .setTarget(target)
+                .build();
+
+        api.getTargetState(ALIAS1, null);
+    }
+
+    @Test
+    public void getTargetStateWithDifferentStateClassTest() throws Exception {
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        String responseBody =
+                "{" +
+                        "\"power\":false," +
+                        "\"currentTemperature\":25" +
+                        "}";
+        MockResponse response = new MockResponse().setResponseCode(200);
+        response.setBody(responseBody);
+        this.server.enqueue(response);
+
+        ThingIFAPI api = createDefaultThingIFAPIBuilder(this.context, APP_ID, APP_KEY)
+                .setTarget(target)
+                .build();
+        try {
+            api.getTargetState(ALIAS1, HumidityState.class);
+            Assert.fail("should throw exception");
+        }catch (ClassCastException e) {
+        }
+
+        // verify the 1st request
+        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
+        org.junit.Assert.assertEquals(
+                BASE_PATH + "/targets/" + thingID.toString() + "/states/aliases/" + ALIAS1,
+                request.getPath());
+        org.junit.Assert.assertEquals("GET", request.getMethod());
+
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
+        expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
+        expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
+        expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
+        this.assertRequestHeader(expectedRequestHeaders, request);
+    }
+  }

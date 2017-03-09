@@ -1641,6 +1641,7 @@ public class ThingIFAPI implements Parcelable {
      * @throws ThingIFRestException Thrown when server returns error response.
      * @throws ClassCastException Thrown when S is different with registered class for this alias.
      * @throws UnregisteredAliasException Thrown when alias cannot be handled.
+     * @throws IllegalArgumentException Thrown when targetStateClass is null.
      */
     @NonNull
     @WorkerThread
