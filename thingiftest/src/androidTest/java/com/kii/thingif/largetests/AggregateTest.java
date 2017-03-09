@@ -54,7 +54,8 @@ public class AggregateTest extends LargeTestCaseBase {
                 "power",
                 Aggregation.FieldType.BOOLEAN);
 
-        List<AggregatedResult<Integer, AirConditionerState>> results = this.onboardedApi.aggregate(query, aggregation, Integer.class);
+        List<AggregatedResult<Integer, AirConditionerState>> results = this.onboardedApi.aggregate(
+                query, aggregation, AirConditionerState.class, Integer.class);
 
         Assert.assertNotNull(results);
         Assert.assertEquals(0, results.size());
@@ -85,7 +86,8 @@ public class AggregateTest extends LargeTestCaseBase {
                 "currentTemperature",
                 Aggregation.FieldType.INTEGER);
 
-        List<AggregatedResult<Integer, AirConditionerState>> results = this.onboardedApi.aggregate(query, aggregation, Integer.class);
+        List<AggregatedResult<Integer, AirConditionerState>> results = this.onboardedApi.aggregate(
+                query, aggregation, AirConditionerState.class, Integer.class);
 
         Assert.assertNotNull(results);
         Assert.assertEquals(1, results.size());
@@ -123,7 +125,8 @@ public class AggregateTest extends LargeTestCaseBase {
                 "currentTemperature",
                 Aggregation.FieldType.INTEGER);
 
-        List<AggregatedResult<Integer, AirConditionerState>> results = this.onboardedApi.aggregate(query, aggregation, Integer.class);
+        List<AggregatedResult<Integer, AirConditionerState>> results = this.onboardedApi.aggregate(
+                query, aggregation, AirConditionerState.class, Integer.class);
 
         Assert.assertNotNull(results);
         Assert.assertEquals(1, results.size());
@@ -160,7 +163,8 @@ public class AggregateTest extends LargeTestCaseBase {
                 "currentTemperature",
                 Aggregation.FieldType.INTEGER);
 
-        List<AggregatedResult<Integer, AirConditionerState>> results = this.onboardedApi.aggregate(query, aggregation, Integer.class);
+        List<AggregatedResult<Integer, AirConditionerState>> results = this.onboardedApi.aggregate(
+                query, aggregation, AirConditionerState.class, Integer.class);
 
         Assert.assertNotNull(results);
         Assert.assertEquals(1, results.size());
@@ -197,7 +201,8 @@ public class AggregateTest extends LargeTestCaseBase {
                 "currentTemperature",
                 Aggregation.FieldType.INTEGER);
 
-        List<AggregatedResult<Integer, AirConditionerState>> results = this.onboardedApi.aggregate(query, aggregation, Integer.class);
+        List<AggregatedResult<Integer, AirConditionerState>> results = this.onboardedApi.aggregate(
+                query, aggregation, AirConditionerState.class, Integer.class);
 
         Assert.assertNotNull(results);
         Assert.assertEquals(1, results.size());
@@ -235,7 +240,8 @@ public class AggregateTest extends LargeTestCaseBase {
                 "currentTemperature",
                 Aggregation.FieldType.INTEGER);
 
-        List<AggregatedResult<Integer, AirConditionerState>> results = this.onboardedApi.aggregate(query, aggregation, Integer.class);
+        List<AggregatedResult<Integer, AirConditionerState>> results = this.onboardedApi.aggregate(
+                query, aggregation, AirConditionerState.class, Integer.class);
 
         Assert.assertNotNull(results);
         Assert.assertEquals(1, results.size());
