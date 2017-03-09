@@ -26,6 +26,6 @@ public class HistoryStateAdapter implements JsonDeserializer<HistoryState> {
         JsonObject json = jsonElement.getAsJsonObject();
         TargetState state = new Gson().fromJson(json, stateClass);
         Long createdAt = json.get("_created").getAsLong();
-        return new HistoryState(state, new Date(createdAt));
+        return new HistoryState<>(state, new Date(createdAt));
     }
 }
