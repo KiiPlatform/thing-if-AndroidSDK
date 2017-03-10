@@ -176,4 +176,9 @@ public class LargeTestCaseBase {
         stateTypes.put(ALIAS2, HumidityState.class);
         return stateTypes;
     }
+
+    protected ThingIFAPI copyThingIFAPIWithoutTarget(ThingIFAPI api) {
+        return ThingIFAPI.Builder.newBuilder(context, api.getApp(), api.getOwner(),
+                api.getActionTypes(), api.getStateTypes()).build();
+    }
 }
