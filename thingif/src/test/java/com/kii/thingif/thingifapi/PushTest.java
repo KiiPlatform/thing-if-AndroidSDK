@@ -1,16 +1,24 @@
-package com.kii.thingif;
+package com.kii.thingif.thingifapi;
 
-import android.support.test.runner.AndroidJUnit4;
+import android.content.Context;
 
 import com.google.gson.JsonObject;
+import com.kii.thingif.PushBackend;
+import com.kii.thingif.ThingIFAPI;
+import com.kii.thingif.ThingIFAPITestBase;
 import com.kii.thingif.exception.BadRequestException;
 import com.kii.thingif.exception.NotFoundException;
 import com.kii.thingif.exception.UnauthorizedException;
+import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,8 +29,22 @@ import java.util.concurrent.TimeUnit;
  * http://docs.kii.com/rest/#notification_management-manage_the_user_thing_device_installation-register_a_new_device
  * http://docs.kii.com/rest/#notification_management-manage_the_user_thing_device_installation-delete_the_installation
  */
-@RunWith(AndroidJUnit4.class)
-public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
+@RunWith(RobolectricTestRunner.class)
+public class PushTest extends ThingIFAPITestBase {
+    private Context context;
+
+    @Before
+    public void before() throws Exception{
+        this.context = RuntimeEnvironment.application.getApplicationContext();
+        this.server = new MockWebServer();
+        this.server.start();
+    }
+
+    @After
+    public void after() throws Exception {
+        this.server.shutdown();
+    }
+
     @Test
     public void installPushGCMTest() throws Exception {
         String deviceToken = UUID.randomUUID().toString();
@@ -30,7 +52,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
 
         this.addMockResponseForInstallPush(201, installationID);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         Assert.assertNull(api.getInstallationID());
         String result = api.installPush(deviceToken, PushBackend.GCM);
         Assert.assertNotNull(api.getInstallationID());
@@ -50,7 +72,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
 
         JsonObject expectedRequestBody = new JsonObject();
         expectedRequestBody.addProperty("installationRegistrationID", deviceToken);
-        expectedRequestBody.addProperty("deviceType", PushBackend.GCM.getDeviceType());
+        expectedRequestBody.addProperty("deviceType", "ANDROID");
         this.assertRequestBody(expectedRequestBody, request);
     }
     @Test
@@ -60,7 +82,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
 
         this.addMockResponseForInstallPush(201, installationID);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         Assert.assertNull(api.getInstallationID());
         String result = api.installPush(deviceToken, PushBackend.GCM,true);
         Assert.assertNotNull(api.getInstallationID());
@@ -80,7 +102,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
 
         JsonObject expectedRequestBody = new JsonObject();
         expectedRequestBody.addProperty("installationRegistrationID", deviceToken);
-        expectedRequestBody.addProperty("deviceType", PushBackend.GCM.getDeviceType());
+        expectedRequestBody.addProperty("deviceType", "ANDROID");
         expectedRequestBody.addProperty("development", true);
         this.assertRequestBody(expectedRequestBody, request);
     }
@@ -91,7 +113,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
 
         this.addMockResponseForInstallPush(201, installationID);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         Assert.assertNull(api.getInstallationID());
         String result = api.installPush(deviceToken, PushBackend.JPUSH);
         Assert.assertNotNull(api.getInstallationID());
@@ -111,7 +133,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
 
         JsonObject expectedRequestBody = new JsonObject();
         expectedRequestBody.addProperty("installationRegistrationID", deviceToken);
-        expectedRequestBody.addProperty("deviceType", PushBackend.JPUSH.getDeviceType());
+        expectedRequestBody.addProperty("deviceType", "JPUSH");
         this.assertRequestBody(expectedRequestBody, request);
     }
     @Test
@@ -119,7 +141,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
         String deviceToken = UUID.randomUUID().toString();
         this.addEmptyMockResponse(400);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         try {
             api.installPush(deviceToken, PushBackend.GCM);
             Assert.fail("ThingIFRestException should be thrown");
@@ -141,7 +163,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
 
         JsonObject expectedRequestBody = new JsonObject();
         expectedRequestBody.addProperty("installationRegistrationID", deviceToken);
-        expectedRequestBody.addProperty("deviceType", PushBackend.GCM.getDeviceType());
+        expectedRequestBody.addProperty("deviceType", "ANDROID");
         this.assertRequestBody(expectedRequestBody, request);
     }
     @Test
@@ -149,7 +171,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
         String deviceToken = UUID.randomUUID().toString();
         this.addEmptyMockResponse(401);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         try {
             api.installPush(deviceToken, PushBackend.GCM);
             Assert.fail("ThingIFRestException should be thrown");
@@ -171,7 +193,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
 
         JsonObject expectedRequestBody = new JsonObject();
         expectedRequestBody.addProperty("installationRegistrationID", deviceToken);
-        expectedRequestBody.addProperty("deviceType", PushBackend.GCM.getDeviceType());
+        expectedRequestBody.addProperty("deviceType", "ANDROID");
         this.assertRequestBody(expectedRequestBody, request);
     }
     @Test
@@ -179,7 +201,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
         String deviceToken = UUID.randomUUID().toString();
         this.addEmptyMockResponse(404);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         try {
             api.installPush(deviceToken, PushBackend.GCM);
             Assert.fail("ThingIFRestException should be thrown");
@@ -200,13 +222,13 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
 
         JsonObject expectedRequestBody = new JsonObject();
         expectedRequestBody.addProperty("installationRegistrationID", deviceToken);
-        expectedRequestBody.addProperty("deviceType", PushBackend.GCM.getDeviceType());
+        expectedRequestBody.addProperty("deviceType", "ANDROID");
         this.assertRequestBody(expectedRequestBody, request);
     }
     @Test(expected = IllegalArgumentException.class)
     public void installPushWithNullPushBackendTest() throws Exception {
         String deviceToken = UUID.randomUUID().toString();
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         api.installPush(deviceToken, null);
     }
     @Test
@@ -215,7 +237,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
 
         this.addEmptyMockResponse(204);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         api.uninstallPush(installationID);
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -234,7 +256,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
 
         this.addEmptyMockResponse(401);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         try {
             api.uninstallPush(installationID);
             Assert.fail("ThingIFRestException should be thrown");
@@ -257,7 +279,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
 
         this.addEmptyMockResponse(404);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         try {
             api.uninstallPush(installationID);
             Assert.fail("ThingIFRestException should be thrown");
@@ -276,7 +298,7 @@ public class ThingIFAPI_PushTest extends ThingIFAPITestBase {
     }
     @Test(expected = IllegalArgumentException.class)
     public void uninstallPushWithNullInstallationIDTest() throws Exception {
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         api.uninstallPush(null);
     }
 }
