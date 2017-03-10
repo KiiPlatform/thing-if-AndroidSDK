@@ -405,4 +405,13 @@ public class ThingIFAPITestBase extends SmallTestBase {
         this.server.enqueue(response);
     }
 
+    protected void addMockResponseForInstallPush(int httpStatus, String installationID) {
+        MockResponse response = new MockResponse().setResponseCode(httpStatus);
+        if (installationID != null) {
+            JsonObject responseBody = new JsonObject();
+            responseBody.addProperty("installationID", installationID);
+            response.setBody(responseBody.toString());
+        }
+        this.server.enqueue(response);
+    }
 }
