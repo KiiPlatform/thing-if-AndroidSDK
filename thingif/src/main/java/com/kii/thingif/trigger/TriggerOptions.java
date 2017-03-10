@@ -1,10 +1,7 @@
 package com.kii.thingif.trigger;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,7 +9,7 @@ import org.json.JSONObject;
 /**
  * Options of trigger.
  */
-public class TriggerOptions implements Parcelable {
+public class TriggerOptions {
 
     /**
      * TriggerOptions builder.
@@ -181,43 +178,4 @@ public class TriggerOptions implements Parcelable {
     public JSONObject getMetadata() {
         return this.metadata;
     }
-
-    private TriggerOptions(Parcel in) {
-        this.title = in.readString();
-        this.description = in.readString();
-        String metadata = in.readString();
-        if (!TextUtils.isEmpty(metadata)) {
-            try {
-                this.metadata = new JSONObject(metadata);
-            } catch (JSONException ignore) {
-                // Never happen
-            }
-        }
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.title);
-        dest.writeString(this.description);
-        dest.writeString(
-            this.metadata == null ? null : this.metadata.toString());
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    public static final Creator<TriggerOptions> CREATOR =
-            new Creator<TriggerOptions>() {
-        @Override
-        public TriggerOptions createFromParcel(Parcel in) {
-            return new TriggerOptions(in);
-        }
-
-        @Override
-        public TriggerOptions[] newArray(int size) {
-            return new TriggerOptions[size];
-        }
-    };
 }

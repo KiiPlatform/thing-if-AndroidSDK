@@ -1,7 +1,5 @@
 package com.kii.thingif.trigger;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -36,7 +34,7 @@ import java.util.List;
  * <li>meta data of a command</li>
  * </ul>
  */
-public class TriggeredCommandForm implements Parcelable {
+public class TriggeredCommandForm {
 
     /**
      * TriggeredCommandForm builder.
@@ -144,9 +142,9 @@ public class TriggeredCommandForm implements Parcelable {
          * <p>
          * {@link
          * com.kii.thingif.ThingIFAPI#postNewTrigger(TriggeredCommandForm,
-         * Predicate, TriggerOptions)} and {@link
-         * com.kii.thingif.ThingIFAPI#patchTrigger(String,
-         * TriggeredCommandForm, Predicate, TriggerOptions)} use {@link
+         * Predicate, TriggerOptions)},  {@link
+         * com.kii.thingif.ThingIFAPI#patchCommandTrigger(String, TriggeredCommandForm, Predicate, TriggerOptions)}
+         * and {@link com.kii.thingif.ThingIFAPI#patchServerCodeTrigger(String, ServerCode, Predicate)} use {@link
          * TriggeredCommandForm#getTargetID()} to specify target of command
          * in trigger. If you do not set target thing ID with this method,
          * Default target is used. The default target is {@link
@@ -367,50 +365,4 @@ public class TriggeredCommandForm implements Parcelable {
     public JSONObject getMetadata() {
         return this.metadata;
     }
-
-    private TriggeredCommandForm(Parcel in) {
-        //TODO: // FIXME: 12/16/16 should adapt to alias subclasses
-        this.aliasActions = new ArrayList<>();
-        in.readList(this.aliasActions, TriggeredCommandForm.class.getClassLoader());
-        this.targetID = in.readParcelable(TypedID.class.getClassLoader());
-        this.title = in.readString();
-        this.description = in.readString();
-        String metadata = in. readString();
-        if (metadata != null) {
-            try {
-                this.metadata = new JSONObject(metadata);
-            } catch (JSONException e) {
-                // Never happen.
-            }
-        }
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        //TODO: // FIXME: 12/16/16 should adapt to alias subclass
-        dest.writeList(this.aliasActions);
-        dest.writeParcelable(this.getTargetID(), flags);
-        dest.writeString(this.title);
-        dest.writeString(this.description);
-        dest.writeString(this.metadata != null ?
-                this.metadata.toString() : null);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    public static final Creator<TriggeredCommandForm> CREATOR =
-            new Creator<TriggeredCommandForm>() {
-        @Override
-        public TriggeredCommandForm createFromParcel(Parcel in) {
-            return new TriggeredCommandForm(in);
-        }
-
-        @Override
-        public TriggeredCommandForm[] newArray(int size) {
-            return new TriggeredCommandForm[size];
-        }
-    };
 }
