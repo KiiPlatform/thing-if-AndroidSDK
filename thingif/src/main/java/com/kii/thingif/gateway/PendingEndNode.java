@@ -10,20 +10,26 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class PendingEndNode implements Parcelable {
-    private final String vendorThingID;
-    private final String thingType;
-    private JSONObject thingProperties;
+    @NonNull private final String vendorThingID;
+    @Nullable private final String thingType;
+    @Nullable private JSONObject thingProperties;
+    @Nullable private final String firmwareVersion;
 
-    public PendingEndNode(String vendorThingID) {
-        this(vendorThingID, null, null);
+    public PendingEndNode(@NonNull String vendorThingID) {
+        this(vendorThingID, null);
     }
-    public PendingEndNode(String vendorThingID, String thingType) {
-        this(vendorThingID, thingType, null);
+    public PendingEndNode(@NonNull String vendorThingID, @Nullable String thingType) {
+        this(vendorThingID, thingType, null, null);
     }
-    public PendingEndNode(String vendorThingID, String thingType, JSONObject thingProperties) {
+    public PendingEndNode(
+            @NonNull String vendorThingID,
+            @Nullable String thingType,
+            @Nullable String firmwareVersion,
+            @Nullable JSONObject thingProperties) {
         this.vendorThingID = vendorThingID;
         this.thingType = thingType;
         this.thingProperties = thingProperties;
+        this.firmwareVersion = firmwareVersion;
     }
 
     PendingEndNode(JSONObject json) {
@@ -33,6 +39,11 @@ public class PendingEndNode implements Parcelable {
             this.thingType = this.thingProperties.optString("thingType");
         } else {
             this.thingType = null;
+        }
+        if (this.thingProperties != null && this.thingProperties.has("firmwareVersion")) {
+            this.firmwareVersion = this.thingProperties.optString("firmwareVersion");
+        } else {
+            this.firmwareVersion = null;
         }
     }
     @NonNull
@@ -47,10 +58,15 @@ public class PendingEndNode implements Parcelable {
     public JSONObject getThingProperties() {
         return this.thingProperties;
     }
+    @Nullable
+    public String getFirmwareVersion() {
+        return firmwareVersion;
+    }
 
     protected PendingEndNode(Parcel in) {
         this.vendorThingID = in.readString();
         this.thingType = in.readString();
+        this.firmwareVersion = in.readString();
         String json = in.readString();
         if (!TextUtils.isEmpty(json)) {
             try {
@@ -78,6 +94,7 @@ public class PendingEndNode implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.vendorThingID);
         dest.writeString(this.thingType);
+        dest.writeString(this.firmwareVersion);
         if (this.thingProperties != null) {
             dest.writeString(this.thingProperties.toString());
         }
