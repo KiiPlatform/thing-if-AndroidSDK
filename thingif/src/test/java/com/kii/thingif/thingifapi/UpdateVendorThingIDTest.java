@@ -147,9 +147,35 @@ public class UpdateVendorThingIDTest extends ThingIFAPITestBase {
         this.assertRequestBody(expectedRequestBody, request);
     }
     @Test(expected = IllegalArgumentException.class)
+    public void updateVendorThingIDWithNullVendorThingIDTest() throws Exception {
+        String newVendorThingID = null;
+        String newPassword = "password999";
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
+        ThingIFAPIUtils.setTarget(api, target);
+
+        api.updateVendorThingID(newVendorThingID, newPassword);
+    }
+    @Test(expected = IllegalArgumentException.class)
     public void updateVendorThingIDWithEmptyVendorThingIDTest() throws Exception {
         String newVendorThingID = "";
         String newPassword = "password999";
+        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
+        String accessToken = "thing-access-token-1234";
+        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
+
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
+        ThingIFAPIUtils.setTarget(api, target);
+
+        api.updateVendorThingID(newVendorThingID, newPassword);
+    }
+    @Test(expected = IllegalArgumentException.class)
+    public void updateVendorThingIDWithNullPasswordTest() throws Exception {
+        String newVendorThingID = UUID.randomUUID().toString();
+        String newPassword = null;
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
