@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import org.json.JSONObject;
 
 /**
- * Optional parameters of {@link ThingIFAPI#onboard(String, String, OnboardWithVendorThingIDOptions)}.
+ * Optional parameters of {@link ThingIFAPI#onboardWithVendorThingID(String, String)}.
  */
 public class OnboardWithVendorThingIDOptions {
     private final String thingType;
