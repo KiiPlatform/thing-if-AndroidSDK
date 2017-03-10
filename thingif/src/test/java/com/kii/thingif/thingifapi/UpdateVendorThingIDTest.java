@@ -1,23 +1,48 @@
-package com.kii.thingif;
+package com.kii.thingif.thingifapi;
 
-import android.support.test.runner.AndroidJUnit4;
+import android.content.Context;
 
 import com.google.gson.JsonObject;
+import com.kii.thingif.StandaloneThing;
+import com.kii.thingif.Target;
+import com.kii.thingif.ThingIFAPI;
+import com.kii.thingif.ThingIFAPITestBase;
+import com.kii.thingif.TypedID;
 import com.kii.thingif.exception.BadRequestException;
 import com.kii.thingif.exception.ConflictException;
+import com.kii.thingif.thingifapi.utils.ThingIFAPIUtils;
+import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-@RunWith(AndroidJUnit4.class)
-public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
+@RunWith(RobolectricTestRunner.class)
+public class UpdateVendorThingIDTest extends ThingIFAPITestBase {
+    private Context context;
+
+    @Before
+    public void before() throws Exception {
+        context = RuntimeEnvironment.application.getApplicationContext();
+        this.server = new MockWebServer();
+        this.server.start();
+    }
+
+    @After
+    public void after() throws Exception {
+        this.server.shutdown();
+    }
+
     @Test
     public void updateVendorThingIDTest() throws Exception {
         String newVendorThingID = UUID.randomUUID().toString();
@@ -26,7 +51,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         ThingIFAPIUtils.setTarget(api, target);
 
         this.addEmptyMockResponse(204);
@@ -57,7 +82,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         ThingIFAPIUtils.setTarget(api, target);
 
         this.addEmptyMockResponse(400);
@@ -66,6 +91,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
             api.updateVendorThingID(newVendorThingID, newPassword);
             Assert.fail("BadRequestException should be thrown");
         } catch (BadRequestException e) {
+            // expected.
         }
 
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -92,7 +118,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         ThingIFAPIUtils.setTarget(api, target);
 
         this.addEmptyMockResponse(409);
@@ -101,6 +127,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
             api.updateVendorThingID(newVendorThingID, newPassword);
             Assert.fail("ConflictException should be thrown");
         } catch (ConflictException e) {
+            // expected.
         }
 
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -127,7 +154,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         ThingIFAPIUtils.setTarget(api, target);
 
         api.updateVendorThingID(newVendorThingID, newPassword);
@@ -140,7 +167,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         ThingIFAPIUtils.setTarget(api, target);
 
         api.updateVendorThingID(newVendorThingID, newPassword);
@@ -153,7 +180,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         ThingIFAPIUtils.setTarget(api, target);
 
         api.updateVendorThingID(newVendorThingID, newPassword);
@@ -166,7 +193,7 @@ public class ThingIFAPI_UpdateVendorThingIDTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        ThingIFAPI api = this.createThingIFAPIWithDemoSchema(APP_ID, APP_KEY);
+        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         ThingIFAPIUtils.setTarget(api, target);
 
         api.updateVendorThingID(newVendorThingID, newPassword);
