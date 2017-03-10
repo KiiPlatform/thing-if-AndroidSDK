@@ -1,12 +1,10 @@
 package com.kii.thingif;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 /** Represents Application on Kii Cloud */
-public class KiiApp implements Parcelable {
+public class KiiApp {
     private String appID;
     private String appKey;
     private String hostName;
@@ -67,26 +65,6 @@ public class KiiApp implements Parcelable {
         this.siteName = "CUSTOM";
     }
 
-    protected KiiApp(Parcel in) {
-        appID = in.readString();
-        appKey = in.readString();
-        hostName = in.readString();
-        baseUrl = in.readString();
-        siteName = in.readString();
-    }
-
-    public static final Creator<KiiApp> CREATOR = new Creator<KiiApp>() {
-        @Override
-        public KiiApp createFromParcel(Parcel in) {
-            return new KiiApp(in);
-        }
-
-        @Override
-        public KiiApp[] newArray(int size) {
-            return new KiiApp[size];
-        }
-    };
-
     public String getAppID() {
         return this.appID;
     }
@@ -113,21 +91,6 @@ public class KiiApp implements Parcelable {
     public String getSiteName() {
         return this.siteName;
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(appID);
-        dest.writeString(appKey);
-        dest.writeString(hostName);
-        dest.writeString(baseUrl);
-        dest.writeString(siteName);
-    }
-
 
     /** KiiApp Builder.
      * Provides fine grained control on creating KiiApp instance.<br>

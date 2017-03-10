@@ -2,8 +2,6 @@ package com.kii.thingif;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.support.annotation.NonNull;
@@ -79,7 +77,7 @@ import java.util.Map;
 /**
  * ThingIFAPI represent an API instance to access Thing-IF APIs for a specified target.
  */
-public class ThingIFAPI implements Parcelable {
+public class ThingIFAPI {
 
     private static final String SHARED_PREFERENCES_KEY_INSTANCE = "ThingIFAPI_INSTANCE";
     private static final String SHARED_PREFERENCES_SDK_VERSION_KEY = "ThingIFAPI_VERSION";
@@ -1856,48 +1854,6 @@ public class ThingIFAPI implements Parcelable {
             return context.getSharedPreferences("com.kii.thingif.preferences", Context.MODE_PRIVATE);
         }
         return null;
-    }
-
-    // Implementation of Parcelable
-    protected ThingIFAPI(Parcel in) {
-        this.tag = in.readString();
-        this.app = in.readParcelable(KiiApp.class.getClassLoader());
-        this.owner = in.readParcelable(Owner.class.getClassLoader());
-        this.target = in.readParcelable(Target.class.getClassLoader());
-        this.restClient = new IoTRestClient();
-        this.installationID = in.readString();
-
-        //TODO: // FIXME: 12/20/16 read the register action classes
-        int size = in.readInt();
-        this.actionTypes = new HashMap<>(size);
-        //TODO: // FIXME: 12/20/16 read the registered targetState classes
-        int size2 = in.readInt();
-        this.stateTypes = new HashMap<>(size2);
-
-    }
-    public static final Creator<ThingIFAPI> CREATOR = new Creator<ThingIFAPI>() {
-        @Override
-        public ThingIFAPI createFromParcel(Parcel in) {
-            return new ThingIFAPI(in);
-        }
-
-        @Override
-        public ThingIFAPI[] newArray(int size) {
-            return new ThingIFAPI[size];
-        }
-    };
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.tag);
-        dest.writeParcelable(this.app, flags);
-        dest.writeParcelable(this.owner, flags);
-        dest.writeParcelable(this.target, flags);
-        dest.writeString(this.installationID);
-        //TODO: // FIXME: 12/20/16 implement write registered action, actionResult, targetState classes
     }
 
     /**
