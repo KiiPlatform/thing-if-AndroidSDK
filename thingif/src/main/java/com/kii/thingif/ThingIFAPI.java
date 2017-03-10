@@ -12,6 +12,7 @@ import android.support.annotation.WorkerThread;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
@@ -42,6 +43,7 @@ import com.kii.thingif.internal.gson.QueryClauseAdapter;
 import com.kii.thingif.internal.gson.ThingIFAPIAdapter;
 import com.kii.thingif.query.AggregatedResultAdapter;
 import com.kii.thingif.internal.gson.GroupedHistoryStatesQueryAdapter;
+import com.kii.thingif.query.GroupedHistoryStatesAdapter;
 import com.kii.thingif.trigger.TriggeredServerCodeResultAdapter;
 import com.kii.thingif.internal.gson.TypedIDAdapter;
 import com.kii.thingif.internal.http.IoTRestClient;
@@ -2143,11 +2145,80 @@ public class ThingIFAPI implements Parcelable {
      * @throws ClassCastException Thrown when targetStateClass is different with registered target
      * class for the specified alias.
      */
+    @NonNull
     public <S extends TargetState> List<GroupedHistoryStates<S>> query(
             @NonNull GroupedHistoryStatesQuery query,
             @NonNull Class<S> targetStateClass) throws ThingIFException{
-        //TODO: // FIXME: 12/21/16 implement the logic
-        return new ArrayList<>();
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
+        }
+        if (query == null) {
+            throw new IllegalArgumentException("query is null");
+        }
+        if (targetStateClass == null) {
+            throw new IllegalArgumentException("targetStateClass is null");
+        }
+
+        if (!this.stateTypes.containsKey(query.getAlias())) {
+            throw new UnregisteredAliasException(query.getAlias(), false);
+        }
+
+        Class<? extends TargetState> storedStateClass = this.stateTypes.get(query.getAlias());
+
+        if (!storedStateClass.equals(targetStateClass)) {
+            throw new ClassCastException("registered target state class is different with " +
+                    "targetStateClass parameter");
+        }
+
+        String path =  MessageFormat.format("/thing-if/apps/{0}/targets/{1}/states/aliases/{2}/query",
+                this.app.getAppID(), this.target.getTypedID().toString(), query.getAlias());
+        String url = Path.combine(this.app.getBaseUrl(), path);
+        Map<String, String> headers = this.newHeader();
+
+        Gson localGson = new GsonBuilder()
+                .registerTypeAdapter(GroupedHistoryStatesQuery.class,
+                        new GroupedHistoryStatesQueryAdapter(null))
+                .registerTypeAdapter(GroupedHistoryStates.class,
+                        new GroupedHistoryStatesAdapter<>(targetStateClass))
+                .create();
+
+        JSONObject requestBody =
+                JsonUtils.newJson(localGson.toJson(query, GroupedHistoryStatesQuery.class));
+
+        IoTRestRequest request = new IoTRestRequest(
+                url,
+                IoTRestRequest.Method.POST,
+                headers,
+                MediaTypes.MEDIA_TYPE_TRAIT_STATE_QUERY_REQUEST,
+                requestBody);
+
+        JSONObject responseBody;
+        try {
+            responseBody = this.restClient.sendRequest(request);
+        }catch (ConflictException e) {
+            // when thing never update its state to server, server returns this error.
+            if (e.getErrorCode() != null && e.getErrorCode().equals("STATE_HISTORY_NOT_AVAILABLE")) {
+                return new ArrayList<>();
+            } else {
+                throw e;
+            }
+        }
+        List<GroupedHistoryStates<S>> states = new ArrayList<>();
+
+        JSONArray statesArray = responseBody.optJSONArray("groupedResults");
+        if (statesArray != null) {
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(HistoryState.class, new HistoryStateAdapter(targetStateClass))
+                    .create();
+            Type historyStateType = new TypeToken<GroupedHistoryStates<S>>(){}.getType();
+            for (int i = 0; i < statesArray.length(); i++) {
+                JSONObject stateJson = statesArray.optJSONObject(i);
+                GroupedHistoryStates<S> historyState =
+                        localGson.fromJson(stateJson.toString(), historyStateType);
+                states.add(historyState);
+            }
+        }
+        return states;
     }
 
     /**
