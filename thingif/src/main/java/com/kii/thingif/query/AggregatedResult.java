@@ -12,14 +12,14 @@ import java.util.List;
 
 public class AggregatedResult<T extends Number, S extends TargetState> implements Parcelable {
     private @NonNull TimeRange timeRange;
-    private @NonNull T value;
+    private @Nullable T value;
     private @Nullable List<HistoryState<S>> aggregatedObjects;
 
     private transient volatile int hashCode; // cached hashcode for performance
 
     AggregatedResult(
         @NonNull TimeRange timeRange,
-        @NonNull T value,
+        @Nullable T value,
         @Nullable List<HistoryState<S>> aggregatedObjects) {
         this.timeRange = timeRange;
         this.value = value;
@@ -31,7 +31,7 @@ public class AggregatedResult<T extends Number, S extends TargetState> implement
         return this.timeRange;
     }
 
-    @NonNull
+    @Nullable
     public T getValue() {
         return this.value;
     }

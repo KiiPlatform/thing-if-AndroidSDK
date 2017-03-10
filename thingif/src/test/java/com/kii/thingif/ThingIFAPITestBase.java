@@ -38,9 +38,10 @@ import java.util.regex.Pattern;
 
 public class ThingIFAPITestBase extends SmallTestBase {
 
-    protected final String APP_ID = "smalltest";
-    protected final String APP_KEY = "abcdefghijklmnopqrstuvwxyz123456789";
+    protected static final String APP_ID = "smalltest";
+    protected static final String APP_KEY = "abcdefghijklmnopqrstuvwxyz123456789";
     protected static final String BASE_PATH = "/thing-if/apps/smalltest";
+    protected static final String KII_CLOUD_BASE_PATH = "/api/apps/" + APP_ID;
     protected static final String ALIAS1 = "AirConditionerAlias";
     protected static final String ALIAS2 = "HumidityAlias";
 
@@ -404,4 +405,14 @@ public class ThingIFAPITestBase extends SmallTestBase {
         }
         this.server.enqueue(response);
     }
+    protected void addMockResponseForGetVendorThingID(int httpStatus, String vendorThingID) {
+        MockResponse response = new MockResponse().setResponseCode(httpStatus);
+        if (vendorThingID != null) {
+            JsonObject responseBody = new JsonObject();
+            responseBody.addProperty("_vendorThingID", vendorThingID);
+            response.setBody(responseBody.toString());
+        }
+        this.server.enqueue(response);
+    }
+
 }
