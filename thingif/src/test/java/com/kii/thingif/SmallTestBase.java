@@ -132,4 +132,15 @@ public class SmallTestBase {
                 JsonUtil.groupedHistoryStateToJson(actual)
         );
     }
+
+    protected void assertSameGroupedHistoryStates(
+            String message,
+            GroupedHistoryStates expected,
+            GroupedHistoryStates actual) {
+        assertJSONObject(
+                message,
+                JsonUtil.groupedHistoryStateToJson(expected),
+                JsonUtil.groupedHistoryStateToJson(actual)
+        );
+    }
 }

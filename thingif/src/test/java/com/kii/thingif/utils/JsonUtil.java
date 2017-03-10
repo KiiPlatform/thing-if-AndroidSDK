@@ -361,4 +361,15 @@ public class JsonUtil {
             throw new RuntimeException(e);
         }
     }
+
+    public static JSONObject timeRangeToClause(TimeRange range) {
+        try{
+            return new JSONObject()
+                    .put("type", "withinTimeRange")
+                    .put("upperLimit", range.getTo().getTime())
+                    .put("lowerLimit", range.getFrom().getTime());
+        }catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
