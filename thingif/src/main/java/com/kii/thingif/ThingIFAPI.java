@@ -700,6 +700,9 @@ public class ThingIFAPI implements Parcelable {
             if (!TextUtils.isEmpty(pendingEndNode.getThingType())) {
                 requestBody.put("endNodeThingType", pendingEndNode.getThingType());
             }
+            if (pendingEndNode.getFirmwareVersion() != null) {
+                requestBody.put("endNodeFirmwareVersion", pendingEndNode.getFirmwareVersion());
+            }
             if (pendingEndNode.getThingProperties() != null && pendingEndNode.getThingProperties().length() > 0) {
                 requestBody.put("endNodeThingProperties", pendingEndNode.getThingProperties());
             }
