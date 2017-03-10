@@ -2207,9 +2207,6 @@ public class ThingIFAPI implements Parcelable {
 
         JSONArray statesArray = responseBody.optJSONArray("groupedResults");
         if (statesArray != null) {
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(HistoryState.class, new HistoryStateAdapter(targetStateClass))
-                    .create();
             Type historyStateType = new TypeToken<GroupedHistoryStates<S>>(){}.getType();
             for (int i = 0; i < statesArray.length(); i++) {
                 JSONObject stateJson = statesArray.optJSONObject(i);
