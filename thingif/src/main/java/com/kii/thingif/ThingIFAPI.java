@@ -40,6 +40,8 @@ import com.kii.thingif.internal.gson.JSONObjectAdapter;
 import com.kii.thingif.internal.gson.PredicateAdapter;
 import com.kii.thingif.internal.gson.QueryClauseAdapter;
 import com.kii.thingif.internal.gson.ThingIFAPIAdapter;
+import com.kii.thingif.query.AggregatedResultAdapter;
+import com.kii.thingif.internal.gson.GroupedHistoryStatesQueryAdapter;
 import com.kii.thingif.trigger.TriggeredServerCodeResultAdapter;
 import com.kii.thingif.internal.gson.TypedIDAdapter;
 import com.kii.thingif.internal.http.IoTRestClient;
@@ -2162,6 +2164,7 @@ public class ThingIFAPI implements Parcelable {
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
      * @throws BadRequestException Thrown if timeRange of query is over 60 data grouping intervals.
+     * @throws UnregisteredAliasException Thrown when alias cannot be handled.
      * @throws ClassCastException Thrown when targetStateClass is different with registered target
      * class for the specified alias.
      */
@@ -2170,7 +2173,59 @@ public class ThingIFAPI implements Parcelable {
             @NonNull Aggregation aggregation,
             @NonNull Class<S> targetStateClass,
             @NonNull Class<T> valueClass) throws ThingIFException {
-        //TODO: // FIXME: 12/21/16 implement the logic
-        return new ArrayList<>();
+        if (this.target == null) {
+            throw new IllegalStateException("Can not perform this action before onboarding");
+        }
+        if (!this.stateTypes.containsKey(groupedQuery.getAlias())) {
+            throw new UnregisteredAliasException(groupedQuery.getAlias(), false);
+        }
+        Class<? extends TargetState> storedStateClass = this.stateTypes.get(groupedQuery.getAlias());
+        if (!storedStateClass.equals(targetStateClass)) {
+            throw new ClassCastException("registered target state class is different with " +
+                    "targetStateClass parameter");
+        }
+
+        Gson localGson = new GsonBuilder()
+                .registerTypeAdapter(GroupedHistoryStatesQuery.class,
+                        new GroupedHistoryStatesQueryAdapter(aggregation))
+                .registerTypeAdapter(AggregatedResult.class,
+                        new AggregatedResultAdapter<>(targetStateClass, valueClass))
+                .create();
+
+        String path = MessageFormat.format("/thing-if/apps/{0}/targets/{1}/states/aliases/{2}/query",
+                this.app.getAppID(), this.target.getTypedID().toString(), groupedQuery.getAlias());
+        String url = Path.combine(this.app.getBaseUrl(), path);
+        Map<String, String> headers = this.newHeader();
+        JSONObject requestBody = JsonUtils.newJson(localGson.toJson(groupedQuery));
+        IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers,
+                MediaTypes.MEDIA_TYPE_TRAIT_STATE_QUERY_REQUEST, requestBody);
+
+        List<AggregatedResult<T, S>> retList = new ArrayList<>();
+
+        JSONObject responseBody;
+        try {
+            responseBody = this.restClient.sendRequest(request);
+        }catch (ConflictException e) {
+            // when thing never update its state to server, server returns this error.
+            if (e.getErrorCode() != null && e.getErrorCode().equals("STATE_HISTORY_NOT_AVAILABLE")) {
+                return retList;
+            } else {
+                throw e;
+            }
+        }
+
+        JSONArray results = responseBody.optJSONArray("groupedResults");
+        Type aggregatedResultType = new TypeToken<AggregatedResult<T, S>>(){}.getType();
+        if (results != null) {
+            for (int i = 0; i < results.length(); ++i) {
+                JSONObject result = results.optJSONObject(i);
+                if (result != null) {
+                    AggregatedResult<T, S> aggregatedResult =
+                            localGson.fromJson(result.toString(), aggregatedResultType);
+                    retList.add(aggregatedResult);
+                }
+            }
+        }
+        return retList;
     }
 }
