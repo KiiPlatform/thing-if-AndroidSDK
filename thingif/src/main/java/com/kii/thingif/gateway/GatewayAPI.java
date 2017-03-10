@@ -3,8 +3,6 @@ package com.kii.thingif.gateway;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
@@ -33,7 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GatewayAPI implements Parcelable {
+public class GatewayAPI {
 
     private static final String SHARED_PREFERENCES_KEY_INSTANCE = "GatewayAPI_INSTANCE";
     private static final String SHARED_PREFERENCES_SDK_VERSION_KEY = "GatewayAPI_VERSION";
@@ -455,40 +453,6 @@ public class GatewayAPI implements Parcelable {
     @Nullable
     public String getAccessToken() {
         return this.accessToken;
-    }
-
-    // Implementation of Parcelable
-    public static final Creator<GatewayAPI> CREATOR = new Creator<GatewayAPI>() {
-        @Override
-        public GatewayAPI createFromParcel(Parcel in) {
-            return new GatewayAPI(in);
-        }
-
-        @Override
-        public GatewayAPI[] newArray(int size) {
-            return new GatewayAPI[size];
-        }
-    };
-
-    protected GatewayAPI(Parcel in) {
-        this.tag = in.readString();
-        this.app = in.readParcelable(KiiApp.class.getClassLoader());
-        this.gatewayAddress = in.readString();
-        this.accessToken = in.readString();
-        this.restClient = new IoTRestClient();
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.tag);
-        dest.writeParcelable(this.app, flags);
-        dest.writeString(this.gatewayAddress);
-        dest.writeString(this.accessToken);
     }
 
     /**
