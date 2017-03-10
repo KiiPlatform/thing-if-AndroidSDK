@@ -395,6 +395,16 @@ public class ThingIFAPITestBase extends SmallTestBase {
         assertJSONObject(expected.getMetadata(), actual.getMetadata());
     }
 
+    protected void addMockResponseForOnBoardEndnode(int httpStatus, String thingID, String accessToken) {
+        MockResponse response = new MockResponse().setResponseCode(httpStatus);
+        if (thingID != null && accessToken != null) {
+            JsonObject responseBody = new JsonObject();
+            responseBody.addProperty("endNodeThingID", thingID);
+            responseBody.addProperty("accessToken", accessToken);
+            response.setBody(responseBody.toString());
+        }
+        this.server.enqueue(response);
+    }
     protected void addMockResponseForGetVendorThingID(int httpStatus, String vendorThingID) {
         MockResponse response = new MockResponse().setResponseCode(httpStatus);
         if (vendorThingID != null) {
