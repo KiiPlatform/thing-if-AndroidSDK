@@ -70,6 +70,7 @@ public class QueryGroupedHistoryStatesTest extends ThingIFAPITestBase {
         GroupedHistoryStatesQuery query = GroupedHistoryStatesQuery.Builder
                 .newBuilder(ALIAS1, range)
                 .setClause(clause)
+                .setFirmwareVersion("v1")
                 .build();
 
         List<HistoryState<AirConditionerState>> historyStates1 = new ArrayList<>();
@@ -134,6 +135,7 @@ public class QueryGroupedHistoryStatesTest extends ThingIFAPITestBase {
                                 .put(JsonUtil.timeRangeToClause(range))))
                 .put("grouped", true);
         requestBody.put("query", queryJson);
+        requestBody.put("firmwareVersion", "v1");
         this.assertRequestBody(requestBody, request);
     }
 
