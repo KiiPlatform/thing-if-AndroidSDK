@@ -10,6 +10,7 @@ import com.kii.thingif.clause.query.AllClause;
 import com.kii.thingif.query.AggregatedResult;
 import com.kii.thingif.query.Aggregation;
 import com.kii.thingif.query.GroupedHistoryStatesQuery;
+import com.kii.thingif.query.HistoryState;
 import com.kii.thingif.query.TimeRange;
 import com.kii.thingif.states.AirConditionerState;
 
@@ -132,7 +133,12 @@ public class AggregateTest extends LargeTestCaseBase {
         Assert.assertTrue(range.getFrom().getTime() >= responseRange.getFrom().getTime());
         Assert.assertTrue(range.getTo().getTime() <= responseRange.getTo().getTime());
         Assert.assertEquals(26, result.getValue());
-        Assert.assertNull(result.getAggregatedObjects());
+        Assert.assertNotNull(result.getAggregatedObjects());
+        List<HistoryState<AirConditionerState>> objects = result.getAggregatedObjects();
+        Assert.assertEquals(1, objects.size());
+        HistoryState<AirConditionerState> history = objects.get(0);
+        Assert.assertNotNull(history);
+        Assert.assertEquals(airStates[1], history.getState());
     }
     @Test
     public void successMinTest() throws Exception {
@@ -168,7 +174,12 @@ public class AggregateTest extends LargeTestCaseBase {
         Assert.assertTrue(range.getFrom().getTime() >= responseRange.getFrom().getTime());
         Assert.assertTrue(range.getTo().getTime() <= responseRange.getTo().getTime());
         Assert.assertEquals(23, result.getValue());
-        Assert.assertNull(result.getAggregatedObjects());
+        Assert.assertNotNull(result.getAggregatedObjects());
+        List<HistoryState<AirConditionerState>> objects = result.getAggregatedObjects();
+        Assert.assertEquals(1, objects.size());
+        HistoryState<AirConditionerState> history = objects.get(0);
+        Assert.assertNotNull(history);
+        Assert.assertEquals(airStates[0], history.getState());
     }
     @Test
     public void successMeanTest() throws Exception {

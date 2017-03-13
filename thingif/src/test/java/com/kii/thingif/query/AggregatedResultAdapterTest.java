@@ -34,13 +34,12 @@ public class AggregatedResultAdapterTest {
                     "}," +
                     "\"aggregations\":[{" +
                         "\"value\": " + expect.getValue() + "," +
-                        "\"objects\":[" +
-                            "{" +
-                                "\"_created\": " + historyState.getCreatedAt().getTime() + "," +
-                                "\"power\": " + airState.power + "," +
-                                "\"currentTemperature\": " + airState.currentTemperature +
-                            "}" +
-                        "]" +
+                        "\"name\" : \"max\"," +
+                        "\"object\":{" +
+                            "\"_created\": " + historyState.getCreatedAt().getTime() + "," +
+                            "\"power\": " + airState.power + "," +
+                            "\"currentTemperature\": " + airState.currentTemperature +
+                        "}" +
                     "}]" +
                 "}").toString();
 
