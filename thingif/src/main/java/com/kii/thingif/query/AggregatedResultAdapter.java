@@ -60,14 +60,11 @@ public class AggregatedResultAdapter<T extends Number, S extends TargetState>
         if (aggregation.has("value")) {
             value = gson.fromJson(aggregation.getAsJsonPrimitive("value"), this.fieldClass);
         }
-        if (aggregation.has("objects")) {
+        if (aggregation.has("object")) {
             aggregateObjects = new ArrayList<>();
-            JsonArray objects = aggregation.getAsJsonArray("objects");
             Type historyStateType = new TypeToken<HistoryState<S>>(){}.getType();
-            for (int i = 0; i < objects.size(); ++i) {
-                HistoryState<S> historyState = gson.fromJson(objects.get(i), historyStateType);
-                aggregateObjects.add(historyState);
-            }
+            HistoryState<S> historyState = gson.fromJson(aggregation.getAsJsonObject("object"), historyStateType);
+            aggregateObjects.add(historyState);
         }
         return new AggregatedResult<T, S>(range, value, aggregateObjects);
     }

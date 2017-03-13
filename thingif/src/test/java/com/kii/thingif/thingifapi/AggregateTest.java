@@ -73,7 +73,7 @@ public class AggregateTest extends ThingIFAPITestBase {
                 .newBuilder(ALIAS1, range)
                 .setClause(clause)
                 .build();
-        Aggregation aggregation = Aggregation.newMaxAggregation("100", Aggregation.FieldType.INTEGER);
+        Aggregation aggregation = Aggregation.newMaxAggregation("currentTemperature", Aggregation.FieldType.INTEGER);
 
         JSONObject requestBody = JsonUtils.newJson(
                 "{" +
@@ -113,14 +113,13 @@ public class AggregateTest extends ThingIFAPITestBase {
                             "\"to\":" + range.getTo().getTime() +
                         "}," +
                         "\"aggregations\":[{" +
-                            "\"value\": 2000," +
-                            "\"objects\":[" +
-                                "{" +
-                                    "\"_created\": 50," +
-                                    "\"power\": true," +
-                                    "\"currentTemperature\": 25" +
-                                "}" +
-                            "]" +
+                            "\"value\": 25," +
+                            "\"name\": \"max\"," +
+                            "\"object\":{" +
+                                "\"_created\": 50," +
+                                "\"power\": true," +
+                                "\"currentTemperature\": 25" +
+                            "}" +
                         "}]" +
                     "}" +
                 "]" +
@@ -141,7 +140,7 @@ public class AggregateTest extends ThingIFAPITestBase {
         Assert.assertEquals(1, results.size());
         AggregatedResult result = results.get(0);
         Assert.assertEquals(range, result.getTimeRange());
-        Assert.assertEquals(2000, result.getValue().intValue());
+        Assert.assertEquals(25, result.getValue().intValue());
         List<HistoryState<AirConditionerState>> objects = result.getAggregatedObjects();
         Assert.assertNotNull(objects);
         Assert.assertEquals(1, objects.size());
@@ -177,7 +176,7 @@ public class AggregateTest extends ThingIFAPITestBase {
         GroupedHistoryStatesQuery query = GroupedHistoryStatesQuery.Builder
                 .newBuilder(ALIAS1, range)
                 .build();
-        Aggregation aggregation = Aggregation.newMaxAggregation("100", Aggregation.FieldType.INTEGER);
+        Aggregation aggregation = Aggregation.newMaxAggregation("currentTemperature", Aggregation.FieldType.INTEGER);
 
         JSONObject requestBody = JsonUtils.newJson(
                 "{" +
@@ -208,14 +207,13 @@ public class AggregateTest extends ThingIFAPITestBase {
                                 "\"to\":" + range.getTo().getTime() +
                             "}," +
                             "\"aggregations\":[{" +
-                                "\"value\": 2000," +
-                                "\"objects\":[" +
-                                    "{" +
-                                        "\"_created\": 50," +
-                                        "\"power\": true," +
-                                        "\"currentTemperature\": 25" +
-                                    "}" +
-                                "]" +
+                                "\"value\": 25," +
+                                "\"name\" : \"max\"," +
+                                "\"object\":{" +
+                                    "\"_created\": 50," +
+                                    "\"power\": true," +
+                                    "\"currentTemperature\": 25" +
+                                "}" +
                             "}]" +
                         "}" +
                     "]" +
@@ -236,7 +234,7 @@ public class AggregateTest extends ThingIFAPITestBase {
         Assert.assertEquals(1, results.size());
         AggregatedResult result = results.get(0);
         Assert.assertEquals(range, result.getTimeRange());
-        Assert.assertEquals(2000, result.getValue().intValue());
+        Assert.assertEquals(25, result.getValue().intValue());
         List<HistoryState<AirConditionerState>> objects = result.getAggregatedObjects();
         Assert.assertNotNull(objects);
         Assert.assertEquals(1, objects.size());
