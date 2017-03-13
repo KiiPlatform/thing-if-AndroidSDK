@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 /**
- * Optional parameters of {@link ThingIFAPI#onboard(String, String, OnboardWithThingIDOptions)}.
+ * Optional parameters of {@link ThingIFAPI#onboardWithThingID(String, String)}.
  */
 public class OnboardWithThingIDOptions {
     private final LayoutPosition layoutPosition;

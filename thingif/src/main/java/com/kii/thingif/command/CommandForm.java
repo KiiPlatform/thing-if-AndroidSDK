@@ -1,15 +1,10 @@
 package com.kii.thingif.command;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 
-import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -32,7 +27,7 @@ import java.util.List;
  * <li>meta data of a command</li>
  * </ul>
  */
-public final class CommandForm implements Parcelable {
+public final class CommandForm {
 
     @SerializedName("actions")
     private final @NonNull List<AliasAction<? extends Action>> aliasActions;
@@ -211,44 +206,5 @@ public final class CommandForm implements Parcelable {
     @Nullable
     public JSONObject getMetadata() {
         return this.metadata;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeList(this.aliasActions);
-        dest.writeString(this.title);
-        dest.writeString(this.description);
-        dest.writeString(this.metadata == null ? null : this.metadata.toString());
-    }
-
-    public static final Parcelable.Creator<CommandForm> CREATOR
-            = new Parcelable.Creator<CommandForm>() {
-        public CommandForm createFromParcel(Parcel in) {
-            return new CommandForm(in);
-        }
-
-        public CommandForm[] newArray(int size) {
-            return new CommandForm[size];
-        }
-    };
-
-    private CommandForm(Parcel in) {
-        this.aliasActions = new ArrayList<>();
-        in.readList(this.aliasActions, null);
-        this.title = in.readString();
-        this.description = in.readString();
-        String metadata = in.readString();
-        if (!TextUtils.isEmpty(metadata)) {
-            try {
-                this.metadata = new JSONObject(metadata);
-            } catch (JSONException ignore) {
-                // Won’t happen
-            }
-        }
     }
 }

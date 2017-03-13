@@ -1,13 +1,11 @@
 package com.kii.thingif.trigger;
 
-import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.kii.thingif.SmallTestBase;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
@@ -52,93 +50,7 @@ public class TriggerOptionsTest extends SmallTestBase {
             this.metadata = metadata;
         }
     }
-
-    private static List<TestCase<TestData>> createNormalTestCases()
-            throws JSONException
-    {
-        List<TestCase<TestData>> retval = new ArrayList<>();
-        JSONObject metadata = new JSONObject();
-        metadata.put("key", "value");
-        Collections.addAll(retval,
-                createNormalTestData(
-                        "1", new TestData(null, null, null)),
-                createNormalTestData(
-                        "2", new TestData(null, "description", null)),
-                createNormalTestData(
-                        "3", new TestData(null, null, metadata)),
-                createNormalTestData(
-                        "4", new TestData(null, "description", metadata)),
-                createNormalTestData(
-                        "5", new TestData("title", null, null)),
-                createNormalTestData(
-                        "6", new TestData("title", "description", null)),
-                createNormalTestData(
-                        "7", new TestData("title", null, metadata)),
-                createNormalTestData(
-                        "8", new TestData("title", "description", metadata)));
-        return retval;
-    }
-
-    private static TestCase<TestData> createNormalTestData(
-            @NonNull String errorMessage,
-            @NonNull TestData testData)
-    {
-        return new TestCase<>(errorMessage, testData, testData);
-    }
-
-    @Test
-    public void normalTest() throws Exception {
-
-        for (TestCase<TestData> test : createNormalTestCases()) {
-            TestData input = test.input;
-            TestData expected = test.expected;
-            String errorMessage = test.errorMessage;
-            TriggerOptions.Builder builder = TriggerOptions.Builder.newBuilder();
-
-            if (input.title != null) {
-                Assert.assertEquals(errorMessage,
-                        builder, builder.setTitle(input.title));
-            }
-            if (input.description != null) {
-                Assert.assertEquals(errorMessage,
-                        builder, builder.setDescription(input.description));
-            }
-            if (input.metadata != null) {
-                Assert.assertEquals(errorMessage,
-                        builder, builder.setMetadata(input.metadata));
-            }
-
-            Assert.assertEquals(errorMessage,
-                    builder.getTitle(), expected.title);
-            Assert.assertEquals(errorMessage,
-                    builder.getDescription(), expected.description);
-            assertJSONObject(errorMessage,
-                    builder.getMetadata(), expected.metadata);
-
-            TriggerOptions options = builder.build();
-            Assert.assertNotNull(errorMessage, options);
-            Assert.assertEquals(errorMessage,
-                    expected.title, options.getTitle());
-            Assert.assertEquals(errorMessage,
-                    expected.description, options.getDescription());
-            assertJSONObject(errorMessage,
-                    expected.metadata, options.getMetadata());
-
-            Parcel parcel = Parcel.obtain();
-            options.writeToParcel(parcel, 0);
-            parcel.setDataPosition(0);
-            TriggerOptions deserialized =
-                    TriggerOptions.CREATOR.createFromParcel(parcel);
-            Assert.assertNotNull(errorMessage, deserialized);
-            Assert.assertEquals(errorMessage,
-                    expected.title, deserialized.getTitle());
-            Assert.assertEquals(errorMessage,
-                    expected.description, deserialized.getDescription());
-            assertJSONObject(errorMessage,
-                    expected.metadata, deserialized.getMetadata());
-        }
-    }
-
+    
     private List<TestCase<String>> createIllegalArgumentTestCases() {
         List<TestCase<String>> retval = new ArrayList<>();
         Collections.addAll(retval,
