@@ -19,7 +19,9 @@ import com.kii.thingif.command.ActionResult;
 import com.kii.thingif.command.AliasAction;
 import com.kii.thingif.command.AliasActionResult;
 import com.kii.thingif.command.Command;
+import com.kii.thingif.query.GroupedHistoryStates;
 import com.kii.thingif.query.HistoryState;
+import com.kii.thingif.query.TimeRange;
 import com.kii.thingif.states.StateToJson;
 import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.ScheduleOncePredicate;
@@ -325,10 +327,47 @@ public class JsonUtil {
 
     public static JSONObject historyStateToJson(HistoryState historyState) {
         try{
-
             JSONObject ret = ((StateToJson)historyState.getState()).toJSONObject();
             ret.put("_created", historyState.getCreatedAt().getTime());
             return ret;
+        }catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static JSONObject groupedHistoryStateToJson(GroupedHistoryStates groupedHistoryStates) {
+        try{
+            JSONObject ret = new JSONObject()
+                    .put("range", timeRangeToJson(groupedHistoryStates.getTimeRange()));
+
+            JSONArray historyStates = new JSONArray();
+            for (int i=0; i<groupedHistoryStates.getObjects().size(); i++) {
+                HistoryState historyState = (HistoryState) groupedHistoryStates.getObjects().get(i);
+                historyStates.put(historyStateToJson(historyState));
+            }
+            return ret.put("objects", historyStates);
+
+        }catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static JSONObject timeRangeToJson(TimeRange range) {
+        try{
+            return new JSONObject()
+                    .put("from", range.getFrom().getTime())
+                    .put("to", range.getTo().getTime());
+        }catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static JSONObject timeRangeToClause(TimeRange range) {
+        try{
+            return new JSONObject()
+                    .put("type", "withinTimeRange")
+                    .put("upperLimit", range.getTo().getTime())
+                    .put("lowerLimit", range.getFrom().getTime());
         }catch (JSONException e) {
             throw new RuntimeException(e);
         }

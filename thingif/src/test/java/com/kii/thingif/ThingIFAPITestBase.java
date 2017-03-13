@@ -11,6 +11,7 @@ import com.kii.thingif.actions.HumidityActions;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
 import com.kii.thingif.command.CommandState;
+import com.kii.thingif.query.GroupedHistoryStates;
 import com.kii.thingif.query.HistoryState;
 import com.kii.thingif.states.AirConditionerState;
 import com.kii.thingif.states.HumidityState;
@@ -381,6 +382,22 @@ public class ThingIFAPITestBase extends SmallTestBase {
             JSONObject responseBody = new JSONObject();
             responseBody.put("results", stateArray);
             responseBody.putOpt("nextPaginationKey", paginationKey);
+            response.setBody(responseBody.toString());
+        }
+        this.server.enqueue(response);
+    }
+
+    protected void addMockResponseForQueryGroupedHistoryStates(
+            int httpStatus,
+            List<GroupedHistoryStates<? extends TargetState>> groupedStatesArray) throws Exception {
+        MockResponse response = new MockResponse().setResponseCode(httpStatus);
+        if (httpStatus == 200) {
+            JSONObject responseBody = new JSONObject();
+            JSONArray groupedJsonArray = new JSONArray();
+            for (GroupedHistoryStates groupedStates: groupedStatesArray) {
+                groupedJsonArray.put(JsonUtil.groupedHistoryStateToJson(groupedStates));
+            }
+            responseBody.put("groupedResults", groupedJsonArray);
             response.setBody(responseBody.toString());
         }
         this.server.enqueue(response);

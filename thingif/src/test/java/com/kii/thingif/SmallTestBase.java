@@ -4,6 +4,7 @@ package com.kii.thingif;
 import com.google.gson.JsonParser;
 import com.kii.thingif.clause.trigger.TriggerClause;
 import com.kii.thingif.command.Command;
+import com.kii.thingif.query.GroupedHistoryStates;
 import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.ServerCode;
 import com.kii.thingif.trigger.Trigger;
@@ -120,6 +121,26 @@ public class SmallTestBase {
         assertJSONObject(
                 JsonUtil.triggeredServerCodeResultToJson(expected),
                 JsonUtil.triggeredServerCodeResultToJson(actual)
+        );
+    }
+
+    protected void assertSameGroupedHistoryStates(
+            GroupedHistoryStates expected,
+            GroupedHistoryStates actual) {
+        assertJSONObject(
+                JsonUtil.groupedHistoryStateToJson(expected),
+                JsonUtil.groupedHistoryStateToJson(actual)
+        );
+    }
+
+    protected void assertSameGroupedHistoryStates(
+            String message,
+            GroupedHistoryStates expected,
+            GroupedHistoryStates actual) {
+        assertJSONObject(
+                message,
+                JsonUtil.groupedHistoryStateToJson(expected),
+                JsonUtil.groupedHistoryStateToJson(actual)
         );
     }
 }
