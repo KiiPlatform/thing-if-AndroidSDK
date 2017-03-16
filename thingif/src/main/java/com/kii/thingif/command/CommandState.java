@@ -5,7 +5,7 @@ package com.kii.thingif.command;
  */
 public enum CommandState {
     SENDING,
-    DELIVERED,
+    SEND_FAILED,
     INCOMPLETE,
     DONE
 }
