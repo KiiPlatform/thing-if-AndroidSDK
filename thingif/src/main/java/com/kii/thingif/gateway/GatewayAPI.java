@@ -194,8 +194,8 @@ public class GatewayAPI {
         IoTRestRequest request = new IoTRestRequest(url, IoTRestRequest.Method.POST, headers);
         JSONObject responseBody = this.restClient.sendRequest(request);
         try {
-            // FIXME:Gateway should return the vendorThingID
-            return new Gateway(responseBody.getString("thingID"), null);
+            return new Gateway(responseBody.getString("thingID"),
+                    responseBody.getString("vendorThingID"));
         } catch (JSONException e) {
             throw new ThingIFException("", e);
         }
