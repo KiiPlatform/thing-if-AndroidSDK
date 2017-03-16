@@ -79,9 +79,10 @@ public class GatewayAPITestBase extends SmallTestBase {
         responseBody.addProperty("vendorThingID", vendorThingID);
         this.server.enqueue(new MockResponse().setResponseCode(httpStatus).setBody(responseBody.toString()));
     }
-    protected void addMockResponseForOnboardGateway(int httpStatus, String thingID) {
+    protected void addMockResponseForOnboardGateway(int httpStatus, String thingID, String vendorThingID) {
         JsonObject responseBody = new JsonObject();
         responseBody.addProperty("thingID", thingID);
+        responseBody.addProperty("vendorThingID", vendorThingID);
         this.server.enqueue(new MockResponse().setResponseCode(httpStatus).setBody(responseBody.toString()));
     }
     protected void addMockResponseForGetGatewayID(int httpStatus, String thingID) {
