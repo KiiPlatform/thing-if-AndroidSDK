@@ -41,6 +41,7 @@ public class GatewayAPI_OnboardGatewayTest extends GatewayAPITestBase {
 
         Assert.assertEquals(0, request.getBodySize());
         Assert.assertEquals(thingID, result.getThingID());
+        Assert.assertEquals(vendorThingID, result.getVendorThingID());
     }
     @Test(expected = IllegalStateException.class)
     public void onboardGatewayNoLoggedInTest() throws Exception {
