@@ -25,9 +25,10 @@ public class GatewayAPI_OnboardGatewayTest extends GatewayAPITestBase {
     @Test
     public void onboardGatewayTest() throws Exception {
         String thingID = "th." + UUID.randomUUID().toString();
+        String vendorThingID = UUID.randomUUID().toString();
 
         GatewayAPI api = this.createGatewayAPIWithLoggedIn();
-        this.addMockResponseForOnboardGateway(200, thingID);
+        this.addMockResponseForOnboardGateway(200, thingID, vendorThingID);
         Gateway result = api.onboardGateway();
 
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -50,8 +51,6 @@ public class GatewayAPI_OnboardGatewayTest extends GatewayAPITestBase {
     }
     @Test
     public void onboardGateway400ErrorTest() throws Exception {
-        String thingID = "th." + UUID.randomUUID().toString();
-
         GatewayAPI api = this.createGatewayAPIWithLoggedIn();
         this.addEmptyMockResponse(400);
         try {
@@ -72,8 +71,6 @@ public class GatewayAPI_OnboardGatewayTest extends GatewayAPITestBase {
     }
     @Test
     public void onboardGateway401ErrorTest() throws Exception {
-        String thingID = "th." + UUID.randomUUID().toString();
-
         GatewayAPI api = this.createGatewayAPIWithLoggedIn();
         this.addEmptyMockResponse(401);
         try {
@@ -94,8 +91,6 @@ public class GatewayAPI_OnboardGatewayTest extends GatewayAPITestBase {
     }
     @Test
     public void onboardGateway409ErrorTest() throws Exception {
-        String thingID = "th." + UUID.randomUUID().toString();
-
         GatewayAPI api = this.createGatewayAPIWithLoggedIn();
         this.addEmptyMockResponse(409);
         try {
@@ -116,8 +111,6 @@ public class GatewayAPI_OnboardGatewayTest extends GatewayAPITestBase {
     }
     @Test
     public void onboardGateway503ErrorTest() throws Exception {
-        String thingID = "th." + UUID.randomUUID().toString();
-
         GatewayAPI api = this.createGatewayAPIWithLoggedIn();
         this.addEmptyMockResponse(503);
         try {
