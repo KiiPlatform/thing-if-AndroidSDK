@@ -23,7 +23,7 @@ public class AliasAction implements Parcelable{
     /**
      * Initialize AliasAction instance.
      * @param alias alias name.
-     * @param actions list of concrete Action instance.
+     * @param actions list of concrete Action instances.
      */
     public AliasAction(
             @NonNull String alias,
