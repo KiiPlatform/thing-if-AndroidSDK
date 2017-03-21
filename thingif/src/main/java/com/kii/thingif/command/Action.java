@@ -15,6 +15,7 @@ import java.util.Map;
  * Marks a class as single action of command. The class must implement this interface and
  * define single action as field.
  * A single action is composed from action name + action payload.
+ * Action name is property name in class implement Action.
  * Action payload can be any of Object, Array String, Boolean, Number.
  * <br>
  * SDK serializes Action objects using
