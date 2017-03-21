@@ -25,7 +25,7 @@ public class Command implements Parcelable {
     @SerializedName("issuer")
     private final @NonNull TypedID issuerID;
     @SerializedName("actions")
-    private final @NonNull List<AliasAction<? extends Action>> aliasActions;
+    private final @NonNull List<AliasAction> aliasActions;
     @SerializedName("actionResults")
     private final @Nullable List<AliasActionResult> aliasActionResults;
     @SerializedName("commandState")
@@ -41,7 +41,7 @@ public class Command implements Parcelable {
 
     Command(
             @NonNull TypedID issuerID,
-            @NonNull List<AliasAction<? extends Action>> aliasActions,
+            @NonNull List<AliasAction> aliasActions,
             @Nullable String commandID,
             @Nullable TypedID targetID,
             @Nullable List<AliasActionResult> aliasActionResults,
@@ -97,26 +97,22 @@ public class Command implements Parcelable {
      * @return action of this command.
      */
     @NonNull
-    public List<AliasAction<? extends Action>> getAliasActions() {
+    public List<AliasAction> getAliasActions() {
         return this.aliasActions;
     }
 
     /**
      * Retrieve specified AliasAction
      * @param alias alias to retrieve
-     * @param clsOfT Class of T.
-     * @param <T> Type of Action
      * @return list of AliasAction with the specified type.
      */
     @NonNull
-    public <T extends Action> List<AliasAction<T>> getAliasAction(
-            @NonNull String alias,
-            @NonNull Class<T> clsOfT) {
-        List<AliasAction<T>> foundActions = new ArrayList<>();
-        for (AliasAction<? extends Action> aliasAction: this.aliasActions) {
-            if (aliasAction.getAlias().equals(alias) &&
-                    aliasAction.getAction().getClass().equals(clsOfT)){
-                foundActions.add((AliasAction<T>) aliasAction);
+    public List<AliasAction> getAliasAction(
+            @NonNull String alias) {
+        List<AliasAction> foundActions = new ArrayList<>();
+        for (AliasAction aliasAction: this.aliasActions) {
+            if (aliasAction.getAlias().equals(alias)){
+                foundActions.add((AliasAction) aliasAction);
             }
         }
         return foundActions;
