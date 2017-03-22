@@ -14,15 +14,16 @@ import com.kii.thingif.command.AliasAction;
 import com.kii.thingif.exception.UnregisteredAliasException;
 
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Map;
 
 public class AliasActionAdapter implements
         JsonSerializer<AliasAction>,
         JsonDeserializer<AliasAction> {
 
-    private Map<String, Class<? extends Action>> actionTypes;
+    private Map<String, List<Class<? extends Action>>> actionTypes;
 
-    public AliasActionAdapter(Map<String, Class<? extends Action>> actionTypes) {
+    public AliasActionAdapter(Map<String, List<Class<? extends Action>>> actionTypes) {
         this.actionTypes = actionTypes;
     }
     @Override

@@ -115,7 +115,7 @@ public class ThingIFAPI {
                 @Nullable Context context,
                 @NonNull KiiApp app,
                 @NonNull Owner owner,
-                @NonNull Map<String, Class<? extends Action>> actionTypes,
+                @NonNull Map<String, List<Class<? extends Action>>> actionTypes,
                 @NonNull Map<String, Class<? extends TargetState>> stateTypes
         ) {
             this.context = context;
@@ -129,7 +129,7 @@ public class ThingIFAPI {
          * @param context Application context.
          * @param app Kii Cloud Application.
          * @param owner Specify who uses the ThingIFAPI.
-         * @param actionTypes Map of alias and action class.
+         * @param actionTypes Map of alias and action classes.
          * @param stateTypes Map of alias and target state class.
          * @return Builder instance.
          */
@@ -138,7 +138,7 @@ public class ThingIFAPI {
                 @NonNull Context context,
                 @NonNull KiiApp app,
                 @NonNull Owner owner,
-                @NonNull Map<String, Class<? extends Action>> actionTypes,
+                @NonNull Map<String, List<Class<? extends Action>>> actionTypes,
                 @NonNull Map<String, Class<? extends TargetState>> stateTypes) {
             if (context == null) {
                 throw new IllegalArgumentException("context is null");
@@ -176,7 +176,7 @@ public class ThingIFAPI {
                     context,
                     app,
                     owner,
-                    new HashMap<String, Class<? extends Action>>(),
+                    new HashMap<String, List<Class<? extends Action>>>(),
                     new HashMap<String, Class<? extends TargetState>>());
         }
 
@@ -186,13 +186,15 @@ public class ThingIFAPI {
          *
          * @param app Kii Cloud Application.
          * @param owner Specify who uses the ThingIFAPI.
+         * @param actionTypes Map of alias and action classes.
+         * @param stateTypes Map of alias and target state class.
          * @return Builder instance.
          */
         @NonNull
         public static Builder _newBuilder(
                 @NonNull KiiApp app,
                 @NonNull Owner owner,
-                @NonNull Map<String, Class<? extends Action>> actionTypes,
+                @NonNull Map<String, List<Class<? extends Action>>> actionTypes,
                 @NonNull Map<String, Class<? extends TargetState>> stateTypes) {
             if (app == null) {
                 throw new IllegalArgumentException("app is null");
@@ -271,7 +273,7 @@ public class ThingIFAPI {
         @NonNull
         public Builder registerActions(
                 @NonNull String alias,
-                @NonNull Class<? extends Action> actionClass){
+                @NonNull List<Class<? extends Action>> actionClass){
             this.actionTypes.put(alias, actionClass);
             return this;
         }

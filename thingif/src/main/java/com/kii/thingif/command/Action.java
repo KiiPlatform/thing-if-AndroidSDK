@@ -8,11 +8,15 @@ import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.TriggerOptions;
 import com.kii.thingif.trigger.TriggeredCommandForm;
 
+import java.util.List;
 import java.util.Map;
 
 /**
- * Marks a class as group of single actions of command. The class must implement this interface and
- * define single actions as fields.
+ * Marks a class as single action of command. The class must implement this interface and
+ * define single action as field.
+ * A single action is composed from action name + action payload.
+ * Action name is property name in class implement Action.
+ * Action payload can be any of Object, Array String, Boolean, Number.
  * <br>
  * SDK serializes Action objects using
  * <a href="https://github.com/google/gson/blob/master/UserGuide.md#TOC-Object-Examples">Gson </a>,
@@ -27,7 +31,7 @@ import java.util.Map;
  * class of Action to ThingIFAPI instance when constructed by the following 2 APIs:
  * <ul>
  * <li>{@link com.kii.thingif.ThingIFAPI.Builder#newBuilder(Context, KiiApp, Owner, Map, Map)}
- * <li>{@link com.kii.thingif.ThingIFAPI.Builder#registerActions(String, Class)}.
+ * <li>{@link com.kii.thingif.ThingIFAPI.Builder#registerActions(String, List<Class>)}.
  * </ul>
  *
  */

@@ -66,7 +66,7 @@ public class TriggeredCommandForm {
          */
         @NonNull
         public static Builder newBuilder(
-                @NonNull List<AliasAction<? extends Action>> aliasActions)
+                @NonNull List<AliasAction> aliasActions)
         {
             return new Builder(aliasActions);
         }
@@ -76,7 +76,7 @@ public class TriggeredCommandForm {
          * @return builder instance.
          */
         public static Builder newBuilder() {
-            return new Builder(new ArrayList<AliasAction<? extends Action>>());
+            return new Builder(new ArrayList<AliasAction>());
         }
 
 //        /**
@@ -132,7 +132,7 @@ public class TriggeredCommandForm {
          * @return aliasActions
          */
         @NonNull
-        public List<AliasAction<? extends Action>> getAliasActions() {
+        public List<AliasAction> getAliasActions() {
             return this.aliasActions;
         }
 
@@ -322,7 +322,7 @@ public class TriggeredCommandForm {
      * @return aliasActions
      */
     @NonNull
-    public List<AliasAction<? extends Action>> getAliasActions() {
+    public List<AliasAction> getAliasActions() {
         return this.aliasActions;
     }
 
