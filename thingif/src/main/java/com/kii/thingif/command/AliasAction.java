@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class AliasAction implements Parcelable{
     @NonNull private String alias;
-    @NonNull private List<? extends Action> actions;
+    @NonNull private List<Action> actions;
 
     private transient volatile int hashCode; // cached hashcode for performance
 
@@ -27,7 +27,7 @@ public class AliasAction implements Parcelable{
      */
     public AliasAction(
             @NonNull String alias,
-            @NonNull List<? extends Action> actions) {
+            @NonNull List<Action> actions) {
         if (TextUtils.isEmpty(alias)) {
             throw new IllegalArgumentException("alias is empty or null");
         }
@@ -45,7 +45,7 @@ public class AliasAction implements Parcelable{
     }
 
     @NonNull
-    public List<? extends Action> getActions() {
+    public List<Action> getActions() {
         return actions;
     }
 
