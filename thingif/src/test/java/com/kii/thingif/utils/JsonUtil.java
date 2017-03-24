@@ -37,6 +37,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
 
+import java.util.List;
+
 public class JsonUtil {
     public static JSONObject triggerClauseToJson(TriggerClause clause) {
         try {
@@ -368,6 +370,33 @@ public class JsonUtil {
                     .put("type", "withinTimeRange")
                     .put("upperLimit", range.getTo().getTime())
                     .put("lowerLimit", range.getFrom().getTime());
+        }catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static JSONObject combineAliasActionsJson(String alias, List<AliasAction> aliasActionList) {
+        try {
+            JSONArray actions = new JSONArray();
+            for (AliasAction aliasAction : aliasActionList) {
+                if (alias.equals(aliasAction.getAlias())) {
+                    JSONArray singleActions = ((ToJSON) aliasAction.getAction()).toJSONArray();
+                    for (int i = 0; i < singleActions.length(); i++) {
+                        actions.put(singleActions.get(i));
+                    }
+                }
+            }
+            return new JSONObject().put(alias, actions);
+        }catch (JSONException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public static JSONObject singleAliasActionToJson(AliasAction aliasAction) {
+        try{
+            return new JSONObject().put(
+                    aliasAction.getAlias(),
+                    ((ToJSON)aliasAction.getAction()).toJSONArray());
         }catch (JSONException e) {
             throw new RuntimeException(e);
         }
