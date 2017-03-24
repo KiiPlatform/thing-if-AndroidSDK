@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.kii.thingif.SmallTestBase;
 import com.kii.thingif.actions.AirConditionerActions;
+import com.kii.thingif.actions.DisOrderedAirConditionerActions;
 import com.kii.thingif.actions.HumidityActions;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
@@ -87,7 +88,42 @@ public class AliasActionListAdapterTest extends SmallTestBase {
         Assert.assertEquals(expectedAliasActions4.toString(), gson.toJson(aliasActions4, listType));
 
         // test with more more one non-null field action
-        // TODO
+        List<AliasAction> aliasActions5 = new ArrayList<>();
+        aliasActions5.add(new AliasAction<>(alias1, new AirConditionerActions(true, 23)));
+        aliasActions5.add(new AliasAction<>(alias2, new HumidityActions(45)));
+
+        List<AliasAction>expectedOrder5 = new ArrayList<>();
+        expectedOrder5.add(new AliasAction<>(alias1, new AirConditionerActions(true, null)));
+        expectedOrder5.add(new AliasAction<>(alias1, new AirConditionerActions(null, 23)));
+
+        JSONArray expectedAliasActions5 = new JSONArray();
+        expectedAliasActions5.put(JsonUtil.combineAliasActionsJson(alias1, expectedOrder5));
+        expectedAliasActions5.put(JsonUtil.singleAliasActionToJson(aliasActions5.get(1)));
+
+        Assert.assertEquals(expectedAliasActions5.toString(), gson.toJson(aliasActions5, listType));
+
+        // test with more one non-null field action, used DisOrderedAirConditionerActions, the order
+        // of which is different with AirConditionerActions
+        Map<String, Class<? extends Action>> actionTypes2 = new HashMap<>();
+        actionTypes2.put(alias1, DisOrderedAirConditionerActions.class);
+        actionTypes2.put(alias2, HumidityActions.class);
+        Gson gson2 = new GsonBuilder()
+                .registerTypeAdapter(listType, new AliasActionListAdapter(actionTypes2))
+                .create();
+        List<AliasAction> aliasActions6 = new ArrayList<>();
+        aliasActions6.add(new AliasAction<>(alias1, new DisOrderedAirConditionerActions(true, 23)));
+        aliasActions6.add(new AliasAction<>(alias2, new HumidityActions(45)));
+
+        // the order is different with last test case
+        List<AliasAction>expectedOrder6 = new ArrayList<>();
+        expectedOrder6.add(new AliasAction<>(alias1, new DisOrderedAirConditionerActions(null, 23)));
+        expectedOrder6.add(new AliasAction<>(alias1, new DisOrderedAirConditionerActions(true, null)));
+
+        JSONArray expectedAliasActions6 = new JSONArray();
+        expectedAliasActions6.put(JsonUtil.combineAliasActionsJson(alias1, expectedOrder6));
+        expectedAliasActions6.put(JsonUtil.singleAliasActionToJson(aliasActions6.get(1)));
+
+        Assert.assertEquals(expectedAliasActions6.toString(), gson.toJson(aliasActions6, listType));
     }
 
     @Test
