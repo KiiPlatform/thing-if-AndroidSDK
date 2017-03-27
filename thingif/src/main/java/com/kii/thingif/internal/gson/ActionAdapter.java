@@ -26,30 +26,31 @@ class ActionAdapter implements
     }
     @Override
     public JsonElement serialize(Action src, Type typeOfSrc, JsonSerializationContext context) {
-        if (src == null) return null;
-        Gson gson = new Gson();
-        JsonObject json = gson.toJsonTree(src).getAsJsonObject();
-        JsonArray ret = new JsonArray();
-        for (Map.Entry<String, JsonElement> element: json.entrySet()) {
-            JsonObject singleAction = new JsonObject();
-            String key = element.getKey();
-            JsonElement value = element.getValue();
-            if (value.isJsonPrimitive()) {
-                JsonPrimitive primVale = (JsonPrimitive)value;
-                if (primVale.isString()) {
-                    singleAction.addProperty(key, primVale.getAsString());
-                }else if (primVale.isBoolean()){
-                    singleAction.addProperty(key, primVale.getAsBoolean());
-                }else if (primVale.isNumber()) {
-                    singleAction.addProperty(key, primVale.getAsNumber());
-                }
-            }else{
-                singleAction.add(key, value);
-            }
-            ret.add(singleAction);
-        }
-        return ret;
-
+//        if (src == null) return null;
+//        Gson gson = new Gson();
+//        JsonObject json = gson.toJsonTree(src).getAsJsonObject();
+//        JsonArray ret = new JsonArray();
+//        for (Map.Entry<String, JsonElement> element: json.entrySet()) {
+//            JsonObject singleAction = new JsonObject();
+//            String key = element.getKey();
+//            JsonElement value = element.getValue();
+//            if (value.isJsonPrimitive()) {
+//                JsonPrimitive primVale = (JsonPrimitive)value;
+//                if (primVale.isString()) {
+//                    singleAction.addProperty(key, primVale.getAsString());
+//                }else if (primVale.isBoolean()){
+//                    singleAction.addProperty(key, primVale.getAsBoolean());
+//                }else if (primVale.isNumber()) {
+//                    singleAction.addProperty(key, primVale.getAsNumber());
+//                }
+//            }else{
+//                singleAction.add(key, value);
+//            }
+//            ret.add(singleAction);
+//        }
+//        return ret;
+        //TODO: // FIXME: 2017/03/27
+        return null;
     }
 
     @Override

@@ -7,33 +7,35 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 
+import java.util.List;
+
 /**
  * Represent Action of alias
  * @param <T> Action class
  */
 public class AliasAction<T extends Action> implements Parcelable{
     @NonNull private String alias;
-    @NonNull private T action;
+    @NonNull private List<T> actions;
 
     private transient volatile int hashCode; // cached hashcode for performance
 
     /**
      * Initialize AliasAction instance.
      * @param alias alias name.
-     * @param action instance of concrete Action class.
+     * @param actions instance of concrete Action class.
      */
     public AliasAction(
             @NonNull String alias,
-            @NonNull T action) {
+            @NonNull List<T> actions) {
         if (TextUtils.isEmpty(alias)) {
             throw new IllegalArgumentException("alias is empty or null");
         }
 
-        if (action == null) {
+        if (actions == null) {
             throw new IllegalArgumentException("action is null");
         }
         this.alias = alias;
-        this.action = action;
+        this.actions = actions;
     }
 
     @NonNull
@@ -42,8 +44,8 @@ public class AliasAction<T extends Action> implements Parcelable{
     }
 
     @NonNull
-    public T getAction() {
-        return action;
+    public List<T> getAction() {
+        return actions;
     }
 
     @Override
@@ -54,15 +56,17 @@ public class AliasAction<T extends Action> implements Parcelable{
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.alias);
-        dest.writeSerializable(this.action.getClass());
-        dest.writeString(new Gson().toJson(this.action));
+        //TODO: // FIXME: 2017/03/27
+//        dest.writeSerializable(this.action.getClass());
+//        dest.writeString(new Gson().toJson(this.action));
     }
 
     public AliasAction(Parcel in) {
         this.alias = in.readString();
-        Class<T> actionType = (Class<T>)in.readSerializable();
-        String jsonString = in.readString();
-        this.action = new Gson().fromJson(jsonString, actionType);
+        //TODO: // FIXME: 2017/03/27
+//        Class<T> actionType = (Class<T>)in.readSerializable();
+//        String jsonString = in.readString();
+//        this.action = new Gson().fromJson(jsonString, actionType);
     }
 
     public static final Creator<AliasAction> CREATOR = new Creator<AliasAction>() {
@@ -79,12 +83,14 @@ public class AliasAction<T extends Action> implements Parcelable{
 
     @Override
     public boolean equals(Object o) {
-        if (o == null) return false;
-        if (!(o instanceof AliasAction)) return false;
-        if (!((AliasAction) o).getAction().getClass().equals(this.action.getClass())) return false;
-        T action = (T)((AliasAction) o).getAction();
-        return this.action.equals(action) &&
-                this.alias.equals(((AliasAction) o).getAlias());
+        return false;
+        //TODO: // FIXME: 2017/03/27
+//        if (o == null) return false;
+//        if (!(o instanceof AliasAction)) return false;
+//        if (!((AliasAction) o).getAction().getClass().equals(this.action.getClass())) return false;
+//        T action = (T)((AliasAction) o).getAction();
+//        return this.action.equals(action) &&
+//                this.alias.equals(((AliasAction) o).getAlias());
     }
 
     @Override
@@ -93,7 +99,8 @@ public class AliasAction<T extends Action> implements Parcelable{
         if (result == 0) {
             result = 17;
             result = 31 * result + this.alias.hashCode();
-            result = 31 * result + this.action.hashCode();
+            //TODO // FIXME: 2017/03/27
+//            result = 31 * result + this.action.hashCode();
             this.hashCode = result;
         }
         return result;

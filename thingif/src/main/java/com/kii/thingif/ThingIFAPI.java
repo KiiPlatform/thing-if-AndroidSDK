@@ -98,6 +98,9 @@ public class ThingIFAPI {
 
     private Gson gson;
 
+    private static String actionsMapKey(String alias, String actionName) {
+        return alias+":"+actionName;
+    }
     public static class Builder {
 
         private static final String TAG = Builder.class.getSimpleName();
@@ -129,33 +132,6 @@ public class ThingIFAPI {
          * @param context Application context.
          * @param app Kii Cloud Application.
          * @param owner Specify who uses the ThingIFAPI.
-         * @param actionTypes Map of alias and action class.
-         * @param stateTypes Map of alias and target state class.
-         * @return Builder instance.
-         */
-        @NonNull
-        public static Builder newBuilder(
-                @NonNull Context context,
-                @NonNull KiiApp app,
-                @NonNull Owner owner,
-                @NonNull Map<String, Class<? extends Action>> actionTypes,
-                @NonNull Map<String, Class<? extends TargetState>> stateTypes) {
-            if (context == null) {
-                throw new IllegalArgumentException("context is null");
-            }
-            if (app == null) {
-                throw new IllegalArgumentException("app is null");
-            }
-            if (owner == null) {
-                throw new IllegalArgumentException("owner is null");
-            }
-            return new Builder(context, app, owner, actionTypes, stateTypes);
-        }
-
-        /** Instantiate new Builder.
-         * @param context Application context.
-         * @param app Kii Cloud Application.
-         * @param owner Specify who uses the ThingIFAPI.
          * @return Builder instance.
          */
         @NonNull
@@ -178,29 +154,6 @@ public class ThingIFAPI {
                     owner,
                     new HashMap<String, Class<? extends Action>>(),
                     new HashMap<String, Class<? extends TargetState>>());
-        }
-
-        /**
-         * Instantiate new Builder without Context.
-         * This method is for internal use only. Do not call it from your application.
-         *
-         * @param app Kii Cloud Application.
-         * @param owner Specify who uses the ThingIFAPI.
-         * @return Builder instance.
-         */
-        @NonNull
-        public static Builder _newBuilder(
-                @NonNull KiiApp app,
-                @NonNull Owner owner,
-                @NonNull Map<String, Class<? extends Action>> actionTypes,
-                @NonNull Map<String, Class<? extends TargetState>> stateTypes) {
-            if (app == null) {
-                throw new IllegalArgumentException("app is null");
-            }
-            if (owner == null) {
-                throw new IllegalArgumentException("owner is null");
-            }
-            return new Builder(null, app, owner, actionTypes, stateTypes);
         }
 
         /**
@@ -269,10 +222,11 @@ public class ThingIFAPI {
          * @return builder instance for chaining call.
          */
         @NonNull
-        public Builder registerActions(
+        public Builder registerAction(
                 @NonNull String alias,
+                @NonNull String actionName,
                 @NonNull Class<? extends Action> actionClass){
-            this.actionTypes.put(alias, actionClass);
+            this.actionTypes.put(ThingIFAPI.actionsMapKey(alias, actionName), actionClass);
             return this;
         }
 
