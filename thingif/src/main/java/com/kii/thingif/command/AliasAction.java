@@ -11,11 +11,10 @@ import java.util.List;
 
 /**
  * Represent Action of alias
- * @param <T> Action class
  */
-public class AliasAction<T extends Action> implements Parcelable{
+public class AliasAction implements Parcelable{
     @NonNull private String alias;
-    @NonNull private List<T> actions;
+    @NonNull private List<? extends Action> actions;
 
     private transient volatile int hashCode; // cached hashcode for performance
 
@@ -26,7 +25,7 @@ public class AliasAction<T extends Action> implements Parcelable{
      */
     public AliasAction(
             @NonNull String alias,
-            @NonNull List<T> actions) {
+            @NonNull List<? extends Action> actions) {
         if (TextUtils.isEmpty(alias)) {
             throw new IllegalArgumentException("alias is empty or null");
         }
@@ -44,7 +43,7 @@ public class AliasAction<T extends Action> implements Parcelable{
     }
 
     @NonNull
-    public List<T> getActions() {
+    public List<? extends Action> getActions() {
         return actions;
     }
 
