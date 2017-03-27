@@ -7,6 +7,7 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -103,5 +104,17 @@ public class AliasAction implements Parcelable{
             this.hashCode = result;
         }
         return result;
+    }
+
+    /**
+     * Retrieve actions by Class of Action
+     * @param classOfT class of Action
+     * @param <T> Action Type
+     * @return list of Action instance.
+     */
+    @NonNull
+    public <T extends Action> List<T> getActions(Class<T> classOfT) {
+        //TODO: // FIXME: 2017/03/27
+        return new ArrayList<>();
     }
 }
