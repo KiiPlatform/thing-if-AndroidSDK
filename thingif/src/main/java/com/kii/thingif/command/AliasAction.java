@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class AliasAction implements Parcelable{
     @NonNull private String alias;
-    @NonNull private List<? extends Action> actions;
+    @NonNull private List<Action> actions;
 
     private transient volatile int hashCode; // cached hashcode for performance
 
@@ -35,7 +35,10 @@ public class AliasAction implements Parcelable{
             throw new IllegalArgumentException("action is null");
         }
         this.alias = alias;
-        this.actions = actions;
+        this.actions = new ArrayList<>();
+        for (Action action: actions) {
+            this.actions.add(action);
+        }
     }
 
     @NonNull
@@ -116,5 +119,15 @@ public class AliasAction implements Parcelable{
     public <T extends Action> List<T> getActions(Class<T> classOfT) {
         //TODO: // FIXME: 2017/03/27
         return new ArrayList<>();
+    }
+
+    /**
+     * Add action to actions list.
+     * @param action action to add.
+     * @return this instance.
+     */
+    public AliasAction addAction(Action action) {
+        this.actions.add(action);
+        return this;
     }
 }
