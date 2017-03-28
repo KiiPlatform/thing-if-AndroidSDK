@@ -43,27 +43,29 @@ public class AliasActionAdapter implements
 
     @Override
     public AliasAction deserialize(JsonElement jsonElement, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        if (jsonElement == null) return null;
-
-        JsonObject json = jsonElement.getAsJsonObject();
-
-        if (!json.entrySet().iterator().hasNext()){
-            return null;
-        }
-        Map.Entry<String, JsonElement> firstEntry = json.entrySet().iterator().next();
-        String alias = firstEntry.getKey();
-
-        if (!this.actionTypes.containsKey(firstEntry.getKey())) {
-            throw new JsonParseException(new UnregisteredAliasException(alias, true));
-        }
-        Class<? extends Action> actionClass = this.actionTypes.get(alias);
-        JsonElement actionJson = json.get(alias);
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(
-                        Action.class,
-                        new ActionAdapter(actionClass))
-                .create();
-        Action action = gson.fromJson(actionJson, Action.class);
-        return new AliasAction(alias, action);
+//        if (jsonElement == null) return null;
+//
+//        JsonObject json = jsonElement.getAsJsonObject();
+//
+//        if (!json.entrySet().iterator().hasNext()){
+//            return null;
+//        }
+//        Map.Entry<String, JsonElement> firstEntry = json.entrySet().iterator().next();
+//        String alias = firstEntry.getKey();
+//
+//        if (!this.actionTypes.containsKey(firstEntry.getKey())) {
+//            throw new JsonParseException(new UnregisteredAliasException(alias, true));
+//        }
+//        Class<? extends Action> actionClass = this.actionTypes.get(alias);
+//        JsonElement actionJson = json.get(alias);
+//        Gson gson = new GsonBuilder()
+//                .registerTypeAdapter(
+//                        Action.class,
+//                        new ActionAdapter(actionClass))
+//                .create();
+//        Action action = gson.fromJson(actionJson, Action.class);
+//        return new AliasAction(alias, action);
+        //TODO: // FIXME: 2017/03/27
+        return null;
     }
 }
