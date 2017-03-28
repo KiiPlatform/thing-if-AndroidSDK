@@ -9,7 +9,7 @@ import java.util.List;
 public class CommandFactory {
     public static Command newTriggeredCommand(
             TypedID issuerID,
-            List<AliasAction<? extends Action>> aliasActions,
+            List<AliasAction> aliasActions,
             TypedID targetID,
             String title,
             String description,
@@ -31,7 +31,7 @@ public class CommandFactory {
 
     public static Command newCommand(
             TypedID issuerID,
-            List<AliasAction<? extends Action>> aliasActions,
+            List<AliasAction> aliasActions,
             String commandID,
             TypedID targetID,
             List<AliasActionResult> aliasActionResults,
