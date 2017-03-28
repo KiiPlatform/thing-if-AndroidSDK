@@ -32,7 +32,7 @@ public class AliasAction implements Parcelable{
         }
 
         if (actions == null) {
-            throw new IllegalArgumentException("action is null");
+            throw new IllegalArgumentException("actions is null");
         }
         this.alias = alias;
         this.actions = new ArrayList<>();
@@ -119,15 +119,5 @@ public class AliasAction implements Parcelable{
     public <T extends Action> List<T> getActions(Class<T> classOfT) {
         //TODO: // FIXME: 2017/03/27
         return new ArrayList<>();
-    }
-
-    /**
-     * Add action to actions list.
-     * @param action action to add.
-     * @return this instance.
-     */
-    public AliasAction addAction(Action action) {
-        this.actions.add(action);
-        return this;
     }
 }
