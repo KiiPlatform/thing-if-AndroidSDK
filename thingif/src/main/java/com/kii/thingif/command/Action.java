@@ -11,7 +11,8 @@ import com.kii.thingif.trigger.TriggeredCommandForm;
 import java.util.Map;
 
 /**
- * Marks a class as a single action.
+ * Marks a class as a single action. The action class should implement this interface and have only
+ * one field as value of the action.
  * <br>
  * SDK serializes Action objects using
  * <a href="https://github.com/google/gson/blob/master/UserGuide.md#TOC-Object-Examples">Gson </a>,
