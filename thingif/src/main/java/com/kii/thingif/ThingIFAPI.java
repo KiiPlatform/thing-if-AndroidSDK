@@ -10,7 +10,6 @@ import android.support.annotation.WorkerThread;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
@@ -202,6 +201,8 @@ public class ThingIFAPI {
          *
          * @param app Kii Cloud Application.
          * @param owner Specify who uses the ThingIFAPI.
+         * @param actionTypes the format of key of actionTypes is "[alias]:[actionName]".
+         * @param stateTypes the key of stateTypes is alias.
          * @return Builder instance.
          */
         @NonNull
