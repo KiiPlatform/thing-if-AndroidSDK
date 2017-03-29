@@ -67,12 +67,15 @@ public class AliasActionAdapter implements
             String acName = actionME.getKey();
             Class<? extends Action> acCls =
                     this.actionTypes.get(AliasUtils.aliasActionKey(alias, acName));
+            if (acCls == null) {
+                throw new JsonParseException( acName + " of " + alias + " is not registered");
+            }
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(
                             Action.class,
                             new ActionAdapter(acCls))
                     .create();
-            actions.add(gson.fromJson(acJE, acCls));
+            actions.add(gson.fromJson(acJE, Action.class));
         }
         return new AliasAction(alias, actions);
     }

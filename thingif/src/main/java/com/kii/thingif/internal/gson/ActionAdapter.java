@@ -37,6 +37,9 @@ class ActionAdapter implements
         }
         String actionName = src.getActionName();
 
+        if (!json.entrySet().iterator().hasNext()) {
+            throw new JsonParseException("action doesn't have field, or value of filed is null");
+        }
         // get the value of first key from json
         Map.Entry<String, JsonElement> firstEntry = json.entrySet().iterator().next();
         JsonElement value = firstEntry.getValue();

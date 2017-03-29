@@ -36,7 +36,10 @@ public class SmallTestBase {
         if (expected == null && actual == null) {
             return;
         }
-        Assert.assertEquals(new JsonParser().parse(expected.toString()), new JsonParser().parse(actual.toString()));
+        if (expected == null || actual == null) {
+            Assert.fail("expected not equals to actual");
+        }
+        Assert.assertEquals(expected.toString(), actual.toString());
     }
     protected void assertJSONArray(JSONArray expected, JSONArray actual) throws JSONException {
         if (expected == null && actual == null) {
