@@ -9,6 +9,7 @@ import com.kii.thingif.actions.SetPresetTemperature;
 import com.kii.thingif.actions.TurnPower;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
+import com.kii.thingif.exception.UnsupportedActionException;
 import com.kii.thingif.internal.utils.AliasUtils;
 import com.kii.thingif.utils.JsonUtil;
 
@@ -89,14 +90,19 @@ public class AliasActionAdapterTest extends SmallTestBase {
         Assert.assertEquals(23, ((SetPresetTemperature)action2).getTemperature().intValue());
     }
 
-    @Test(expected = JsonParseException.class)
+    @Test
     public void deserialize_unregisteredAlias_throw_exceptionTest() {
         List<Action> actions = new ArrayList<>();
         actions.add(new TurnPower(true));
         AliasAction aa = new AliasAction("anotherAlias", actions);
+        try {
+            gson.fromJson(
+                    JsonUtil.aliasActionToJson(aa).toString(),
+                    AliasAction.class);
+            Assert.fail("should throw exception");
+        }catch (JsonParseException e) {
+            Assert.assertTrue(e.getCause() instanceof UnsupportedActionException);
+        }
 
-        gson.fromJson(
-                JsonUtil.aliasActionToJson(aa).toString(),
-                AliasAction.class);
     }
 }

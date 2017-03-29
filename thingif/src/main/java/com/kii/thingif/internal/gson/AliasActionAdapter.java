@@ -12,6 +12,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
+import com.kii.thingif.exception.UnsupportedActionException;
 import com.kii.thingif.internal.utils.AliasUtils;
 
 import java.lang.reflect.Type;
@@ -68,7 +69,7 @@ public class AliasActionAdapter implements
             Class<? extends Action> acCls =
                     this.actionTypes.get(AliasUtils.aliasActionKey(alias, acName));
             if (acCls == null) {
-                throw new JsonParseException( acName + " of " + alias + " is not registered");
+                throw new JsonParseException(new UnsupportedActionException(acName, alias));
             }
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(
