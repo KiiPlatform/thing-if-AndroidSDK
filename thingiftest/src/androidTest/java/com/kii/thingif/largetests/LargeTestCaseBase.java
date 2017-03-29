@@ -2,19 +2,14 @@ package com.kii.thingif.largetests;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
 import android.text.TextUtils;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.kii.cloud.rest.client.KiiRest;
 import com.kii.cloud.rest.client.exception.KiiRestException;
-import com.kii.cloud.rest.client.logging.KiiDefaultLogger;
 import com.kii.cloud.rest.client.model.KiiCredentials;
 import com.kii.cloud.rest.client.model.storage.KiiNormalUser;
-import com.kii.cloud.rest.client.model.storage.KiiThing;
-import com.kii.cloud.rest.client.resource.KiiThingIfResource;
 import com.kii.cloud.rest.client.resource.thingif.KiiThingIfTargetResource;
 import com.kii.cloud.rest.client.resource.thingif.KiiThingIfTargetStatesResource;
 import com.kii.thingif.KiiApp;
@@ -23,8 +18,7 @@ import com.kii.thingif.Target;
 import com.kii.thingif.TargetState;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.TypedID;
-import com.kii.thingif.actions.AirConditionerActions;
-import com.kii.thingif.actions.HumidityActions;
+import com.kii.thingif.actions.TurnPower;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.states.AirConditionerState;
 import com.kii.thingif.states.HumidityState;
@@ -35,7 +29,6 @@ import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.runner.RunWith;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -148,12 +141,10 @@ public class LargeTestCaseBase {
         Owner owner = this.createNewOwner();
         String hostname = server.getBaseUrl().substring("https://".length());
         KiiApp app = KiiApp.Builder.builderWithHostName(server.getAppID(), server.getAppKey(), hostname).build();
-        return ThingIFAPI.Builder.newBuilder(
-                this.context,
-                app,
-                owner,
-                getDefaultActionTypes(),
-                getDefaultStateTypes()).build();
+        return ThingIFAPI.Builder.newBuilder(this.context, app, owner)
+                .registerAction(ALIAS1, "turnPower", TurnPower.class)
+                .registerTargetState(ALIAS1, AirConditionerState.class)
+                .registerTargetState(ALIAS2, HumidityState.class).build();
     }
 
     protected void assertJSONObject(JSONObject expected, JSONObject actual) {
@@ -161,13 +152,6 @@ public class LargeTestCaseBase {
             return;
         }
         Assert.assertEquals(new JsonParser().parse(expected.toString()), new JsonParser().parse(actual.toString()));
-    }
-
-    protected Map<String, Class<? extends Action>> getDefaultActionTypes () {
-        Map<String, Class<? extends Action>> actionTypes = new HashMap<>();
-        actionTypes.put(ALIAS1, AirConditionerActions.class);
-        actionTypes.put(ALIAS2, HumidityActions.class);
-        return actionTypes;
     }
 
     protected Map<String, Class<? extends TargetState>> getDefaultStateTypes () {
@@ -178,7 +162,9 @@ public class LargeTestCaseBase {
     }
 
     protected ThingIFAPI copyThingIFAPIWithoutTarget(ThingIFAPI api) {
-        return ThingIFAPI.Builder.newBuilder(context, api.getApp(), api.getOwner(),
-                api.getActionTypes(), api.getStateTypes()).build();
+        return ThingIFAPI.Builder.newBuilder(context, api.getApp(), api.getOwner())
+                .registerAction(ALIAS1, "turnPower", TurnPower.class)
+                .registerTargetState(ALIAS1, AirConditionerState.class)
+                .registerTargetState(ALIAS2, HumidityState.class).build();
     }
 }
