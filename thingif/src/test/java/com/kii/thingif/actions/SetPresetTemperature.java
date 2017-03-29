@@ -5,25 +5,26 @@ import com.kii.thingif.command.Action;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+public class SetPresetTemperature implements Action, ActionToJSON {
 
-public class TurnPower implements Action, ActionToJSON {
-    private Boolean power;
-    public TurnPower(Boolean power) {
-        this.power = power;
+    private Integer temperature;
+
+    public SetPresetTemperature(Integer temperature) {
+        this.temperature = temperature;
     }
     @Override
     public String getActionName() {
-        return "turnPower";
+        return "setPresetTemperature";
     }
 
-    public Boolean getPower() {
-        return this.power;
+    public Integer getTemperature() {
+        return this.temperature;
     }
 
     @Override
     public JSONObject toJSONObject() {
         try {
-            return new JSONObject().put(this.getActionName(), this.power);
+            return new JSONObject().put(this.getActionName(), this.temperature);
         }catch (JSONException e) {
             // never throw
             throw new RuntimeException(e);
