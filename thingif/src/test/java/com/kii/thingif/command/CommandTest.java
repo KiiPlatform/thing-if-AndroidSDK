@@ -2,10 +2,12 @@ package com.kii.thingif.command;
 
 import android.os.Parcel;
 
+import com.kii.thingif.SmallTestBase;
 import com.kii.thingif.TypedID;
-import com.kii.thingif.actions.AirConditionerActions;
-import com.kii.thingif.actions.HumidityActions;
-import com.kii.thingif.actions.NewAction;
+import com.kii.thingif.actions.SetPresetHumidity;
+import com.kii.thingif.actions.SetPresetTemperature;
+import com.kii.thingif.actions.TurnPower;
+import com.kii.thingif.utils.JsonUtil;
 
 import junit.framework.Assert;
 
@@ -19,31 +21,40 @@ import java.util.Date;
 import java.util.List;
 
 @RunWith(RobolectricTestRunner.class)
-public class CommandTest {
+public class CommandTest extends SmallTestBase {
     @Test
     public void test() throws Exception{
 
         String alias1 = "AirConditionerAlias";
         String alias2 = "HumidityAlias";
 
-        List<AliasAction<? extends Action>> aliasActions = new ArrayList<>();
+        List<AliasAction> aliasActions = new ArrayList<>();
         List<AliasActionResult> aliasActionResults = new ArrayList<>();
+        
+        List<Action> actions1 = new ArrayList<>();
+        actions1.add(new TurnPower(true));
+        actions1.add(new SetPresetTemperature(100));
+        AliasAction aliasAction1 =
+                new AliasAction(
+                        alias1,
+                        actions1);
 
-        AliasAction<AirConditionerActions> action1 =
-                new AliasAction<>(
-                        alias1,
-                        new AirConditionerActions(true, 100));
-        AliasAction<HumidityActions> action2 =
-                new AliasAction<>(
+        List<Action> actions2 = new ArrayList<>();
+        actions2.add(new SetPresetHumidity(50));
+        AliasAction aliasAction2 =
+                new AliasAction(
                         alias2,
-                        new HumidityActions(50));
-        AliasAction<AirConditionerActions> action3 =
-                new AliasAction<>(
+                        actions2);
+
+        List<Action> actions3 = new ArrayList<>();
+        actions3.add(new TurnPower(false));
+        AliasAction aliasAction3 =
+                new AliasAction(
                         alias1,
-                        new AirConditionerActions(false, null));
-        aliasActions.add(action1);
-        aliasActions.add(action2);
-        aliasActions.add(action3);
+                        actions3);
+        aliasActions.add(aliasAction1);
+        aliasActions.add(aliasAction2);
+        aliasActions.add(aliasAction3);
 
         List<ActionResult> results1 = new ArrayList<>();
         results1.add(new ActionResult("turnPower", true, null, null));
@@ -102,29 +113,18 @@ public class CommandTest {
 
         Assert.assertEquals(3, command.getAliasActions().size());
 
-        Assert.assertEquals(alias1, command.getAliasActions().get(0).getAlias());
-        Action actualAction1 = command.getAliasActions().get(0).getAction();
-        Assert.assertTrue(actualAction1 instanceof AirConditionerActions);
-        Assert.assertEquals(true,
-                ((AirConditionerActions)actualAction1).isPower().booleanValue());
-        Assert.assertEquals(
-                100,
-                ((AirConditionerActions)actualAction1).getPresetTemperature().intValue());
 
-        Assert.assertEquals(alias2, command.getAliasActions().get(1).getAlias());
-        Action actualAction2 = command.getAliasActions().get(1).getAction();
-        Assert.assertTrue(actualAction2 instanceof HumidityActions);
-        Assert.assertEquals(
-                50,
-                ((HumidityActions)actualAction2).getPresetHumidity().intValue());
+        assertJSONObject(
+                JsonUtil.aliasActionToJson(aliasAction1),
+                JsonUtil.aliasActionToJson(command.getAliasActions().get(0)));
 
-        Assert.assertEquals(alias1, command.getAliasActions().get(2).getAlias());
-        Action actualAction3 = command.getAliasActions().get(2).getAction();
-        Assert.assertTrue(actualAction3 instanceof AirConditionerActions);
-        Assert.assertEquals(
-                false,
-                ((AirConditionerActions)actualAction3).isPower().booleanValue());
-        Assert.assertNull(((AirConditionerActions)actualAction3).getPresetTemperature());
+        assertJSONObject(
+                JsonUtil.aliasActionToJson(aliasAction2),
+                JsonUtil.aliasActionToJson(command.getAliasActions().get(1)));
+
+        assertJSONObject(
+                JsonUtil.aliasActionToJson(aliasAction3),
+                JsonUtil.aliasActionToJson(command.getAliasActions().get(2)));
 
         Assert.assertNotNull(command.getAliasActionResults());
         Assert.assertEquals(3, command.getAliasActionResults().size());
@@ -189,18 +189,20 @@ public class CommandTest {
                 command.getAliasActionResults().get(2).getResults().get(0).getData().toString());
 
         // test retrieve action by alias
-        List<AliasAction<AirConditionerActions>> foundActions =
-                command.getAliasAction(alias1, AirConditionerActions.class);
+        List<AliasAction> foundActions =
+                command.getAliasAction(alias1);
         Assert.assertEquals(2, foundActions.size());
-        Assert.assertEquals(alias1, foundActions.get(0).getAlias());
-        Assert.assertEquals(true, foundActions.get(0).getAction().isPower().booleanValue());
-        Assert.assertEquals(100, foundActions.get(0).getAction().getPresetTemperature().intValue());
-        Assert.assertEquals(alias1, foundActions.get(1).getAlias());
-        Assert.assertEquals(false, foundActions.get(1).getAction().isPower().booleanValue());
-        Assert.assertNull(foundActions.get(1).getAction().getPresetTemperature());
 
-        List<AliasAction<NewAction>> foundActions2 =
-                command.getAliasAction("NewAlias", NewAction.class);
+        assertJSONObject(
+                JsonUtil.aliasActionToJson(aliasAction1),
+                JsonUtil.aliasActionToJson(foundActions.get(0)));
+
+        assertJSONObject(
+                JsonUtil.aliasActionToJson(aliasAction3),
+                JsonUtil.aliasActionToJson(foundActions.get(1)));
+
+        List<AliasAction> foundActions2 =
+                command.getAliasAction("NewAlias");
         Assert.assertEquals(0, foundActions2.size());
 
         // test retrieve action result by alias and acton name
@@ -230,19 +232,23 @@ public class CommandTest {
         String alias1 = "AirConditionerAlias";
         String alias2 = "HumidityAlias";
 
-        List<AliasAction<? extends Action>> aliasActions = new ArrayList<>();
+        List<AliasAction> aliasActions = new ArrayList<>();
         List<AliasActionResult> aliasActionResults = new ArrayList<>();
 
-        AliasAction<AirConditionerActions> action1 =
-                new AliasAction<>(
+        List<Action> actions1 = new ArrayList<>();
+        actions1.add(new TurnPower(true));
+        AliasAction aliasAction1 =
+                new AliasAction(
                         alias1,
-                        new AirConditionerActions(true, null));
-        AliasAction<HumidityActions> action2 =
-                new AliasAction<>(
+                        actions1);
+
+        List<Action> actions2 = new ArrayList<>();
+        AliasAction aliasAction2 =
+                new AliasAction(
                         alias2,
-                        new HumidityActions(50));
-        aliasActions.add(action1);
-        aliasActions.add(action2);
+                        actions2);
+        aliasActions.add(aliasAction1);
+        aliasActions.add(aliasAction2);
 
         List<ActionResult> results1 = new ArrayList<>();
         results1.add(new ActionResult("turnPower", true, null, null));
@@ -303,19 +309,14 @@ public class CommandTest {
         Assert.assertEquals(
                 2,
                 deserializedCommand1.getAliasActions().size());
-        Assert.assertEquals(
-                alias1,
-                deserializedCommand1.getAliasActions().get(0).getAlias());
-        Action actualAction1 = deserializedCommand1.getAliasActions().get(0).getAction();
-        Assert.assertTrue(actualAction1 instanceof AirConditionerActions);
-        Assert.assertTrue(((AirConditionerActions)actualAction1).isPower());
-        Assert.assertNull(((AirConditionerActions)actualAction1).getPresetTemperature());
-        Assert.assertEquals(
-                alias2,
-                deserializedCommand1.getAliasActions().get(1).getAlias());
-        Action actualAction2 = deserializedCommand1.getAliasActions().get(1).getAction();
-        Assert.assertTrue(actualAction2 instanceof HumidityActions);
-        Assert.assertEquals(50, ((HumidityActions)actualAction2).getPresetHumidity().intValue());
+
+        assertJSONObject(
+                JsonUtil.aliasActionToJson(aliasAction1),
+                JsonUtil.aliasActionToJson(deserializedCommand1.getAliasActions().get(0)));
+
+        assertJSONObject(
+                JsonUtil.aliasActionToJson(aliasAction2),
+                JsonUtil.aliasActionToJson(deserializedCommand1.getAliasActions().get(1)));
 
         // check actionResults
         Assert.assertNotNull(deserializedCommand1.getAliasActionResults());
