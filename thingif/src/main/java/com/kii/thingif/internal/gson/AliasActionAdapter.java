@@ -27,18 +27,20 @@ public class AliasActionAdapter implements
     }
     @Override
     public JsonElement serialize(AliasAction src, Type typeOfSrc, JsonSerializationContext context) {
-        if (src == null) return null;
-
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(
-                        Action.class,
-                        new ActionAdapter(this.actionTypes.get(src.getAlias())))
-                .create();
-        JsonObject json = new JsonObject();
-        json.add(
-                src.getAlias(),
-                gson.toJsonTree(src.getAction(), Action.class));
-        return json;
+//        if (src == null) return null;
+//
+//        Gson gson = new GsonBuilder()
+//                .registerTypeAdapter(
+//                        Action.class,
+//                        new ActionAdapter(this.actionTypes.get(src.getAlias())))
+//                .create();
+//        JsonObject json = new JsonObject();
+//        json.add(
+//                src.getAlias(),
+//                gson.toJsonTree(src.getAction(), Action.class));
+//        return json;
+        //TODO: // FIXME: 2017/03/29
+        return null;
     }
 
     @Override

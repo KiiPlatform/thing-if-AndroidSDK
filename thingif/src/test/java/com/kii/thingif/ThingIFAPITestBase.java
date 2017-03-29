@@ -6,9 +6,7 @@ import android.content.SharedPreferences;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.kii.thingif.actions.AirConditionerActions;
-import com.kii.thingif.actions.HumidityActions;
-import com.kii.thingif.command.Action;
+import com.kii.thingif.actions.TurnPower;
 import com.kii.thingif.command.Command;
 import com.kii.thingif.command.CommandState;
 import com.kii.thingif.query.GroupedHistoryStates;
@@ -51,13 +49,6 @@ public class ThingIFAPITestBase extends SmallTestBase {
 
     protected MockWebServer server;
 
-    protected static Map<String, Class<? extends Action>> getDefaultActionTypes () {
-        Map<String, Class<? extends Action>> actionTypes = new HashMap<>();
-        actionTypes.put(ALIAS1, AirConditionerActions.class);
-        actionTypes.put(ALIAS2, HumidityActions.class);
-        return actionTypes;
-    }
-
     protected static Map<String, Class<? extends TargetState>> getDefaultStateTypes () {
         Map<String, Class<? extends TargetState>> stateTypes = new HashMap<>();
         stateTypes.put(ALIAS1, AirConditionerState.class);
@@ -80,12 +71,11 @@ public class ThingIFAPITestBase extends SmallTestBase {
         String ownerID = UUID.randomUUID().toString();
         Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
         KiiApp app = getApp(appID, appKey);
-        ThingIFAPI.Builder builder = ThingIFAPI.Builder.newBuilder(
-                context,
-                app,
-                owner,
-                getDefaultActionTypes(),
-                getDefaultStateTypes());
+        ThingIFAPI.Builder builder = ThingIFAPI.Builder
+                .newBuilder(context, app, owner)
+                .registerAction(ALIAS1, "turnPower", TurnPower.class)
+                .registerTargetState(ALIAS1, AirConditionerState.class)
+                .registerTargetState(ALIAS2, HumidityState.class);
         return builder.build();
     }
 
@@ -93,12 +83,12 @@ public class ThingIFAPITestBase extends SmallTestBase {
         String ownerID = UUID.randomUUID().toString();
         Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
         KiiApp app = getApp(appID, appKey);
-        return ThingIFAPI.Builder.newBuilder(
-                context,
-                app,
-                owner,
-                getDefaultActionTypes(),
-                getDefaultStateTypes());
+        return ThingIFAPI.Builder
+                .newBuilder(context, app, owner)
+                .registerAction(ALIAS1, "turnPower", TurnPower.class)
+                .registerTargetState(ALIAS1, AirConditionerState.class)
+                .registerTargetState(ALIAS2, HumidityState.class);
+
     }
 
     public KiiApp getApp(String appId, String appKey) {

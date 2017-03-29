@@ -196,6 +196,29 @@ public class ThingIFAPI {
             return this;
         }
 
+        /**
+         * Instantiate new Builder without Context.
+         * This method is for internal use only. Do not call it from your application.
+         *
+         * @param app Kii Cloud Application.
+         * @param owner Specify who uses the ThingIFAPI.
+         * @return Builder instance.
+         */
+        @NonNull
+        public static Builder _newBuilder(
+                @NonNull KiiApp app,
+                @NonNull Owner owner,
+                @NonNull Map<String, Class<? extends Action>> actionTypes,
+                @NonNull Map<String, Class<? extends TargetState>> stateTypes) {
+            if (app == null) {
+                throw new IllegalArgumentException("app is null");
+            }
+            if (owner == null) {
+                throw new IllegalArgumentException("owner is null");
+            }
+            return new Builder(null, app, owner, actionTypes, stateTypes);
+        }
+
         /** Instantiate new ThingIFAPI instance.
          * @return ThingIFAPI instance.
          * @throws IllegalStateException when actionTypes or stateTypes is empty.
@@ -226,6 +249,7 @@ public class ThingIFAPI {
                 @NonNull String alias,
                 @NonNull String actionName,
                 @NonNull Class<? extends Action> actionClass){
+            //TODO: validate actionClass, should contain only 1 field
             this.actionTypes.put(ThingIFAPI.actionsMapKey(alias, actionName), actionClass);
             return this;
         }

@@ -1,7 +1,6 @@
 package com.kii.thingif.utils;
 
 import com.kii.thingif.ServerError;
-import com.kii.thingif.actions.ToJSON;
 import com.kii.thingif.clause.query.AllClause;
 import com.kii.thingif.clause.query.AndClauseInQuery;
 import com.kii.thingif.clause.query.EqualsClauseInQuery;
@@ -148,14 +147,14 @@ public class JsonUtil {
 
             JSONArray aliasActionsArray = new JSONArray();
             for (AliasAction aliasAction : cmd.getAliasActions()) {
-                if (!(aliasAction.getAction() instanceof ToJSON)) {
-                    Assert.fail(aliasAction.getAction().getClass().getName()+
-                            " not extend ToJSON interface for test purpose");
-                }else{
-                    aliasActionsArray.put(new JSONObject()
-                            .put(aliasAction.getAlias(),
-                                    ((ToJSON)aliasAction.getAction()).toJSONArray()));
-                }
+//                if (!(aliasAction.getAction() instanceof ToJSON)) {
+//                    Assert.fail(aliasAction.getAction().getClass().getName()+
+//                            " not extend ToJSON interface for test purpose");
+//                }else{
+//                    aliasActionsArray.put(new JSONObject()
+//                            .put(aliasAction.getAlias(),
+//                                    ((ToJSON)aliasAction.getAction()).toJSONArray()));
+//                }
             }
             if (aliasActionsArray.length() != 0) {
                 ret.put("actions", aliasActionsArray);

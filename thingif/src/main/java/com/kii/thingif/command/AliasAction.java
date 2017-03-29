@@ -47,7 +47,7 @@ public class AliasAction implements Parcelable{
     }
 
     @NonNull
-    public List<? extends Action> getActions() {
+    public List<Action> getActions() {
         return actions;
     }
 

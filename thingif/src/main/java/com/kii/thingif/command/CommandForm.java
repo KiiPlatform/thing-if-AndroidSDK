@@ -30,7 +30,7 @@ import java.util.List;
 public final class CommandForm {
 
     @SerializedName("actions")
-    private final @NonNull List<AliasAction<? extends Action>> aliasActions;
+    private final @NonNull List<AliasAction> aliasActions;
 
     private @Nullable String title;
     private @Nullable String description;
@@ -38,13 +38,13 @@ public final class CommandForm {
 
 
     public static class Builder{
-        private @NonNull List<AliasAction<? extends Action>> aliasActions;
+        private @NonNull List<AliasAction> aliasActions;
         private @Nullable String title;
         private @Nullable String description;
         private @Nullable JSONObject metadata;
 
         private Builder(
-                @NonNull List<AliasAction<? extends Action>> aliasActions) {
+                @NonNull List<AliasAction> aliasActions) {
             this.aliasActions = aliasActions;
         }
 
@@ -54,7 +54,7 @@ public final class CommandForm {
          */
         @NonNull
         public static Builder newBuilder() {
-            List<AliasAction<? extends Action>> actions = new ArrayList<>();
+            List<AliasAction> actions = new ArrayList<>();
             return new Builder(actions);
         }
 
@@ -66,7 +66,7 @@ public final class CommandForm {
          */
         @NonNull
         public static Builder newBuilder(
-                @NonNull List<AliasAction<? extends Action>> aliasActions) {
+                @NonNull List<AliasAction> aliasActions) {
             if (aliasActions == null || aliasActions.size() == 0) {
                 throw new IllegalArgumentException("aliasActions is null or empty");
             }
@@ -81,7 +81,7 @@ public final class CommandForm {
          */
         @NonNull
         public Builder addAliasAction(
-                @NonNull AliasAction<? extends Action> aliasAction) {
+                @NonNull AliasAction aliasAction) {
             if (aliasAction == null) {
                 throw new IllegalArgumentException("aliasAction is null");
             }
@@ -156,7 +156,7 @@ public final class CommandForm {
     }
 
     private CommandForm(
-            @NonNull List<AliasAction<? extends Action>> aliasActions,
+            @NonNull List<AliasAction> aliasActions,
             @Nullable String title,
             @Nullable String description,
             @Nullable JSONObject metaData)
@@ -174,7 +174,7 @@ public final class CommandForm {
      * @return aliasActions
      */
     @NonNull
-    public List<AliasAction<? extends Action>> getAliasActions() {
+    public List<AliasAction> getAliasActions() {
         return this.aliasActions;
     }
 
