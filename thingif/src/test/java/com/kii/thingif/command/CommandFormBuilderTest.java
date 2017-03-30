@@ -1,8 +1,9 @@
 package com.kii.thingif.command;
 
-import com.ibm.icu.impl.IllegalIcuArgumentException;
-import com.kii.thingif.actions.AirConditionerActions;
-import com.kii.thingif.actions.HumidityActions;
+import com.kii.thingif.SmallTestBase;
+import com.kii.thingif.actions.SetPresetHumidity;
+import com.kii.thingif.actions.TurnPower;
+import com.kii.thingif.utils.JsonUtil;
 
 import junit.framework.Assert;
 
@@ -12,33 +13,47 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RunWith(RobolectricTestRunner.class)
-public class CommandFormBuilderTest {
+public class CommandFormBuilderTest extends SmallTestBase {
 
     private static final String DEMO_TITLE = "DemoTitle";
     private static final String DEMO_DESCRIPTION = "DemoDESCRIPTION";
 
     @Test
     public void basicTest() throws Exception{
-        AliasAction<AirConditionerActions> action1 = new AliasAction<>(
+
+        List<Action> actions1 = new ArrayList<>();
+        actions1.add(new TurnPower(true));
+        AliasAction aliasAction1 = new AliasAction(
                 "AirConditionerAlias",
-                new AirConditionerActions(true, null));
-        AliasAction<HumidityActions> action2 = new AliasAction<>(
+                actions1);
+
+        List<Action> actions2 = new ArrayList<>();
+        actions2.add(new SetPresetHumidity(45));
+        AliasAction aliasAction2 = new AliasAction(
                 "HumidityAlais",
-                new HumidityActions(45));
+                actions2);
         JSONObject metaData = new JSONObject("{f:v}");
         CommandForm form = CommandForm
                 .Builder
                 .newBuilder()
-                .addAliasAction(action1)
-                .addAliasAction(action2)
+                .addAliasAction(aliasAction1)
+                .addAliasAction(aliasAction2)
                 .setTitle(DEMO_TITLE)
                 .setDescription(DEMO_DESCRIPTION)
                 .setMetadata(metaData)
                 .build();
         Assert.assertEquals(2, form.getAliasActions().size());
-        Assert.assertEquals(action1, form.getAliasActions().get(0));
-        Assert.assertEquals(action2, form.getAliasActions().get(1));
+        assertJSONObject(
+                JsonUtil.aliasActionToJson(aliasAction1),
+                JsonUtil.aliasActionToJson(form.getAliasActions().get(0)));
+        assertJSONObject(
+                JsonUtil.aliasActionToJson(aliasAction2),
+                JsonUtil.aliasActionToJson(form.getAliasActions().get(1)));
+
         Assert.assertEquals(DEMO_TITLE, form.getTitle());
         Assert.assertEquals(DEMO_DESCRIPTION, form.getDescription());
         Assert.assertNotNull(form.getMetadata());
@@ -72,21 +87,31 @@ public class CommandFormBuilderTest {
 
     @Test
     public void addAliasActionTest() {
-        AliasAction<AirConditionerActions> action1 = new AliasAction<>(
+        List<Action> actions1 = new ArrayList<>();
+        actions1.add(new TurnPower(true));
+        AliasAction aliasAction1 = new AliasAction(
                 "AirConditionerAlias",
-                new AirConditionerActions(true, null));
-        AliasAction<HumidityActions> action2 = new AliasAction<>(
+                actions1);
+
+        List<Action> actions2 = new ArrayList<>();
+        actions2.add(new SetPresetHumidity(45));
+        AliasAction aliasAction2 = new AliasAction(
                 "HumidityAlais",
-                new HumidityActions(45));
+                actions2);
+
         CommandForm form = CommandForm
                 .Builder
                 .newBuilder()
-                .addAliasAction(action1)
-                .addAliasAction(action2)
+                .addAliasAction(aliasAction1)
+                .addAliasAction(aliasAction2)
                 .build();
         Assert.assertEquals(2, form.getAliasActions().size());
-        Assert.assertEquals(action1, form.getAliasActions().get(0));
-        Assert.assertEquals(action2, form.getAliasActions().get(1));
+        assertJSONObject(
+                JsonUtil.aliasActionToJson(aliasAction1),
+                JsonUtil.aliasActionToJson(form.getAliasActions().get(0)));
+        assertJSONObject(
+                JsonUtil.aliasActionToJson(aliasAction2),
+                JsonUtil.aliasActionToJson(form.getAliasActions().get(1)));
     }
 
     @Test(expected = IllegalArgumentException.class)
