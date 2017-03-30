@@ -59,17 +59,25 @@ public class AliasAction implements Parcelable{
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.alias);
-        //TODO: // FIXME: 2017/03/27
-//        dest.writeSerializable(this.action.getClass());
-//        dest.writeString(new Gson().toJson(this.action));
+        dest.writeInt(this.actions.size());
+        Gson gson = new Gson();
+        for (Action action : this.actions) {
+            dest.writeSerializable(action.getClass());
+            dest.writeString(gson.toJson(action));
+        }
     }
 
     public AliasAction(Parcel in) {
         this.alias = in.readString();
-        //TODO: // FIXME: 2017/03/27
-//        Class<T> actionType = (Class<T>)in.readSerializable();
-//        String jsonString = in.readString();
-//        this.action = new Gson().fromJson(jsonString, actionType);
+        List<Action> actions = new ArrayList<>();
+        int size = in.readInt();
+        Gson gson = new Gson();
+        for (int i=0 ; i < size; i++) {
+            Class<Action> actionClass = (Class<Action>) in.readSerializable();
+            Action action = gson.fromJson(in.readString(), actionClass);
+            actions.add(action);
+        }
+        this.actions = actions;
     }
 
     public static final Creator<AliasAction> CREATOR = new Creator<AliasAction>() {
@@ -86,14 +94,10 @@ public class AliasAction implements Parcelable{
 
     @Override
     public boolean equals(Object o) {
-        return false;
-        //TODO: // FIXME: 2017/03/27
-//        if (o == null) return false;
-//        if (!(o instanceof AliasAction)) return false;
-//        if (!((AliasAction) o).getAction().getClass().equals(this.action.getClass())) return false;
-//        T action = (T)((AliasAction) o).getAction();
-//        return this.action.equals(action) &&
-//                this.alias.equals(((AliasAction) o).getAlias());
+        return o != null &&
+                o instanceof AliasAction &&
+                this.actions.equals(((AliasAction) o).getActions()) &&
+                this.alias.equals(((AliasAction) o).getAlias());
     }
 
     @Override
@@ -102,8 +106,7 @@ public class AliasAction implements Parcelable{
         if (result == 0) {
             result = 17;
             result = 31 * result + this.alias.hashCode();
-            //TODO // FIXME: 2017/03/27
-//            result = 31 * result + this.action.hashCode();
+            result = 31 * result + this.actions.hashCode();
             this.hashCode = result;
         }
         return result;
@@ -117,7 +120,12 @@ public class AliasAction implements Parcelable{
      */
     @NonNull
     public <T extends Action> List<T> getActions(Class<T> classOfT) {
-        //TODO: // FIXME: 2017/03/27
-        return new ArrayList<>();
+        List<T> foundActions = new ArrayList<>();
+        for (Action action: this.actions) {
+            if (action.getClass().equals(classOfT)) {
+                foundActions.add(classOfT.cast(action));
+            }
+        }
+        return foundActions;
     }
 }
