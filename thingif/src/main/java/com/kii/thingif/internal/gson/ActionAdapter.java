@@ -14,6 +14,7 @@ import com.google.gson.JsonSerializer;
 import com.kii.thingif.command.Action;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.Map;
 
@@ -65,9 +66,25 @@ class ActionAdapter implements
 
         Map.Entry<String, JsonElement> firstEntry = jsonElement.getAsJsonObject().entrySet().iterator().next();
         JsonElement actionValue = firstEntry.getValue();
-        Field firstField = this.actionClass.getDeclaredFields()[0];
-        String fieldName = firstField.getName();
+
+        String fieldName = null;
+
+        if (this.actionClass.getEnclosingClass() != null &&
+                !Modifier.isStatic(this.actionClass.getModifiers())) {
+            // for non static inner class skip the default field
+            for (Field field : this.actionClass.getDeclaredFields()) {
+                if (!field.getName().equals("this$0")) {
+                    fieldName = field.getName();
+                    break;
+                }
+            }
+        }else if (this.actionClass.getDeclaredFields().length == 1){
+            fieldName = this.actionClass.getDeclaredFields()[0].getName();
+        }
         JsonObject actionJson = new JsonObject();
+        if (fieldName == null) {
+            throw new JsonParseException("can not find a user defined field");
+        }
 
         if (actionValue.isJsonPrimitive()) {
             JsonPrimitive primValue = actionValue.getAsJsonPrimitive();
