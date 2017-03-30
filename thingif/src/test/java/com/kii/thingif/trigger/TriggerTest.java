@@ -4,8 +4,8 @@ import android.os.Parcel;
 
 import com.kii.thingif.SmallTestBase;
 import com.kii.thingif.TypedID;
-import com.kii.thingif.actions.AirConditionerActions;
-import com.kii.thingif.actions.HumidityActions;
+import com.kii.thingif.actions.SetPresetHumidity;
+import com.kii.thingif.actions.TurnPower;
 import com.kii.thingif.clause.trigger.EqualsClauseInTrigger;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
@@ -31,19 +31,23 @@ public class TriggerTest extends SmallTestBase{
         TypedID target = new TypedID(TypedID.Types.THING, "thing1234");
         TypedID issuer = new TypedID(TypedID.Types.USER, "user1234");
 
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
-        actions.add(new AliasAction<Action>(
-                alias1,
-                new AirConditionerActions(true, null)));
-        actions.add(new AliasAction<Action>(
-                alias2,
-                new HumidityActions(45)));
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions1 = new ArrayList<>();
+        actions1.add(new TurnPower(true));
+        aliasActions.add(new AliasAction(alias1, actions1));
+
+        List<Action> actions2 = new ArrayList<>();
+        actions2.add(new SetPresetHumidity(45));
+
+        aliasActions.add(new AliasAction(alias2, actions2));
+
+
         String commandTitle = "command title";
         String commandDescription = "command description";
         JSONObject commandMetaData = new JSONObject().put("k", "v");
         Command command = CommandFactory.newCommand(
                 issuer,
-                actions,
+                aliasActions,
                 null,
                 target,
                 null,

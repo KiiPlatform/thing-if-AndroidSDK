@@ -1,7 +1,8 @@
 package com.kii.thingif.trigger;
 
 import com.kii.thingif.TypedID;
-import com.kii.thingif.actions.AirConditionerActions;
+import com.kii.thingif.actions.SetPresetTemperature;
+import com.kii.thingif.actions.TurnPower;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
 
@@ -21,9 +22,13 @@ public class TriggeredCommandFormTest {
 
     @Test
     public void minValueTest() {
-        AliasAction<AirConditionerActions> airAlias =
-                new AliasAction<>("alias", new AirConditionerActions(false, 10));
-        List<AliasAction<? extends Action>> aliasActions = new ArrayList<>();
+        
+        List<Action> actions = new ArrayList<>();
+        actions.add(new TurnPower(false));
+        actions.add(new SetPresetTemperature(10));
+        AliasAction airAlias =
+                new AliasAction("alias", actions);
+        List<AliasAction> aliasActions = new ArrayList<>();
         aliasActions.add(airAlias);
 
         TriggeredCommandForm target = TriggeredCommandForm.Builder
@@ -40,9 +45,12 @@ public class TriggeredCommandFormTest {
 
     @Test
     public void maxValueTest() {
-        AliasAction<AirConditionerActions> airAlias =
-                new AliasAction<>("alias", new AirConditionerActions(false, 10));
-        List<AliasAction<? extends Action>> aliasActions = new ArrayList<>();
+        List<Action> actions = new ArrayList<>();
+        actions.add(new TurnPower(false));
+        actions.add(new SetPresetTemperature(10));
+        AliasAction airAlias =
+                new AliasAction("alias", actions);
+        List<AliasAction> aliasActions = new ArrayList<>();
         aliasActions.add(airAlias);
         TypedID targetID = new TypedID(TypedID.Types.THING, "id");
         JSONObject metadata = new JSONObject();
@@ -71,10 +79,17 @@ public class TriggeredCommandFormTest {
 
     @Test
     public void addAliasActionTest() {
-        AliasAction<AirConditionerActions> airAlias1 =
-                new AliasAction<>("alias", new AirConditionerActions(false, 10));
-        AliasAction<AirConditionerActions> airAlias2 =
-                new AliasAction<>("alias", new AirConditionerActions(true, 25));
+        List<Action> actions1 = new ArrayList<>();
+        actions1.add(new TurnPower(false));
+        actions1.add(new SetPresetTemperature(10));
+        AliasAction airAlias1 =
+                new AliasAction("alias", actions1);
+
+        List<Action> actions2 = new ArrayList<>();
+        actions2.add(new TurnPower(true));
+        actions2.add(new SetPresetTemperature(25));
+        AliasAction airAlias2 =
+                new AliasAction("alias", actions2);
 
         TriggeredCommandForm target = TriggeredCommandForm.Builder.newBuilder()
                 .addAliasAction(airAlias1)
@@ -82,7 +97,7 @@ public class TriggeredCommandFormTest {
                 .build();
 
         Assert.assertNotNull(target);
-        List<AliasAction<? extends Action>> aliasActions = target.getAliasActions();
+        List<AliasAction> aliasActions = target.getAliasActions();
         Assert.assertNotNull(aliasActions);
         Assert.assertEquals(2, aliasActions.size());
         Assert.assertEquals(airAlias1, aliasActions.get(0));
@@ -95,9 +110,12 @@ public class TriggeredCommandFormTest {
 
     @Test
     public void nullableValueTest() {
-        AliasAction<AirConditionerActions> airAlias =
-                new AliasAction<>("alias", new AirConditionerActions(false, 10));
-        List<AliasAction<? extends Action>> aliasActions = new ArrayList<>();
+        List<Action> actions = new ArrayList<>();
+        actions.add(new TurnPower(false));
+        actions.add(new SetPresetTemperature(10));
+        AliasAction airAlias =
+                new AliasAction("alias", actions);
+        List<AliasAction> aliasActions = new ArrayList<>();
         aliasActions.add(airAlias);
 
         TriggeredCommandForm target = TriggeredCommandForm.Builder

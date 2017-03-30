@@ -36,6 +36,7 @@ import com.kii.thingif.trigger.TriggeredServerCodeResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Assert;
 
 public class JsonUtil {
     public static JSONObject triggerClauseToJson(TriggerClause clause) {
@@ -148,14 +149,20 @@ public class JsonUtil {
 
             JSONArray aliasActionsArray = new JSONArray();
             for (AliasAction aliasAction : cmd.getAliasActions()) {
-//                if (!(aliasAction.getAction() instanceof ToJSON)) {
-//                    Assert.fail(aliasAction.getAction().getClass().getName()+
-//                            " not extend ToJSON interface for test purpose");
-//                }else{
-//                    aliasActionsArray.put(new JSONObject()
-//                            .put(aliasAction.getAlias(),
-//                                    ((ToJSON)aliasAction.getAction()).toJSONArray()));
-//                }
+                JSONArray actions = new JSONArray();
+                for (Action action: aliasAction.getActions()) {
+                    if (!(action instanceof ActionToJSON)) {
+                        Assert.fail(action.getClass().getName()+
+                                " not extend ToJSON interface for test purpose");
+                    }else{
+                        actions.put(new JSONObject()
+                                .put(action.getActionName(), ((ActionToJSON)action).toJSONObject()));
+                    }
+                    aliasActionsArray.put(new JSONObject().put(
+                            aliasAction.getAlias(),
+                            actions));
+                }
+
             }
             if (aliasActionsArray.length() != 0) {
                 ret.put("actions", aliasActionsArray);
