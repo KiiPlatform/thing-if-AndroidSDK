@@ -67,9 +67,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -201,8 +203,11 @@ public class ThingIFAPI {
          *
          * @param app Kii Cloud Application.
          * @param owner Specify who uses the ThingIFAPI.
-         * @param actionTypes the format of key of actionTypes is "[alias]:[actionName]".
-         * @param stateTypes the key of stateTypes is alias.
+         * @param actionTypes the format of key of actionTypes is "[alias]:[actionName]". i.e.
+         *                    if you register an action class, the alias name is AirConditionerAlias
+         *                    and the action name is turnPower, then the key should be
+         *                    "AirConditionerAlias:turnPower".
+         * @param stateTypes the key of stateTypes is alias name.
          * @return Builder instance.
          */
         @NonNull
@@ -250,7 +255,23 @@ public class ThingIFAPI {
                 @NonNull String alias,
                 @NonNull String actionName,
                 @NonNull Class<? extends Action> actionClass){
-            //TODO: validate actionClass, should contain only 1 field
+            // validate field of actionClass
+            List<Field> fields = new ArrayList<>();
+            for (Field field : actionClass.getDeclaredFields()) {
+                if (!field.getName().equals("this$0")){ // in case of inner class, has this field
+                    fields.add(field);
+                }
+            }
+            if (fields.size() != 1) {
+                throw new IllegalArgumentException("action class must contain only one field.");
+            }
+            // validate return value of getActionName()
+            Gson gson = new Gson();
+            Action action = gson.fromJson(new JsonObject(), actionClass);
+            if (TextUtils.isEmpty(action.getActionName())) {
+                throw new IllegalArgumentException("getActionName() return null or empty");
+            }
+
             this.actionTypes.put(ThingIFAPI.actionsMapKey(alias, actionName), actionClass);
             return this;
         }
