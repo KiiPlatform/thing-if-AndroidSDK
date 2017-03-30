@@ -201,8 +201,11 @@ public class ThingIFAPI {
          *
          * @param app Kii Cloud Application.
          * @param owner Specify who uses the ThingIFAPI.
-         * @param actionTypes the format of key of actionTypes is "[alias]:[actionName]".
-         * @param stateTypes the key of stateTypes is alias.
+         * @param actionTypes the format of key of actionTypes is "[alias]:[actionName]". i.e.
+         *                    if you register an action class, the alias name is AirConditionerAlias
+         *                    and the action name is turnPower, then the key should be
+         *                    "AirConditionerAlias:turnPower".
+         * @param stateTypes the key of stateTypes is alias name.
          * @return Builder instance.
          */
         @NonNull
