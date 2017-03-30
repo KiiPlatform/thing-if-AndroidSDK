@@ -68,6 +68,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -255,16 +256,21 @@ public class ThingIFAPI {
                 @NonNull String alias,
                 @NonNull String actionName,
                 @NonNull Class<? extends Action> actionClass){
-            // validate field of actionClass
-            List<Field> fields = new ArrayList<>();
-            for (Field field : actionClass.getDeclaredFields()) {
-                if (!field.getName().equals("this$0")){ // in case of inner class, has this field
-                    fields.add(field);
+
+            // validate field of actionClass, only allow one field to hold the value of action
+            if (actionClass.getEnclosingClass() != null &&
+                    !Modifier.isStatic(actionClass.getModifiers())) {
+                // for non static inner class, there is a additional default filed this$0 to
+                // access enclosing class's this, plus the user defined field, should have 2 fields.
+                if (actionClass.getDeclaredFields().length != 2) {
+                    throw new IllegalArgumentException("action class must contain only one field.");
+                }
+            }else{
+                if(actionClass.getDeclaredFields().length != 1) {
+                    throw new IllegalArgumentException("action class must contain only one field.");
                 }
             }
-            if (fields.size() != 1) {
-                throw new IllegalArgumentException("action class must contain only one field.");
-            }
+
             // validate return value of getActionName()
             Gson gson = new Gson();
             Action action = gson.fromJson(new JsonObject(), actionClass);
