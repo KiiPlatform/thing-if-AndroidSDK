@@ -1,14 +1,8 @@
 package com.kii.thingif.command;
 
-import android.content.Context;
-
-import com.kii.thingif.KiiApp;
-import com.kii.thingif.Owner;
 import com.kii.thingif.trigger.Predicate;
 import com.kii.thingif.trigger.TriggerOptions;
 import com.kii.thingif.trigger.TriggeredCommandForm;
-
-import java.util.Map;
 
 /**
  * Marks a class as a single action. The action class should implement this interface and have only
@@ -30,5 +24,12 @@ import java.util.Map;
  *
  */
 public interface Action {
+    /**
+     * A string to represent name of this action in server. SDK invokes this method to serialize
+     * action instance or parse an json format action object from server. The return value should
+     * be same as you configured for this action in trait.
+     * **Note** the return value must be neither null nor empty.
+     * @return name of action.
+     */
     String getActionName();
 }
