@@ -6,9 +6,13 @@ import android.content.SharedPreferences;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.kii.thingif.actions.SetPresetHumidity;
+import com.kii.thingif.actions.SetPresetTemperature;
 import com.kii.thingif.actions.TurnPower;
+import com.kii.thingif.command.Action;
 import com.kii.thingif.command.Command;
 import com.kii.thingif.command.CommandState;
+import com.kii.thingif.internal.utils.AliasUtils;
 import com.kii.thingif.query.GroupedHistoryStates;
 import com.kii.thingif.query.HistoryState;
 import com.kii.thingif.states.AirConditionerState;
@@ -56,6 +60,14 @@ public class ThingIFAPITestBase extends SmallTestBase {
         return stateTypes;
     }
 
+    protected static Map<String, Class<? extends Action>> getDefaultActionTypes () {
+        Map<String, Class<? extends Action>> actionTypes = new HashMap<>();
+        actionTypes.put(AliasUtils.aliasActionKey(ALIAS1, "turnPower"), TurnPower.class);
+        actionTypes.put(AliasUtils.aliasActionKey(ALIAS1, "setPresetTemperature"), SetPresetTemperature.class);
+        actionTypes.put(AliasUtils.aliasActionKey(ALIAS2, "setPresetHumidity"), SetPresetHumidity.class);
+        return actionTypes;
+    }
+
     protected void addMockResponseForOnBoard(int httpStatus, String thingID, String accessToken) {
         MockResponse response = new MockResponse().setResponseCode(httpStatus);
         if (thingID != null && accessToken != null) {
@@ -74,6 +86,8 @@ public class ThingIFAPITestBase extends SmallTestBase {
         ThingIFAPI.Builder builder = ThingIFAPI.Builder
                 .newBuilder(context, app, owner)
                 .registerAction(ALIAS1, "turnPower", TurnPower.class)
+                .registerAction(ALIAS1, "setPresetTemperature", SetPresetTemperature.class)
+                .registerAction(ALIAS2, "setPresetHumidity", SetPresetHumidity.class)
                 .registerTargetState(ALIAS1, AirConditionerState.class)
                 .registerTargetState(ALIAS2, HumidityState.class);
         return builder.build();
@@ -86,6 +100,8 @@ public class ThingIFAPITestBase extends SmallTestBase {
         return ThingIFAPI.Builder
                 .newBuilder(context, app, owner)
                 .registerAction(ALIAS1, "turnPower", TurnPower.class)
+                .registerAction(ALIAS1, "setPresetTemperature", SetPresetTemperature.class)
+                .registerAction(ALIAS2, "setPresetHumidity", SetPresetHumidity.class)
                 .registerTargetState(ALIAS1, AirConditionerState.class)
                 .registerTargetState(ALIAS2, HumidityState.class);
 
