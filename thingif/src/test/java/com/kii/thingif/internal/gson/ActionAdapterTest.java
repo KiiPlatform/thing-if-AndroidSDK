@@ -16,6 +16,60 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
+class OuterClass {
+
+    private String className;
+    public OuterClass(String className) {
+        this.className = className;
+    }
+
+    public String getClassName() {
+        return this.className;
+    }
+
+    public class TurnPower implements Action {
+        private Boolean power;
+        public TurnPower(Boolean power) {
+            this.power = power;
+        }
+        @Override
+        public String getActionName() {
+            return "turnPower";
+        }
+
+        public Boolean getPower() {
+            return this.power;
+        }
+    }
+    public static class StaticTurnPower implements Action {
+        private Boolean power;
+        public StaticTurnPower(Boolean power) {
+            this.power = power;
+        }
+        @Override
+        public String getActionName() {
+            return "turnPower";
+        }
+
+        public Boolean getPower() {
+            return this.power;
+        }
+    }
+
+    public class EmptyTurnPower implements Action {
+        @Override
+        public String getActionName() {
+            return "turnPower";
+        }
+    }
+
+    public class EmptyStaticTurnPower implements Action {
+        @Override
+        public String getActionName() {
+            return "turnPower";
+        }
+    }
+}
 
 class EmptyAction implements Action {
     @Override
@@ -259,7 +313,53 @@ public class ActionAdapterTest {
         gson.fromJson(json1.toString(), Action.class);
     }
 
-    public static void main () {
-        InnerTurnPower turnPower = (new ActionAdapterTest()).new InnerTurnPower(true);
+    @Test
+    public void parse_InnerClass_fromOtherClassTest() throws Exception {
+        JSONObject json1 = new JSONObject().put("turnPower", true);
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(
+                        Action.class,
+                        new ActionAdapter(OuterClass.TurnPower.class))
+                .create();
+        OuterClass.TurnPower action =
+                (OuterClass.TurnPower)gson.fromJson(json1.toString(), Action.class);
+        Assert.assertTrue(action.getPower());
+    }
+
+    @Test
+    public void parse_InnerStaticClass_fromOtherClassTest() throws Exception {
+        JSONObject json1 = new JSONObject().put("turnPower", true);
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(
+                        Action.class,
+                        new ActionAdapter(OuterClass.StaticTurnPower.class))
+                .create();
+        OuterClass.StaticTurnPower action =
+                (OuterClass.StaticTurnPower)gson.fromJson(json1.toString(), Action.class);
+        Assert.assertTrue(action.getPower());
+    }
+
+    @Test(expected = JsonParseException.class)
+    public void parse_to_innerEmptyAction_fromOuterClass_throw_exceptionTest() throws Exception {
+        JSONObject json1 = new JSONObject().put("turnPower", true);
+
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(
+                        Action.class,
+                        new ActionAdapter(OuterClass.EmptyTurnPower.class))
+                .create();
+        gson.fromJson(json1.toString(), Action.class);
+    }
+
+    @Test(expected = JsonParseException.class)
+    public void parse_to_innerStaticEmptyAction_fromOuterClass_throw_exceptionTest() throws Exception {
+        JSONObject json1 = new JSONObject().put("turnPower", true);
+
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(
+                        Action.class,
+                        new ActionAdapter(OuterClass.EmptyStaticTurnPower.class))
+                .create();
+        gson.fromJson(json1.toString(), Action.class);
     }
 }
