@@ -1,29 +1,69 @@
 package com.kii.thingif.command;
 
-import com.kii.thingif.trigger.Predicate;
-import com.kii.thingif.trigger.TriggerOptions;
-import com.kii.thingif.trigger.TriggeredCommandForm;
-
 /**
- * Marks a class as a single action. The action class should implement this interface and has one
- * field to hold value of the action. You either make name of this field same as action name or
- * use {@link com.google.gson.annotations.SerializedName} annotation and make value of serializedName
+ * Marks a class as a single action.
+ * <br>
+ * A single action must has the following two information:
+ * <ul>
+ *     <li>action name to represent what action it is.</li>
+ *     <li>action value to represent how the action to be executed.</li>
+ * </ul>
+ * A class implement Action interface, we called it a Concrete Action. SDK requires a Concrete Action
+ * must has one field to represent the above 2 information. Value of this field to represent action value
+ * and name of this field as action name. If you would like to use different name for this field, you can
+ * use {@link com.google.gson.annotations.SerializedName} annotation and make value of SerializedName
  * same as action name.
  * <br>
- * SDK serializes Action objects using
- * <a href="https://github.com/google/gson/blob/master/UserGuide.md#TOC-Object-Examples">Gson </a>,
- * when calling the following APIs:
- * <ul>
- * <li>{@link com.kii.thingif.ThingIFAPI#postNewCommand(CommandForm)}
- * <li>{@link com.kii.thingif.ThingIFAPI#postNewTrigger(TriggeredCommandForm, Predicate, TriggerOptions)}
- * </ul>
+ * <b>Note</b> that SDK doesn't allow use non static inner class as Concrete Action.
  * <br><br>
- * When parsing json formatted action from kii cloud server, SDK uses Gson too. You must register
- * class of Action to ThingIFAPI instance when constructed API:
+ * SDK using
+ * <a href="https://github.com/google/gson/blob/master/UserGuide.md#TOC-Object-Examples">Gson </a>
+ * to serialize Concrete Action instance or parse json format action object received from server as
+ * a Concrete Action instance.
+ * <br><br>
+ * You must register Concrete Action class to ThingIFAPI instance when constructed by:
  * <ul>
- * <li>{@link com.kii.thingif.ThingIFAPI.Builder#registerAction(String, String, Class)} (String, Class)}.
+ * <li>{@link com.kii.thingif.ThingIFAPI.Builder#registerAction(String, String, Class)}.
  * </ul>
+ * For example:
+ * <pre><code>
  *
+ *  // example to use annotation
+ *  class TurnPower implements Action {
+ *       {@literal @}SerializedName("turnPower") // value of annotation should be action name
+ *       public Boolean power;
+ *
+ *       public Integer anotherField;
+ *
+ *       public TurnPower(Boolean power,
+ *           Integer anotherField) {
+ *           this.power = power;
+ *           this.anotherField = anotherField;
+ *       }
+ *  }
+ *
+ *  // example not to use annotation
+ *  class TurnPower2 implements Action {
+ *       public Boolean turnPower; // field name should be action name
+ *
+ *       public Integer anotherField;
+ *
+ *       public TurnPower(Boolean turnPower,
+ *           Integer anotherField) {
+ *           this.turnPower = turnPower;
+ *           this.anotherField = anotherField;
+ *       }
+ *  }
+ *
+ *  // when registering Concrete Action
+ *  ThingIFAPI api = ThingIFAPI.Builder
+ *      .newBuilder(context, app, owner)
+ *      // make sure actionName parameter same as value of SerializedName annotation.
+ *      .registerAction("alias1", "turnPower", TurnPower.class);
+ *      // make sure actionName parameter same as field name.
+ *      .registerAction("alias2", "turnPower", TurnPower2.class)
+ *      .build();
+ *  </code></pre>
  */
 public interface Action {
 }
