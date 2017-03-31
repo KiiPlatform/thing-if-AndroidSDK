@@ -71,18 +71,14 @@ class ActionAdapter implements
 
         if (this.actionClass.getEnclosingClass() != null &&
                 !Modifier.isStatic(this.actionClass.getModifiers())) {
-            // for non static inner class skip the default field
-            for (Field field : this.actionClass.getDeclaredFields()) {
-                if (!field.getName().equals("this$0")) {
-                    fieldName = field.getName();
-                    break;
-                }
-            }
-        }else if (this.actionClass.getDeclaredFields().length == 1){
+            //never happen, since action class was validated when registered.
+            throw new JsonParseException("non static inner class is not allowed");
+        } else if (this.actionClass.getDeclaredFields().length == 1){
             fieldName = this.actionClass.getDeclaredFields()[0].getName();
         }
         JsonObject actionJson = new JsonObject();
         if (fieldName == null) {
+            //never happen, since action class was validated when registered.
             throw new JsonParseException("can not find a user defined field");
         }
 
