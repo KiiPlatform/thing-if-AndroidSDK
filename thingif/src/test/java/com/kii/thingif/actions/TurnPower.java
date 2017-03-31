@@ -1,5 +1,6 @@
 package com.kii.thingif.actions;
 
+import com.google.gson.annotations.SerializedName;
 import com.kii.thingif.command.Action;
 
 import org.json.JSONException;
@@ -7,13 +8,10 @@ import org.json.JSONObject;
 
 
 public class TurnPower implements Action, ActionToJSON {
+    @SerializedName("turnPower")
     private Boolean power;
     public TurnPower(Boolean power) {
         this.power = power;
-    }
-    @Override
-    public String getActionName() {
-        return "turnPower";
     }
 
     public Boolean getPower() {
@@ -23,7 +21,7 @@ public class TurnPower implements Action, ActionToJSON {
     @Override
     public JSONObject toJSONObject() {
         try {
-            return new JSONObject().put(this.getActionName(), this.power);
+            return new JSONObject().put("turnPower", this.power);
         }catch (JSONException e) {
             // never throw
             throw new RuntimeException(e);
