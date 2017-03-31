@@ -250,6 +250,13 @@ public class ThingIFAPI {
          * @param alias Alias to register
          * @param actionClass List of Action subclasses
          * @return builder instance for chaining call.
+         * @throws IllegalArgumentException This exception is thrown if one or
+         * more following conditions are met.
+         * <ul>
+         *  <li>actionClass is non static inner class</li>
+         *  <li>actionClass has more than one field/s</li>
+         *  <li>getActionName() method returns null or empty string</li>
+         * </ul>
          */
         @NonNull
         public Builder registerAction(
@@ -260,17 +267,11 @@ public class ThingIFAPI {
             // validate field of actionClass, only allow one field to hold the value of action
             if (actionClass.getEnclosingClass() != null &&
                     !Modifier.isStatic(actionClass.getModifiers())) {
-                // for non static inner class, there is a additional default filed this$0 to
-                // access enclosing class's this, plus the user defined field, should have 2 fields.
-                if (actionClass.getDeclaredFields().length != 2) {
-                    throw new IllegalArgumentException("action class must contain only one field.");
-                }
-            }else{
-                if(actionClass.getDeclaredFields().length != 1) {
-                    throw new IllegalArgumentException("action class must contain only one field.");
-                }
+                throw new IllegalArgumentException("non static inner class is not allowed to be Action");
             }
-
+            if(actionClass.getDeclaredFields().length != 1) {
+                    throw new IllegalArgumentException("action class must contain only one field.");
+            }
             // validate return value of getActionName()
             Gson gson = new Gson();
             Action action = gson.fromJson(new JsonObject(), actionClass);

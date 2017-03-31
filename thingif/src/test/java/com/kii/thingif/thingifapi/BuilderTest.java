@@ -251,15 +251,24 @@ public class BuilderTest extends ThingIFAPITestBase{
                 this.context,
                 new KiiApp("appid", "appkey", Site.JP),
                 new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"))
-                .registerAction("alias1", "turnPower", InnerTurnPower.class)
                 .registerAction("alias2", "turnPower", InnerStaticTurnPower.class)
                 .registerTargetState("alias1", AirConditionerState.class)
                 .build();
 
         Map<String, Class<? extends Action>> actionTypes = new HashMap<>();
-        actionTypes.put(AliasUtils.aliasActionKey("alias1", "turnPower"), InnerTurnPower.class);
         actionTypes.put(AliasUtils.aliasActionKey("alias2", "turnPower"), InnerStaticTurnPower.class);
 
         Assert.assertEquals(actionTypes, api.getActionTypes());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void registerAction_NonStaticInnerClass_should_throw_exceptionTest() {
+        ThingIFAPI.Builder.newBuilder(
+                this.context,
+                new KiiApp("appid", "appkey", Site.JP),
+                new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"))
+                .registerAction("alias1", "turnPower", InnerTurnPower.class)
+                .registerTargetState("alias1", AirConditionerState.class)
+                .build();
     }
 }

@@ -7,6 +7,7 @@ import com.kii.thingif.trigger.TriggeredCommandForm;
 /**
  * Marks a class as a single action. The action class should implement this interface and have only
  * one field as value of the action.
+ * **Note** SDK doesn't allow register an non static inner class as an action class.
  * <br>
  * SDK serializes Action objects using
  * <a href="https://github.com/google/gson/blob/master/UserGuide.md#TOC-Object-Examples">Gson </a>,
