@@ -45,7 +45,7 @@ public class AggregateTest extends LargeTestCaseBase {
     }
 
     @Test
-    public void successQueryEmptyResultsTest() throws Exception {
+    public void successEmptyResultsTest() throws Exception {
         TimeRange range = new TimeRange(new Date(1), new Date());
         GroupedHistoryStatesQuery query = GroupedHistoryStatesQuery.Builder
                 .newBuilder(ALIAS1, range)
