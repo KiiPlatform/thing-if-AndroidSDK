@@ -13,6 +13,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.kii.thingif.clause.query.QueryClause;
 import com.kii.thingif.command.Action;
@@ -67,6 +68,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -269,14 +271,15 @@ public class ThingIFAPI {
                     !Modifier.isStatic(actionClass.getModifiers())) {
                 throw new IllegalArgumentException("non static inner class is not allowed to be Action");
             }
-            if(actionClass.getDeclaredFields().length != 1) {
-                    throw new IllegalArgumentException("action class must contain only one field.");
-            }
-            // validate return value of getActionName()
+
+            // validate actionName in actionClass
             Gson gson = new Gson();
             Action action = gson.fromJson(new JsonObject(), actionClass);
-            if (TextUtils.isEmpty(action.getActionName())) {
-                throw new IllegalArgumentException("getActionName() return null or empty");
+            Gson gson2 = new GsonBuilder().serializeNulls().create();
+            JsonObject json = gson2.toJsonTree(action).getAsJsonObject();
+            if (!json.has(actionName)) {
+                throw new IllegalArgumentException("can not find a field in actionClass with " +
+                        "same name as " + actionName + ", or annotated with "+ actionName);
             }
 
             this.actionTypes.put(ThingIFAPI.actionsMapKey(alias, actionName), actionClass);

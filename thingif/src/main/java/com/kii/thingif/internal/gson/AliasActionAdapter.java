@@ -12,7 +12,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
-import com.kii.thingif.exception.UnsupportedActionException;
+import com.kii.thingif.exception.UnRegisteredActionException;
 import com.kii.thingif.internal.utils.AliasUtils;
 
 import java.lang.reflect.Type;
@@ -35,12 +35,26 @@ public class AliasActionAdapter implements
 
         JsonArray actionsJson = new JsonArray();
         for (Action action: src.getActions()) {
-            String key = AliasUtils.aliasActionKey(src.getAlias(), action.getActionName());
-            Class<? extends Action> actionClass = this.actionTypes.get(key);
+            // find out registered action name
+            String registeredAN = null;
+            for (Map.Entry<String, Class<? extends Action>> entry : this.actionTypes.entrySet()) {
+                if (entry.getValue().equals(action.getClass())) {
+                    String alias = AliasUtils.aliasFromKey(entry.getKey());
+                    if (alias.equals(src.getAlias())) {
+                        registeredAN = AliasUtils.actionNameFromKey(entry.getKey());
+                    }
+                }
+            }
+
+            if (registeredAN == null) {
+                throw new JsonParseException(new UnRegisteredActionException(
+                        action.getClass().getName(),
+                        src.getAlias()));
+            }
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(
                             Action.class,
-                            new ActionAdapter(actionClass))
+                            new ActionAdapter(action.getClass(), registeredAN))
                     .create();
             actionsJson.add(gson.toJsonTree(action, Action.class));
         }
@@ -68,13 +82,13 @@ public class AliasActionAdapter implements
             String acName = actionME.getKey();
             Class<? extends Action> acCls =
                     this.actionTypes.get(AliasUtils.aliasActionKey(alias, acName));
-            if (acCls == null) {
-                throw new JsonParseException(new UnsupportedActionException(acName, alias));
+            if (acCls == null) { // skip if there is not registered action class
+                continue;
             }
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(
                             Action.class,
-                            new ActionAdapter(acCls))
+                            new ActionAdapter(acCls, acName))
                     .create();
             actions.add(gson.fromJson(acJE, Action.class));
         }

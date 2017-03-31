@@ -22,8 +22,12 @@ class ActionAdapter implements
         JsonDeserializer<Action> {
 
     private Class<? extends Action> actionClass;
+    private String actionName;
 
-    ActionAdapter(Class<? extends Action> actionClass) {
+    ActionAdapter(
+            Class<? extends Action> actionClass,
+            String actionName) {
+        this.actionClass
         String fieldName = null;
         if (actionClass.getEnclosingClass() != null &&
                 !Modifier.isStatic(actionClass.getModifiers())) {
