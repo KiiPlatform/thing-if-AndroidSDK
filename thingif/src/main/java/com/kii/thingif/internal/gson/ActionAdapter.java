@@ -13,7 +13,6 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.kii.thingif.command.Action;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -25,6 +24,19 @@ class ActionAdapter implements
     private Class<? extends Action> actionClass;
 
     ActionAdapter(Class<? extends Action> actionClass) {
+        String fieldName = null;
+        if (actionClass.getEnclosingClass() != null &&
+                !Modifier.isStatic(actionClass.getModifiers())) {
+            //never happen, since action class was validated when registered.
+            throw new JsonParseException("non static inner class is not allowed");
+        } else if (actionClass.getDeclaredFields().length == 1){
+            fieldName = actionClass.getDeclaredFields()[0].getName();
+        }
+        if (fieldName == null) {
+            //never happen, since action class was validated when registered.
+            throw new JsonParseException("can not find a user defined field");
+        }
+
         this.actionClass = actionClass;
     }
     @Override
@@ -67,20 +79,8 @@ class ActionAdapter implements
         Map.Entry<String, JsonElement> firstEntry = jsonElement.getAsJsonObject().entrySet().iterator().next();
         JsonElement actionValue = firstEntry.getValue();
 
-        String fieldName = null;
-
-        if (this.actionClass.getEnclosingClass() != null &&
-                !Modifier.isStatic(this.actionClass.getModifiers())) {
-            //never happen, since action class was validated when registered.
-            throw new JsonParseException("non static inner class is not allowed");
-        } else if (this.actionClass.getDeclaredFields().length == 1){
-            fieldName = this.actionClass.getDeclaredFields()[0].getName();
-        }
+        String fieldName = this.actionClass.getDeclaredFields()[0].getName();
         JsonObject actionJson = new JsonObject();
-        if (fieldName == null) {
-            //never happen, since action class was validated when registered.
-            throw new JsonParseException("can not find a user defined field");
-        }
 
         if (actionValue.isJsonPrimitive()) {
             JsonPrimitive primValue = actionValue.getAsJsonPrimitive();
