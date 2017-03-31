@@ -6,12 +6,12 @@ import com.kii.thingif.KiiApp;
 import com.kii.thingif.Owner;
 import com.kii.thingif.StandaloneThing;
 import com.kii.thingif.Target;
-import com.kii.thingif.TargetState;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.ThingIFAPITestBase;
 import com.kii.thingif.TypedID;
-import com.kii.thingif.actions.AirConditionerActions;
-import com.kii.thingif.actions.HumidityActions;
+import com.kii.thingif.actions.SetPresetHumidity;
+import com.kii.thingif.actions.SetPresetTemperature;
+import com.kii.thingif.actions.TurnPower;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
 import com.kii.thingif.command.Command;
@@ -22,6 +22,7 @@ import com.kii.thingif.exception.ServiceUnavailableException;
 import com.kii.thingif.states.AirConditionerState;
 import com.kii.thingif.states.HumidityState;
 import com.kii.thingif.thingifapi.utils.ThingIFAPIUtils;
+import com.kii.thingif.utils.JsonUtil;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
@@ -49,29 +50,36 @@ public class PostNewCommandTest extends ThingIFAPITestBase {
     private final String alias1 = "AirConditionerAlias";
     private final String alias2 = "HumidityAlias";
 
+    private List<AliasAction> getDefaultAliasActions() {
+        List<AliasAction> aliasActions = new ArrayList<>();
+
+        List<Action> actions1 = new ArrayList<>();
+        actions1.add(new TurnPower(true));
+        actions1.add(new SetPresetTemperature(23));
+        aliasActions.add(new AliasAction(alias1, actions1));
+
+        List<Action> actions2 = new ArrayList<>();
+        actions2.add(new SetPresetHumidity(50));
+        aliasActions.add(new AliasAction(alias2, actions2));
+        return aliasActions;
+    }
+
     @Before
     public void before() throws Exception{
         Context context = RuntimeEnvironment.application.getApplicationContext();
         this.server = new MockWebServer();
         this.server.start();
 
-        Map<String, Class<? extends Action>> actionTypes = new HashMap<>();
-        actionTypes.put(alias1, AirConditionerActions.class);
-        actionTypes.put(alias2, HumidityActions.class);
-
-        Map<String, Class<? extends TargetState>> stateTypes = new HashMap<>();
-        stateTypes.put(alias1, AirConditionerState.class);
-        stateTypes.put(alias2, HumidityState.class);
-
         String ownerID = UUID.randomUUID().toString();
         Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
         KiiApp app = getApp(APP_ID, APP_KEY);
-        ThingIFAPI.Builder builder = ThingIFAPI.Builder.newBuilder(
-                context,
-                app,
-                owner,
-                actionTypes,
-                stateTypes);
+        ThingIFAPI.Builder builder = ThingIFAPI.Builder
+                .newBuilder(context, app, owner)
+                .registerAction(alias1, "turnPower", TurnPower.class)
+                .registerAction(alias1, "setPresetTemperature", SetPresetTemperature.class)
+                .registerAction(alias2, "setPresetHumidity", SetPresetHumidity.class)
+                .registerTargetState(alias1, AirConditionerState.class)
+                .registerTargetState(alias2, HumidityState.class);
         this.api = builder.build();
 
     }
@@ -99,7 +107,7 @@ public class PostNewCommandTest extends ThingIFAPITestBase {
                         alias1,
                         new JSONArray()
                                 .put(new JSONObject().put("turnPower", true))
-                                .put(new JSONObject().put("setPresetTemperature", 100))))
+                                .put(new JSONObject().put("setPresetTemperature", 23))))
                 .put(new JSONObject().put(
                         alias2,
                         new JSONArray()
@@ -107,15 +115,16 @@ public class PostNewCommandTest extends ThingIFAPITestBase {
 
         ThingIFAPIUtils.setTarget(this.api, target);
 
-        List<AliasAction<? extends Action>> aliasActions = new ArrayList<>();
-        aliasActions.add(
-                new AliasAction<>(
-                        alias1,
-                        new AirConditionerActions(true, 100)));
-        aliasActions.add(
-                new AliasAction<Action>(
-                        alias2,
-                        new HumidityActions(50)));
+        List<AliasAction> aliasActions = new ArrayList<>();
+
+        List<Action> actions1 = new ArrayList<>();
+        actions1.add(new TurnPower(true));
+        actions1.add(new SetPresetTemperature(23));
+        aliasActions.add(new AliasAction(alias1, actions1));
+
+        List<Action> actions2 = new ArrayList<>();
+        actions2.add(new SetPresetHumidity(50));
+        aliasActions.add(new AliasAction(alias2, actions2));
 
         CommandForm form = CommandForm
                 .Builder
@@ -161,22 +170,14 @@ public class PostNewCommandTest extends ThingIFAPITestBase {
         Assert.assertNull(createdCommand.getDescription());
         Assert.assertNull(createdCommand.getMetadata());
         Assert.assertNull(createdCommand.getAliasActionResults());
-        Assert.assertEquals(2, createdCommand.getAliasActions().size());
 
-        Assert.assertEquals(alias1, createdCommand.getAliasActions().get(0).getAlias());
-        Action action1 = createdCommand.getAliasActions().get(0).getAction();
-        Assert.assertTrue(action1 instanceof AirConditionerActions);
-        Assert.assertEquals(
-                true,
-                ((AirConditionerActions)action1).isPower().booleanValue());
-        Assert.assertEquals(
-                100,
-                ((AirConditionerActions)action1).getPresetTemperature().intValue());
-        Action action2 = createdCommand.getAliasActions().get(1).getAction();
-        Assert.assertTrue(action2 instanceof HumidityActions);
-        Assert.assertEquals(
-                50,
-                ((HumidityActions)action2).getPresetHumidity().intValue());
+        Assert.assertEquals(2, createdCommand.getAliasActions().size());
+        assertJSONObject(
+                JsonUtil.aliasActionToJson(aliasActions.get(0)),
+                JsonUtil.aliasActionToJson(createdCommand.getAliasActions().get(0)));
+        assertJSONObject(
+                JsonUtil.aliasActionToJson(aliasActions.get(1)),
+                JsonUtil.aliasActionToJson(createdCommand.getAliasActions().get(1)));
 
         // verify the 1st request
         RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -216,19 +217,9 @@ public class PostNewCommandTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        List<AliasAction<? extends Action>> aliasActions = new ArrayList<>();
-        aliasActions.add(
-                new AliasAction<>(
-                        alias1,
-                        new AirConditionerActions(true, 100)));
-        aliasActions.add(
-                new AliasAction<Action>(
-                        alias2,
-                        new HumidityActions(50)));
-
         CommandForm form = CommandForm
                 .Builder
-                .newBuilder(aliasActions)
+                .newBuilder(getDefaultAliasActions())
                 .build();
         this.addEmptyMockResponse(400);
 
@@ -243,7 +234,7 @@ public class PostNewCommandTest extends ThingIFAPITestBase {
         Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/commands", request1.getPath());
         Assert.assertEquals("POST", request1.getMethod());
 
-        Map<String, String> expectedRequestHeaders1 = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders1 = new HashMap<>();
         expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders1.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
@@ -256,7 +247,7 @@ public class PostNewCommandTest extends ThingIFAPITestBase {
                         alias1,
                         new JSONArray()
                                 .put(new JSONObject().put("turnPower", true))
-                                .put(new JSONObject().put("setPresetTemperature", 100))))
+                                .put(new JSONObject().put("setPresetTemperature", 23))))
                 .put(new JSONObject().put(
                         alias2,
                         new JSONArray()
@@ -272,19 +263,9 @@ public class PostNewCommandTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        List<AliasAction<? extends Action>> aliasActions = new ArrayList<>();
-        aliasActions.add(
-                new AliasAction<>(
-                        alias1,
-                        new AirConditionerActions(true, 100)));
-        aliasActions.add(
-                new AliasAction<Action>(
-                        alias2,
-                        new HumidityActions(50)));
-
         CommandForm form = CommandForm
                 .Builder
-                .newBuilder(aliasActions)
+                .newBuilder(getDefaultAliasActions())
                 .build();
 
         this.addEmptyMockResponse(403);
@@ -301,7 +282,7 @@ public class PostNewCommandTest extends ThingIFAPITestBase {
         Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/commands", request1.getPath());
         Assert.assertEquals("POST", request1.getMethod());
 
-        Map<String, String> expectedRequestHeaders1 = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders1 = new HashMap<>();
         expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders1.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
@@ -314,7 +295,7 @@ public class PostNewCommandTest extends ThingIFAPITestBase {
                         alias1,
                         new JSONArray()
                                 .put(new JSONObject().put("turnPower", true))
-                                .put(new JSONObject().put("setPresetTemperature", 100))))
+                                .put(new JSONObject().put("setPresetTemperature", 23))))
                 .put(new JSONObject().put(
                         alias2,
                         new JSONArray()
@@ -330,19 +311,9 @@ public class PostNewCommandTest extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        List<AliasAction<? extends Action>> aliasActions = new ArrayList<>();
-        aliasActions.add(
-                new AliasAction<>(
-                        alias1,
-                        new AirConditionerActions(true, 100)));
-        aliasActions.add(
-                new AliasAction<Action>(
-                        alias2,
-                        new HumidityActions(50)));
-
         CommandForm form = CommandForm
                 .Builder
-                .newBuilder(aliasActions)
+                .newBuilder(getDefaultAliasActions())
                 .build();
         this.addEmptyMockResponse(503);
 
@@ -357,7 +328,7 @@ public class PostNewCommandTest extends ThingIFAPITestBase {
         Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/commands", request1.getPath());
         Assert.assertEquals("POST", request1.getMethod());
 
-        Map<String, String> expectedRequestHeaders1 = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders1 = new HashMap<>();
         expectedRequestHeaders1.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders1.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders1.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
@@ -370,7 +341,7 @@ public class PostNewCommandTest extends ThingIFAPITestBase {
                         alias1,
                         new JSONArray()
                                 .put(new JSONObject().put("turnPower", true))
-                                .put(new JSONObject().put("setPresetTemperature", 100))))
+                                .put(new JSONObject().put("setPresetTemperature", 23))))
                 .put(new JSONObject().put(
                         alias2,
                         new JSONArray()
