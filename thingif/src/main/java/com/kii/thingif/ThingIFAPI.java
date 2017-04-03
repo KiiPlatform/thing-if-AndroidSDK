@@ -29,6 +29,7 @@ import com.kii.thingif.exception.ThingIFException;
 import com.kii.thingif.exception.ThingIFRestException;
 import com.kii.thingif.exception.UnloadableInstanceVersionException;
 import com.kii.thingif.exception.UnregisteredAliasException;
+import com.kii.thingif.exception.UnsupportedActionException;
 import com.kii.thingif.gateway.EndNode;
 import com.kii.thingif.gateway.Gateway;
 import com.kii.thingif.gateway.PendingEndNode;
@@ -878,6 +879,8 @@ public class ThingIFAPI {
         return this.getCommand(commandID);
     }
 
+
+
     /**
      * Get specified command.
      * @param commandID ID of the command to obtain. ID is present in the
@@ -887,7 +890,7 @@ public class ThingIFAPI {
      * @return Command instance.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws UnregisteredAliasException Thrown when the returned response contains alias that cannot be handled.
+     * @throws UnsupportedActionException Thrown when the returned response contains unregistered actions.
      */
     @NonNull
     @WorkerThread

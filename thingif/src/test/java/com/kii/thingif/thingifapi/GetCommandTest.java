@@ -6,22 +6,25 @@ import com.kii.thingif.KiiApp;
 import com.kii.thingif.Owner;
 import com.kii.thingif.StandaloneThing;
 import com.kii.thingif.Target;
-import com.kii.thingif.TargetState;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.ThingIFAPITestBase;
 import com.kii.thingif.TypedID;
-import com.kii.thingif.actions.AirConditionerActions;
-import com.kii.thingif.actions.HumidityActions;
+import com.kii.thingif.actions.SetPresetHumidity;
+import com.kii.thingif.actions.SetPresetTemperature;
+import com.kii.thingif.actions.TurnPower;
 import com.kii.thingif.command.Action;
+import com.kii.thingif.command.AliasAction;
 import com.kii.thingif.command.Command;
 import com.kii.thingif.command.CommandState;
 import com.kii.thingif.exception.ForbiddenException;
 import com.kii.thingif.exception.NotFoundException;
 import com.kii.thingif.exception.ServiceUnavailableException;
 import com.kii.thingif.exception.UnregisteredAliasException;
+import com.kii.thingif.exception.UnsupportedActionException;
 import com.kii.thingif.states.AirConditionerState;
 import com.kii.thingif.states.HumidityState;
 import com.kii.thingif.thingifapi.utils.ThingIFAPIUtils;
+import com.kii.thingif.utils.JsonUtil;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
@@ -36,7 +39,9 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -53,23 +58,16 @@ public class GetCommandTest  extends ThingIFAPITestBase {
         this.server = new MockWebServer();
         this.server.start();
 
-        Map<String, Class<? extends Action>> actionTypes = new HashMap<>();
-        actionTypes.put(alias1, AirConditionerActions.class);
-        actionTypes.put(alias2, HumidityActions.class);
-
-        Map<String, Class<? extends TargetState>> stateTypes = new HashMap<>();
-        stateTypes.put(alias1, AirConditionerState.class);
-        stateTypes.put(alias2, HumidityState.class);
-
         String ownerID = UUID.randomUUID().toString();
         Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
         KiiApp app = getApp(APP_ID, APP_KEY);
-        ThingIFAPI.Builder builder = ThingIFAPI.Builder.newBuilder(
-                context,
-                app,
-                owner,
-                actionTypes,
-                stateTypes);
+        ThingIFAPI.Builder builder = ThingIFAPI.Builder
+                .newBuilder(context, app, owner)
+                .registerAction(alias1, "turnPower", TurnPower.class)
+                .registerAction(alias1, "setPresetTemperature", SetPresetTemperature.class)
+                .registerAction(alias2, "setPresetHumidity", SetPresetHumidity.class)
+                .registerTargetState(alias1, AirConditionerState.class)
+                .registerTargetState(alias2, HumidityState.class);
         this.api = builder.build();
 
     }
@@ -98,7 +96,7 @@ public class GetCommandTest  extends ThingIFAPITestBase {
                         alias1,
                         new JSONArray()
                                 .put(new JSONObject().put("turnPower", true))
-                                .put(new JSONObject().put("setPresetTemperature", 100))))
+                                .put(new JSONObject().put("setPresetTemperature", 23))))
                 .put(new JSONObject().put(
                         alias2,
                         new JSONArray()
@@ -160,20 +158,21 @@ public class GetCommandTest  extends ThingIFAPITestBase {
         Assert.assertEquals(metaData.toString(), cmd.getMetadata().toString());
 
         Assert.assertEquals(2, cmd.getAliasActions().size());
-        Assert.assertEquals(alias1, cmd.getAliasActions().get(0).getAlias());
-        Action action1 = cmd.getAliasActions().get(0).getAction();
-        Assert.assertTrue(action1 instanceof AirConditionerActions);
-        Assert.assertEquals(
-                true,
-                ((AirConditionerActions)action1).isPower().booleanValue());
-        Assert.assertEquals(
-                100,
-                ((AirConditionerActions)action1).getPresetTemperature().intValue());
-        Action action2 = cmd.getAliasActions().get(1).getAction();
-        Assert.assertTrue(action2 instanceof HumidityActions);
-        Assert.assertEquals(
-                50,
-                ((HumidityActions)action2).getPresetHumidity().intValue());
+
+        List<AliasAction> expectedAAs = new ArrayList<>();
+        List<Action> actions1 = new ArrayList<>();
+        actions1.add(new TurnPower(true));
+        actions1.add(new SetPresetTemperature(23));
+        expectedAAs.add(new AliasAction(alias1, actions1));
+        List<Action> actions2 = new ArrayList<>();
+        actions2.add(new SetPresetHumidity(50));
+        expectedAAs.add(new AliasAction(alias2, actions2));
+        assertJSONObject(
+                JsonUtil.aliasActionToJson(expectedAAs.get(0)),
+                JsonUtil.aliasActionToJson(cmd.getAliasActions().get(0)));
+        assertJSONObject(
+                JsonUtil.aliasActionToJson(expectedAAs.get(1)),
+                JsonUtil.aliasActionToJson(cmd.getAliasActions().get(1)));
 
         Assert.assertNotNull(cmd.getAliasActionResults());
         Assert.assertEquals(2, cmd.getAliasActionResults().size());
@@ -250,7 +249,7 @@ public class GetCommandTest  extends ThingIFAPITestBase {
         Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/commands/" + commandID, request.getPath());
         Assert.assertEquals("GET", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
@@ -276,7 +275,7 @@ public class GetCommandTest  extends ThingIFAPITestBase {
         Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/commands/" + commandID, request.getPath());
         Assert.assertEquals("GET", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
@@ -302,7 +301,7 @@ public class GetCommandTest  extends ThingIFAPITestBase {
         Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/commands/" + commandID, request.getPath());
         Assert.assertEquals("GET", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
@@ -372,7 +371,7 @@ public class GetCommandTest  extends ThingIFAPITestBase {
         try {
             api.getCommand(commandID);
             Assert.fail("UnregisteredAliasException should be thrown");
-        }catch (UnregisteredAliasException ex) {
+        }catch (UnsupportedActionException ex) {
         }
 
         // verify the request
@@ -382,7 +381,7 @@ public class GetCommandTest  extends ThingIFAPITestBase {
                 request.getPath());
         Assert.assertEquals("GET", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
