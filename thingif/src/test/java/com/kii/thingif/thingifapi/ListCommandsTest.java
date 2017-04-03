@@ -8,15 +8,22 @@ import com.kii.thingif.Target;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.ThingIFAPITestBase;
 import com.kii.thingif.TypedID;
-import com.kii.thingif.actions.AirConditionerActions;
-import com.kii.thingif.actions.HumidityActions;
+import com.kii.thingif.actions.SetPresetHumidity;
+import com.kii.thingif.actions.SetPresetTemperature;
+import com.kii.thingif.actions.TurnPower;
 import com.kii.thingif.command.Action;
+import com.kii.thingif.command.ActionResult;
+import com.kii.thingif.command.ActionResultFactory;
+import com.kii.thingif.command.AliasAction;
 import com.kii.thingif.command.AliasActionResult;
+import com.kii.thingif.command.AliasActionResultFactory;
 import com.kii.thingif.command.Command;
+import com.kii.thingif.command.CommandFactory;
 import com.kii.thingif.command.CommandState;
 import com.kii.thingif.exception.BadRequestException;
 import com.kii.thingif.exception.NotFoundException;
 import com.kii.thingif.thingifapi.utils.ThingIFAPIUtils;
+import com.kii.thingif.utils.JsonUtil;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
@@ -30,6 +37,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,18 +69,22 @@ public class ListCommandsTest extends ThingIFAPITestBase{
         // prepare command1
         Long created = System.currentTimeMillis();
         Long modified = System.currentTimeMillis();
-        JSONArray actions1 = new JSONArray()
-                .put(new JSONObject().put(ALIAS1, new JSONArray()
-                        .put(new JSONObject().put("turnPower", true))
-                        .put(new JSONObject().put("setPresetTemperature", 100))))
-                .put(new JSONObject().put(ALIAS2, new JSONArray()
-                        .put(new JSONObject().put("setPresetHumidity", 50))));
 
-        JSONObject command1 = createCommandJson(
-                "command1",
+        List<AliasAction> aliasActions = new ArrayList<>();
+
+        List<Action> actions11 = new ArrayList<>();
+        actions11.add(new TurnPower(true));
+        actions11.add(new SetPresetTemperature(23));
+        aliasActions.add(new AliasAction(ALIAS1, actions11));
+        List<Action> actions12 = new ArrayList<>();
+        actions12.add(new SetPresetHumidity(50));
+        aliasActions.add(new AliasAction(ALIAS2, actions12));
+
+        Command command1 = CommandFactory.newCommand(
                 issuerID,
+                aliasActions,
+                "command1",
                 targetID,
-                actions1,
                 null,
                 CommandState.SENDING,
                 null,
@@ -83,24 +95,31 @@ public class ListCommandsTest extends ThingIFAPITestBase{
                 null);
 
         // prepare command2
-        JSONArray actions2 = new JSONArray()
-                .put(new JSONObject().put(ALIAS1, new JSONArray()
-                        .put(new JSONObject().put("turnPower", false))));
-        JSONArray actionResults2 = new JSONArray()
-                .put(new JSONObject().put(ALIAS1, new JSONArray()
-                        .put(new JSONObject()
-                                .put("turnPower",
-                                        new JSONObject()
-                                                .put("succeeded", false)
-                                                .put("errorMessage", "invalid value")
-                                                .put("data", new JSONObject().put("k", "v"))))));
+        List<AliasAction> aliasActions2 = new ArrayList<>();
+        List<Action> actions21 = new ArrayList<>();
+        actions21.add(new TurnPower(false));
+        aliasActions2.add(new AliasAction(ALIAS1, actions21));
+
+        List<AliasActionResult> aliasActionResults2 = new ArrayList<>();
+        List<ActionResult> actionResults2 = new ArrayList<>();
+        actionResults2.add(ActionResultFactory.newActionResult(
+                "turnPower",
+                false,
+                "invalid value",
+                new JSONObject().put("k", "v")));
+
+        aliasActionResults2.add(
+                AliasActionResultFactory.newAliasActionResult(
+                        ALIAS1,
+                        actionResults2));
+
         JSONObject metadata = new JSONObject().put("k1", "v1");
-        JSONObject command2 = createCommandJson(
-                "command2",
+        Command command2 = CommandFactory.newCommand(
                 issuerID,
+                aliasActions2,
+                "command2",
                 targetID,
-                actions2,
-                actionResults2,
+                aliasActionResults2,
                 CommandState.DONE,
                 "trigger1",
                 created,
@@ -111,14 +130,16 @@ public class ListCommandsTest extends ThingIFAPITestBase{
 
         // prepare command3
         TypedID issuer2 = new TypedID(TypedID.Types.USER, "user2");
-        JSONArray actions3 = new JSONArray()
-                .put(new JSONObject().put(ALIAS2, new JSONArray()
-                        .put(new JSONObject().put("setPresetHumidity", 60))));
-        JSONObject command3 = createCommandJson(
-                "command3",
+
+        List<AliasAction> aliasActions3 = new ArrayList<>();
+        List<Action> actions3 = new ArrayList<>();
+        actions3.add(new SetPresetHumidity(60));
+        aliasActions3.add(new AliasAction(ALIAS2, actions3));
+        Command command3 = CommandFactory.newCommand(
                 issuer2,
+                aliasActions3,
+                "command3",
                 targetID,
-                actions3,
                 null,
                 CommandState.SENDING,
                 null,
@@ -129,11 +150,13 @@ public class ListCommandsTest extends ThingIFAPITestBase{
                 null);
         this.addMockResponseForListCommands(
                 200,
-                new JSONArray().put(command1).put(command2),
+                new JSONArray()
+                        .put(JsonUtil.commandToJson(command1))
+                        .put(JsonUtil.commandToJson(command2)),
                 paginationKey);
         this.addMockResponseForListCommands(
                 200,
-                new JSONArray().put(command3),
+                new JSONArray().put(JsonUtil.commandToJson(command3)),
                 null);
 
 
@@ -159,17 +182,12 @@ public class ListCommandsTest extends ThingIFAPITestBase{
         Assert.assertEquals("SENDING", actualCommand1.getCommandState().name());
 
         Assert.assertEquals(2, actualCommand1.getAliasActions().size());
-        Assert.assertEquals(ALIAS1, actualCommand1.getAliasActions().get(0).getAlias());
-        Action actualAction1 = actualCommand1.getAliasActions().get(0).getAction();
-        Assert.assertTrue(actualAction1 instanceof AirConditionerActions);
-        Assert.assertEquals(true, ((AirConditionerActions)actualAction1).isPower());
-        Assert.assertEquals(
-                100,
-                ((AirConditionerActions)actualAction1).getPresetTemperature().intValue());
-        Assert.assertEquals(ALIAS2, actualCommand1.getAliasActions().get(1).getAlias());
-        Action actualAction2 = actualCommand1.getAliasActions().get(1).getAction();
-        Assert.assertTrue(actualAction2 instanceof HumidityActions);
-        Assert.assertEquals(50, ((HumidityActions)actualAction2).getPresetHumidity().intValue());
+        assertJSONObject(
+                JsonUtil.aliasActionToJson(aliasActions.get(0)),
+                JsonUtil.aliasActionToJson(actualCommand1.getAliasActions().get(0)));
+        assertJSONObject(
+                JsonUtil.aliasActionToJson(aliasActions.get(1)),
+                JsonUtil.aliasActionToJson(actualCommand1.getAliasActions().get(1)));
 
         Command actualCommand2 = results1.first.get(1);
         Assert.assertEquals("command2", actualCommand2.getCommandID());
@@ -187,11 +205,9 @@ public class ListCommandsTest extends ThingIFAPITestBase{
         Assert.assertEquals("DONE", actualCommand2.getCommandState().name());
 
         Assert.assertEquals(1, actualCommand2.getAliasActions().size());
-        Assert.assertEquals(ALIAS1, actualCommand2.getAliasActions().get(0).getAlias());
-        Action actualAction3 = actualCommand2.getAliasActions().get(0).getAction();
-        Assert.assertTrue(actualAction3 instanceof AirConditionerActions);
-        Assert.assertEquals(false, ((AirConditionerActions)actualAction3).isPower());
-        Assert.assertNull(((AirConditionerActions)actualAction3).getPresetTemperature());
+        assertJSONObject(
+                JsonUtil.aliasActionToJson(aliasActions2.get(0)),
+                JsonUtil.aliasActionToJson(actualCommand2.getAliasActions().get(0)));
 
         Assert.assertNotNull(actualCommand2.getAliasActionResults());
         Assert.assertEquals(1, actualCommand2.getAliasActionResults().size());
@@ -225,10 +241,9 @@ public class ListCommandsTest extends ThingIFAPITestBase{
         Assert.assertEquals("SENDING", actualCommand3.getCommandState().name());
 
         Assert.assertEquals(1, actualCommand3.getAliasActions().size());
-        Assert.assertEquals(ALIAS2, actualCommand3.getAliasActions().get(0).getAlias());
-        Action actualAction4 = actualCommand3.getAliasActions().get(0).getAction();
-        Assert.assertTrue(actualAction4 instanceof HumidityActions);
-        Assert.assertEquals(60, ((HumidityActions)actualAction4).getPresetHumidity().intValue());
+        assertJSONObject(
+                JsonUtil.aliasActionToJson(aliasActions3.get(0)),
+                JsonUtil.aliasActionToJson(actualCommand3.getAliasActions().get(0)));
 
         // verify the 1st request
         RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -258,18 +273,22 @@ public class ListCommandsTest extends ThingIFAPITestBase{
         // prepare command1
         Long created = System.currentTimeMillis();
         Long modified = System.currentTimeMillis();
-        JSONArray actions1 = new JSONArray()
-                .put(new JSONObject().put(ALIAS1, new JSONArray()
-                        .put(new JSONObject().put("turnPower", true))
-                        .put(new JSONObject().put("setPresetTemperature", 100))))
-                .put(new JSONObject().put(ALIAS2, new JSONArray()
-                        .put(new JSONObject().put("setPresetHumidity", 50))));
 
-        JSONObject command1 = createCommandJson(
-                "command1",
+        List<AliasAction> aliasActions = new ArrayList<>();
+
+        List<Action> actions1 = new ArrayList<>();
+        actions1.add(new TurnPower(true));
+        actions1.add(new SetPresetTemperature(23));
+        aliasActions.add(new AliasAction(ALIAS1, actions1));
+        List<Action> actions2 = new ArrayList<>();
+        actions2.add(new SetPresetHumidity(50));
+        aliasActions.add(new AliasAction(ALIAS2, actions2));
+
+        Command command1 = CommandFactory.newCommand(
                 issuerID,
+                aliasActions,
+                "command1",
                 targetID,
-                actions1,
                 null,
                 CommandState.SENDING,
                 null,
@@ -281,7 +300,7 @@ public class ListCommandsTest extends ThingIFAPITestBase{
 
         this.addMockResponseForListCommands(
                 200,
-                new JSONArray().put(command1),
+                new JSONArray().put(JsonUtil.commandToJson(command1)),
                 null);
 
         ThingIFAPI api = createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
@@ -306,17 +325,12 @@ public class ListCommandsTest extends ThingIFAPITestBase{
         Assert.assertEquals("SENDING", actualCommand1.getCommandState().name());
 
         Assert.assertEquals(2, actualCommand1.getAliasActions().size());
-        Assert.assertEquals(ALIAS1, actualCommand1.getAliasActions().get(0).getAlias());
-        Action actualAction1 = actualCommand1.getAliasActions().get(0).getAction();
-        Assert.assertTrue(actualAction1 instanceof AirConditionerActions);
-        Assert.assertEquals(true, ((AirConditionerActions)actualAction1).isPower());
-        Assert.assertEquals(
-                100,
-                ((AirConditionerActions)actualAction1).getPresetTemperature().intValue());
-        Assert.assertEquals(ALIAS2, actualCommand1.getAliasActions().get(1).getAlias());
-        Action actualAction2 = actualCommand1.getAliasActions().get(1).getAction();
-        Assert.assertTrue(actualAction2 instanceof HumidityActions);
-        Assert.assertEquals(50, ((HumidityActions)actualAction2).getPresetHumidity().intValue());
+        assertJSONObject(
+                JsonUtil.aliasActionToJson(aliasActions.get(0)),
+                JsonUtil.aliasActionToJson(actualCommand1.getAliasActions().get(0)));
+        assertJSONObject(
+                JsonUtil.aliasActionToJson(aliasActions.get(1)),
+                JsonUtil.aliasActionToJson(actualCommand1.getAliasActions().get(1)));
 
         // verify the request
         RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
@@ -377,7 +391,7 @@ public class ListCommandsTest extends ThingIFAPITestBase{
         Assert.assertEquals(BASE_PATH + "/targets/" + targetID.toString() + "/commands?bestEffortLimit=10", request.getPath());
         Assert.assertEquals("GET", request.getMethod());
 
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
+        Map<String, String> expectedRequestHeaders = new HashMap<>();
         expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
         expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
         expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
