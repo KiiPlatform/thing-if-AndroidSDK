@@ -7,8 +7,9 @@ import com.kii.thingif.Target;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.ThingIFAPITestBase;
 import com.kii.thingif.TypedID;
-import com.kii.thingif.actions.AirConditionerActions;
-import com.kii.thingif.actions.HumidityActions;
+import com.kii.thingif.actions.SetPresetHumidity;
+import com.kii.thingif.actions.SetPresetTemperature;
+import com.kii.thingif.actions.TurnPower;
 import com.kii.thingif.clause.trigger.EqualsClauseInTrigger;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
@@ -162,14 +163,12 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
     }
     @Test
     public void postNewCommandTrigger_FormOnlyHasActions_StatePredicate__NonNullOptions_Test() throws Exception {
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
-        actions.add(new AliasAction<Action>(
-                ALIAS1,
-                new AirConditionerActions(true, null)));
-        actions.add(new AliasAction<Action>(
-                ALIAS2,
-                new HumidityActions(45)));
-        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions).build();
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions = new ArrayList<>();
+        actions.add(new TurnPower(true));
+        actions.add(new SetPresetTemperature(23));
+        aliasActions.add(new AliasAction(ALIAS1, actions));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(aliasActions).build();
         StatePredicate predicate = new StatePredicate(new Condition(
                 new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
         TriggerOptions options = TriggerOptions.Builder.newBuilder()
@@ -181,11 +180,13 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
     }
     @Test
     public void postNewCommandTrigger_FormOnlyHasActionsAndCommandOption_ScheduledOncePredicate_NonNullOptions_Test() throws Exception {
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
-        actions.add(new AliasAction<Action>(
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions = new ArrayList<>();
+        actions.add(new TurnPower(true));
+        aliasActions.add(new AliasAction(
                 ALIAS1,
-                new AirConditionerActions(true, null)));
-        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions)
+                actions));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(aliasActions)
                 .setTitle("command title")
                 .setDescription("command description")
                 .setMetadata(new JSONObject().put("k", "v"))
@@ -200,12 +201,14 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
 
     @Test
     public void postNewCommandCrossThingTrigger_FormHasTarget_SchedulePredicate_NonNullOptions_Test() throws Exception {
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
         TypedID targetID = new TypedID(TypedID.Types.THING, "another thing");
-        actions.add(new AliasAction<Action>(
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions = new ArrayList<>();
+        actions.add(new TurnPower(true));
+        aliasActions.add(new AliasAction(
                 ALIAS1,
-                new AirConditionerActions(true, null)));
-        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions)
+                actions));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(aliasActions)
                 .setTargetID(targetID)
                 .setTitle("command title")
                 .setDescription("command description")
@@ -220,14 +223,15 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
     }
     @Test
     public void postNewCommandTrigger_StatePredicate__NullOptions_Test() throws Exception {
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
-        actions.add(new AliasAction<Action>(
-                ALIAS1,
-                new AirConditionerActions(true, null)));
-        actions.add(new AliasAction<Action>(
-                ALIAS2,
-                new HumidityActions(45)));
-        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions).build();
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions1 = new ArrayList<>();
+        actions1.add(new TurnPower(true));
+        aliasActions.add(new AliasAction(ALIAS1, actions1));
+        List<Action> actions2 = new ArrayList<>();
+        actions2.add(new SetPresetHumidity(45));
+        aliasActions.add(new AliasAction(ALIAS2, actions2));
+
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(aliasActions).build();
 
         StatePredicate predicate = new StatePredicate(new Condition(
                 new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
@@ -240,14 +244,13 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
-        actions.add(new AliasAction<Action>(
-                ALIAS1,
-                new AirConditionerActions(true, null)));
-        actions.add(new AliasAction<Action>(
-                ALIAS2,
-                new HumidityActions(45)));
-        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions).build();
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions = new ArrayList<>();
+        actions.add(new TurnPower(true));
+        actions.add(new SetPresetTemperature(23));
+        aliasActions.add(new AliasAction(ALIAS1, actions));
+
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(aliasActions).build();
 
         StatePredicate predicate = new StatePredicate(new Condition(
                 new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
@@ -299,14 +302,12 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
-        actions.add(new AliasAction<Action>(
-                ALIAS1,
-                new AirConditionerActions(true, null)));
-        actions.add(new AliasAction<Action>(
-                ALIAS2,
-                new HumidityActions(45)));
-        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions).build();
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions = new ArrayList<>();
+        actions.add(new TurnPower(true));
+        actions.add(new SetPresetTemperature(23));
+        aliasActions.add(new AliasAction(ALIAS1, actions));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(aliasActions).build();
 
         StatePredicate predicate = new StatePredicate(new Condition(
                 new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
@@ -358,14 +359,12 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
-        actions.add(new AliasAction<Action>(
-                ALIAS1,
-                new AirConditionerActions(true, null)));
-        actions.add(new AliasAction<Action>(
-                ALIAS2,
-                new HumidityActions(45)));
-        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions).build();
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions = new ArrayList<>();
+        actions.add(new TurnPower(true));
+        actions.add(new SetPresetTemperature(23));
+        aliasActions.add(new AliasAction(ALIAS1, actions));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(aliasActions).build();
 
         StatePredicate predicate = new StatePredicate(new Condition(
                 new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
@@ -415,14 +414,12 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
     @Test(expected = IllegalStateException.class)
     public void postNewCommandTriggerWithNullTargetTest() throws Exception {
 
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
-        actions.add(new AliasAction<Action>(
-                ALIAS1,
-                new AirConditionerActions(true, null)));
-        actions.add(new AliasAction<Action>(
-                ALIAS2,
-                new HumidityActions(45)));
-        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions).build();
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions = new ArrayList<>();
+        actions.add(new TurnPower(true));
+        actions.add(new SetPresetTemperature(23));
+        aliasActions.add(new AliasAction(ALIAS1, actions));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(aliasActions).build();
 
         StatePredicate predicate = new StatePredicate(new Condition(
                 new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
@@ -453,14 +450,12 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
 
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
-        actions.add(new AliasAction<Action>(
-                ALIAS1,
-                new AirConditionerActions(true, null)));
-        actions.add(new AliasAction<Action>(
-                ALIAS2,
-                new HumidityActions(45)));
-        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions).build();
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions = new ArrayList<>();
+        actions.add(new TurnPower(true));
+        actions.add(new SetPresetTemperature(23));
+        aliasActions.add(new AliasAction(ALIAS1, actions));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(aliasActions).build();
 
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         ThingIFAPIUtils.setTarget(api, target);
@@ -745,25 +740,24 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
 
     @Test
     public void postNewCommandTrigger_FormOnlyHasActions_StatePredicate_Test() throws Exception {
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
-        actions.add(new AliasAction<Action>(
-                ALIAS1,
-                new AirConditionerActions(true, null)));
-        actions.add(new AliasAction<Action>(
-                ALIAS2,
-                new HumidityActions(45)));
-        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions).build();
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions = new ArrayList<>();
+        actions.add(new TurnPower(true));
+        actions.add(new SetPresetTemperature(23));
+        aliasActions.add(new AliasAction(ALIAS1, actions));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(aliasActions).build();
         StatePredicate predicate = new StatePredicate(new Condition(
                 new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
         this.postNewTriggerWithCommandTest(form, predicate, null);
     }
     @Test
     public void postNewCommandTrigger_FormOnlyHasActionsAndCommandOption_ScheduledOncePredicate_Test() throws Exception {
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
-        actions.add(new AliasAction<Action>(
-                ALIAS1,
-                new AirConditionerActions(true, null)));
-        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions)
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions = new ArrayList<>();
+        actions.add(new TurnPower(true));
+        actions.add(new SetPresetTemperature(23));
+        aliasActions.add(new AliasAction(ALIAS1, actions));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(aliasActions)
                 .setTitle("command title")
                 .setDescription("command description")
                 .setMetadata(new JSONObject().put("k", "v"))
@@ -774,12 +768,13 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
 
     @Test
     public void postNewCommandCrossThingTrigger_FormHasTarget_SchedulePredicate_Test() throws Exception {
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
         TypedID targetID = new TypedID(TypedID.Types.THING, "another thing");
-        actions.add(new AliasAction<Action>(
-                ALIAS1,
-                new AirConditionerActions(true, null)));
-        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions)
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions = new ArrayList<>();
+        actions.add(new TurnPower(true));
+        actions.add(new SetPresetTemperature(23));
+        aliasActions.add(new AliasAction(ALIAS1, actions));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(aliasActions)
                 .setTargetID(targetID)
                 .setTitle("command title")
                 .setDescription("command description")
@@ -795,14 +790,12 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
-        actions.add(new AliasAction<Action>(
-                ALIAS1,
-                new AirConditionerActions(true, null)));
-        actions.add(new AliasAction<Action>(
-                ALIAS2,
-                new HumidityActions(45)));
-        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions).build();
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions = new ArrayList<>();
+        actions.add(new TurnPower(true));
+        actions.add(new SetPresetTemperature(23));
+        aliasActions.add(new AliasAction(ALIAS1, actions));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(aliasActions).build();
 
         StatePredicate predicate = new StatePredicate(new Condition(
                 new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
@@ -854,14 +847,12 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
-        actions.add(new AliasAction<Action>(
-                ALIAS1,
-                new AirConditionerActions(true, null)));
-        actions.add(new AliasAction<Action>(
-                ALIAS2,
-                new HumidityActions(45)));
-        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions).build();
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions = new ArrayList<>();
+        actions.add(new TurnPower(true));
+        actions.add(new SetPresetTemperature(23));
+        aliasActions.add(new AliasAction(ALIAS1, actions));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(aliasActions).build();
 
         StatePredicate predicate = new StatePredicate(new Condition(
                 new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
@@ -913,14 +904,12 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
-        actions.add(new AliasAction<Action>(
-                ALIAS1,
-                new AirConditionerActions(true, null)));
-        actions.add(new AliasAction<Action>(
-                ALIAS2,
-                new HumidityActions(45)));
-        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions).build();
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions = new ArrayList<>();
+        actions.add(new TurnPower(true));
+        actions.add(new SetPresetTemperature(23));
+        aliasActions.add(new AliasAction(ALIAS1, actions));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(aliasActions).build();
 
         StatePredicate predicate = new StatePredicate(new Condition(
                 new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
@@ -970,14 +959,12 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
     @Test(expected = IllegalStateException.class)
     public void postNewCommandTriggerWithNullTargetTest2() throws Exception {
 
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
-        actions.add(new AliasAction<Action>(
-                ALIAS1,
-                new AirConditionerActions(true, null)));
-        actions.add(new AliasAction<Action>(
-                ALIAS2,
-                new HumidityActions(45)));
-        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions).build();
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions = new ArrayList<>();
+        actions.add(new TurnPower(true));
+        actions.add(new SetPresetTemperature(23));
+        aliasActions.add(new AliasAction(ALIAS1, actions));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(aliasActions).build();
 
         StatePredicate predicate = new StatePredicate(new Condition(
                 new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
@@ -1008,14 +995,12 @@ public class PostNewTriggerTest extends ThingIFAPITestBase{
 
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
-        actions.add(new AliasAction<Action>(
-                ALIAS1,
-                new AirConditionerActions(true, null)));
-        actions.add(new AliasAction<Action>(
-                ALIAS2,
-                new HumidityActions(45)));
-        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions).build();
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions = new ArrayList<>();
+        actions.add(new TurnPower(true));
+        actions.add(new SetPresetTemperature(23));
+        aliasActions.add(new AliasAction(ALIAS1, actions));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(aliasActions).build();
 
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         ThingIFAPIUtils.setTarget(api, target);

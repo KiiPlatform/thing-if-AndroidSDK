@@ -37,12 +37,14 @@ public class AliasActionAdapter implements
         for (Action action: src.getActions()) {
             String key = AliasUtils.aliasActionKey(src.getAlias(), action.getActionName());
             Class<? extends Action> actionClass = this.actionTypes.get(key);
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(
-                            Action.class,
-                            new ActionAdapter(actionClass))
-                    .create();
-            actionsJson.add(gson.toJsonTree(action, Action.class));
+            if (actionClass != null) {
+                Gson gson = new GsonBuilder()
+                        .registerTypeAdapter(
+                                Action.class,
+                                new ActionAdapter(actionClass))
+                        .create();
+                actionsJson.add(gson.toJsonTree(action, Action.class));
+            }
         }
         JsonObject ret = new JsonObject();
         ret.add(src.getAlias(), actionsJson);

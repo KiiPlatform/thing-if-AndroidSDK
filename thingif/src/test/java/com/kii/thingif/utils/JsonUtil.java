@@ -155,14 +155,12 @@ public class JsonUtil {
                         Assert.fail(action.getClass().getName()+
                                 " not extend ToJSON interface for test purpose");
                     }else{
-                        actions.put(new JSONObject()
-                                .put(action.getActionName(), ((ActionToJSON)action).toJSONObject()));
+                        actions.put(((ActionToJSON)action).toJSONObject());
                     }
-                    aliasActionsArray.put(new JSONObject().put(
-                            aliasAction.getAlias(),
-                            actions));
                 }
-
+                aliasActionsArray.put(new JSONObject().put(
+                        aliasAction.getAlias(),
+                        actions));
             }
             if (aliasActionsArray.length() != 0) {
                 ret.put("actions", aliasActionsArray);
