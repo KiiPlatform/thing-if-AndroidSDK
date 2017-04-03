@@ -54,7 +54,7 @@ public class AliasActionAdapter implements
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(
                             Action.class,
-                            new ActionAdapter(action.getClass(), registeredAN))
+                            new ActionAdapter(registeredAN))
                     .create();
             actionsJson.add(gson.toJsonTree(action, Action.class));
         }
@@ -76,6 +76,7 @@ public class AliasActionAdapter implements
         String alias = firstEntry.getKey();
         List<Action> actions = new ArrayList<>();
         JsonArray actionsJA = firstEntry.getValue().getAsJsonArray();
+        Gson gson = new Gson();
         for (JsonElement acJE: actionsJA) {
             Map.Entry<String, JsonElement> actionME =
                     acJE.getAsJsonObject().entrySet().iterator().next();
@@ -85,12 +86,7 @@ public class AliasActionAdapter implements
             if (acCls == null) { // skip if there is not registered action class
                 continue;
             }
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(
-                            Action.class,
-                            new ActionAdapter(acCls, acName))
-                    .create();
-            actions.add(gson.fromJson(acJE, Action.class));
+            actions.add(gson.fromJson(acJE, acCls));
         }
         return new AliasAction(alias, actions);
     }

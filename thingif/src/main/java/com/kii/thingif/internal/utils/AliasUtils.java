@@ -6,7 +6,7 @@ public class AliasUtils {
     }
 
     public static String actionNameFromKey(String key) {
-        return key.substring(key.indexOf(":"), key.length());
+        return key.substring(key.indexOf(":")+1, key.length());
     }
 
     public static String aliasFromKey(String key) {

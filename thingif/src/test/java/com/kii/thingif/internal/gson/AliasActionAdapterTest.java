@@ -2,14 +2,12 @@ package com.kii.thingif.internal.gson;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParseException;
 import com.kii.thingif.SmallTestBase;
 import com.kii.thingif.actions.SetPresetHumidity;
 import com.kii.thingif.actions.SetPresetTemperature;
 import com.kii.thingif.actions.TurnPower;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
-import com.kii.thingif.exception.UnsupportedActionException;
 import com.kii.thingif.internal.utils.AliasUtils;
 import com.kii.thingif.utils.JsonUtil;
 
@@ -88,21 +86,5 @@ public class AliasActionAdapterTest extends SmallTestBase {
         Action action2 = deserializedAA.getActions().get(1);
         Assert.assertTrue(action2 instanceof SetPresetTemperature);
         Assert.assertEquals(23, ((SetPresetTemperature)action2).getTemperature().intValue());
-    }
-
-    @Test
-    public void deserialize_unregisteredAlias_throw_exceptionTest() {
-        List<Action> actions = new ArrayList<>();
-        actions.add(new TurnPower(true));
-        AliasAction aa = new AliasAction("anotherAlias", actions);
-        try {
-            gson.fromJson(
-                    JsonUtil.aliasActionToJson(aa).toString(),
-                    AliasAction.class);
-            Assert.fail("should throw exception");
-        }catch (JsonParseException e) {
-            Assert.assertTrue(e.getCause() instanceof UnsupportedActionException);
-        }
-
     }
 }
