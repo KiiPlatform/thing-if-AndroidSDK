@@ -68,9 +68,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -248,13 +251,35 @@ public class ThingIFAPI {
          * @param alias Alias to register
          * @param actionClass List of Action subclasses
          * @return builder instance for chaining call.
+         * @throws IllegalArgumentException This exception is thrown if one or
+         * more following conditions are met.
+         * <ul>
+         *  <li>actionClass is non static inner class</li>
+         *  <li>actionClass has more than one field/s</li>
+         *  <li>getActionName() method returns null or empty string</li>
+         * </ul>
          */
         @NonNull
         public Builder registerAction(
                 @NonNull String alias,
                 @NonNull String actionName,
                 @NonNull Class<? extends Action> actionClass){
-            //TODO: validate actionClass, should contain only 1 field
+
+            // validate field of actionClass, only allow one field to hold the value of action
+            if (actionClass.getEnclosingClass() != null &&
+                    !Modifier.isStatic(actionClass.getModifiers())) {
+                throw new IllegalArgumentException("non static inner class is not allowed to be Action");
+            }
+            if(actionClass.getDeclaredFields().length != 1) {
+                    throw new IllegalArgumentException("action class must contain only one field.");
+            }
+            // validate return value of getActionName()
+            Gson gson = new Gson();
+            Action action = gson.fromJson(new JsonObject(), actionClass);
+            if (TextUtils.isEmpty(action.getActionName())) {
+                throw new IllegalArgumentException("getActionName() return null or empty");
+            }
+
             this.actionTypes.put(ThingIFAPI.actionsMapKey(alias, actionName), actionClass);
             return this;
         }
