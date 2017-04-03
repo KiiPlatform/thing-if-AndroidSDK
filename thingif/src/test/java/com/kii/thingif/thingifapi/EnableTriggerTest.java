@@ -7,8 +7,8 @@ import com.kii.thingif.Target;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.ThingIFAPITestBase;
 import com.kii.thingif.TypedID;
-import com.kii.thingif.actions.AirConditionerActions;
-import com.kii.thingif.actions.HumidityActions;
+import com.kii.thingif.actions.SetPresetHumidity;
+import com.kii.thingif.actions.TurnPower;
 import com.kii.thingif.clause.trigger.EqualsClauseInTrigger;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
@@ -65,19 +65,19 @@ public class EnableTriggerTest extends ThingIFAPITestBase{
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         TypedID issuer = new TypedID(TypedID.Types.USER, "user1234");
 
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
-        actions.add(new AliasAction<Action>(
-                ALIAS1,
-                new AirConditionerActions(true, null)));
-        actions.add(new AliasAction<Action>(
-                ALIAS2,
-                new HumidityActions(45)));
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions1 = new ArrayList<>();
+        actions1.add(new TurnPower(true));
+        aliasActions.add(new AliasAction(ALIAS1, actions1));
+        List<Action> actions2 = new ArrayList<>();
+        actions2.add(new SetPresetHumidity(45));
+        aliasActions.add(new AliasAction(ALIAS2, actions2));
         String commandTitle = "command title";
         String commandDescription = "command description";
         JSONObject commandMetaData = new JSONObject().put("k", "v");
         Command expectedCommand = CommandFactory.newCommand(
                 issuer,
-                actions,
+                aliasActions,
                 null,
                 target.getTypedID(),
                 null,
@@ -129,19 +129,20 @@ public class EnableTriggerTest extends ThingIFAPITestBase{
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         TypedID issuer = new TypedID(TypedID.Types.USER, "user1234");
 
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
-        actions.add(new AliasAction<Action>(
-                ALIAS1,
-                new AirConditionerActions(true, null)));
-        actions.add(new AliasAction<Action>(
-                ALIAS2,
-                new HumidityActions(45)));
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions1 = new ArrayList<>();
+        actions1.add(new TurnPower(true));
+        aliasActions.add(new AliasAction(ALIAS1, actions1));
+        List<Action> actions2 = new ArrayList<>();
+        actions2.add(new SetPresetHumidity(45));
+        aliasActions.add(new AliasAction(ALIAS2, actions2));
+
         String commandTitle = "command title";
         String commandDescription = "command description";
         JSONObject commandMetaData = new JSONObject().put("k", "v");
         Command expectedCommand = CommandFactory.newCommand(
                 issuer,
-                actions,
+                aliasActions,
                 null,
                 target.getTypedID(),
                 null,
