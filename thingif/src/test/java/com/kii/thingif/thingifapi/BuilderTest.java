@@ -2,6 +2,7 @@ package com.kii.thingif.thingifapi;
 
 import android.content.Context;
 
+import com.google.gson.annotations.SerializedName;
 import com.kii.thingif.KiiApp;
 import com.kii.thingif.Owner;
 import com.kii.thingif.Site;
@@ -27,14 +28,10 @@ import org.robolectric.RuntimeEnvironment;
 import java.util.HashMap;
 import java.util.Map;
 
-class EmptyNameAction implements Action {
+class NFNAAction implements Action {
     private Boolean power;
-    public EmptyNameAction(Boolean power) {
+    public NFNAAction(Boolean power) {
         this.power = power;
-    }
-    @Override
-    public String getActionName() {
-        return "";
     }
 
     public Boolean getPower() {
@@ -42,14 +39,12 @@ class EmptyNameAction implements Action {
     }
 }
 
-class NullNameAction implements Action {
+// empty annotation
+class ENAction implements Action {
+    @SerializedName("")
     private Boolean power;
-    public NullNameAction(Boolean power) {
+    public ENAction(Boolean power) {
         this.power = power;
-    }
-    @Override
-    public String getActionName() {
-        return null;
     }
 
     public Boolean getPower() {
@@ -57,31 +52,23 @@ class NullNameAction implements Action {
     }
 }
 
-class EmptyAction implements Action {
-    @Override
-    public String getActionName() {
-        return "turnPower";
+// field name same as actionName
+class TurnPower2 implements Action {
+    private Boolean turnPower;
+    public TurnPower2(Boolean turnPower) {
+        this.turnPower = turnPower;
     }
-}
 
+    public Boolean getPower() {
+        return this.turnPower;
+    }
+
+}
 @RunWith(RobolectricTestRunner.class)
 public class BuilderTest extends ThingIFAPITestBase{
 
-    class InnerEmptyAction implements Action {
-        @Override
-        public String getActionName() {
-            return "turnPower";
-        }
-    }
-
-    static class InnerStaticEmptyAction implements Action {
-        @Override
-        public String getActionName() {
-            return "turnPower";
-        }
-    }
-
     class InnerTurnPower implements Action {
+        @SerializedName("turnPower")
         private Boolean power;
         public InnerTurnPower(Boolean power) {
             this.power = power;
@@ -90,24 +77,16 @@ public class BuilderTest extends ThingIFAPITestBase{
         public Boolean getPower() {
             return this.power;
         }
-
-        @Override
-        public String getActionName() {
-            return "turnPower";
-        }
     }
 
     static class InnerStaticTurnPower implements Action {
+        @SerializedName("turnPower")
         private Boolean power;
         public InnerStaticTurnPower(Boolean power) {
             this.power = power;
         }
         public Boolean getPower() {
             return this.power;
-        }
-        @Override
-        public String getActionName() {
-            return "turnPower";
         }
     }
 
@@ -126,6 +105,7 @@ public class BuilderTest extends ThingIFAPITestBase{
                 .registerAction("alias1", "turnPower", TurnPower.class)
                 .registerAction("alias1", "setPresetTemperature", SetPresetTemperature.class)
                 .registerAction("alias2", "setPresetHumidity", SetPresetHumidity.class)
+                .registerAction("alias3", "turnPower", TurnPower2.class)
                 .registerTargetState("alias1", AirConditionerState.class)
                 .registerTargetState("alias2", HumidityState.class);
         ThingIFAPI api = builder.build();
@@ -140,6 +120,7 @@ public class BuilderTest extends ThingIFAPITestBase{
         expectedActionTypes.put(AliasUtils.aliasActionKey("alias1", "turnPower"), TurnPower.class);
         expectedActionTypes.put(AliasUtils.aliasActionKey("alias1", "setPresetTemperature"), SetPresetTemperature.class);
         expectedActionTypes.put(AliasUtils.aliasActionKey("alias2", "setPresetHumidity"), SetPresetHumidity.class);
+        expectedActionTypes.put(AliasUtils.aliasActionKey("alias3", "turnPower"), TurnPower2.class);
         Assert.assertEquals(expectedActionTypes, api.getActionTypes());
 
         Map<String, Class<? extends TargetState>> expectedStateTypes = new HashMap<>();
@@ -207,26 +188,9 @@ public class BuilderTest extends ThingIFAPITestBase{
                 this.context,
                 new KiiApp("appid", "appkey", Site.JP),
                 new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"))
-                .registerAction("alias1", "turnPower", EmptyAction.class);
+                .registerAction("alias1", "turnPower", NFNAAction.class);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void registerAction_emptyInnerAction_throw_IllegalArgumentExceptionTest() {
-        ThingIFAPI.Builder.newBuilder(
-                this.context,
-                new KiiApp("appid", "appkey", Site.JP),
-                new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"))
-                .registerAction("alias1", "turnPower", InnerEmptyAction.class);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void registerAction_emptyInnerStaticAction_throw_IllegalArgumentExceptionTest() {
-        ThingIFAPI.Builder.newBuilder(
-                this.context,
-                new KiiApp("appid", "appkey", Site.JP),
-                new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"))
-                .registerAction("alias1", "turnPower", InnerStaticEmptyAction.class);
-    }
 
     @Test(expected = IllegalArgumentException.class)
     public void registerAction_emptyNameAction_throw_IllegalArgumentExceptionTest() {
@@ -234,19 +198,11 @@ public class BuilderTest extends ThingIFAPITestBase{
                 this.context,
                 new KiiApp("appid", "appkey", Site.JP),
                 new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"))
-                .registerAction("alias1", "turnPower", EmptyNameAction.class);
-    }
-    @Test(expected = IllegalArgumentException.class)
-    public void registerAction_nullNameAction_throw_IllegalArgumentExceptionTest() {
-        ThingIFAPI.Builder.newBuilder(
-                this.context,
-                new KiiApp("appid", "appkey", Site.JP),
-                new Owner(new TypedID(TypedID.Types.USER, "user1234"), "token"))
-                .registerAction("alias1", "turnPower", NullNameAction.class);
+                .registerAction("alias1", "turnPower", ENAction.class);
     }
 
     @Test
-    public void regiesterAction_InnerNonEmptyAction_should_succeededTest() {
+    public void registerAction_InnerNonEmptyAction_should_succeededTest() {
         ThingIFAPI api = ThingIFAPI.Builder.newBuilder(
                 this.context,
                 new KiiApp("appid", "appkey", Site.JP),
