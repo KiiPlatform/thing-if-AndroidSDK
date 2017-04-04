@@ -7,8 +7,8 @@ import com.kii.thingif.Target;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.ThingIFAPITestBase;
 import com.kii.thingif.TypedID;
-import com.kii.thingif.actions.AirConditionerActions;
-import com.kii.thingif.actions.HumidityActions;
+import com.kii.thingif.actions.SetPresetHumidity;
+import com.kii.thingif.actions.TurnPower;
 import com.kii.thingif.clause.trigger.EqualsClauseInTrigger;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
@@ -66,15 +66,15 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
         this.server.shutdown();
     }
 
-    private List<AliasAction<? extends Action>> getDefaultActions() {
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
-        actions.add(new AliasAction<Action>(
-                ALIAS1,
-                new AirConditionerActions(true, null)));
-        actions.add(new AliasAction<Action>(
-                ALIAS2,
-                new HumidityActions(45)));
-        return actions;
+    private List<AliasAction> getDefaultActions() {
+        List<AliasAction> aliaActions = new ArrayList<>();
+        List<Action> actions1 = new ArrayList<>();
+        actions1.add(new TurnPower(true));
+        aliaActions.add(new AliasAction(ALIAS1, actions1));
+        List<Action> actions2 = new ArrayList<>();
+        actions2.add(new SetPresetHumidity(45));
+        aliaActions.add(new AliasAction(ALIAS2, actions2));
+        return aliaActions;
     }
 
     private Predicate getDefaultPredicate() {
@@ -118,7 +118,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
     //call patchTrigger(String, TriggeredCommandForm, StatePredicate, TriggerOptions)
     public void patchCommandTrigger_FormOnlyHasActions_StatePredicate_NonNullOptions_Test() throws Exception {
 
-        List<AliasAction<? extends Action>> actions = getDefaultActions();
+        List<AliasAction> actions = getDefaultActions();
         TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions).build();
         StatePredicate predicate = new StatePredicate(new Condition(
                 new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
@@ -193,7 +193,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
     @Test
     // call patchTrigger(String, TriggeredCommandForm, ScheduleOncePredicate, TriggerOptions)
     public void patchCommandTrigger_FormHasActionsAndCommandOption_ScheduledOncePredicate_NonNullOptions_Test() throws Exception {
-        List<AliasAction<? extends Action>> actions = getDefaultActions();
+        List<AliasAction> actions = getDefaultActions();
         TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions)
                 .setTitle("command title")
                 .setDescription("command description")
@@ -271,12 +271,13 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
     @Test
     // call patchTrigger(String, TriggeredCommandForm, SchedulePredicate, TriggerOptions)
     public void patchCommandTrigger_FormHasTarget_SchedulePredicate_NonnullOptions_Test() throws Exception {
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
         TypedID targetID = new TypedID(TypedID.Types.THING, "another thing");
-        actions.add(new AliasAction<Action>(
-                ALIAS1,
-                new AirConditionerActions(true, null)));
-        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions)
+
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action>actions1 = new ArrayList<>();
+        actions1.add(new TurnPower(true));
+        aliasActions.add(new AliasAction(ALIAS1, actions1));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(aliasActions)
                 .setTargetID(targetID)
                 .build();
         SchedulePredicate predicate = new SchedulePredicate("1 * * * *");
@@ -290,7 +291,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
         Assert.assertNotNull(this.defaultApi.getTarget());
         Command expectedCommand = CommandFactory.newTriggeredCommand(
                 this.defaultApi.getOwner().getTypedID(),
-                actions,
+                aliasActions,
                 targetID,
                 null,
                 null,
@@ -351,11 +352,11 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
     @Test
     // call patchTrigger(String, TriggeredCommandForm, null, TriggerOptions)
     public void patchCommandTrigger_Form_NullPredicate_NonNullOptions_Test() throws Exception {
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
-        actions.add(new AliasAction<Action>(
-                ALIAS1,
-                new AirConditionerActions(true, null)));
-        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions).build();
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions = new ArrayList<>();
+        actions.add(new TurnPower(true));
+        aliasActions.add(new AliasAction(ALIAS1, actions));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(aliasActions).build();
         TriggerOptions options = TriggerOptions.Builder.newBuilder()
                 .setTitle("cross thing trigger title")
                 .setDescription("cross thing trigger description")
@@ -366,7 +367,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
         Assert.assertNotNull(this.defaultApi.getTarget());
         Command expectedCommand = CommandFactory.newTriggeredCommand(
                 this.defaultApi.getOwner().getTypedID(),
-                actions,
+                aliasActions,
                 this.defaultApi.getTarget().getTypedID(),
                 null,
                 null,
@@ -488,7 +489,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
     @Test
     // call patchTrigger(String, TriggeredCommandForm, StatePredicate, null)
     public void patchCommandTrigger_StatePredicate_NullOptions_Test() throws Exception {
-        List<AliasAction<? extends Action>> actions = getDefaultActions();
+        List<AliasAction> actions = getDefaultActions();
         TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions).build();
 
         StatePredicate predicate = new StatePredicate(new Condition(
@@ -1578,7 +1579,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
     //call patchTrigger(String, TriggeredCommandForm, StatePredicate)
     public void patchCommandTrigger_FormOnlyHasActions_StatePredicate_Test() throws Exception {
 
-        List<AliasAction<? extends Action>> actions = getDefaultActions();
+        List<AliasAction> actions = getDefaultActions();
         TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions).build();
         StatePredicate predicate = new StatePredicate(new Condition(
                 new EqualsClauseInTrigger(ALIAS1, "power", true)), TriggersWhen.CONDITION_CHANGED);
@@ -1650,7 +1651,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
     @Test
     // call patchTrigger(String, TriggeredCommandForm, ScheduleOncePredicate)
     public void patchCommandTrigger_FormHasActionsAndCommandOption_ScheduledOncePredicate_Test() throws Exception {
-        List<AliasAction<? extends Action>> actions = getDefaultActions();
+        List<AliasAction> actions = getDefaultActions();
         TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions)
                 .setTitle("command title")
                 .setDescription("command description")
@@ -1725,12 +1726,12 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
     @Test
     // call patchTrigger(String, TriggeredCommandForm, SchedulePredicate)
     public void patchCommandTrigger_FormHasTarget_SchedulePredicate_Test() throws Exception {
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
         TypedID targetID = new TypedID(TypedID.Types.THING, "another thing");
-        actions.add(new AliasAction<Action>(
-                ALIAS1,
-                new AirConditionerActions(true, null)));
-        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(actions)
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions = new ArrayList<>();
+        actions.add(new TurnPower(true));
+        aliasActions.add(new AliasAction(ALIAS1, actions));
+        TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(aliasActions)
                 .setTargetID(targetID)
                 .build();
         SchedulePredicate predicate = new SchedulePredicate("1 * * * *");
@@ -1744,7 +1745,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
         Assert.assertNotNull(this.defaultApi.getTarget());
         Command expectedCommand = CommandFactory.newTriggeredCommand(
                 this.defaultApi.getOwner().getTypedID(),
-                actions,
+                aliasActions,
                 targetID,
                 null,
                 null,
@@ -1802,7 +1803,7 @@ public class PatchTriggerTest extends ThingIFAPITestBase {
     @Test
     // call patchTrigger(String, TriggeredCommandForm, null)
     public void patchCommandTrigger_Form_NullPredicate_Test() throws Exception {
-        List<AliasAction<? extends Action>> actions = getDefaultActions();
+        List<AliasAction> actions = getDefaultActions();
         TriggeredCommandForm form = getDefaultForm();
         TriggerOptions options = TriggerOptions.Builder.newBuilder()
                 .setTitle("cross thing trigger title")

@@ -10,8 +10,9 @@ import com.kii.thingif.Target;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.ThingIFAPITestBase;
 import com.kii.thingif.TypedID;
-import com.kii.thingif.actions.AirConditionerActions;
-import com.kii.thingif.actions.HumidityActions;
+import com.kii.thingif.actions.SetPresetHumidity;
+import com.kii.thingif.actions.SetPresetTemperature;
+import com.kii.thingif.actions.TurnPower;
 import com.kii.thingif.clause.trigger.EqualsClauseInTrigger;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
@@ -22,6 +23,9 @@ import com.kii.thingif.exception.ForbiddenException;
 import com.kii.thingif.exception.NotFoundException;
 import com.kii.thingif.exception.ServiceUnavailableException;
 import com.kii.thingif.exception.UnregisteredAliasException;
+import com.kii.thingif.exception.UnsupportedActionException;
+import com.kii.thingif.states.AirConditionerState;
+import com.kii.thingif.states.HumidityState;
 import com.kii.thingif.thingifapi.utils.ThingIFAPIUtils;
 import com.kii.thingif.trigger.Condition;
 import com.kii.thingif.trigger.ScheduleOncePredicate;
@@ -76,16 +80,16 @@ public class ListTriggersTest extends ThingIFAPITestBase{
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         // construct command1
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
-        actions.add(new AliasAction<Action>(
-                ALIAS1,
-                new AirConditionerActions(true, null)));
-        actions.add(new AliasAction<Action>(
-                ALIAS2,
-                new HumidityActions(45)));
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions11 = new ArrayList<>();
+        actions11.add(new TurnPower(true));
+        List<Action> actions12 = new ArrayList<>();
+        actions12.add(new SetPresetHumidity(45));
+        aliasActions.add(new AliasAction(ALIAS1, actions11));
+        aliasActions.add(new AliasAction(ALIAS2, actions12));
         Command command1 = CommandFactory.newCommand(
                 issuer,
-                actions,
+                aliasActions,
                 null,
                 target.getTypedID(),
                 null,
@@ -98,13 +102,14 @@ public class ListTriggersTest extends ThingIFAPITestBase{
                 new JSONObject().put("k", "v"));
 
         // construct command2
-        List<AliasAction<? extends Action>> actions2 = new ArrayList<>();
-        actions2.add(new AliasAction<Action>(
-                ALIAS1,
-                new AirConditionerActions(true, 23)));
+        List<AliasAction> aliasActions2 = new ArrayList<>();
+        List<Action> actions21 = new ArrayList<>();
+        actions21.add(new TurnPower(true));
+        actions21.add(new SetPresetTemperature(23));
+        aliasActions2.add(new AliasAction(ALIAS1, actions21));
         Command command2 = CommandFactory.newCommand(
                 issuer,
-                actions2,
+                aliasActions2,
                 null,
                 target.getTypedID(),
                 null,
@@ -240,109 +245,7 @@ public class ListTriggersTest extends ThingIFAPITestBase{
         Assert.assertEquals("GET", request2.getMethod());
         this.assertRequestHeader(expectedRequestHeaders, request2);
     }
-
-    @Test
-    public void listTriggersReponseWithUnregisteredAliasTest() throws Exception {
-        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
-        String accessToken = "thing-access-token-1234";
-        TypedID issuer = new TypedID(TypedID.Types.USER, "user1234");
-        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
-
-        // construct command1
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
-        actions.add(new AliasAction<Action>(
-                ALIAS1,
-                new AirConditionerActions(true, null)));
-        actions.add(new AliasAction<Action>(
-                ALIAS2,
-                new HumidityActions(45)));
-        Command command1 = CommandFactory.newCommand(
-                issuer,
-                actions,
-                null,
-                target.getTypedID(),
-                null,
-                null,
-                null,
-                null,
-                null,
-                "title1",
-                "description1",
-                new JSONObject().put("k", "v"));
-
-        StatePredicate statePredicate =
-                new StatePredicate(
-                        new Condition(new EqualsClauseInTrigger(ALIAS1, "power", true)),
-                        TriggersWhen.CONDITION_CHANGED);
-
-        ServerCode serverCode1 = new ServerCode("endpoint", "token", "targetAppID", new JSONObject().put("k1", "v1"));
-        Trigger trigger1 = TriggerFactory
-                .createTrigger(
-                        "trigger1",
-                        target.getTypedID(),
-                        statePredicate,
-                        command1,
-                        null,
-                        false,
-                        null,
-                        "title1",
-                        "description1",
-                        new JSONObject().put("k2", "v2"));
-
-        Trigger trigger2 = TriggerFactory
-                .createTrigger("trigger4",
-                        target.getTypedID(),
-                        statePredicate,
-                        null,
-                        serverCode1,
-                        false,
-                        null,
-                        "trigger title2",
-                        "trigger description2",
-                        new JSONObject().put("key1", "value1"));
-
-        String paginationKey = "pagination-12345-key";
-        this.addMockResponseForListTriggers(
-                200,
-                new Trigger[]{trigger1, trigger2},
-                paginationKey);
-
-        String ownerID = UUID.randomUUID().toString();
-        Owner owner = new Owner(new TypedID(TypedID.Types.USER, ownerID), "owner-access-token-1234");
-        KiiApp app = getApp(APP_ID, APP_KEY);
-        Map<String, Class<? extends Action>> actionTypes = new HashMap<>();
-        actionTypes.put(ALIAS2, HumidityActions.class);
-        ThingIFAPI.Builder builder = ThingIFAPI.Builder.newBuilder(
-                context,
-                app,
-                owner,
-                actionTypes,
-                getDefaultStateTypes());
-        ThingIFAPI api = builder.build();
-
-        ThingIFAPIUtils.setTarget(api, target);
-
-
-        try {
-            api.listTriggers(0, null);
-            org.junit.Assert.fail("should throw exception");
-        }catch (UnregisteredAliasException e) {
-
-        }
-
-        // verify the 1st request
-        RecordedRequest request1 = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(BASE_PATH + "/targets/" + thingID.toString() + "/triggers", request1.getPath());
-        Assert.assertEquals("GET", request1.getMethod());
-
-        Map<String, String> expectedRequestHeaders = new HashMap<>();
-        expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
-        expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
-        expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
-        this.assertRequestHeader(expectedRequestHeaders, request1);
-
-    }
-
+    
     @Test
     public void listTriggersWithBestEffortLimitZeroTest() throws Exception {
         TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
@@ -351,16 +254,16 @@ public class ListTriggersTest extends ThingIFAPITestBase{
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
 
         // construct command1
-        List<AliasAction<? extends Action>> actions = new ArrayList<>();
-        actions.add(new AliasAction<Action>(
-                ALIAS1,
-                new AirConditionerActions(true, null)));
-        actions.add(new AliasAction<Action>(
-                ALIAS2,
-                new HumidityActions(45)));
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions1 = new ArrayList<>();
+        actions1.add(new TurnPower(true));
+        aliasActions.add(new AliasAction(ALIAS1, actions1));
+        List<Action> actions2 = new ArrayList<>();
+        actions2.add(new SetPresetHumidity(45));
+        aliasActions.add(new AliasAction(ALIAS2, actions2));
         Command command1 = CommandFactory.newCommand(
                 issuer,
-                actions,
+                aliasActions,
                 null,
                 target.getTypedID(),
                 null,
