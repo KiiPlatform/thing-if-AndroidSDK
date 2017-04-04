@@ -18,6 +18,8 @@ import com.kii.thingif.Target;
 import com.kii.thingif.TargetState;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.TypedID;
+import com.kii.thingif.actions.SetPresetHumidity;
+import com.kii.thingif.actions.SetPresetTemperature;
 import com.kii.thingif.actions.TurnPower;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.states.AirConditionerState;
@@ -143,6 +145,8 @@ public class LargeTestCaseBase {
         KiiApp app = KiiApp.Builder.builderWithHostName(server.getAppID(), server.getAppKey(), hostname).build();
         return ThingIFAPI.Builder.newBuilder(this.context, app, owner)
                 .registerAction(ALIAS1, "turnPower", TurnPower.class)
+                .registerAction(ALIAS1, "setPresetTemperature", SetPresetTemperature.class)
+                .registerAction(ALIAS2, "setPresetHumidity", SetPresetHumidity.class)
                 .registerTargetState(ALIAS1, AirConditionerState.class)
                 .registerTargetState(ALIAS2, HumidityState.class).build();
     }

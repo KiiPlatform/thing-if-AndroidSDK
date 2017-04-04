@@ -8,6 +8,9 @@ import com.kii.thingif.OnboardWithVendorThingIDOptions;
 import com.kii.thingif.Target;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.TypedID;
+import com.kii.thingif.actions.SetPresetHumidity;
+import com.kii.thingif.actions.SetPresetTemperature;
+import com.kii.thingif.actions.TurnPower;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
 import com.kii.thingif.command.Command;
@@ -46,15 +49,14 @@ public class CommandTest extends LargeTestCaseBase {
         String commandTitle = "title";
         String commandDescription = "description";
         JSONObject metaData = new JSONObject().put("k", "v");
-        List<AliasAction<? extends Action>> aliasActions = new ArrayList<>();
-        aliasActions.add(
-                new AliasAction<>(
-                        ALIAS1,
-                        new AirConditionerActions(true, 25)));
-        aliasActions.add(
-                new AliasAction<Action>(
-                        ALIAS2,
-                        new HumidityActions(50)));
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions = new ArrayList<>();
+        actions.add(new TurnPower(true));
+        actions.add(new SetPresetTemperature(25));
+        aliasActions.add(new AliasAction(ALIAS1, actions));
+        List<Action> actions2 = new ArrayList<>();
+        actions2.add(new SetPresetHumidity(50));
+        aliasActions.add(new AliasAction(ALIAS2, actions2));
 
         CommandForm form = CommandForm
                 .Builder
@@ -78,18 +80,22 @@ public class CommandTest extends LargeTestCaseBase {
         Assert.assertEquals(2, command1.getAliasActions().size());
 
         Assert.assertEquals(ALIAS1, command1.getAliasActions().get(0).getAlias());
-        Action action1 = command1.getAliasActions().get(0).getAction();
-        Assert.assertTrue(action1 instanceof AirConditionerActions);
+        Assert.assertEquals(2, command1.getAliasActions().get(0).getActions().size());
+        Action action11 = command1.getAliasActions().get(0).getActions().get(0);
+        Assert.assertTrue(action11 instanceof TurnPower);
         Assert.assertEquals(
                 true,
-                ((AirConditionerActions)action1).isPower().booleanValue());
+                ((TurnPower)action11).getPower().booleanValue());
+        Action action12 = command1.getAliasActions().get(0).getActions().get(1);
         Assert.assertEquals(
                 25,
-                ((AirConditionerActions)action1).getPresetTemperature().intValue());
+                ((SetPresetTemperature)action12).getTemperature().intValue());
         Assert.assertEquals(ALIAS2, command1.getAliasActions().get(1).getAlias());
-        Action action2 = command1.getAliasActions().get(1).getAction();
-        Assert.assertTrue(action2 instanceof HumidityActions);
-        Assert.assertEquals(50, ((HumidityActions)action2).getPresetHumidity().intValue());
+
+        Assert.assertEquals(1, command1.getAliasActions().get(1).getActions().size());
+        Action action21 = command1.getAliasActions().get(1).getActions().get(0);
+        Assert.assertTrue(action21 instanceof SetPresetHumidity);
+        Assert.assertEquals(50, ((SetPresetHumidity)action21).getHumidity().intValue());
 
         // get created command
         Command command1Copy = api.getCommand(command1.getCommandID());
@@ -107,26 +113,32 @@ public class CommandTest extends LargeTestCaseBase {
         Assert.assertEquals(2, command1Copy.getAliasActions().size());
 
         Assert.assertEquals(ALIAS1, command1Copy.getAliasActions().get(0).getAlias());
-        Action action11 = command1Copy.getAliasActions().get(0).getAction();
-        Assert.assertTrue(action11 instanceof AirConditionerActions);
+        Assert.assertEquals(2, command1Copy.getAliasActions().get(0).getActions().size());
+        Action action31 = command1Copy.getAliasActions().get(0).getActions().get(0);
+        Assert.assertTrue(action31 instanceof TurnPower);
         Assert.assertEquals(
                 true,
-                ((AirConditionerActions)action11).isPower().booleanValue());
+                ((TurnPower)action31).getPower().booleanValue());
+        Action action32 = command1Copy.getAliasActions().get(0).getActions().get(1);
+        Assert.assertTrue(action32 instanceof SetPresetTemperature);
         Assert.assertEquals(
                 25,
-                ((AirConditionerActions)action11).getPresetTemperature().intValue());
+                ((SetPresetTemperature)action32).getTemperature().intValue());
+        
         Assert.assertEquals(ALIAS2, command1Copy.getAliasActions().get(1).getAlias());
-        Action action12 = command1Copy.getAliasActions().get(1).getAction();
-        Assert.assertTrue(action12 instanceof HumidityActions);
-        Assert.assertEquals(50, ((HumidityActions)action12).getPresetHumidity().intValue());
+        Assert.assertEquals(1, command1Copy.getAliasActions().get(1).getActions().size());
+        Action action41 = command1Copy.getAliasActions().get(1).getActions().get(0);
+        Assert.assertTrue(action41 instanceof SetPresetHumidity);
+        Assert.assertEquals(50, ((SetPresetHumidity)action41).getHumidity().intValue());
 
         // create new command
+        List<Action> actions21 = new ArrayList<>();
+        actions21.add(new SetPresetHumidity(50));
+
         CommandForm form2 = CommandForm
                 .Builder
                 .newBuilder()
-                .addAliasAction(new AliasAction<Action>(
-                        ALIAS2,
-                        new HumidityActions(50)))
+                .addAliasAction(new AliasAction(ALIAS2, actions21))
                 .build();
         Command command2 = api.postNewCommand(form2);
 
@@ -141,14 +153,14 @@ public class CommandTest extends LargeTestCaseBase {
         Assert.assertEquals(1, command2.getAliasActions().size());
 
         // create new command
+        List<Action> actions31 = new ArrayList<>();
+        actions31.add(new SetPresetHumidity(51));
         CommandForm form3 = CommandForm
                 .Builder
                 .newBuilder()
-                .addAliasAction(new AliasAction<Action>(
-                        ALIAS2,
-                        new HumidityActions(51)))
+                .addAliasAction(new AliasAction(ALIAS2, actions31))
                 .build();
-        Command command3 = api.postNewCommand(form2);
+        Command command3 = api.postNewCommand(form3);
 
         Assert.assertNotNull(command3.getCommandID());
         Assert.assertNull(command3.getTitle());
@@ -175,6 +187,7 @@ public class CommandTest extends LargeTestCaseBase {
             }
         }
 
+        // verify command1
         Assert.assertNotNull(command1.getCommandID());
         Assert.assertEquals(commandTitle, command1.getTitle());
         Assert.assertEquals(commandDescription, command1.getDescription());
@@ -185,22 +198,25 @@ public class CommandTest extends LargeTestCaseBase {
         Assert.assertNotNull(command1.getModified());
         Assert.assertNull(command1.getFiredByTriggerID());
         Assert.assertNull(command1.getAliasActionResults());
-
         Assert.assertEquals(2, command1.getAliasActions().size());
-
         Assert.assertEquals(ALIAS1, command1.getAliasActions().get(0).getAlias());
-        action1 = command1.getAliasActions().get(0).getAction();
-        Assert.assertTrue(action1 instanceof AirConditionerActions);
+        Assert.assertEquals(2, command1.getAliasActions().get(0).getActions().size());
+        action11 = command1.getAliasActions().get(0).getActions().get(0);
+        Assert.assertTrue(action11 instanceof TurnPower);
         Assert.assertEquals(
                 true,
-                ((AirConditionerActions)action1).isPower().booleanValue());
+                ((TurnPower)action11).getPower().booleanValue());
+        action12 = command1.getAliasActions().get(0).getActions().get(1);
         Assert.assertEquals(
                 25,
-                ((AirConditionerActions)action1).getPresetTemperature().intValue());
+                ((SetPresetTemperature)action12).getTemperature().intValue());
         Assert.assertEquals(ALIAS2, command1.getAliasActions().get(1).getAlias());
-        action2 = command1.getAliasActions().get(1).getAction();
-        Assert.assertTrue(action2 instanceof HumidityActions);
-        Assert.assertEquals(50, ((HumidityActions)action2).getPresetHumidity().intValue());
+        Assert.assertEquals(1, command1.getAliasActions().get(1).getActions().size());
+        action21 = command1.getAliasActions().get(1).getActions().get(0);
+        Assert.assertTrue(action21 instanceof SetPresetHumidity);
+        Assert.assertEquals(50, ((SetPresetHumidity)action21).getHumidity().intValue());
+
+        // verify command2
         Assert.assertNotNull(command2.getCommandID());
         Assert.assertNull(command2.getTitle());
         Assert.assertNull(command2.getDescription());

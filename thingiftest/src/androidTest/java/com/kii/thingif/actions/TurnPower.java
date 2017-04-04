@@ -5,8 +5,12 @@ import com.kii.thingif.command.Action;
 
 public class TurnPower implements Action{
     @SerializedName("turnPower")
-    public Boolean power;
+    private Boolean power;
     public TurnPower(Boolean power) {
         this.power = power;
+    }
+
+    public Boolean getPower() {
+        return this.power;
     }
 }
