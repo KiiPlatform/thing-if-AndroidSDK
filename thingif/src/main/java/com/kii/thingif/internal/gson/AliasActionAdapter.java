@@ -12,7 +12,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
-import com.kii.thingif.exception.UnRegisteredActionException;
+import com.kii.thingif.exception.UnregisteredActionException;
 import com.kii.thingif.internal.utils.AliasUtils;
 
 import java.lang.reflect.Type;
@@ -47,7 +47,7 @@ public class AliasActionAdapter implements
             }
 
             if (registeredAN == null) {
-                throw new JsonParseException(new UnRegisteredActionException(
+                throw new JsonParseException(new UnregisteredActionException(
                         action.getClass().getName(),
                         src.getAlias()));
             }

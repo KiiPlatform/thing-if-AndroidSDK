@@ -8,7 +8,7 @@ import com.google.gson.JsonParseException;
 import com.kii.thingif.actions.SetPresetTemperature;
 import com.kii.thingif.actions.TurnPower;
 import com.kii.thingif.command.Action;
-import com.kii.thingif.exception.UnRegisteredActionException;
+import com.kii.thingif.exception.UnregisteredActionException;
 
 import junit.framework.Assert;
 
@@ -86,7 +86,7 @@ public class ActionAdapterTest {
                             new TurnPower(true),
                             Action.class);
         }catch (JsonParseException e) {
-            Assert.assertTrue(e.getCause() instanceof UnRegisteredActionException);
+            Assert.assertTrue(e.getCause() instanceof UnregisteredActionException);
         }
     }
 }
