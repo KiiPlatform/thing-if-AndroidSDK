@@ -12,6 +12,9 @@ import com.kii.thingif.OnboardWithVendorThingIDOptions;
 import com.kii.thingif.Target;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.TypedID;
+import com.kii.thingif.actions.SetPresetHumidity;
+import com.kii.thingif.actions.SetPresetTemperature;
+import com.kii.thingif.actions.TurnPower;
 import com.kii.thingif.clause.trigger.EqualsClauseInTrigger;
 import com.kii.thingif.clause.trigger.RangeClauseInTrigger;
 import com.kii.thingif.command.Action;
@@ -65,11 +68,11 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertNotNull(target);
 
         // create trigger 1: command,  state predicate, null options
-        List<AliasAction<? extends Action>> aliasActions = new ArrayList<>();
-        aliasActions.add(
-                new AliasAction<>(
-                        ALIAS1,
-                        new AirConditionerActions(true, 25)));
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions = new ArrayList<>();
+        actions.add(new TurnPower(true));
+        actions.add(new SetPresetTemperature(25));
+        aliasActions.add(new AliasAction(ALIAS1, actions));
         Condition condition1 = new Condition(new EqualsClauseInTrigger(ALIAS1, "power", true));
         StatePredicate predicate1 = new StatePredicate(condition1, TriggersWhen.CONDITION_TRUE);
 
@@ -95,10 +98,13 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertEquals(1, trigger1Command.getAliasActions().size());
 
         Assert.assertEquals(ALIAS1, trigger1Command.getAliasActions().get(0).getAlias());
-        Action action1 = trigger1Command.getAliasActions().get(0).getAction();
-        Assert.assertTrue(action1 instanceof AirConditionerActions);
-        Assert.assertTrue(((AirConditionerActions)action1).isPower());
-        Assert.assertEquals(25, ((AirConditionerActions)action1).getPresetTemperature().intValue());
+        Assert.assertEquals(2, trigger1Command.getAliasActions().get(0).getActions().size());
+        Action action11 = trigger1Command.getAliasActions().get(0).getActions().get(0);
+        Assert.assertTrue(action11 instanceof TurnPower);
+        Assert.assertTrue(((TurnPower)action11).getPower());
+        Action action12 = trigger1Command.getAliasActions().get(0).getActions().get(1);
+        Assert.assertTrue(action12 instanceof SetPresetTemperature);
+        Assert.assertEquals(25, ((SetPresetTemperature)action12).getTemperature().intValue());
 
         StatePredicate trigger1Predicate = (StatePredicate)trigger1.getPredicate();
         Assert.assertEquals(EventSource.STATES, trigger1Predicate.getEventSource());
@@ -113,11 +119,10 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertFalse(trigger1.disabled());
 
         // create trigger 2: command, schedule predicate, non null options
-        List<AliasAction<? extends Action>> aliasActions2 = new ArrayList<>();
-        aliasActions2.add(
-                new AliasAction<Action>(
-                        ALIAS2,
-                        new HumidityActions(50)));
+        List<AliasAction> aliasActions2 = new ArrayList<>();
+        List<Action> actions2 = new ArrayList<>();
+        actions2.add(new SetPresetHumidity(50));
+        aliasActions2.add(new AliasAction(ALIAS2, actions2));
         SchedulePredicate predicate2 = new SchedulePredicate("5 * * * *");
         TriggerOptions options2 = TriggerOptions.Builder.newBuilder()
                 .setTitle("trigger title")
@@ -151,9 +156,10 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertEquals(1, trigger2Command.getAliasActions().size());
 
         Assert.assertEquals(ALIAS2, trigger2Command.getAliasActions().get(0).getAlias());
-        Action action2 = trigger2Command.getAliasActions().get(0).getAction();
-        Assert.assertTrue(action2 instanceof HumidityActions);
-        Assert.assertEquals(50, ((HumidityActions)action2).getPresetHumidity().intValue());
+        Assert.assertEquals(1, trigger2Command.getAliasActions().get(0).getActions().size());
+        Action action21 = trigger2Command.getAliasActions().get(0).getActions().get(0);
+        Assert.assertTrue(action21 instanceof SetPresetHumidity);
+        Assert.assertEquals(50, ((SetPresetHumidity)action21).getHumidity().intValue());
         Assert.assertNull(trigger2Command.getAliasActionResults());
         Assert.assertNull(trigger2Command.getAliasActionResults());
 
@@ -165,8 +171,10 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertTrue(trigger2.disabled());
 
         // update trigger 2
-        List<AliasAction<? extends Action>> aliasActions21 = new ArrayList<>();
-        aliasActions21.add(new AliasAction<Action>(ALIAS1, new AirConditionerActions(false, null)));
+        List<AliasAction> aliasActions21 = new ArrayList<>();
+        List<Action> actions21 = new ArrayList<>();
+        actions21.add(new TurnPower(false));
+        aliasActions21.add(new AliasAction(ALIAS1, actions21));
         SchedulePredicate trigger2Predicate2 = new SchedulePredicate("7 * * * *");
         trigger2 = this.onboardedApi.patchCommandTrigger(
                 trigger2.getTriggerID(),
@@ -196,10 +204,10 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertEquals(1, trigger2Command.getAliasActions().size());
 
         Assert.assertEquals(ALIAS1, trigger2Command.getAliasActions().get(0).getAlias());
-        action2 = trigger2Command.getAliasActions().get(0).getAction();
-        Assert.assertTrue(action2 instanceof AirConditionerActions);
-        Assert.assertFalse(((AirConditionerActions)action2).isPower());
-        Assert.assertNull(((AirConditionerActions) action2).getPresetTemperature());
+        Assert.assertEquals(1, trigger2Command.getAliasActions().get(0).getActions().size());
+        action21 = trigger2Command.getAliasActions().get(0).getActions().get(0);
+        Assert.assertTrue(action21 instanceof TurnPower);
+        Assert.assertFalse(((TurnPower)action21).getPower());
         Assert.assertNull(trigger2Command.getAliasActionResults());
         Assert.assertNull(trigger2Command.getAliasActionResults());
 
@@ -207,11 +215,10 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertEquals(trigger2Predicate2.getSchedule(), trigger2Predicate.getSchedule());
 
         // create trigger 3: command, schedule once predicate, null options
-        List<AliasAction<? extends Action>> aliasActions3 = new ArrayList<>();
-        aliasActions3.add(
-                new AliasAction<Action>(
-                        ALIAS2,
-                        new HumidityActions(50)));
+        List<AliasAction> aliasActions3 = new ArrayList<>();
+        List<Action> actions3 = new ArrayList<>();
+        actions3.add(new SetPresetHumidity(50));
+        aliasActions3.add(new AliasAction(ALIAS2, actions3));
         ScheduleOncePredicate predicate3 = new ScheduleOncePredicate(System.currentTimeMillis()+ 1000*1000);
 
         Trigger trigger3 = this.onboardedApi.postNewTrigger(
@@ -236,9 +243,10 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertEquals(1, trigger3Command.getAliasActions().size());
 
         Assert.assertEquals(ALIAS2, trigger3Command.getAliasActions().get(0).getAlias());
-        Action action3 = trigger3Command.getAliasActions().get(0).getAction();
-        Assert.assertTrue(action3 instanceof HumidityActions);
-        Assert.assertEquals(50, ((HumidityActions)action3).getPresetHumidity().intValue());
+        Assert.assertEquals(1, trigger3Command.getAliasActions().get(0).getActions().size());
+        Action action3 = trigger3Command.getAliasActions().get(0).getActions().get(0);
+        Assert.assertTrue(action3 instanceof SetPresetHumidity);
+        Assert.assertEquals(50, ((SetPresetHumidity)action3).getHumidity().intValue());
         Assert.assertNull(trigger3Command.getAliasActionResults());
         Assert.assertNull(trigger3Command.getAliasActionResults());
 
@@ -303,10 +311,12 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertEquals(1, trigger1Command.getAliasActions().size());
 
         Assert.assertEquals(ALIAS1, trigger1Command.getAliasActions().get(0).getAlias());
-        action1 = trigger1Command.getAliasActions().get(0).getAction();
-        Assert.assertTrue(action1 instanceof AirConditionerActions);
-        Assert.assertTrue(((AirConditionerActions)action1).isPower());
-        Assert.assertEquals(25, ((AirConditionerActions)action1).getPresetTemperature().intValue());
+        Assert.assertEquals(2, trigger1Command.getAliasActions().get(0).getActions().size());
+        action11 = trigger1Command.getAliasActions().get(0).getActions().get(0);
+        Assert.assertTrue(action11 instanceof TurnPower);
+        Assert.assertTrue(((TurnPower)action11).getPower());
+        action12 = trigger1Command.getAliasActions().get(0).getActions().get(1);
+        Assert.assertEquals(25, ((SetPresetTemperature)action12).getTemperature().intValue());
 
         trigger1Predicate = (StatePredicate)trigger1.getPredicate();
         Assert.assertEquals(EventSource.STATES, trigger1Predicate.getEventSource());
@@ -338,10 +348,10 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertEquals(1, trigger2Command.getAliasActions().size());
 
         Assert.assertEquals(ALIAS1, trigger2Command.getAliasActions().get(0).getAlias());
-        action2 = trigger2Command.getAliasActions().get(0).getAction();
-        Assert.assertTrue(action2 instanceof AirConditionerActions);
-        Assert.assertFalse(((AirConditionerActions)action2).isPower());
-        Assert.assertNull(((AirConditionerActions) action2).getPresetTemperature());
+        Assert.assertEquals(1, trigger2Command.getAliasActions().get(0).getActions().size());
+        action21 = trigger2Command.getAliasActions().get(0).getActions().get(0);
+        Assert.assertTrue(action21 instanceof TurnPower);
+        Assert.assertFalse(((TurnPower)action21).getPower());
         Assert.assertNull(trigger2Command.getAliasActionResults());
         Assert.assertNull(trigger2Command.getAliasActionResults());
 
@@ -367,9 +377,10 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertEquals(1, trigger3Command.getAliasActions().size());
 
         Assert.assertEquals(ALIAS2, trigger3Command.getAliasActions().get(0).getAlias());
-        action3 = trigger3Command.getAliasActions().get(0).getAction();
-        Assert.assertTrue(action3 instanceof HumidityActions);
-        Assert.assertEquals(50, ((HumidityActions)action3).getPresetHumidity().intValue());
+        Assert.assertEquals(1, trigger3Command.getAliasActions().get(0).getActions().size());
+        action3 = trigger3Command.getAliasActions().get(0).getActions().get(0);
+        Assert.assertTrue(action3 instanceof SetPresetHumidity);
+        Assert.assertEquals(50, ((SetPresetHumidity)action3).getHumidity().intValue());
         Assert.assertNull(trigger3Command.getAliasActionResults());
         Assert.assertNull(trigger3Command.getAliasActionResults());
 
@@ -669,11 +680,11 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertNotNull(target);
 
         // create new trigger
-        List<AliasAction<? extends Action>> aliasActions = new ArrayList<>();
-        aliasActions.add(
-                new AliasAction<>(
-                        ALIAS1,
-                        new AirConditionerActions(true, 25)));
+        List<AliasAction> aliasActions = new ArrayList<>();
+        List<Action> actions = new ArrayList<>();
+        actions.add(new TurnPower(true));
+        actions.add(new SetPresetTemperature(25));
+        aliasActions.add(new AliasAction(ALIAS1, actions));
 
         TriggeredCommandForm form = TriggeredCommandForm.Builder.newBuilder(aliasActions).build();
         SchedulePredicate predicate1 = new SchedulePredicate("wrong format");
