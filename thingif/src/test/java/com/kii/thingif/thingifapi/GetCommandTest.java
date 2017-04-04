@@ -326,5 +326,6 @@ public class GetCommandTest  extends ThingIFAPITestBase {
         String accessToken = "thing-access-token-1234";
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
         ThingIFAPIUtils.setTarget(api, target);
+        api.getCommand("");
     }
 }
