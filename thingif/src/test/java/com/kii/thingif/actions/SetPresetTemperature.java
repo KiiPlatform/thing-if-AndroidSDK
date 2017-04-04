@@ -1,5 +1,6 @@
 package com.kii.thingif.actions;
 
+import com.google.gson.annotations.SerializedName;
 import com.kii.thingif.command.Action;
 
 import org.json.JSONException;
@@ -7,14 +8,11 @@ import org.json.JSONObject;
 
 public class SetPresetTemperature implements Action, ActionToJSON {
 
+    @SerializedName("setPresetTemperature")
     private Integer temperature;
 
     public SetPresetTemperature(Integer temperature) {
         this.temperature = temperature;
-    }
-    @Override
-    public String getActionName() {
-        return "setPresetTemperature";
     }
 
     public Integer getTemperature() {
@@ -24,7 +22,7 @@ public class SetPresetTemperature implements Action, ActionToJSON {
     @Override
     public JSONObject toJSONObject() {
         try {
-            return new JSONObject().put(this.getActionName(), this.temperature);
+            return new JSONObject().put("setPresetTemperature", this.temperature);
         }catch (JSONException e) {
             // never throw
             throw new RuntimeException(e);

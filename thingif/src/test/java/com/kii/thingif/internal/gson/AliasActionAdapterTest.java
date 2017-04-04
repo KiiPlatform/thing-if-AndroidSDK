@@ -2,17 +2,17 @@ package com.kii.thingif.internal.gson;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParseException;
 import com.kii.thingif.SmallTestBase;
+import com.kii.thingif.actions.ActionToJSON;
 import com.kii.thingif.actions.SetPresetHumidity;
 import com.kii.thingif.actions.SetPresetTemperature;
 import com.kii.thingif.actions.TurnPower;
 import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
-import com.kii.thingif.exception.UnsupportedActionException;
 import com.kii.thingif.internal.utils.AliasUtils;
 import com.kii.thingif.utils.JsonUtil;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
@@ -25,10 +25,37 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+class SetPresetTemperature2 implements Action, ActionToJSON {
+    private Integer setPresetTemperature;
+    private String temperatureUnit = "Celsius";
+
+    SetPresetTemperature2(Integer setPresetTemperature, String temperatureUnit) {
+        this.setPresetTemperature = setPresetTemperature;
+        this.temperatureUnit = temperatureUnit;
+    }
+
+    Integer getSetPresetTemperature() {
+        return this.setPresetTemperature;
+    }
+
+    String getTemperatureUnit() {
+        return this.temperatureUnit;
+    }
+
+    @Override
+    public JSONObject toJSONObject() {
+        try {
+            return new JSONObject().put("setPresetTemperature", this.setPresetTemperature);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
 @RunWith(RobolectricTestRunner.class)
 public class AliasActionAdapterTest extends SmallTestBase {
     private static final String alias1 = "AirConditionerAlias";
     private static final String alias2 = "HumidityAlias";
+    private static final String alias3 = "AnotherACAlias";
 
     private Gson gson;
     @Before
@@ -38,6 +65,7 @@ public class AliasActionAdapterTest extends SmallTestBase {
         actionTypes.put(AliasUtils.aliasActionKey(alias1, "turnPower"), TurnPower.class);
         actionTypes.put(AliasUtils.aliasActionKey(alias1, "setPresetTemperature"), SetPresetTemperature.class);
         actionTypes.put(AliasUtils.aliasActionKey(alias2, "setPresetHumidity"), SetPresetHumidity.class);
+        actionTypes.put(AliasUtils.aliasActionKey(alias3, "setPresetTemperature"), SetPresetTemperature2.class);
 
         gson = new GsonBuilder()
                 .registerTypeAdapter(
@@ -88,21 +116,18 @@ public class AliasActionAdapterTest extends SmallTestBase {
         Action action2 = deserializedAA.getActions().get(1);
         Assert.assertTrue(action2 instanceof SetPresetTemperature);
         Assert.assertEquals(23, ((SetPresetTemperature)action2).getTemperature().intValue());
-    }
 
-    @Test
-    public void deserialize_unregisteredAlias_throw_exceptionTest() {
-        List<Action> actions = new ArrayList<>();
-        actions.add(new TurnPower(true));
-        AliasAction aa = new AliasAction("anotherAlias", actions);
-        try {
-            gson.fromJson(
-                    JsonUtil.aliasActionToJson(aa).toString(),
-                    AliasAction.class);
-            Assert.fail("should throw exception");
-        }catch (JsonParseException e) {
-            Assert.assertTrue(e.getCause() instanceof UnsupportedActionException);
-        }
-
+        List<Action> actions2 = new ArrayList<>();
+        actions2.add(new SetPresetTemperature2(34, "Celsius"));
+        AliasAction aa2 = new AliasAction(alias3, actions2);
+        AliasAction parsedAA2 = gson.fromJson(
+                JsonUtil.aliasActionToJson(aa2).toString(),
+                AliasAction.class);
+        Assert.assertEquals(1, parsedAA2.getActions().size());
+        Action action21 = parsedAA2.getActions().get(0);
+        Assert.assertEquals(
+                34,
+                ((SetPresetTemperature2)action21).getSetPresetTemperature().intValue());
+        Assert.assertNull(((SetPresetTemperature2)action21).getTemperatureUnit());
     }
 }

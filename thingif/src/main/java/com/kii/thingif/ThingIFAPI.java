@@ -29,7 +29,6 @@ import com.kii.thingif.exception.ThingIFException;
 import com.kii.thingif.exception.ThingIFRestException;
 import com.kii.thingif.exception.UnloadableInstanceVersionException;
 import com.kii.thingif.exception.UnregisteredAliasException;
-import com.kii.thingif.exception.UnsupportedActionException;
 import com.kii.thingif.gateway.EndNode;
 import com.kii.thingif.gateway.Gateway;
 import com.kii.thingif.gateway.PendingEndNode;
@@ -68,6 +67,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -270,14 +270,15 @@ public class ThingIFAPI {
                     !Modifier.isStatic(actionClass.getModifiers())) {
                 throw new IllegalArgumentException("non static inner class is not allowed to be Action");
             }
-            if(actionClass.getDeclaredFields().length != 1) {
-                    throw new IllegalArgumentException("action class must contain only one field.");
-            }
-            // validate return value of getActionName()
+
+            // validate actionName in actionClass
             Gson gson = new Gson();
             Action action = gson.fromJson(new JsonObject(), actionClass);
-            if (TextUtils.isEmpty(action.getActionName())) {
-                throw new IllegalArgumentException("getActionName() return null or empty");
+            Gson gson2 = new GsonBuilder().serializeNulls().create();
+            JsonObject json = gson2.toJsonTree(action).getAsJsonObject();
+            if (!json.has(actionName)) {
+                throw new IllegalArgumentException("can not find a field in actionClass with " +
+                        "same name as " + actionName + ", or annotated with "+ actionName);
             }
 
             this.actionTypes.put(ThingIFAPI.actionsMapKey(alias, actionName), actionClass);
@@ -890,7 +891,6 @@ public class ThingIFAPI {
      * @return Command instance.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws UnsupportedActionException Thrown when the returned response contains unregistered actions.
      */
     @NonNull
     @WorkerThread
@@ -937,7 +937,6 @@ public class ThingIFAPI {
      * paginationKey if there is next page to be obtained.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws UnregisteredAliasException Thrown when the returned response contains alias that cannot be handled.
      */
     @NonNull
     public Pair<List<Command>, String> listCommands (
@@ -1182,7 +1181,6 @@ public class ThingIFAPI {
      * @return Trigger instance.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws UnregisteredAliasException Thrown when the returned response contains alias that cannot be handled.
      */
     @NonNull
     @WorkerThread
@@ -1562,7 +1560,6 @@ public class ThingIFAPI {
      * in the target.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws UnregisteredAliasException Thrown when the returned response contains alias that cannot be handled.
      */
     @NonNull
     @WorkerThread
