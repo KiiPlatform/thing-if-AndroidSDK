@@ -3,7 +3,7 @@ package com.kii.thingif.actions;
 import com.kii.thingif.command.Action;
 
 public class TurnPower implements Action{
-    public Boolean power;
+    private Boolean power;
     public TurnPower(Boolean power) {
         this.power = power;
     }
@@ -11,5 +11,9 @@ public class TurnPower implements Action{
     @Override
     public String getActionName() {
         return "turnPower";
+    }
+
+    public Boolean getPower() {
+        return this.power;
     }
 }
