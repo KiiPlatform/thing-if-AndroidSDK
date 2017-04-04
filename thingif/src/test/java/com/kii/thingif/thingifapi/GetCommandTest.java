@@ -19,8 +19,6 @@ import com.kii.thingif.command.CommandState;
 import com.kii.thingif.exception.ForbiddenException;
 import com.kii.thingif.exception.NotFoundException;
 import com.kii.thingif.exception.ServiceUnavailableException;
-import com.kii.thingif.exception.UnregisteredAliasException;
-import com.kii.thingif.exception.UnsupportedActionException;
 import com.kii.thingif.states.AirConditionerState;
 import com.kii.thingif.states.HumidityState;
 import com.kii.thingif.thingifapi.utils.ThingIFAPIUtils;
@@ -329,62 +327,5 @@ public class GetCommandTest  extends ThingIFAPITestBase {
         Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
         ThingIFAPIUtils.setTarget(api, target);
         api.getCommand("");
-    }
-
-    @Test()
-    public void getCommandWithUnregisterAliasTest() throws Exception{
-        String commandID = "command-1234";
-        TypedID thingID = new TypedID(TypedID.Types.THING, "th.1234567890");
-        String accessToken = "thing-access-token-1234";
-        Target target = new StandaloneThing(thingID.getID(), "vendor-thing-id", accessToken);
-        String commandTitle = "title";
-        String commandDescription = "description";
-        JSONObject metaData = new JSONObject().put("k", "v");
-        String firedTriggerID = "trigger1";
-        CommandState state = CommandState.SENDING;
-        Long created = System.currentTimeMillis();
-        Long modified = System.currentTimeMillis();
-
-        // prepare the get command response
-        JSONArray actionsInResponse = new JSONArray();
-        actionsInResponse
-                .put(new JSONObject().put(
-                        "NewAlias",
-                        new JSONArray()
-                                .put(new JSONObject().put("newAction", true))));
-
-        this.addMockResponseForGetCommand(
-                200,
-                commandID,
-                api.getOwner().getTypedID(),
-                target.getTypedID(),
-                actionsInResponse,
-                null,
-                state,
-                created,
-                modified,
-                firedTriggerID,
-                commandTitle,
-                commandDescription,
-                metaData);
-        ThingIFAPIUtils.setTarget(api, target);
-        try {
-            api.getCommand(commandID);
-            Assert.fail("UnregisteredAliasException should be thrown");
-        }catch (UnsupportedActionException ex) {
-        }
-
-        // verify the request
-        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(
-                BASE_PATH + "/targets/" + thingID.toString() + "/commands/" + commandID,
-                request.getPath());
-        Assert.assertEquals("GET", request.getMethod());
-
-        Map<String, String> expectedRequestHeaders = new HashMap<>();
-        expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
-        expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
-        expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
-        this.assertRequestHeader(expectedRequestHeaders, request);
     }
 }
