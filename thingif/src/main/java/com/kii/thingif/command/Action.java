@@ -5,8 +5,8 @@ package com.kii.thingif.command;
  * <br>
  * A single action must has the following two information:
  * <ul>
- *     <li>action name to represent what action it is.</li>
- *     <li>action value to represent how the action to be executed.</li>
+ *     <li>action name identifies the action to be executed.</li>
+ *     <li>action value indicates contents of the action to be executed.</li>
  * </ul>
  * A class implement Action interface, we called it a Concrete Action. SDK requires a Concrete Action
  * must has one field to represent the above 2 information. Value of this field to represent action value
