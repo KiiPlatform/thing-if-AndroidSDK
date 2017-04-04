@@ -13,7 +13,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.kii.thingif.clause.query.QueryClause;
 import com.kii.thingif.command.Action;
@@ -30,7 +29,6 @@ import com.kii.thingif.exception.ThingIFException;
 import com.kii.thingif.exception.ThingIFRestException;
 import com.kii.thingif.exception.UnloadableInstanceVersionException;
 import com.kii.thingif.exception.UnregisteredAliasException;
-import com.kii.thingif.exception.UnsupportedActionException;
 import com.kii.thingif.gateway.EndNode;
 import com.kii.thingif.gateway.Gateway;
 import com.kii.thingif.gateway.PendingEndNode;
@@ -893,7 +891,6 @@ public class ThingIFAPI {
      * @return Command instance.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws UnsupportedActionException Thrown when the returned response contains unregistered actions.
      */
     @NonNull
     @WorkerThread
@@ -940,7 +937,6 @@ public class ThingIFAPI {
      * paginationKey if there is next page to be obtained.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws UnregisteredAliasException Thrown when the returned response contains alias that cannot be handled.
      */
     @NonNull
     public Pair<List<Command>, String> listCommands (
@@ -1185,7 +1181,6 @@ public class ThingIFAPI {
      * @return Trigger instance.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws UnregisteredAliasException Thrown when the returned response contains alias that cannot be handled.
      */
     @NonNull
     @WorkerThread
@@ -1565,7 +1560,6 @@ public class ThingIFAPI {
      * in the target.
      * @throws ThingIFException Thrown when failed to connect IoT Cloud Server.
      * @throws ThingIFRestException Thrown when server returns error response.
-     * @throws UnregisteredAliasException Thrown when the returned response contains alias that cannot be handled.
      */
     @NonNull
     @WorkerThread
