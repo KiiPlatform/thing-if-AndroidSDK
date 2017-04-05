@@ -112,6 +112,42 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertEquals("power", ((EqualsClauseInTrigger)trigger1Predicate.getCondition().getClause()).getField());
         Assert.assertEquals(Boolean.TRUE, ((EqualsClauseInTrigger)trigger1Predicate.getCondition().getClause()).getValue());
 
+        // get trigger
+        Trigger gotTrigger = this.onboardedApi.getTrigger(trigger1.getTriggerID());
+        Assert.assertEquals(trigger1.getTriggerID(), gotTrigger.getTriggerID());
+        Assert.assertEquals(trigger1.getTargetID(), gotTrigger.getTargetID());
+        StatePredicate gotPredicate = (StatePredicate)gotTrigger.getPredicate();
+        Assert.assertEquals(trigger1Predicate.getEventSource(), gotPredicate.getEventSource());
+        Assert.assertEquals(trigger1Predicate.getTriggersWhen(), gotPredicate.getTriggersWhen());
+        Assert.assertEquals(((EqualsClauseInTrigger) trigger1Predicate.getCondition().getClause()).getField(),
+                ((EqualsClauseInTrigger)gotPredicate.getCondition().getClause()).getField());
+        Assert.assertEquals(((EqualsClauseInTrigger) trigger1Predicate.getCondition().getClause()).getValue(),
+                ((EqualsClauseInTrigger)gotPredicate.getCondition().getClause()).getValue());
+        Command gotCommand = gotTrigger.getCommand();
+        Assert.assertNotNull(gotCommand);
+        Assert.assertEquals(trigger1Command.getCommandID(), gotCommand.getCommandID());
+        Assert.assertEquals(trigger1Command.getTargetID(), gotCommand.getTargetID());
+        Assert.assertEquals(trigger1Command.getIssuerID(), gotCommand.getIssuerID());
+        Assert.assertEquals(trigger1Command.getCommandState(), gotCommand.getCommandState());
+        Assert.assertEquals(trigger1Command.getFiredByTriggerID(), gotCommand.getFiredByTriggerID());
+        Assert.assertEquals(trigger1Command.getCreated(), gotCommand.getCreated());
+        Assert.assertEquals(trigger1Command.getModified(), gotCommand.getModified());
+        Assert.assertEquals(1, gotCommand.getAliasActions().size());
+        Assert.assertEquals(ALIAS1, gotCommand.getAliasActions().get(0).getAlias());
+        Assert.assertEquals(2, gotCommand.getAliasActions().get(0).getActions().size());
+        Action gotAction1 = trigger1Command.getAliasActions().get(0).getActions().get(0);
+        Assert.assertTrue(gotAction1 instanceof TurnPower);
+        Assert.assertTrue(((TurnPower)gotAction1).getPower());
+        Action gotAction2 = trigger1Command.getAliasActions().get(0).getActions().get(1);
+        Assert.assertTrue(gotAction2 instanceof SetPresetTemperature);
+        Assert.assertEquals(25, ((SetPresetTemperature)gotAction2).getTemperature().intValue());
+        Assert.assertEquals(trigger1.getServerCode(), gotTrigger.getServerCode());
+        Assert.assertEquals(trigger1.disabled(), gotTrigger.disabled());
+        Assert.assertEquals(trigger1.getDisabledReason(), gotTrigger.getDisabledReason());
+        Assert.assertEquals(trigger1.getTitle(), gotTrigger.getTitle());
+        Assert.assertEquals(trigger1.getDescription(), gotTrigger.getDescription());
+        Assert.assertEquals(trigger1.getMetadata(), gotTrigger.getMetadata());
+
         // disable/enable trigger 1
         trigger1 = this.onboardedApi.enableTrigger(trigger1.getTriggerID(), false);
         Assert.assertTrue(trigger1.disabled());
@@ -431,6 +467,30 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertEquals(TriggersWhen.CONDITION_TRUE, trigger4Predicate.getTriggersWhen());
         Assert.assertEquals("power", ((EqualsClauseInTrigger)trigger4Predicate.getCondition().getClause()).getField());
         Assert.assertEquals(Boolean.TRUE, ((EqualsClauseInTrigger)trigger4Predicate.getCondition().getClause()).getValue());
+
+        // get trigger
+        Trigger gotTrigger = this.onboardedApi.getTrigger(trigger4.getTriggerID());
+        Assert.assertEquals(trigger4.getTriggerID(), gotTrigger.getTriggerID());
+        Assert.assertEquals(trigger4.getTargetID(), gotTrigger.getTargetID());
+        StatePredicate gotPredicate = (StatePredicate)gotTrigger.getPredicate();
+        Assert.assertEquals(trigger4Predicate.getEventSource(), gotPredicate.getEventSource());
+        Assert.assertEquals(trigger4Predicate.getTriggersWhen(), gotPredicate.getTriggersWhen());
+        Assert.assertEquals(((EqualsClauseInTrigger) trigger4Predicate.getCondition().getClause()).getField(),
+                ((EqualsClauseInTrigger)gotPredicate.getCondition().getClause()).getField());
+        Assert.assertEquals(((EqualsClauseInTrigger) trigger4Predicate.getCondition().getClause()).getValue(),
+                ((EqualsClauseInTrigger)gotPredicate.getCondition().getClause()).getValue());
+        Assert.assertNull(gotTrigger.getCommand());
+        ServerCode gotServerCode = gotTrigger.getServerCode();
+        Assert.assertNotNull(gotServerCode);
+        Assert.assertEquals(trigger4ServerCode.getEndpoint(), gotServerCode.getEndpoint());
+        Assert.assertEquals(trigger4ServerCode.getExecutorAccessToken(), gotServerCode.getExecutorAccessToken());
+        Assert.assertEquals(trigger4ServerCode.getTargetAppID(), gotServerCode.getTargetAppID());
+        assertJSONObject(trigger4ServerCode.getParameters(), gotServerCode.getParameters());
+        Assert.assertEquals(trigger4.disabled(), gotTrigger.disabled());
+        Assert.assertEquals(trigger4.getDisabledReason(), gotTrigger.getDisabledReason());
+        Assert.assertEquals(trigger4.getTitle(), gotTrigger.getTitle());
+        Assert.assertEquals(trigger4.getDescription(), gotTrigger.getDescription());
+        assertJSONObject(trigger4.getMetadata(), gotTrigger.getMetadata());
 
         // update trigger
         ServerCode serverCode11 = new ServerCode("my_function2", null);
