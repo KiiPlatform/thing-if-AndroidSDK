@@ -2,9 +2,11 @@ package com.kii.thingif.largetests;
 
 import android.support.test.runner.AndroidJUnit4;
 
+import com.kii.thingif.KiiApp;
 import com.kii.thingif.LayoutPosition;
 import com.kii.thingif.OnboardWithThingIDOptions;
 import com.kii.thingif.OnboardWithVendorThingIDOptions;
+import com.kii.thingif.Owner;
 import com.kii.thingif.Target;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.TypedID;
@@ -41,6 +43,11 @@ public class OnboardTest extends LargeTestCaseBase {
         Assert.assertNotNull(onboardVendorThingIDTarget.getTypedID().getID());
         Assert.assertNotNull(onboardVendorThingIDTarget.getAccessToken());
 
+        // check stored api.
+        ThingIFAPI loadedAPI1 = ThingIFAPI.loadFromStoredInstance(this.context);
+        Assert.assertNotNull(loadedAPI1);
+        assertThingIFAPI("check laodedAPI1", onboardVendorThingIDApi, loadedAPI1);
+
         ThingIFAPI onboardThingIDApi =
                 copyThingIFAPIWithoutTarget(onboardVendorThingIDApi);
         // on-boarding thing
@@ -56,6 +63,11 @@ public class OnboardTest extends LargeTestCaseBase {
         Assert.assertEquals(onboardThingIDTarget.getTypedID().getID(),
                 onboardThingIDTarget.getTypedID().getID());
         Assert.assertNotNull(onboardThingIDTarget.getAccessToken());
+
+        // check stored api.
+        ThingIFAPI loadedAPI2 = ThingIFAPI.loadFromStoredInstance(this.context);
+        Assert.assertNotNull(loadedAPI2);
+        assertThingIFAPI("check laodedAPI2", onboardThingIDApi, loadedAPI2);
     }
 
     @Test
@@ -75,6 +87,11 @@ public class OnboardTest extends LargeTestCaseBase {
         Assert.assertNotNull(onboardVendorThingIDTarget.getTypedID().getID());
         Assert.assertNotNull(onboardVendorThingIDTarget.getAccessToken());
 
+        // check stored api.
+        ThingIFAPI loadedAPI1 = ThingIFAPI.loadFromStoredInstance(this.context);
+        Assert.assertNotNull(loadedAPI1);
+        assertThingIFAPI("check laodedAPI1", onboardVendorThingIDApi, loadedAPI1);
+
         ThingIFAPI onboardThingIDApi =
                 copyThingIFAPIWithoutTarget(onboardVendorThingIDApi);
         // on-boarding thing
@@ -87,6 +104,11 @@ public class OnboardTest extends LargeTestCaseBase {
         Assert.assertEquals(onboardThingIDTarget.getTypedID().getID(),
                 onboardThingIDTarget.getTypedID().getID());
         Assert.assertNotNull(onboardThingIDTarget.getAccessToken());
+
+        // check stored api.
+        ThingIFAPI loadedAPI2 = ThingIFAPI.loadFromStoredInstance(this.context);
+        Assert.assertNotNull(loadedAPI2);
+        assertThingIFAPI("check laodedAPI2", onboardThingIDApi, loadedAPI2);
     }
 
     @Test
@@ -112,5 +134,67 @@ public class OnboardTest extends LargeTestCaseBase {
                 endnode.getTypedID().getType());
         Assert.assertNotNull(endnode.getTypedID().getID());
         Assert.assertNotNull(endnode.getAccessToken());
+    }
+
+    private void assertThingIFAPI(String tag, ThingIFAPI expected, ThingIFAPI actual) throws Exception {
+
+        KiiApp expectedApp = expected.getApp();
+        KiiApp actualApp = actual.getApp();
+        Assert.assertEquals(tag,
+                expectedApp.getAppID(),
+                actualApp.getAppID());
+        Assert.assertEquals(tag,
+                expectedApp.getAppKey(),
+                actualApp.getAppKey());
+        Assert.assertEquals(tag,
+                expectedApp.getBaseUrl(),
+                actualApp.getBaseUrl());
+        Assert.assertEquals(tag,
+                expectedApp.getHostName(),
+                actualApp.getHostName());
+        Assert.assertEquals(tag,
+                expectedApp.getSiteName(),
+                actualApp.getSiteName());
+        Assert.assertEquals(tag,
+                expectedApp.getSite(),
+                actualApp.getSite());
+
+        Assert.assertEquals(tag,
+                expected.getAppID(),
+                actual.getAppID());
+        Assert.assertEquals(tag,
+                expected.getAppKey(),
+                actual.getAppKey());
+        Assert.assertEquals(tag,
+                expected.getBaseUrl(),
+                actual.getBaseUrl());
+
+        Owner expectedOwner = expected.getOwner();
+        Owner actualOwner = actual.getOwner();
+        Assert.assertEquals(tag,
+                expectedOwner.getTypedID(),
+                actualOwner.getTypedID());
+        Assert.assertEquals(tag,
+                expectedOwner.getAccessToken(),
+                actualOwner.getAccessToken());
+
+        Target expectedTarget = expected.getTarget();
+        Target actualTarget = actual.getTarget();
+        Assert.assertEquals(tag,
+                expectedTarget.getTypedID(),
+                actualTarget.getTypedID());
+        Assert.assertEquals(tag,
+                expectedTarget.getAccessToken(),
+                actualTarget.getAccessToken());
+
+        Assert.assertEquals(tag,
+                expected.getTag(),
+                actual.getTag());
+        Assert.assertEquals(tag,
+                expected.getActionTypes(),
+                actual.getActionTypes());
+        Assert.assertEquals(tag,
+                expected.getStateTypes(),
+                actual.getStateTypes());
     }
 }
