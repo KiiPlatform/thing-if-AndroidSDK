@@ -83,7 +83,7 @@ public class LargeTestCaseBase {
 
     @Before
     public void before() throws Exception {
-        this.context = InstrumentationRegistry.getContext();
+        this.context = InstrumentationRegistry.getTargetContext();
         InputStream is = this.getClass().getClassLoader().getResourceAsStream("assets/app.json");
         try {
             JSONObject json = new JSONObject(IOUtils.toString(is));
