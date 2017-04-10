@@ -107,7 +107,7 @@ public class Command implements Parcelable {
      * @return list of AliasAction with the specified type.
      */
     @NonNull
-    public List<AliasAction> getAliasAction(
+    public List<AliasAction> getAliasActions(
             @NonNull String alias) {
         List<AliasAction> foundActions = new ArrayList<>();
         for (AliasAction aliasAction: this.aliasActions) {
