@@ -190,7 +190,7 @@ public class CommandTest extends SmallTestBase {
 
         // test retrieve action by alias
         List<AliasAction> foundActions =
-                command.getAliasAction(alias1);
+                command.getAliasActions(alias1);
         Assert.assertEquals(2, foundActions.size());
 
         assertJSONObject(
@@ -202,7 +202,7 @@ public class CommandTest extends SmallTestBase {
                 JsonUtil.aliasActionToJson(foundActions.get(1)));
 
         List<AliasAction> foundActions2 =
-                command.getAliasAction("NewAlias");
+                command.getAliasActions("NewAlias");
         Assert.assertEquals(0, foundActions2.size());
 
         // test retrieve action result by alias and acton name
