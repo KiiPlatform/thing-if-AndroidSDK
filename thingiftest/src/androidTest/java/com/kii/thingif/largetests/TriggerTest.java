@@ -10,6 +10,7 @@ import com.kii.cloud.rest.client.model.KiiCredentials;
 import com.kii.cloud.rest.client.model.storage.KiiThing;
 import com.kii.thingif.OnboardWithVendorThingIDOptions;
 import com.kii.thingif.Target;
+import com.kii.thingif.TargetState;
 import com.kii.thingif.ThingIFAPI;
 import com.kii.thingif.TypedID;
 import com.kii.thingif.actions.SetPresetHumidity;
@@ -21,6 +22,7 @@ import com.kii.thingif.command.Action;
 import com.kii.thingif.command.AliasAction;
 import com.kii.thingif.command.Command;
 import com.kii.thingif.exception.BadRequestException;
+import com.kii.thingif.states.AirConditionerState;
 import com.kii.thingif.trigger.Condition;
 import com.kii.thingif.trigger.EventSource;
 import com.kii.thingif.trigger.ScheduleOncePredicate;
@@ -597,23 +599,28 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertEquals(0, triggers.size());
     }
 
+    /*
+      listTriggerServerCodeResultsTest and
+      listTriggerServerCodeResultsWithErrorTest requires deployed server
+      code. We already deployed server code for these tests in current
+      application.
+
+      If you change application, you need to deploy server code before
+      execute these tests.
+
+      The server codes which we deploy are followings:
+
+      function server_code_for_trigger(params, context) {
+        return 100;
+      }
+
+      function server_code_for_trigger_error(params, context) {
+        reference.error = 100;
+        return 100;
+      }
+     */
     @Test
     public void listTriggerServerCodeResultsTest() throws Exception {
-        if (!this.server.hasAdminCredential()) {
-            return;
-        }
-        // Deploy server code
-        KiiRest rest = new KiiRest(this.server.getAppID(), this.server.getAppKey(), this.server.getBaseUrl() + "/api", this.server.getBaseUrl() + "/thing-if", this.server.getBaseUrl() + ":443/logs");
-        KiiCredentials admin = rest.api().oauth().getAdminAccessToken(this.server.getClientId(), this.server.getClientSecret());
-        rest.setCredentials(admin);
-
-        String javascript =
-                "function server_code_for_trigger(params, context){" + "\n" +
-                "    return 100;" + "\n"
-                + "}" + "\n";
-        String versionID = rest.api().servercode().deploy(javascript);
-        rest.api().servercode().setCurrentVersion(versionID);
-
         Target target = this.onboardedApi.getTarget();
         Assert.assertNotNull(target);
         Assert.assertNotNull(target.getAccessToken());
@@ -631,24 +638,21 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertNotNull(trigger.getTriggerID());
         Assert.assertFalse(trigger.disabled());
         Assert.assertNull(trigger.getDisabledReason());
-        Assert.assertNull(trigger.getTargetID());
+        Assert.assertNotNull(trigger.getTargetID());
         Assert.assertNull(trigger.getCommand());
 
         Thread.sleep(3000);
 
-        rest.setCredentials(new KiiCredentials(target.getAccessToken()));
         // update thing state in order to trigger the server code
-        KiiThing targetThing = new KiiThing();
-        targetThing.setThingID(target.getTypedID().getID());
-        JsonObject thingState = new JsonObject();
-        thingState.addProperty("power", false);
-        rest.thingif().targets(targetThing).states().save(thingState);
+        updateTargetState(
+            this.onboardedApi.getTarget(),
+            new TargetState[] { new AirConditionerState(false, null) });
 
         Thread.sleep(3000);
 
-        thingState = new JsonObject();
-        thingState.addProperty("power", true);
-        rest.thingif().targets(targetThing).states().save(thingState);
+        updateTargetState(
+            this.onboardedApi.getTarget(),
+            new TargetState[] { new AirConditionerState(true, null) });
 
         Thread.sleep(3000);
 
@@ -665,28 +669,12 @@ public class TriggerTest extends LargeTestCaseBase{
     }
     @Test
     public void listTriggerServerCodeResultsWithErrorTest() throws Exception {
-        if (!this.server.hasAdminCredential()) {
-            return;
-        }
-        // Deploy server code
-        KiiRest rest = new KiiRest(this.server.getAppID(), this.server.getAppKey(), this.server.getBaseUrl() + "/api", this.server.getBaseUrl() + "/thing-if", this.server.getBaseUrl() + ":443/logs");
-        KiiCredentials admin = rest.api().oauth().getAdminAccessToken(this.server.getClientId(), this.server.getClientSecret());
-        rest.setCredentials(admin);
-
-        String javascript =
-                "function server_code_for_trigger(params, context){" + "\n"+
-                        "    reference.error = 100;" + "\n" +
-                        "    return 100;" + "\n" +
-                        "}" + "\n";
-        String versionID = rest.api().servercode().deploy(javascript);
-        rest.api().servercode().setCurrentVersion(versionID);
-
         Target target = this.onboardedApi.getTarget();
         Assert.assertNotNull(target);
         Assert.assertNotNull(target.getAccessToken());
 
         // create new server code trigger
-        String endpoint = "server_code_for_trigger";
+        String endpoint = "server_code_for_trigger_error";
         String executorAccessToken = target.getAccessToken();
         String targetAppID = this.onboardedApi.getAppID();
         JSONObject parameters = new JSONObject("{\"arg1\":\"passed_parameter\"}");
@@ -698,24 +686,21 @@ public class TriggerTest extends LargeTestCaseBase{
         Assert.assertNotNull(trigger.getTriggerID());
         Assert.assertFalse(trigger.disabled());
         Assert.assertNull(trigger.getDisabledReason());
-        Assert.assertNull(trigger.getTargetID());
+        Assert.assertNotNull(trigger.getTargetID());
         Assert.assertNull(trigger.getCommand());
 
         Thread.sleep(3000);
 
-        rest.setCredentials(new KiiCredentials(target.getAccessToken()));
         // update thing state in order to trigger the server code
-        KiiThing targetThing = new KiiThing();
-        targetThing.setThingID(target.getTypedID().getID());
-        JsonObject thingState = new JsonObject();
-        thingState.addProperty("power", false);
-        rest.thingif().targets(targetThing).states().save(thingState);
+        updateTargetState(
+            this.onboardedApi.getTarget(),
+            new TargetState[] { new AirConditionerState(false, null) });
 
         Thread.sleep(3000);
 
-        thingState = new JsonObject();
-        thingState.addProperty("power", true);
-        rest.thingif().targets(targetThing).states().save(thingState);
+        updateTargetState(
+            this.onboardedApi.getTarget(),
+            new TargetState[] { new AirConditionerState(true, null) });
 
         Thread.sleep(3000);
 
