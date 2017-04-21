@@ -1,4 +1,6 @@
 package com.kii.thingif.clause.base;
 
-public interface BaseClause {
+import android.os.Parcelable;
+
+public interface BaseClause extends Parcelable {
 }
