@@ -49,7 +49,7 @@ public class ThingIFAPITestBase extends SmallTestBase {
     protected static final String ALIAS2 = "HumidityAlias";
 
 
-    private final String SDK_VERSION = "0.13.0";
+    private final String SDK_VERSION = "1.0";
 
     protected MockWebServer server;
 

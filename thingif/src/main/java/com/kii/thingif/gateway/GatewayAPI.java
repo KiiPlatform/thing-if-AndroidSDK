@@ -35,7 +35,7 @@ public class GatewayAPI {
 
     private static final String SHARED_PREFERENCES_KEY_INSTANCE = "GatewayAPI_INSTANCE";
     private static final String SHARED_PREFERENCES_SDK_VERSION_KEY = "GatewayAPI_VERSION";
-    private static final String MINIMUM_LOADABLE_SDK_VERSION = "0.13.0";
+    private static final String MINIMUM_LOADABLE_SDK_VERSION = "1.0";
     private static Context context;
     private final String tag;
     private final KiiApp app;
