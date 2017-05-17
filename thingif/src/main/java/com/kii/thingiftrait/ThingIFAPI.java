@@ -246,6 +246,7 @@ public class ThingIFAPI {
          * will be used for serialization/deserialization the action.
          * If the same alias already registered, then will be updated
          * @param alias Alias to register
+         * @param actionName Name of action
          * @param actionClass List of Action subclasses
          * @return builder instance for chaining call.
          * @throws IllegalArgumentException This exception is thrown if one or
