@@ -1,4 +1,4 @@
-[ ![Download](https://api.bintray.com/packages/kii/KiiAndroidSDK/thing-if-sdk/images/download.svg) ](https://bintray.com/kii/KiiAndroidSDK/thing-if-sdk/_latestVersion) [![Circle CI](https://circleci.com/gh/KiiPlatform/thing-if-AndroidSDK/tree/master.svg?style=svg)](https://circleci.com/gh/KiiPlatform/thing-if-AndroidSDK/tree/master)
+[ ![Download](https://api.bintray.com/packages/kii/KiiAndroidSDK/thing-if/images/download.svg) ](https://bintray.com/kii/KiiAndroidSDK/thing-if/_latestVersion) [![Circle CI](https://circleci.com/gh/KiiPlatform/thing-if-AndroidSDK/tree/master.svg?style=svg)](https://circleci.com/gh/KiiPlatform/thing-if-AndroidSDK/tree/master)
 # thing-if AndroidSDK
 
 Android SDK for Kii Thing Interaction Framework.<br>
@@ -25,7 +25,7 @@ We recommend your project to using JCenter to let it fetch released library, but
 Add the following dependencies in the "build.gradle" file that locates under the target module to build. The file should be under the "app" directory by default.
 
 ```
-compile 'com.kii:thing-if-sdk:xx.yy.zzz:library@aar' // xx.yy.zz is the version number of thing-if AndroidSDK to use
+compile 'com.kii:thing-if:xx.yy.zzz:library@aar' // xx.yy.zz is the version number of thing-if AndroidSDK to use
 ```
 
 ## Import thing-if AndroidSDK as Library Module
