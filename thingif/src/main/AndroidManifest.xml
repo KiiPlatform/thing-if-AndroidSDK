@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.kii.thingif">
+    package="com.kii.thingiftrait">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-sdk tools:overrideLibrary="android.support.test.uiautomator.v18"/>
     <application android:allowBackup="true"
