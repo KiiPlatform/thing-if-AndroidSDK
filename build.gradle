@@ -22,19 +22,19 @@ allprojects {
 }
 
 task replaceGatewayIFAPITestVersion(type: ReplaceVersionTask) {
-    target = "thingif/src/androidTest/java/com/kii/thingif/gateway/GatewayAPITestBase.java"
+    target = "thingif/src/androidTest/java/com/kii/thing-if/gateway/GatewayAPITestBase.java"
     replacing = "private static final String SDK_VERSION "
     version = thingIfVersion
 }
 
 task replaceThingIFAPITestVersion(type: ReplaceVersionTask) {
-    target = "thingif/src/androidTest/java/com/kii/thingif/ThingIFAPITestBase.java"
+    target = "thingif/src/androidTest/java/com/kii/thing-if/ThingIFAPITestBase.java"
     replacing = "private static final String SDK_VERSION "
     version = thingIfVersion
 }
 
 task replaceThingIFAPIVersion(type: ReplaceVersionTask) {
-    target = "thingif/src/main/java/com/kii/thingif/ThingIFAPI.java"
+    target = "thingif/src/main/java/com/kii/thing-if/ThingIFAPI.java"
     replacing = "private static final String SDK_VERSION "
     version = thingIfVersion
 }
