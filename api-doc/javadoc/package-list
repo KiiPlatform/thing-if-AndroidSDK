@@ -1,0 +1,9 @@
+com.kii.thing_if
+com.kii.thing_if.clause.base
+com.kii.thing_if.clause.query
+com.kii.thing_if.clause.trigger
+com.kii.thing_if.command
+com.kii.thing_if.exception
+com.kii.thing_if.gateway
+com.kii.thing_if.query
+com.kii.thing_if.trigger
