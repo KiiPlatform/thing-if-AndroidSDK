@@ -9,7 +9,7 @@ android {
         minSdkVersion 10
         targetSdkVersion 24
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -54,8 +54,8 @@ android.libraryVariants.all { variant ->
         description "thing-if SDK for Android API Reference"
         source = files() {
             fileTree(dir:'src/main/java').matching {
-                include 'com/kii/thingif/**'
-                exclude 'com/kii/thingif/internal/**'
+                include 'com/kii/thing_if/**'
+                exclude 'com/kii/thing_if/internal/**'
             }
         }
         def androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
@@ -65,7 +65,7 @@ android.libraryVariants.all { variant ->
 
         options.bottom = "Copyright 2015 Kii Corporation. All rights reserved. (Last updated on ${getDate()})"
         options.locale = 'en_US'
-        failOnError false
+        failOnError true
     }
 
     task ("javadocArchive", type: Zip, dependsOn: [clean, generateJavadoc, setBranch, setVer], overwrite:true) {
