@@ -15,7 +15,7 @@ android {
         minSdkVersion 10
         targetSdkVersion 22
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -34,9 +34,11 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(path: ':thingif', configuration: 'debug')
     compile 'com.android.support:appcompat-v7:22.2.1'
-    compile 'com.kii.cloud.rest.client:kii-rest-client4j:0.5.7'
+    compile 'com.kii.cloud.rest.client:kii-rest-client4j:0.5.8'
     compile 'commons-io:commons-io:2.4'
     compile 'com.android.support:support-v4:22+'
-    compile 'com.android.support.test:runner:0.3'
-    compile 'com.android.support.test:rules:0.3'
+
+    // Required for instrumented tests
+    androidTestCompile 'com.android.support:support-annotations:25.1.0'
+    androidTestCompile 'com.android.support.test:runner:0.5'
 }

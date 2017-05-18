@@ -1,11 +1,15 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
+
 buildscript {
     repositories {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.0'
+        classpath 'com.android.tools.build:gradle:2.2.3'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -15,4 +19,155 @@ allprojects {
     repositories {
         jcenter()
     }
+}
+
+task replaceGatewayIFAPITestVersion(type: ReplaceVersionTask) {
+    target = "thingif/src/androidTest/java/com/kii/thingif/gateway/GatewayAPITestBase.java"
+    replacing = "private static final String SDK_VERSION "
+    version = thingIfVersion
+}
+
+task replaceThingIFAPITestVersion(type: ReplaceVersionTask) {
+    target = "thingif/src/androidTest/java/com/kii/thingif/ThingIFAPITestBase.java"
+    replacing = "private static final String SDK_VERSION "
+    version = thingIfVersion
+}
+
+task replaceThingIFAPIVersion(type: ReplaceVersionTask) {
+    target = "thingif/src/main/java/com/kii/thingif/ThingIFAPI.java"
+    replacing = "private static final String SDK_VERSION "
+    version = thingIfVersion
+}
+
+task replaceSdkInfoVersion(type: ReplaceVersionTask) {
+    target = "sdk-info.txt"
+    replacing = "version: "
+    version = thingIfVersion
+}
+
+task replaceVersion(dependsOn: [replaceSdkInfoVersion,
+        replaceThingIFAPIVersion,
+        replaceThingIFAPITestVersion,
+        replaceGatewayIFAPITestVersion]) {
+}
+
+class ReplaceVersionTask extends DefaultTask {
+
+    String target = null
+    String replacing = null
+    String version = null
+
+    @TaskAction
+    def replace() {
+        def reader = new InputStreamReader(new FileInputStream(target), "UTF-8")
+        def builder = new StringBuilder()
+        for (def str = reader.readLine(); str != null; str = reader.readLine()) {
+            if (str.contains(replacing)) {
+                str = str.replaceFirst("[\\d\\.]+", version)
+    	}
+            builder.append(str).append("\n")
+        }
+        reader.close()
+        def dest = new FileOutputStream(target)
+        dest.write(builder.toString().getBytes("UTF-8"))
+        dest.close()
+
+    }
+}
+
+task prepareArchives(dependsOn:
+        [
+            ":thingif:makeAAR",
+            ":thingif:sourcesJar",
+            "thingif:javadocJar"
+        ]) {
+    mustRunAfter "thingif:clean"
+    doLast {
+        delete "archives"
+        mkdir "archives"
+    }
+}
+
+task generateArchives(type: Copy,
+    dependsOn:
+        [
+            ":thingif:clean",
+            prepareArchives
+        ]) {
+    from "thingif/build/outputs/aar/thingif-release.aar"
+    from "thingif/build/libs/thingif-javadoc.jar"
+    from "thingif/build/libs/thingif-sources.jar"
+    into "archives"
+}
+
+// Configure  maven publish
+publishing {
+    publications {
+        kiiArchives(MavenPublication) {
+            groupId "com.kii"
+            artifactId "thing-if"
+            version thingIfVersion
+
+            artifact("archives/thingif-javadoc.jar"){
+                classifier 'javadoc'
+                extension 'jar'
+            }
+            artifact("archives/thingif-release.aar")
+            artifact("archives/thingif-sources.jar"){
+                classifier 'sources'
+                extension 'jar'
+            }
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+                project(':thingif').getConfigurations().compile.allDependencies.each {
+                    // Skip local file dependencies.
+                    if (it.group == null)
+                        return
+                    if (it.name == null)
+                        return
+                    if (it.version == null)
+                        return
+
+                    def node = dependenciesNode.appendNode('dependency')
+                    node.appendNode('groupId', it.group)
+                    node.appendNode('artifactId', it.name)
+                    node.appendNode('version', it.version)
+                }
+            }
+        }
+    }
+}
+
+// configure for bintrayUpload task
+bintray {
+    user = System.getenv("BINTRAY_USER")
+    key = System.getenv("BINTRAY_PASS")
+
+    //the files to deploy are the result of maven publication
+    publications = ['kiiArchives']
+    dryRun = false; // deploy files
+
+    publish = true //If version should be auto published after an upload
+
+    //Package configuration. The plugin will use the repo and name properties to check if the package already exists. In that case, there's no need to configure the other package properties (like userOrg, desc, etc).
+    pkg {
+        repo = 'KiiAndroidSDK'
+        name = 'thing-if'
+        userOrg = 'kii'
+        websiteUrl = 'http://documentation.kii.com/'
+        issueTrackerUrl = 'https://github.com/KiiPlatform/thing-if-AndroidSDK/issues'
+        labels = ['IoT', 'Cloud', 'Kii', 'Backend']
+        publicDownloadNumbers = true
+        version {
+            name = thingIfVersion //Bintray logical version name
+            desc = 'Android SDK for Kii Thing Interaction Framework'
+            released  = new Date()
+            vcsTag = thingIfVersion
+        }
+    }
+}
+
+// it needs to execute generateArchives first
+bintrayUpload {
+    dependsOn generateArchives, 'generatePomFileForKiiArchivesPublication'
 }
