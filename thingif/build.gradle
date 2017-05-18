@@ -54,8 +54,8 @@ android.libraryVariants.all { variant ->
         description "thing-if SDK for Android API Reference"
         source = files() {
             fileTree(dir:'src/main/java').matching {
-                include 'com/kii/thingiftrait/**'
-                exclude 'com/kii/thingiftrait/internal/**'
+                include 'com/kii/thing_if/**'
+                exclude 'com/kii/thing_if/internal/**'
             }
         }
         def androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
