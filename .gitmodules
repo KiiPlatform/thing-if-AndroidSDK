@@ -1,0 +1,3 @@
+[submodule "thing-if-mock-server"]
+	path = thing-if-mock-server
+	url = git@github.com:shinsuke-nara/thing-if-mock-server.git

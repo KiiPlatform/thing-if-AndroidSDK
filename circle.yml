@@ -2,6 +2,10 @@ machine:
   environment:
     QEMU_AUDIO_DRV: none
 
+checkout:
+  post:
+    - git submodule update --init --recursive
+
 test:
   pre:
     # build sdk
@@ -24,9 +28,15 @@ test:
         parallel: true
     - circle-android wait-for-boot
 
+    # get IP address.
+    - sh utils/set_ip.sh
+
+    # start mock server
+    - cd thing-if-mock-server; sh start.sh
+
   override:
     # run small tests, all small tests are all local unit tests
-    - ./gradlew :thingif:test
+    - ./gradlew :thingif:test --tests '*MockServerTest'
     - mkdir $CIRCLE_TEST_REPORTS/local_ut_reports; cp -r thingif/build/test-results/debug/* $CIRCLE_TEST_REPORTS/local_ut_reports/
 
     # copy the logcat file to test results directory.
@@ -39,6 +49,9 @@ test:
     # copy the logcat file to test results directory.
     - adb logcat -d > logcat.txt
     - mv logcat.txt $CIRCLE_ARTIFACTS/logcat_large_test.txt
+
+  post:
+    - cd thing-if-mock-server; sh stop.sh
 
 deployment:
   production:
