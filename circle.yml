@@ -8,6 +8,10 @@ checkout:
 
 test:
   pre:
+    # get IP address.
+    - sh utils/set_ip.sh
+    # start mock server
+    - cd thing-if-mock-server; sh start.sh
     # build sdk
     - ./gradlew :thingif:build
     # save lint reports of sdk
@@ -27,12 +31,6 @@ test:
         background: true
         parallel: true
     - circle-android wait-for-boot
-
-    # get IP address.
-    - sh utils/set_ip.sh
-
-    # start mock server
-    - cd thing-if-mock-server; sh start.sh
 
   override:
     # run small tests, all small tests are all local unit tests
