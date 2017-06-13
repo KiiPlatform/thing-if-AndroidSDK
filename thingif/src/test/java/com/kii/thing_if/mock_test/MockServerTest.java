@@ -28,7 +28,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
-@Config(manifest = "thingif/src/main/AndroidManifest.xml", assetDir = "../test/assets")
+@Config(manifest = "src/main/AndroidManifest.xml", assetDir = "../test/assets")
 @RunWith(RobolectricTestRunner.class)
 public class MockServerTest extends ThingIFAPITestBase {
 

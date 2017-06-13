@@ -34,7 +34,7 @@ test:
 
   override:
     # run small tests, all small tests are all local unit tests
-    - ./gradlew :thingif:test --tests '*MockServerTest'
+    - ./gradlew testDebugUnitTest --tests '*MockServerTest*'
     - mkdir $CIRCLE_TEST_REPORTS/local_ut_reports; cp -r thingif/build/test-results/debug/* $CIRCLE_TEST_REPORTS/local_ut_reports/
 
     # copy the logcat file to test results directory.
