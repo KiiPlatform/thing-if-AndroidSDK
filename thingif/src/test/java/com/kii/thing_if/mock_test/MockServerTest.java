@@ -14,16 +14,21 @@ import com.kii.thing_if.command.CommandState;
 import com.kii.thing_if.states.AirConditionerState;
 import com.kii.thing_if.states.HumidityState;
 
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
+@Config(manifest = "thingif/src/main/AndroidManifest.xml", assetDir = "../test/assets")
 @RunWith(RobolectricTestRunner.class)
 public class MockServerTest extends ThingIFAPITestBase {
 
@@ -31,6 +36,21 @@ public class MockServerTest extends ThingIFAPITestBase {
     private final String alias2 = "HumidityAlias";
 
     ThingIFAPI api;
+
+    public String getIP() throws Exception {
+        BufferedReader reader = new BufferedReader(
+            new InputStreamReader(
+                RuntimeEnvironment.application.getApplicationContext()
+                    .getAssets().open("setting.json")));
+        StringBuilder builder = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            builder.append(line);
+        }
+        JSONObject json = new JSONObject(builder.toString());
+        reader.close();
+        return json.getString("IP");
+    }
 
     @Before
     public void before() throws Exception {
@@ -41,7 +61,7 @@ public class MockServerTest extends ThingIFAPITestBase {
                     KiiApp.Builder.builderWithHostName(
                         "wire_mock_app_id",
                         "wire_mock_app_key",
-                        "192.168.0.102").setURLSchema(
+                        getIP()).setURLSchema(
                             "http").setPort(1080).build(),
                     new Owner(
                         new TypedID(
