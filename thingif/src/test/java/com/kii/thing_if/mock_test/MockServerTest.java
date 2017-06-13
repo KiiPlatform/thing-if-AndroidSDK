@@ -1,5 +1,11 @@
-package com.kii.thing_if;
+package com.kii.thing_if.mock_test;
 
+import com.kii.thing_if.KiiApp;
+import com.kii.thing_if.Owner;
+import com.kii.thing_if.StandaloneThing;
+import com.kii.thing_if.ThingIFAPI;
+import com.kii.thing_if.ThingIFAPITestBase;
+import com.kii.thing_if.TypedID;
 import com.kii.thing_if.actions.SetPresetHumidity;
 import com.kii.thing_if.actions.SetPresetTemperature;
 import com.kii.thing_if.actions.TurnPower;
