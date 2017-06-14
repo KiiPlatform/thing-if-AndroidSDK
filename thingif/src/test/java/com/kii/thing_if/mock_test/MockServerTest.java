@@ -9,7 +9,9 @@ import com.kii.thing_if.TypedID;
 import com.kii.thing_if.actions.SetPresetHumidity;
 import com.kii.thing_if.actions.SetPresetTemperature;
 import com.kii.thing_if.actions.TurnPower;
+import com.kii.thing_if.command.AliasAction;
 import com.kii.thing_if.command.Command;
+import com.kii.thing_if.command.CommandForm;
 import com.kii.thing_if.command.CommandState;
 import com.kii.thing_if.states.AirConditionerState;
 import com.kii.thing_if.states.HumidityState;
@@ -24,7 +26,8 @@ import org.robolectric.annotation.Config;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -66,7 +69,7 @@ public class MockServerTest extends ThingIFAPITestBase {
                     new Owner(
                         new TypedID(
                             TypedID.Types.USER,
-                            UUID.randomUUID().toString()),
+                            "my-owner-id"),
                         "owner-access-token-1234"))
                 .registerAction(alias1, "turnPower", TurnPower.class)
                 .registerAction(
@@ -87,10 +90,29 @@ public class MockServerTest extends ThingIFAPITestBase {
     }
 
     @Test
-    public void test() throws Exception {
+    public void getCommand() throws Exception {
         Command command = api.getCommand("XXXXXXXX");
-        assertEquals(CommandState.SENDING, command.getCommandState());
+        assertEquals(CommandState.DONE, command.getCommandState());
         assertEquals("XXXXXXXX", command.getCommandID());
         // TODO: check more.
+    }
+
+    @Test public void postNewCommand() throws Exception {
+        Command command = api.postNewCommand(
+            CommandForm.Builder.newBuilder(
+                toList(new AliasAction(
+                            alias1,
+                            toList(new TurnPower(true))))).build());
+        assertEquals(CommandState.SENDING, command.getCommandState());
+        assertEquals("YYYYYYYY", command.getCommandID());
+        // TODO: check more.
+    }
+
+    private <T> List<T> toList(T... elements) {
+        ArrayList<T> list = new ArrayList<>();
+        for (T element : elements) {
+            list.add(element);
+        }
+        return list;
     }
 }
