@@ -214,20 +214,6 @@ public class OnboardTest extends ThingIFAPITestBase {
         Target target = api.onboardWithVendorThingID("v1234567890abcde", "");
     }
     @Test
-    public void onboardWithThingIDByOwner404ErrorTest() throws Exception {
-        String thingID = "th.1234567890";
-        String thingPassword = "password";
-        String accessToken = "thing-access-token-1234";
-        this.addMockResponseForOnBoard(404, null, null);
-
-        ThingIFAPI api = this.createDefaultThingIFAPI(this.context,APP_ID, APP_KEY);
-        try {
-            api.onboardWithThingID(thingID, thingPassword);
-            Assert.fail("ThingIFRestException should be thrown");
-        } catch (NotFoundException e) {
-        }
-    }
-    @Test
     public void onboardWithThingIDByOwner500ErrorTest() throws Exception {
         String thingID = "th.1234567890";
         String thingPassword = "password";
