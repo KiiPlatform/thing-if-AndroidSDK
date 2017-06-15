@@ -3,6 +3,7 @@ package com.kii.thing_if.mock_test;
 import com.kii.thing_if.StandaloneThing;
 import com.kii.thing_if.Target;
 import com.kii.thing_if.ThingIFAPI;
+import com.kii.thing_if.exception.ForbiddenException;
 import com.kii.thing_if.mock_test.utils.EquableTarget;
 
 import org.junit.Test;
@@ -30,6 +31,12 @@ public class OnboardWithThingIDTests extends ThingHTTPMockTestBase {
             new EquableTarget(
                 new StandaloneThing("thing-id", null, "accesstoken")),
             new EquableTarget(target));
+    }
+
+    @Test(expected = ForbiddenException.class)
+    public void onboardWithThingIDByOwner403Error() throws Exception {
+        createThingIFAPIBuilder("test-onboard-with-id-403")
+                .build().onboardWithThingID("thing-id", "thing-password");
     }
 
 }
