@@ -4,6 +4,7 @@ import com.kii.thing_if.StandaloneThing;
 import com.kii.thing_if.Target;
 import com.kii.thing_if.ThingIFAPI;
 import com.kii.thing_if.exception.ForbiddenException;
+import com.kii.thing_if.exception.InternalServerErrorException;
 import com.kii.thing_if.exception.NotFoundException;
 import com.kii.thing_if.mock_test.utils.EquableTarget;
 
@@ -43,6 +44,12 @@ public class OnboardWithThingIDTests extends ThingHTTPMockTestBase {
     @Test(expected = NotFoundException.class)
     public void onboardWithThingIDByOwner404Error() throws Exception {
         createThingIFAPIBuilder("test-onboard-with-id-404")
+                .build().onboardWithThingID("thing-id", "thing-password");
+    }
+
+    @Test(expected = InternalServerErrorException.class)
+    public void onboardWithThingIDByOwner500Error() throws Exception {
+        createThingIFAPIBuilder("test-onboard-with-id-500")
                 .build().onboardWithThingID("thing-id", "thing-password");
     }
 
