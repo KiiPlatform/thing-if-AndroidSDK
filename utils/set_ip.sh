@@ -10,4 +10,4 @@ else
 fi
 
 mkdir -p thingif/src/test/assets
-echo "{\"IP\" : \"${IP_ADDR}\"}" > thingif/src/test/assets/setting.json
+echo "{\"address\":\"${IP_ADDR}\",\"port\":1080}" > thingif/src/test/assets/setting.json
