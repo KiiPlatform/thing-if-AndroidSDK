@@ -440,60 +440,6 @@ public class OnboardTest extends ThingIFAPITestBase {
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
         Target target = api.onboardWithVendorThingID("v1234567890abcde", "", (OnboardWithVendorThingIDOptions) null);
     }
-    @Test
-    public void onboardWithThingIDAndOptionsTest() throws Exception {
-        String thingID = "th.1234567890";
-        String thingPassword = "password";
-        String accessToken = "thing-access-token-1234";
-        OnboardWithThingIDOptions.Builder options = new OnboardWithThingIDOptions.Builder();
-        options.setLayoutPosition(LayoutPosition.STANDALONE);
-        this.addMockResponseForOnBoard(200, thingID, accessToken);
-
-        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
-        Assert.assertFalse(api.onboarded());
-        Target target = api.onboardWithThingID(thingID, thingPassword, options.build());
-        Assert.assertTrue(api.onboarded());
-
-        // verify the result
-        Assert.assertEquals(new TypedID(TypedID.Types.THING, thingID), target.getTypedID());
-        Assert.assertEquals(accessToken, target.getAccessToken());
-        // verify the request
-        RecordedRequest request = this.server.takeRequest(1, TimeUnit.SECONDS);
-        Assert.assertEquals(BASE_PATH + "/onboardings", request.getPath());
-        Assert.assertEquals("POST", request.getMethod());
-
-        Map<String, String> expectedRequestHeaders = new HashMap<String, String>();
-        expectedRequestHeaders.put("X-Kii-AppID", APP_ID);
-        expectedRequestHeaders.put("X-Kii-AppKey", APP_KEY);
-        expectedRequestHeaders.put("Authorization", "Bearer " + api.getOwner().getAccessToken());
-        expectedRequestHeaders.put("Content-Type", "application/vnd.kii.OnboardingWithThingIDByOwner+json");
-        this.assertRequestHeader(expectedRequestHeaders, request);
-
-        JsonObject expectedRequestBody = new JsonObject();
-        expectedRequestBody.addProperty("owner", api.getOwner().getTypedID().toString());
-        expectedRequestBody.addProperty("thingID", thingID);
-        expectedRequestBody.addProperty("layoutPosition", "STANDALONE");
-        expectedRequestBody.addProperty("thingPassword", thingPassword);
-        this.assertRequestBody(expectedRequestBody, request);
-    }
-    @Test(expected = ForbiddenException.class)
-    public void onboardWithThingIDAndOptions403ErrorTest() throws Exception {
-        this.addMockResponseForOnBoard(403, null, null);
-        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
-        api.onboardWithThingID("th.1234567890", "password", (OnboardWithThingIDOptions) null);
-    }
-    @Test(expected = NotFoundException.class)
-    public void onboardWithThingIDAndOptions404ErrorTest() throws Exception {
-        this.addMockResponseForOnBoard(404, null, null);
-        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
-        api.onboardWithThingID("th.1234567890", "password", (OnboardWithThingIDOptions) null);
-    }
-    @Test(expected = InternalServerErrorException.class)
-    public void onboardWithThingIDAndOptions500ErrorTest() throws Exception {
-        this.addMockResponseForOnBoard(500, null, null);
-        ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);
-        api.onboardWithThingID("th.1234567890", "password", (OnboardWithThingIDOptions) null);
-    }
     @Test(expected = IllegalArgumentException.class)
     public void onboardWithThingIDAndOptionsTestWithNullThingIDTest() throws Exception {
         ThingIFAPI api = this.createDefaultThingIFAPI(this.context, APP_ID, APP_KEY);

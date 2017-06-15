@@ -1,5 +1,7 @@
 package com.kii.thing_if.mock_test;
 
+import com.kii.thing_if.LayoutPosition;
+import com.kii.thing_if.OnboardWithThingIDOptions;
 import com.kii.thing_if.StandaloneThing;
 import com.kii.thing_if.Target;
 import com.kii.thing_if.ThingIFAPI;
@@ -51,6 +53,53 @@ public class OnboardWithThingIDTests extends ThingHTTPMockTestBase {
     public void onboardWithThingIDByOwner500Error() throws Exception {
         createThingIFAPIBuilder("test-onboard-with-id-500")
                 .build().onboardWithThingID("thing-id", "thing-password");
+    }
+
+    @Test
+    public void onboardWithThingIDAndOptions() throws Exception {
+        ThingIFAPI api = createThingIFAPIBuilder(
+            "test-onboard-with-id-option-success").build();
+        assertFalse("This api must be not onboarded.", api.onboarded());
+        Target target = api.onboardWithThingID(
+            "thing-id",
+            "thing-password",
+            new OnboardWithThingIDOptions.Builder().setLayoutPosition(
+                LayoutPosition.STANDALONE).build());
+        assertTrue("This api must be onboarded.", api.onboarded());
+        assertEquals(
+            new EquableTarget(
+                new StandaloneThing("thing-id", null, "accesstoken")),
+            new EquableTarget(target));
+    }
+
+    @Test(expected = ForbiddenException.class)
+    public void onboardWithThingIDAndOptions403Error() throws Exception {
+        createThingIFAPIBuilder("test-onboard-with-id-option-403")
+                .build().onboardWithThingID(
+                    "thing-id",
+                    "thing-password",
+                    new OnboardWithThingIDOptions.Builder().setLayoutPosition(
+                        LayoutPosition.STANDALONE).build());
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void onboardWithThingIDAndOptions404Error() throws Exception {
+        createThingIFAPIBuilder("test-onboard-with-id-option-404")
+                .build().onboardWithThingID(
+                    "thing-id",
+                    "thing-password",
+                    new OnboardWithThingIDOptions.Builder().setLayoutPosition(
+                        LayoutPosition.STANDALONE).build());
+    }
+
+    @Test(expected = InternalServerErrorException.class)
+    public void onboardWithThingIDAndOptions500Error() throws Exception {
+        createThingIFAPIBuilder("test-onboard-with-id-option-500")
+                .build().onboardWithThingID(
+                    "thing-id",
+                    "thing-password",
+                    new OnboardWithThingIDOptions.Builder().setLayoutPosition(
+                        LayoutPosition.STANDALONE).build());
     }
 
 }
