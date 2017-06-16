@@ -15,3 +15,5 @@
 /captures
 *.iml
 /archives
+*~
+/thingif/src/test/assets/setting.json

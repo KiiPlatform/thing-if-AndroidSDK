@@ -2,8 +2,16 @@ machine:
   environment:
     QEMU_AUDIO_DRV: none
 
+checkout:
+  post:
+    - git submodule update --init --recursive
+
 test:
   pre:
+    # get IP address.
+    - sh utils/set_ip.sh
+    # start mock server
+    - cd thing-if-mock-server; sh start.sh
     # build sdk
     - ./gradlew :thingif:build
     # save lint reports of sdk
@@ -39,6 +47,9 @@ test:
     # copy the logcat file to test results directory.
     - adb logcat -d > logcat.txt
     - mv logcat.txt $CIRCLE_ARTIFACTS/logcat_large_test.txt
+
+  post:
+    - cd thing-if-mock-server; sh stop.sh
 
 deployment:
   production:
