@@ -16,7 +16,7 @@ import org.robolectric.RuntimeEnvironment;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-abstract class ThingHTTPMockTestBase {
+abstract class ThingIFHTTPMockTestBase {
 
     protected ThingIFAPI.Builder createThingIFAPIBuilder(String testID)
             throws Exception

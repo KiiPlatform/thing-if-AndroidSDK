@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 
 @Config(manifest = "src/main/AndroidManifest.xml", assetDir = "../test/assets")
 @RunWith(RobolectricTestRunner.class)
-public class OnboardWithThingIDTests extends ThingHTTPMockTestBase {
+public class OnboardWithThingIDTests extends ThingIFHTTPMockTestBase {
 
     @Test
     public void onboardWithThingIDByOwner() throws Exception {
