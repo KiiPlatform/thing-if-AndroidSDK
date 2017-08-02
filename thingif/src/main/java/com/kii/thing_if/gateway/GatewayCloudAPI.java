@@ -42,7 +42,7 @@ public class GatewayCloudAPI {
      *                     please create ThingIFAPI separately by registering alias for each gateway
      *                     command actions, then call {@link #GatewayCloudAPI(ThingIFAPI)}.
      */
-     GatewayCloudAPI(Context context, KiiApp app, Owner owner, String commandAlias) {
+     public GatewayCloudAPI(Context context, KiiApp app, Owner owner, String commandAlias) {
         this.thingIFAPI = ThingIFAPI.Builder
                 .newBuilder(context, app, owner)
                 .registerAction(commandAlias, "listPendings", ListPendingNodesAction.class)
@@ -145,6 +145,8 @@ public class GatewayCloudAPI {
 
     /**
      * Post command to gateway to get list of pending end-nodes.
+     * Please note that it requires to onboard gateway first. Please call {@link #onboardWithThingID(String, String)}
+     * or {@link #onboardWithVendorThingID(String, String)}
      * It requires gateway to update the action result with pending nodes, so the returned Command
      * instance may not has the result. You can either polling to call {@link ThingIFAPI#getCommand(String)}
      * or leverage push notification for update of result.
@@ -159,6 +161,8 @@ public class GatewayCloudAPI {
 
     /**
      * Post command to gateway to get list of onboarded end-nodes.
+     * Please note that it requires to onboard gateway first. Please call {@link #onboardWithThingID(String, String)}
+     * or {@link #onboardWithVendorThingID(String, String)}
      * It requires gateway to update the action result, so the returned Command
      * instance may not has the result. You can either polling to call {@link ThingIFAPI#getCommand(String)}
      * or leverage push notification for update of result.
@@ -174,6 +178,8 @@ public class GatewayCloudAPI {
 
     /**
      * Post command to gateway to enable a specified end-node.
+     * Please note that it requires to onboard gateway first. Please call {@link #onboardWithThingID(String, String)}
+     * or {@link #onboardWithVendorThingID(String, String)}
      * It requires gateway to update the action result, so the returned Command
      * instance may not has the result. You can either polling to call {@link ThingIFAPI#getCommand(String)}
      * or leverage push notification for update of result.
@@ -188,6 +194,8 @@ public class GatewayCloudAPI {
 
     /**
      * Post command to gateway to disable a specified end-node
+     * Please note that it requires to onboard gateway first. Please call {@link #onboardWithThingID(String, String)}
+     * or {@link #onboardWithVendorThingID(String, String)}
      * It requires gateway to update the action result, so the returned Command
      * instance may not has the result. You can either polling to call {@link ThingIFAPI#getCommand(String)}
      * or leverage push notification for update of result.
