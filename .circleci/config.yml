@@ -11,8 +11,19 @@ jobs:
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "thingif/build.gradle" }}
       - run:
-          name: Download Dependencies
-          command: ./gradlew androidDependencies
+          name: pre build
+          command: |
+            export TERM=xterm
+            ./gradlew :thingif:build
+            mkdir $CIRCLE_ARTIFACTS/lintReports; cp -fr thingif/build/outputs/lint-results* $CIRCLE_ARTIFACTS/lintReports/
+            ./gradlew :thingif:makeAAR
+            cp -fr thingif/build/artifacts/* $CIRCLE_ARTIFACTS
+            # generate java doc
+            /gradlew :thingif:generateJavadoc
+            cp -fr thingif/build/outputs/javadoc $CIRCLE_ARTIFACTS/javadoc/
+            # archive java doc
+            ./gradlew :thingif:javadocArchive
+            cp thingif/build/outputs/archive/apidoc*.zip $CIRCLE_ARTIFACTS
       - save_cache:
           paths:
             - ~/.gradle
