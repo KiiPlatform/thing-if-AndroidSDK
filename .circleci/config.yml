@@ -15,35 +15,8 @@ jobs:
           command: |
             export TERM=xterm
             ./gradlew :thingif:build
-            mkdir $CIRCLE_ARTIFACTS/lintReports; cp -fr thingif/build/outputs/lint-results* $CIRCLE_ARTIFACTS/lintReports/
             ./gradlew :thingif:makeAAR
             cp -fr thingif/build/artifacts/* $CIRCLE_ARTIFACTS
-            # generate java doc
-            /gradlew :thingif:generateJavadoc
-            cp -fr thingif/build/outputs/javadoc $CIRCLE_ARTIFACTS/javadoc/
-            # archive java doc
-            ./gradlew :thingif:javadocArchive
-            cp thingif/build/outputs/archive/apidoc*.zip $CIRCLE_ARTIFACTS
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
-      - run:
-          name: Run Tests
-          command: ./gradlew lint test
-      - store_artifacts:
-          path: thingif/build/reports
-          destination: reports
-      - store_test_results:
-          path: thingif/build/test-results
-  deployment:
-    docker:
-      - image: buildpack-deps:trusty
-    steps:
-      - checkout
-      - restore_cache:
-          key: api-doc-{{ .Revision }}
-      - run: bash circleci_scripts/release_doc.sh
 
 workflows:
   version: 2
@@ -53,25 +26,3 @@ workflows:
           filters:
             tags:
               ignore: /.*/
-      # - test:
-      #     requires:
-      #       - build
-      #     filters:
-      #       tags:
-      #         ignore: /.*/
-  build_deploy:
-    jobs:
-      - build:
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v[0-9]+(\.[0-9]+){0,2}((-.*)?)?$/
-      - deployment:
-          requires:
-            - build
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v[0-9]+(\.[0-9]+){0,2}((-.*)?)?$/
