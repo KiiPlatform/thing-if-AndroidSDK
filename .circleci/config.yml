@@ -11,14 +11,20 @@ jobs:
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "thingif/build.gradle" }}
       - run:
-          name: pre build
+          name: build sdk
           command: |
             export TERM=xterm
             ./gradlew :thingif:build
             ./gradlew :thingif:makeAAR
+      - run:
+          name: generate doc and archive
+          command: |
+            export TERM=xterm
+            /gradlew :thingif:generateJavadoc
+            ./gradlew :thingif:javadocArchive
       - store_artifacts:
           path: thingif/build/artifacts/
-          destination: built
+          destination: artifacts
 
 workflows:
   version: 2
