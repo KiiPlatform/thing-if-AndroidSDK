@@ -16,7 +16,9 @@ jobs:
             export TERM=xterm
             ./gradlew :thingif:build
             ./gradlew :thingif:makeAAR
-            cp -fr thingif/build/artifacts/* $CIRCLE_ARTIFACTS
+      - store_artifacts:
+          path: thingif/build/artifacts/
+          destination: built
 
 workflows:
   version: 2
