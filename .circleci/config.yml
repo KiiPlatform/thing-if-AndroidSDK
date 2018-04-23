@@ -25,8 +25,9 @@ jobs:
             ./gradlew :thingif:generateJavadoc
             ./gradlew :thingif:javadocArchive
       - store_artifacts:
-          path: thingif/build/outputs/
-          destination: java-doc
+          path: thingif/build/outputs/javadoc
+      - store_artifacts:
+          path: thingif/build/outputs/archive/apidoc*.zip
 
 workflows:
   version: 2
