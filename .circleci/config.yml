@@ -23,12 +23,27 @@ jobs:
           command: |
             ./gradlew :thingif:generateJavadoc
             ./gradlew :thingif:javadocArchive
+      - save_cache:
+          key: api-doc-{{ .Revision }}
+          paths:
+            - thingif/build/outputs
       - store_artifacts:
           path: thingif/build/outputs/
           destination: java-doc
       - run: ./gradlew :thingif:test
       - store_test_results:
           path: thingif/build/test-results
+  deployment:
+    docker:
+      - image: circleci/android:api-25-alpha
+    environment:
+      JVM_OPTS: -Xmx3200m
+      TERM: xterm
+    steps:
+      - checkout
+      - restore_cache:
+          key: api-doc-{{ .Revision }}
+      - run: bash circleci_scripts/release_doc.sh
 
 workflows:
   version: 2
@@ -38,3 +53,19 @@ workflows:
           filters:
             tags:
               ignore: /.*/
+  build_deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v[0-9]+(\.[0-9]+){0,2}((-.*)?)?$/
+      - deployment:
+          requires:
+            - build
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v[0-9]+(\.[0-9]+){0,2}((-.*)?)?$/
