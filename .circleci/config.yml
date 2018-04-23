@@ -6,6 +6,7 @@ jobs:
       - image: circleci/android:api-25-alpha
     environment:
       JVM_OPTS: -Xmx3200m
+      TERM: xterm
     steps:
       - checkout
       - restore_cache:
@@ -13,20 +14,16 @@ jobs:
       - run:
           name: build sdk
           command: |
-            export TERM=xterm
             ./gradlew :thingif:build
             ./gradlew :thingif:makeAAR
       - run:
           name: generate doc and archive
           command: |
-            export TERM=xterm
             ./gradlew :thingif:generateJavadoc
             ./gradlew :thingif:javadocArchive
       - store_artifacts:
           path: thingif/build/artifacts/
-          destination: artifacts
-      - store_test_results:
-          path: thingif/build/test-results
+          destination: sdk-aar
 
 workflows:
   version: 2
