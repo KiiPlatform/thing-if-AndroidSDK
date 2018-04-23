@@ -25,9 +25,8 @@ jobs:
       - store_artifacts:
           path: thingif/build/artifacts/
           destination: artifacts
-      - store_artifacts:
+      - store_test_results:
           path: thingif/build/test-results
-          destination: unit-test-results
 
 workflows:
   version: 2
