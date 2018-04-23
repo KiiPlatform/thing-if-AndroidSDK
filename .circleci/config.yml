@@ -16,14 +16,17 @@ jobs:
           command: |
             ./gradlew :thingif:build
             ./gradlew :thingif:makeAAR
+      - store_artifacts:
+          path: thingif/build/artifacts/
+          destination: sdk-aar
       - run:
           name: generate doc and archive
           command: |
             ./gradlew :thingif:generateJavadoc
             ./gradlew :thingif:javadocArchive
       - store_artifacts:
-          path: thingif/build/artifacts/
-          destination: sdk-aar
+          path: thingif/build/outputs/
+          destination: java-doc
 
 workflows:
   version: 2
