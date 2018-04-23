@@ -5,4 +5,4 @@ cd thing-if-AndroidSDK
 git checkout gh-pages && git config user.email 'satoshi.kumano@kii.com' && git config user.name 'satoshi kumano'
 git rm -r --ignore-unmatch api-doc && mkdir -p api-doc
 cp -r ../thingif/build/outputs/javadoc api-doc
-git add api-doc && git commit -m 'updated doc' && git push origin gh-pages
+echo git add api-doc && git commit -m 'updated doc' && git push origin gh-pages
