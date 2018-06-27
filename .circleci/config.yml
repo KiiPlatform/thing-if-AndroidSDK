@@ -61,12 +61,11 @@ jobs:
           command: export LD_LIBRARY_PATH=${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib && emulator64-arm -avd test -noaudio -no-boot-anim -no-window -accel on
           background: true
       - run:
-          name: Run Tests
-          command: ./gradlew :demo:connectedAndroidTest
-      - run:
           name: build sdk
           command: ./gradlew :thingif:build
-      - run: ./gradlew :thingiftest:connectedAndroidTest
+      - run:
+          name: Run Tests
+          command: ./gradlew :thingiftest:connectedAndroidTest
       - store_test_results:
           path: thingiftest/build/outputs/androidTest-results/connected/
 
