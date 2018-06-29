@@ -33,6 +33,19 @@ jobs:
       - run: ./gradlew :thingif:test
       - store_test_results:
           path: thingif/build/test-results
+      - run:
+          name: build large test module
+          command: |
+            mkdir large-test-apks
+            ./gradlew :thingiftest:assembleDebug
+            ./gradlew :thingiftest:assembleAndroidTest
+            cp thingiftest/build/outputs/apk/thingiftest-debug.apk large-test-apks/
+            cp thingiftest/build/outputs/apk/thingiftest-debug-androidTest.apk large-test-apks/
+      - persist_to_workspace:
+          root: large-test-apks
+          paths:
+            - thingiftest-debug.apk
+            - thingiftest-debug-androidTest.apk
   deployment:
     docker:
       - image: circleci/android:api-25-alpha
@@ -45,6 +58,48 @@ jobs:
           key: api-doc-{{ .Revision }}
       - run: bash circleci_scripts/release_doc.sh
       - run: ./gradlew bintrayUpload
+  large_test:
+    docker:
+      - image: google/cloud-sdk
+    steps:
+      - checkout
+      - attach_workspace:
+          at: large-test-apks
+      - run:
+          name: Store Service Account
+          command: echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
+      - run: |
+          gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+          gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+          gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+      - run:
+          name: Run instrumented test on Firebase Test Lab
+          command: |
+            # make build not faild caused by failure of tests, since we would like to collect test result from gcloud
+            gcloud firebase test android run \
+              --type instrumentation \
+              --app large-test-apks/thingiftest-debug.apk \
+              --test large-test-apks/thingiftest-debug-androidTest.apk \
+              --device model=Pixel2,version=28,locale=en_US,orientation=portrait \
+              --device model=NexusLowRes,version=27,locale=en_US,orientation=portrait \
+              --device model=Nexus10,version=19,locale=en_US,orientation=portrait \
+              --environment-variables coverage=true,coverageFile=/sdcard/tmp/code-coverage/connected/coverage.ec \
+              --directories-to-pull=/sdcard/tmp \
+              --timeout 20m
+      - run:
+          name: Create directory to store test results
+          command: mkdir firebase
+      - run:
+          when: always
+          name: Download instrumented test results from Firebase Test Lab
+          command: |
+            mkdir firebase
+            gsutil -m cp -r -U "`gsutil ls gs://test-lab-6392988w852y6-k75m1yx2tf60u | tail -1`*" firebase/
+      - store_artifacts:
+          path: firebase/
+          destination: /firebase/
+      - store_test_results:
+          path: firebase/
 
 workflows:
   version: 2
@@ -70,3 +125,15 @@ workflows:
               ignore: /.*/
             tags:
               only: /^v[0-9]+(\.[0-9]+){0,2}((-.*)?)?$/
+  large_test:
+    jobs:
+      - build:
+          branches:
+            only:
+              /ltest.*/
+      - large_test:
+          requires:
+            - build
+          branches:
+            only:
+              /ltest.*/
