@@ -36,11 +36,12 @@ jobs:
       - run:
           name: build large test module
           command: |
-            mkdir large-test-apks
+            mkdir large-test-apks # folder to save generated apks for large tests
             ./gradlew :thingiftest:assembleDebug
             ./gradlew :thingiftest:assembleAndroidTest
             cp thingiftest/build/outputs/apk/thingiftest-debug.apk large-test-apks/
             cp thingiftest/build/outputs/apk/thingiftest-debug-androidTest.apk large-test-apks/
+      # stored the apks in workspace for large_test job
       - persist_to_workspace:
           root: large-test-apks
           paths:
@@ -65,9 +66,11 @@ jobs:
       - checkout
       - attach_workspace:
           at: large-test-apks
+      # refer: https://circleci.com/docs/2.0/google-auth/
       - run:
           name: Store Service Account
           command: echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
+      # refer: https://circleci.com/docs/2.0/google-auth/
       - run: |
           gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
           gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
@@ -93,6 +96,7 @@ jobs:
           name: Download instrumented test results from Firebase Test Lab
           command: |
             mkdir firebase
+            # Note: test-lab-6392988w852y6-k75m1yx2tf60u need to be changed if google account for test is changed.
             gsutil -m cp -r -U "`gsutil ls gs://test-lab-6392988w852y6-k75m1yx2tf60u | tail -1`*" firebase/
       - store_artifacts:
           path: firebase/
@@ -124,6 +128,7 @@ workflows:
               ignore: /.*/
             tags:
               only: /^v[0-9]+(\.[0-9]+){0,2}((-.*)?)?$/
+  # only do large test on ltest* branches.
   large_test:
     jobs:
       - build:
