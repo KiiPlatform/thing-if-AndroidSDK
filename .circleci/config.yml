@@ -132,12 +132,12 @@ workflows:
   large_test:
     jobs:
       - build:
-          branches:
-            only:
-              /ltest.*/
+          filters:
+            branches:
+              only: /ltest.*/
       - large_test:
           requires:
             - build
-          branches:
-            only:
-              /ltest.*/
+          filters:
+            branches:
+              only: /ltest.*/
