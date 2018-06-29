@@ -75,7 +75,6 @@ jobs:
       - run:
           name: Run instrumented test on Firebase Test Lab
           command: |
-            # make build not faild caused by failure of tests, since we would like to collect test result from gcloud
             gcloud firebase test android run \
               --type instrumentation \
               --app large-test-apks/thingiftest-debug.apk \
