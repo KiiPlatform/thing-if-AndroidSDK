@@ -47,7 +47,7 @@ jobs:
       - run: ./gradlew bintrayUpload
   large_test:
     docker:
-      - image: circleci/android:api-26-alpha
+      - image: circleci/android:api-28-alpha
     environment:
       JVM_OPTS: -Xmx3200m
       TERM: xterm
