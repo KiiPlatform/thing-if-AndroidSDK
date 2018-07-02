@@ -54,6 +54,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: update packages
+          command: sdkmanager --update
+      - run:
           name: Setup emulator
           command: sdkmanager "system-images;android-22;default;armeabi-v7a" && echo "no" | avdmanager create avd -n test -k "system-images;android-22;default;armeabi-v7a"
       - run:
