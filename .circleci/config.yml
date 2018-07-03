@@ -33,6 +33,20 @@ jobs:
       - run: ./gradlew :thingif:test
       - store_test_results:
           path: thingif/build/test-results
+      - run:
+          name: build large test module
+          command: |
+            mkdir large-test-apks # folder to save generated apks for large tests
+            ./gradlew :thingiftest:assembleDebug
+            ./gradlew :thingiftest:assembleAndroidTest
+            cp thingiftest/build/outputs/apk/thingiftest-debug.apk large-test-apks/
+            cp thingiftest/build/outputs/apk/thingiftest-debug-androidTest.apk large-test-apks/
+      # stored the apks in workspace for large_test job
+      - persist_to_workspace:
+          root: large-test-apks
+          paths:
+            - thingiftest-debug.apk
+            - thingiftest-debug-androidTest.apk
   deployment:
     docker:
       - image: circleci/android:api-25-alpha
@@ -45,6 +59,49 @@ jobs:
           key: api-doc-{{ .Revision }}
       - run: bash circleci_scripts/release_doc.sh
       - run: ./gradlew bintrayUpload
+  large_test:
+    docker:
+      - image: google/cloud-sdk
+    steps:
+      - attach_workspace:
+          at: large-test-apks
+      # refer: https://circleci.com/docs/2.0/google-auth/
+      - run:
+          name: Store Service Account
+          command: echo $GCLOUD_SERVICE_KEY > ${HOME}/gcloud-service-key.json
+      # refer: https://circleci.com/docs/2.0/google-auth/
+      - run: |
+          gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+          gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+          gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+      - run:
+          name: Run instrumented test on Firebase Test Lab
+          command: |
+            gcloud firebase test android run \
+              --type instrumentation \
+              --app large-test-apks/thingiftest-debug.apk \
+              --test large-test-apks/thingiftest-debug-androidTest.apk \
+              --device model=Pixel2,version=28,locale=en_US,orientation=portrait \
+              --device model=NexusLowRes,version=27,locale=en_US,orientation=portrait \
+              --device model=Nexus10,version=19,locale=en_US,orientation=portrait \
+              --environment-variables coverage=true,coverageFile=/sdcard/tmp/code-coverage/connected/coverage.ec \
+              --directories-to-pull=/sdcard/tmp \
+              --timeout 20m
+      - run:
+          name: Create directory to store test results
+          command: mkdir firebase
+      - run:
+          when: always
+          name: Download instrumented test results from Firebase Test Lab
+          command: |
+            mkdir firebase
+            # Note: please set TEST_RESULT_LINK with appropriate link. You can get it from firebase portal under test lab
+            gsutil -m cp -r -U "`gsutil ls ${TEST_RESULT_LINK} | tail -1`*" firebase/
+      - store_artifacts:
+          path: firebase/
+          destination: /firebase/
+      - store_test_results:
+          path: firebase/
 
 workflows:
   version: 2
@@ -61,7 +118,7 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /^v[0-9]+(\.[0-9]+){0,2}((-.*)?)?$/
+              only: /v[0-9]+(\.[0-9]+){0,2}([-+].+)?/
       - deployment:
           requires:
             - build
@@ -69,4 +126,17 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /^v[0-9]+(\.[0-9]+){0,2}((-.*)?)?$/
+              only: /v[0-9]+(\.[0-9]+){0,2}([-+].+)?/
+  # only do large test on ltest* branches.
+  large_test:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: /ltest.*/
+      - large_test:
+          requires:
+            - build
+          filters:
+            branches:
+              only: /ltest.*/
