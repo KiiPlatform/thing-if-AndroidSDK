@@ -96,7 +96,7 @@ jobs:
           command: |
             mkdir firebase
             # Note: please set TEST_RESULT_LINK with appropriate link. You can get it from firebase portal under test lab
-            gsutil -m cp -r -U "`gsutil ls gs://${TEST_RESULT_LINK} | tail -1`*" firebase/
+            gsutil -m cp -r -U "`gsutil ls ${TEST_RESULT_LINK} | tail -1`*" firebase/
       - store_artifacts:
           path: firebase/
           destination: /firebase/
