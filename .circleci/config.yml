@@ -96,8 +96,8 @@ jobs:
           name: Download instrumented test results from Firebase Test Lab
           command: |
             mkdir firebase
-            # Note: test-lab-6392988w852y6-k75m1yx2tf60u need to be changed if google account for test is changed.
-            gsutil -m cp -r -U "`gsutil ls gs://test-lab-6392988w852y6-k75m1yx2tf60u | tail -1`*" firebase/
+            # Note: please set TEST_RESULT_LINK with appropriate link. You can get it from firebase portal under test lab
+            gsutil -m cp -r -U "`gsutil ls gs://${TEST_RESULT_LINK} | tail -1`*" firebase/
       - store_artifacts:
           path: firebase/
           destination: /firebase/
