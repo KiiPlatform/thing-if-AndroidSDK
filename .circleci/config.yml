@@ -63,7 +63,6 @@ jobs:
     docker:
       - image: google/cloud-sdk
     steps:
-      - checkout
       - attach_workspace:
           at: large-test-apks
       # refer: https://circleci.com/docs/2.0/google-auth/
