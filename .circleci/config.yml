@@ -86,7 +86,8 @@ jobs:
               --device model=Nexus10,version=19,locale=en_US,orientation=portrait \
               --environment-variables coverage=true,coverageFile=/sdcard/tmp/code-coverage/connected/coverage.ec \
               --directories-to-pull=/sdcard/tmp \
-              --timeout 20m
+              --timeout 20m \
+              --results-bucket=$RESULTS_BUCKET_NAME
       - run:
           name: Create directory to store test results
           command: mkdir firebase
