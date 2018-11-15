@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion '24'
+    compileSdkVersion 27
+    buildToolsVersion '28.0.3'
 
     android {
         lintOptions {
@@ -12,8 +12,8 @@ android {
 
     defaultConfig {
         applicationId "com.kii.thingif.largetests"
-        minSdkVersion 10
-        targetSdkVersion 22
+        minSdkVersion 14
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -31,14 +31,14 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(path: ':thingif', configuration: 'debug')
-    compile 'com.android.support:appcompat-v7:22.2.1'
-    compile 'com.kii.cloud.rest.client:kii-rest-client4j:0.5.8'
-    compile 'commons-io:commons-io:2.4'
-    compile 'com.android.support:support-v4:22+'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':thingif')
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.kii.cloud.rest.client:kii-rest-client4j:0.5.8'
+    implementation 'commons-io:commons-io:2.4'
+    implementation 'com.android.support:support-v4:27.1.1'
 
     // Required for instrumented tests
-    androidTestCompile 'com.android.support:support-annotations:25.1.0'
-    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestImplementation 'com.android.support:support-annotations:27.1.1'
+    androidTestImplementation 'com.android.support.test:runner:0.5'
 }
