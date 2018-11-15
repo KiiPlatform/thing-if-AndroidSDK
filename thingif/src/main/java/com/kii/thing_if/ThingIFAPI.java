@@ -1990,8 +1990,7 @@ public class ThingIFAPI {
             responseBody = this.restClient.sendRequest(request);
         } catch (NotFoundException e) {
             String code = e.getErrorCode();
-            // TODO: When server response fixed, change to FIRMWARE_VERSION_NOT_FOUND.
-            if ("THING_WITHOUT_THING_TYPE".equals(code)) {
+            if ("THING_WITHOUT_FIRMWARE_VERSION".equals(code)) {
                 return null;
             }
             throw e;
