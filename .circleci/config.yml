@@ -40,7 +40,7 @@ jobs:
             ./gradlew :thingiftest:assembleDebug
             ./gradlew :thingiftest:assembleAndroidTest
             cp thingiftest/build/outputs/apk/debug/thingiftest-debug.apk large-test-apks/
-            cp thingiftest/build/outputs/apk/debug/thingiftest-debug-androidTest.apk large-test-apks/
+            cp thingiftest/build/outputs/apk/androidTest/debug/thingiftest-debug-androidTest.apk large-test-apks/
       # stored the apks in workspace for large_test job
       - persist_to_workspace:
           root: large-test-apks
