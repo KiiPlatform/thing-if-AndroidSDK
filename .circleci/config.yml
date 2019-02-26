@@ -39,8 +39,9 @@ jobs:
             mkdir large-test-apks # folder to save generated apks for large tests
             ./gradlew :thingiftest:assembleDebug
             ./gradlew :thingiftest:assembleAndroidTest
-            cp thingiftest/build/outputs/apk/thingiftest-debug.apk large-test-apks/
-            cp thingiftest/build/outputs/apk/thingiftest-debug-androidTest.apk large-test-apks/
+            cp thingiftest/build/outputs/apk/debug/thingiftest-debug.apk large-test-apks/
+            cp thingiftest/build/outputs/apk/androidTest/debug/thingiftest-debug-androidTest.apk large-test-apks/
+
       # stored the apks in workspace for large_test job
       - persist_to_workspace:
           root: large-test-apks
@@ -49,7 +50,7 @@ jobs:
             - thingiftest-debug-androidTest.apk
   deployment:
     docker:
-      - image: circleci/android:api-25-alpha
+      - image: circleci/android:api-27
     environment:
       JVM_OPTS: -Xmx3200m
       TERM: xterm
